@@ -1,0 +1,198 @@
+/* Ludinir Set 2023 
+*/
+.etiq{
+    text-align: right; color: #9C9C9C; font-size: 70%; font-weight: bold; padding-right: 1px; padding-bottom: 1px;
+ }
+ .relacmodal{
+     display: none; /* oculto default */
+     position: fixed;
+     z-index: 200;
+     left: 0;
+     top: 0;
+     width: 100%; /* largura total */
+     height: 100%; /* altura total */
+     overflow: auto; /* autoriza scroll se necessário */
+     background-color: rgb(0,0,0); /* Fallback color */
+     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+ }
+ /* caixa do Modal Content */
+ .modal-content-Aniver{
+     background: linear-gradient(180deg, white, #86c1eb);
+     margin: 15% auto; /* 10% do topo e centrado */
+     padding: 20px;
+     border: 1px solid #888;
+     border-radius: 15px;
+     width: 40%; /* acertar de acordo com a tela */
+ }
+.modal-content-Telef{
+    background: linear-gradient(135deg, white, #EEDD82);
+    margin: 10% auto; /* 10% do topo e centrado */
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 40%; /* acertar de acordo com a tela */
+}
+.modal-content-Ramais{
+    background: linear-gradient(135deg, white, #9bc9bf);
+    margin: 15% auto; /* 10% do topo e centrado */
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 40%; /* acertar de acordo com a tela */
+}
+.modal-content-Login{
+    background: linear-gradient(180deg, white, #86c1eb);
+    margin: 15% auto; /* 10% do topo e centrado */
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 40%; /* acertar de acordo com a tela */
+}
+.modal-content-CadUsu{
+    background: linear-gradient(180deg, white, #86c1eb);
+    margin: 15% auto; /* 10% do topo e centrado */
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 50%; /* acertar de acordo com a tela */
+}
+.modal-content-trocaSenha{
+    background: linear-gradient(180deg, white, #86c1eb);
+    margin: 10% auto; /* 10% do topo e centrado */
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 40%; /* acertar de acordo com a tela */
+}
+.modal-content-InsOcorIni{
+    background: linear-gradient(180deg, white, #86c1eb);
+    margin: 7% auto; /* 10% do topo e centrado */
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 40%;
+}
+.modal-content-InsOcor{
+    background: linear-gradient(180deg, white, #86c1eb);
+    margin: 7% auto; /* 10% do topo e centrado */
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 90%;
+}
+
+.modal-content-matrix{
+    background-color: #fefefe;
+    margin: .5% auto;
+    padding: 2px;
+    text-align: center;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 99%;
+    height: 99%;
+    background: no-repeat center;
+    background-size: cover;
+    object-fit: fill;
+    background-image: url("images/matrix.gif");
+}
+.modalEditaSlide-content{
+    background-color: #1E90FF;
+    margin: 15% auto;
+    padding: 15px;
+    padding-bottom: 15px;
+    border: 1px solid #888;
+    width: 50%;
+    border-radius: 15px;
+    background: linear-gradient(180deg, white, #CAE1FF);
+}
+.iContainer{ /* botão upload */ 
+    position: relative;
+    float: left;
+    border: 1px solid blue;
+    background-color: blue;
+    color: white;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 10px; 
+    padding-left: 5px; 
+    padding-right: 5px; 
+}
+
+.modalConfirm{ /*modal para confirmação */ 
+    position: relative;
+    float: right;
+    border: 2px solid red;
+    background-color: white;
+    color: red;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 7px; 
+    padding-left: 5px; 
+    padding-right: 5px; 
+}
+
+.resetbot{
+    text-align: center;
+    padding-left: 5px;
+    padding-right: 5px; 
+    border-radius: 5px;
+ }
+ .resetbotinv{
+    text-align: center;
+    padding-left: 5px;
+    padding-right: 5px; 
+    border-radius: 5px;
+ }
+ .resetbotred{
+    text-align: center;
+    padding-left: 5px;
+    padding-right: 5px; 
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;;
+    background-color: red;
+ }
+ .resetbotazul{
+    text-align: center;
+    padding-left: 5px;
+    padding-right: 5px; 
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;;
+    background-color: blue;
+ }
+ .resetbotverde{
+    color: #008000;
+    text-align: center;
+    padding-left: 5px;
+    padding-right: 5px; 
+    border-radius: 5px;
+ }
+ .resetbotbloq{
+    color: #363636;
+    text-align: center;
+    text-align: center;
+    padding-left: 5px;
+    padding-right: 5px; 
+    border-radius: 5px;
+ }
+
+/* Botão fechar */
+.close{
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: right;
+}
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+/*
+tr td{
+    border: 1px solid;
+}
+*/

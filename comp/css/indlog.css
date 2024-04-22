@@ -1,0 +1,258 @@
+/* containers  */
+#container0{ /* container total   */
+    min-height: 700px; 
+    padding: 1px;
+}
+#container1{ /* banner superior - deixar limpo se for utilizar os container1Esq Cen ou Dir  */
+    height: 65px; 
+    border-radius: 7px;
+    position: relative;
+    float: left;
+    padding: 2px;
+}
+#container1Esq{ /* container 1   */
+    position: relative;
+    float: left;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height:95%; /* porcentagem da alura do elemento pai container1  */
+    /* max-width: 32%; acertar largura no elemento cfe uso */
+}
+#container1Cen{ /* container 1   */
+    position: relative;
+    float:inherit;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height:90%; /* porcentagem da alura do elemento pai container1  */
+    /* max-width: 32%; acertar largura no elemento cfe uso */
+}
+#container1Dir{ /* container 1   */
+    position: relative;
+    float: right;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height:90%; /* porcentagem da alura do elemento pai container1  */
+    /* max-width: 32%; acertar largura no elemento cfe uso */
+}
+#container2{ /* menu superior   */
+/*    min-height: 50px;
+    border-radius: 7px; */ 
+    position: relative;
+    float: left;
+    justify-content: center;
+    margin: 2px;
+    padding: 2px;
+}
+#container3{ /* corpo da página  */
+    min-height: 500px; 
+    border-radius: 7px;
+    position: relative;
+    float: left;
+    margin: 2px;
+    padding: 2px;
+}
+#container4{ /* footer */
+    min-height: 30px;
+    width: 99%; 
+    position: relative;
+    float: left;
+    margin: 0 auto;
+    padding: 10px;
+    border: 2px solid;
+    border-radius: 10px;
+}
+.footer{
+    position: absolute; 
+    bottom: 0; 
+    width: 100%; 
+    height: 2.5rem;
+}
+#container5{ /* posição lateral esquerda  */
+    min-height: 300px;
+    position: relative;
+    float: left;
+    width: 30%;
+    margin: 12px;
+    padding: 5px;
+    padding-top: 25px;
+}
+#container6{ /* posição lateral direita  */
+    min-height: 300px;
+    position: relative;
+    float: right;
+    width: 65%;
+    margin: 12px;
+    padding: 5px;
+    padding-top: 25px;
+}
+.corFundo{
+    background-color: #FFFAFA;
+}
+.corFundoMenu{
+    background-color: #FFFAFA; /*  #000080 */
+}
+
+.fontSiteFamily{
+    font-family: Montserrat, Arial, san-serif !important;
+}
+.fontTrebuchet_Spacing{
+    height: 52px;
+    font-family: "Trebuchet MS", Verdana, sans-serif;
+    letter-spacing: 8px; 
+    word-spacing: 8px;
+/*    font-size: 1.5em;  */
+    font-weight: bold;
+    color: #6C7AB3;
+    text-shadow: 2px 4px 5px #ae8888;
+}
+.fonteATI{
+    font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 5px; 
+    color: #6C7AB3; 
+    font-size: 1.2em; font-weight: 800; 
+    margin: 0; padding: 0;
+    text-shadow: 2px 4px 5px #ae8888;
+}
+.etiqDir{
+    text-align: right; color: #036; font-size: 80%; font-weight: bold; padding-right: 1px; padding-bottom: 1px;
+}
+
+
+/* dia 1 (Segunda-Feira)  - dia 0 (Domingo) fica a cor orignal  */
+/*
+.sf-menu-dia1 li {
+	background: #EEC900;
+}
+.sf-menu-dia1 ul li {
+	background: #EEC900;
+}
+.sf-menu-dia1 ul ul li {
+	background: #EEC900;
+}
+.corFundoMenu-dia1{
+    background: #EEC900;
+}
+*/
+
+.sf-menu-dia1 li {
+	background: #6C7AB3;  /* Cor background do segundo submenu */
+	color: white; /* Cor da fonte */
+}
+.sf-menu-dia1 ul li {
+	background: #6C7AB3; /* Cor background primeiro submenu */
+}
+.sf-menu-dia1 ul ul li {
+	background: #6C7AB3;  /* Cor background do segundo submenu */
+}
+.corFundoMenu-dia1{
+    background: #6C7AB3;
+    color: white; /* Cor da fonte */
+}
+.sf-menu-dia1 a {
+	color: white; /* Cor da fonte */
+}
+.sf-menu-dia1 li:hover,
+.sf-menu-dia1 li.sfHover {
+	background: #6C7AB3;
+}
+
+
+/* dia 2 (Terça-Feira) */
+.sf-menu-dia2 li {
+	background: #6699FF;  /* Cor background do segundo submenu */
+}
+.sf-menu-dia2 ul li {
+	background: #6699FF; /* Cor background primeiro submenu */
+}
+.sf-menu-dia2 ul ul li {
+	background: #6699FF;  /* Cor background do segundo submenu */
+}
+.corFundoMenu-dia2{
+    background: #6699FF;
+}
+
+/* dia 3 (Quarta-Feira) */
+.sf-menu-dia3 li {
+	background: #B0E2FF;  /* Cor background do segundo submenu */
+}
+.sf-menu-dia3 ul li {
+	background: #B0E2FF; /* Cor background primeiro submenu */
+}
+.sf-menu-dia3 ul ul li {
+	background: #B0E2FF;  /* Cor background do segundo submenu */
+}
+.corFundoMenu-dia3{
+    background: #B0E2FF;
+}
+
+/* dia 4 (Quinta-Feira) */
+.sf-menu-dia4 li {
+	background: #337ab7;  /* Cor background do segundo submenu */
+	color: white; /* Cor da fonte */
+}
+.sf-menu-dia4 ul li {
+	background: #337ab7; /* Cor background primeiro submenu */
+}
+.sf-menu-dia4 ul ul li {
+	background: #337ab7;  /* Cor background do segundo submenu */
+}
+.corFundoMenu-dia4{
+    background: #337ab7;
+    color: white; /* Cor da fonte */
+}
+.sf-menu-dia4 a {
+	color: white; /* Cor da fonte */
+}
+.sf-menu-dia4 li:hover,
+.sf-menu-dia4 li.sfHover {
+	background: #A2B5CD;
+}
+
+/* dia 5 (Sexta-Feira) */
+.sf-menu-dia5 li {
+	background: #00008B;  /* Cor background do segundo submenu */
+	color: white; /* Cor da fonte */
+}
+.sf-menu-dia5 ul li {
+	background: #00008B; /* Cor background primeiro submenu */
+}
+.sf-menu-dia5 ul ul li {
+	background: #00008B;  /* Cor background do segundo submenu */
+}
+.corFundoMenu-dia5{
+    background: #00008B;
+    color: white; /* Cor da fonte */
+}
+.sf-menu-dia5 a {
+	color: white; /* Cor da fonte */
+}
+.sf-menu-dia5 li:hover,
+.sf-menu-dia5 li.sfHover {
+	background: #A2B5CD;
+}
+
+/* dia 6 (Sábado) */
+.sf-menu-dia6 li {
+	background: #000099;  /* Cor background do segundo submenu */
+	color: white; /* Cor da fonte */
+}
+.sf-menu-dia6 ul li {
+	background: #000099; /* Cor background primeiro submenu */
+}
+.sf-menu-dia6 ul ul li {
+	background: #000099;  /* Cor background do segundo submenu */
+}
+.corFundoMenu-dia6{
+    background: #000099;
+    color: white; /* Cor da fonte */
+}
+.sf-menu-dia6 a {
+	color: white; /* Cor da fonte */
+}
+.sf-menu-dia6 li:hover,
+.sf-menu-dia6 li.sfHover {
+	background: #A2B5CD;
+}
+
