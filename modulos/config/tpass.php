@@ -33,6 +33,39 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("novasenha").disabled = true;
                 document.getElementById("repetsenha").disabled = true;
 
+                document.getElementById('olhoSecaoSenha1').addEventListener('mousedown', function(){
+                  document.getElementById('senhaant').type = 'text';
+                });
+                document.getElementById('olhoSecaoSenha1').addEventListener('mouseup', function(){
+                  document.getElementById('senhaant').type = 'password';
+                });
+                // Para que o password não fique exposto após mover a imagem.
+                document.getElementById('olhoSecaoSenha1').addEventListener('mousemove', function(){
+                  document.getElementById('senhaant').type = 'password';
+                });
+
+                document.getElementById('olhoSecaoSenha2').addEventListener('mousedown', function(){
+                  document.getElementById('novasenha').type = 'text';
+                });
+                document.getElementById('olhoSecaoSenha2').addEventListener('mouseup', function(){
+                  document.getElementById('novasenha').type = 'password';
+                });
+                // Para que o password não fique exposto após mover a imagem.
+                document.getElementById('olhoSecaoSenha2').addEventListener('mousemove', function(){
+                  document.getElementById('novasenha').type = 'password';
+                });
+
+                document.getElementById('olhoSecaoSenha3').addEventListener('mousedown', function(){
+                  document.getElementById('repetsenha').type = 'text';
+                });
+                document.getElementById('olhoSecaoSenha3').addEventListener('mouseup', function(){
+                  document.getElementById('repetsenha').type = 'password';
+                });
+                // Para que o password não fique exposto após mover a imagem.
+                document.getElementById('olhoSecaoSenha3').addEventListener('mousemove', function(){
+                  document.getElementById('repetsenha').type = 'password';
+                });
+
                 $('#senhaant').change(function(){ //confere a senha anterior ao digitar
                     ajaxIni();
                     if(ajax){
@@ -44,7 +77,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro desconhecido no servidor.");
                                 }else{
-                                    if(parseInt(Resp.row) === 0){
+                                    if(parseInt(Resp.confere) === 0){
                                         $('#mensagemTroca').fadeIn("slow");
                                         document.getElementById("mensagemTroca").innerHTML = "Senha não confere";
                                         document.getElementById("senhaant").value = "";
@@ -157,19 +190,19 @@ if(!isset($_SESSION["usuarioID"])){
                     <h2><img src="imagens/LogoComunhao.png" height="40px;">Nova Senha</h2>
                     <p>Mudança da senha de acesso: <?php echo $_SESSION["UsuLogado"]; ?></p>
                     <div>
-                        <label>Senha atual:</label>
+                        <label style="padding-right: 3px;">Senha atual:</label><img id="olhoSecaoSenha1" style="cursor: pointer;" title="Mantenha clicado para visualizar a senha inserida." src="imagens/olhosenha.png" alt="" width="25" height="15" draggable="false">
 <!--                        <input type="password" id="senhaant" class="form-control" value=""onkeypress="if(event.keyCode===13){javascript:foco('novasenha');return false;}"> -->
                         <input type="password" id="senhaant" class="form-control" value="" onkeypress="if(event.keyCode===13){javascript:foco('salvar');return false;}">
                     </div>
                     <div style="padding-top: 5px;">
-                        <label>Nova senha</label>
+                        <label style="padding-right: 3px;">Nova senha</label><img id="olhoSecaoSenha2" style="cursor: pointer;" title="Mantenha clicado para visualizar a senha inserida." src="imagens/olhosenha.png" alt="" width="25" height="15" draggable="false">
                         <input type="password" id="novasenha" class="form-control" value="" onkeypress="if(event.keyCode===13){javascript:foco('repetsenha');return false;}">
                         <span class="invalid-feedback"></span>
                     </div>
 
                     <div style="padding-top: 5px;">
-                        <label>Confirme a nova senha</label>
-                        <input type="password" id="repetsenha" class="form-control" value="" onkeypress="if(event.keyCode===13){javascript:foco('salvar');return false;}">
+                        <label style="padding-right: 3px;">Confirme a nova senha</label><img id="olhoSecaoSenha3" style="cursor: pointer;" title="Mantenha clicado para visualizar a senha inserida." src="imagens/olhosenha.png" alt="" width="25" height="15" draggable="false">
+                        <input type="password" id="repetsenha" class="form-control" value=""  onkeypress="if(event.keyCode===13){salvaMudaSenha();}"">
                         <span class="invalid-feedback"></span>
                     </div>
                     <table style="margin: 0 auto; width: 90%">

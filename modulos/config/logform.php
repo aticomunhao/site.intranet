@@ -9,7 +9,6 @@
         <style>
             body{ font: 14px sans-serif; }
             .caixalog{
-/*                width: 360px;  */
                 padding: 20px; 
                 margin: 0 auto; border: 2px solid red; border-radius: 10px;
             }            
@@ -18,8 +17,18 @@
             }
         </style>
         <script>
-//            $(document).ready(function(){
-//            });
+            $(document).ready(function(){
+                document.getElementById('olhoSecaoSenha').addEventListener('mousedown', function(){
+                  document.getElementById('senha').type = 'text';
+               });
+               document.getElementById('olhoSecaoSenha').addEventListener('mouseup', function(){
+                  document.getElementById('senha').type = 'password';
+               });
+               // Para que o password não fique exposto após mover a imagem.
+               document.getElementById('olhoSecaoSenha').addEventListener('mousemove', function(){
+                  document.getElementById('senha').type = 'password';
+               });
+            });
             function ajaxIni(){
                 try{
                 ajax = new ActiveXObject("Microsoft.XMLHTTP");}
@@ -65,7 +74,7 @@
                                 if(parseInt(Resp.coderro) > 0 && parseInt(Resp.coderro) < 5){
                                     $('#mensagem').fadeIn("slow");
                                     document.getElementById("mensagem").innerHTML = Resp.msg;
-                                    $('#mensagem').fadeOut(5000);
+                                    $('#mensagem').fadeOut(3000);
                                     return false;
                                 }else if(parseInt(Resp.coderro) === 5){
                                     document.getElementById("relacmodalLog").style.display = "none";
@@ -74,7 +83,7 @@
                                 }else if(parseInt(Resp.coderro) === 6){
                                     $('#mensagem').fadeIn("slow");
                                     document.getElementById("mensagem").innerHTML = Resp.msg;
-                                    $('#mensagem').fadeOut(8000);
+                                    $('#mensagem').fadeOut(3000);
                                     return false;                                    
                                 }else{
                                   document.getElementById("relacmodalLog").style.display = "none";
@@ -122,6 +131,10 @@
                                     $('#mensagemTroca').fadeIn("slow");
                                     document.getElementById("mensagemTroca").innerHTML = "Mínimo de 6 caracteres na senha.";
                                     $('#mensagemTroca').fadeOut(3000);
+                                }else if(parseInt(Resp.coderro) === 3){
+                                    $('#mensagemTroca').fadeIn("slow");
+                                    document.getElementById("mensagemTroca").innerHTML = "Senha igual ao login.";
+                                    $('#mensagemTroca').fadeOut(3000);
                                 }else if(parseInt(Resp.coderro) === 2){
                                     $('#mensagemTroca').fadeIn("slow");
                                     document.getElementById("mensagemTroca").innerHTML = "Senha com sequência numérica";
@@ -166,7 +179,7 @@
                     <div class="mb-3" style="padding-top: 5px;">
                         <label>Senha</label>
                         <input type="password" id="senha" class="form-control" value="" title="Termine com Enter" onkeypress="if(event.keyCode===13){logModal();}">
-                        <span class="invalid-feedback"></span>
+                        <img id="olhoSecaoSenha" style="cursor: pointer;" title="Mantenha clicado para visualizar a senha inserida." src="imagens/olhosenha.png" alt="" width="25" height="15" draggable="false">
                     </div>
                     <table style="margin: 0 auto; width: 90%">
                         <tr>
@@ -198,7 +211,7 @@
 
                     <div style="padding-top: 5px;">
                         <label>Senha</label>
-                        <input type="password" id="repetsenha" class="form-control" value="" onkeypress="if(event.keyCode===13){javascript:foco('salvar');return false;}">
+                        <input type="password" id="repetsenha" class="form-control" value="" onkeypress="if(event.keyCode===13){salvaTrocaSenha();}">
                         <span class="invalid-feedback"></span>
                     </div>
                     <table style="margin: 0 auto; width: 90%">

@@ -56,7 +56,7 @@
     <body>
         <?php
         require_once("config/abrealas.php");
-        $rs0 = pg_query($ConecPes, "SELECT id, nome_completo, TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') FROM pessoas WHERE nome_completo != '' ORDER BY nome_completo ");
+        $rs0 = pg_query($ConecPes, "SELECT id, nome_completo, TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') FROM ".$xPes.".pessoas WHERE nome_completo != '' ORDER BY nome_completo ");
         $row0 = pg_num_rows($rs0);
         ?>
         <div style="margin: 20px; border: 2px solid blue; border-radius: 15px; padding: 20px;">

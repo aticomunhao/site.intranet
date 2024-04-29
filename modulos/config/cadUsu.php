@@ -27,20 +27,6 @@ if(!isset($_SESSION["usuarioID"])){
         </style>
         <script>
             new DataTable('#idTabelaUsu', {
-                columnDefs: [
-                {
-                    targets: [0],
-                    orderData: [0, 1]
-                },
-                {
-                    targets: [1],
-                    orderData: [1, 0]
-                },
-                {
-                    targets: [4],
-                    orderData: [4, 0]
-                }
-                ],
                 lengthMenu: [
                     [50, 100, 200, 500],
                     [50, 100, 200, 500]
@@ -57,8 +43,10 @@ if(!isset($_SESSION["usuarioID"])){
             tableUsu = new DataTable('#idTabelaUsu');
             tableUsu.on('click', 'tbody tr', function () {
                 let data = tableUsu.row(this).data();
-                $id = data[1];//
+                $id = data[2];//
                 document.getElementById("guardaid_click").value = $id;
+                $Cpf = data[1];//
+                document.getElementById("guardaid_cpf").value = $Cpf;
                 if($id !== ""){
                     if(parseInt(document.getElementById("UsuAdm").value) < 7){  // superusuário
                         if(parseInt(document.getElementById("UsuAdm").value) > 3 && parseInt(document.getElementById("admEditUsu").value) === 1){ // adminisetrador 
@@ -95,7 +83,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
             $(document).ready(function(){
-//                document.getElementById("botapagar").style.visibility = "hidden"; // botão para apagar usuário
+//                document.getElementById("botapagar").style.visibility = "hidden"; // botão para deletar usuário
                 document.getElementById("botinserir").style.visibility = "hidden"; // botão de inserir usuário
                 if(parseInt(document.getElementById("UsuAdm").value) === 7){ // superusuário 
 //                    document.getElementById("botapagar").style.visibility = "visible";
@@ -129,7 +117,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("salvar").disabled = false;
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/config/registr.php?acao=buscausu&numero="+id, true);
+                    ajax.open("POST", "modulos/config/registr.php?acao=buscausu&numero="+id+"&cpf="+encodeURIComponent(document.getElementById("guardaid_cpf").value), true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -152,7 +140,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     }
                                     document.getElementById("titulomodal").innerHTML = "Edição de Usuários";
 //                                    document.getElementById("botapagar").disabled = false;
-//                                    document.getElementById("ressetsenha").disabled = false;
+                                    document.getElementById("ressetsenha").disabled = false;
                                     document.getElementById("mudou").value = "0";
                                     document.getElementById("relacmodalUsu").style.display = "block";
                                     document.getElementById("usulogin").disabled = true;
@@ -169,6 +157,9 @@ if(!isset($_SESSION["usuarioID"])){
 
             function salvaModal(){
                 if(document.getElementById("usulogin").value === ""){
+                    return false;
+                }
+                if(document.getElementById("usuarioNome").value === ""){
                     return false;
                 }
                 if(document.getElementById("setor").value === ""){
@@ -190,7 +181,7 @@ if(!isset($_SESSION["usuarioID"])){
                         +"&cpf="+encodeURIComponent(document.getElementById("usulogin").value)
                         +"&guardaidpessoa="+document.getElementById("guardaidpessoa").value
                         +"&usulogado="+document.getElementById("guarda_usulogado_id").value
-                        +"&usulogin="+document.getElementById("usulogin").value
+                        +"&ativo="+document.getElementById("guardaAtiv").value
                         +"&setor="+document.getElementById("setor").value
                         +"&flAdm="+document.getElementById("flAdm").value, true);
                         ajax.onreadystatechange = function(){
@@ -206,8 +197,8 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("mudou").value = "0";
                                         document.getElementById("guardaid_click").value = 0;
                                         document.getElementById("relacmodalUsu").style.display = "none";
-                                        $('#container3').load('modulos/config/cadUsu.php');
                                     }
+                                    $('#container3').load('modulos/config/cadUsu.php');
                                 }
                             }
                         };
@@ -218,11 +209,11 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("relacmodalUsu").style.display = "none";
                 }
             }
-            function checaEntrada(){
+            function checaEntrada__(){
                  checaLogin();
             }
 
-            function checaEntrada__(){
+            function checaEntrada(){
                 if(validaCPF(document.getElementById("usulogin").value)){
                     checaLogin();
                 }else{
@@ -234,7 +225,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
             function checaLogin(){
-                document.getElementById("guardaid_click").value = 0;
+                document.getElementById("guardaid_cpf").value = 0;
                 document.getElementById("salvar").disabled = false;
                 ajaxIni();
                 if(ajax){
@@ -267,8 +258,10 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById("flAdm").value = Resp.adm;
                                             document.getElementById("setor").value = Resp.setor;
                                             document.getElementById("guardaidpessoa").value = Resp.idpessoa;
+//                                            document.getElementById("guardaid_click").value = Resp.idpessoa; // para salvar modif se for procurado por inserção ao invés de click
                                             document.getElementById("usulogin").disabled = true;
                                             if(parseInt(Resp.jatem) === 1){
+                                                document.getElementById("guardaid_click").value = Resp.idpessoa; // para salvar modif se for procurado por inserção ao invés de click
                                                 $('#mensagem').fadeIn("slow");
                                                 document.getElementById("mensagem").innerHTML = "Usuário já cadastrado no site.";
                                                 $('#mensagem').fadeOut(10000);
@@ -278,7 +271,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 }
                                 if(parseInt(Resp.coderro) === 2){
                                     $('#mensagem').fadeIn("slow");
-                                    document.getElementById("mensagem").innerHTML = "CPF "+document.getElementById("usulogin").value+" não encontrado na base de dados.";
+                                    document.getElementById("mensagem").innerHTML = "CPF ("+format_CnpjCpf(document.getElementById("usulogin").value)+") não encontrado na base de dados.";
                                     $('#mensagem').fadeOut(10000);
                                     document.getElementById("usulogin").value = "";
                                 }
@@ -297,12 +290,6 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("acessos").value = Resp.acessos;
                                     document.getElementById("flAdm").value = Resp.adm;
                                     document.getElementById("setor").value = Resp.setor;
-                                    document.getElementById("salvar").disabled = true;
-                                    
-                                    $('#mensagem').fadeIn("slow");
-                                    document.getElementById("mensagem").innerHTML = "Não está na tabela de usuários do sistema.";
-                                    $('#mensagem').fadeOut(10000);
-//                                    document.getElementById("usulogin").value = "";
                                 }
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve erro no servidor");
@@ -315,6 +302,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function insUsu(){
+                document.getElementById("guardaid_click").value = 0;
                 if(parseInt(document.getElementById("UsuAdm").value) < 7){ 
                     if(parseInt(document.getElementById("admCadUsu").value) === 0){ // administrador não cadastra
                         return false;
@@ -338,7 +326,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("mesAniv").value = "";
                 document.getElementById("acessos").value = "-";
                 document.getElementById("ultlog").value = "-";
-                document.getElementById("setor").value = document.getElementById("guardaCodSetor").value;
+//                document.getElementById("setor").value = document.getElementById("guardaCodSetor").value;
                 if(parseInt(document.getElementById("UsuAdm").value) < 7){
                     document.getElementById("setor").disabled = true;
                     document.getElementById("flAdm").value = 2; // usuário registrado
@@ -353,24 +341,8 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function salvaAtiv(Valor){
-                ajaxIni();
-                if(ajax){
-                    ajax.open("POST", "modulos/config/registr.php?acao=salvaAtiv&numero="+document.getElementById("guardaid_click").value+"&valor="+Valor+"&usulogado="+document.getElementById("guarda_usulogado_id").value, true);
-                    ajax.onreadystatechange = function(){
-                        if(ajax.readyState === 4 ){
-                            if(ajax.responseText){
-//alert(ajax.responseText);
-                                Resp = eval("(" + ajax.responseText + ")");
-                                if(parseInt(Resp.coderro) === 1){
-                                    alert("Houve um erro no servidor.")
-                                }else{
-                                    document.getElementById("mudou").value = "1";
-                                }
-                            }
-                        }
-                    };
-                    ajax.send(null);
-                }                
+                document.getElementById("guardaAtiv").value = Valor;
+                document.getElementById("mudou").value = "1";
             }
 
             function deletaModal(){
@@ -409,12 +381,13 @@ if(!isset($_SESSION["usuarioID"])){
             function modif(){ // assinala se houve qualquer modificação nos campos do modal durante a edição para evitar salvar desnecessariamente
                 document.getElementById("mudou").value = "1";
             }
+
             function resetSenha(){
-                let Conf = confirm("A senha deste usuário será modificada para 123456789. Prossegue?");
+                let Conf = confirm("A senha deste usuário será modificada para o CPF. Prossegue?");
                 if(Conf){
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/config/registr.php?acao=resetsenha&numero="+document.getElementById("guardaid_click").value, true);
+                        ajax.open("POST", "modulos/config/registr.php?acao=resetsenha&numero="+document.getElementById("guardaid_cpf").value, true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -423,7 +396,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     if(parseInt(Resp.coderro) === 1){
                                         alert("Houve um erro no servidor.")
                                     }else{
-                                        document.getElementById("textoMsg").innerHTML = "Senha modificada para 123456789";
+                                        document.getElementById("textoMsg").innerHTML = "Senha modificada para o CPF";
                                         document.getElementById("relacmensagem").style.display = "block"; // está em modais.php
                                         setTimeout(function(){
                                             document.getElementById("relacmensagem").style.display = "none";
@@ -438,54 +411,41 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function validaCPF(cpf) {
-  var Soma = 0
-  var Resto
-
-  var strCPF = String(cpf).replace(/[^\d]/g, '')
-  
-  if (strCPF.length !== 11)
-     return false
-  
-  if ([
-    '00000000000',
-    '11111111111',
-    '22222222222',
-    '33333333333',
-    '44444444444',
-    '55555555555',
-    '66666666666',
-    '77777777777',
-    '88888888888',
-    '99999999999',
-    ].indexOf(strCPF) !== -1)
-    return false
-
-  for (i=1; i<=9; i++)
-    Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (11 - i);
-
-  Resto = (Soma * 10) % 11
-
-  if ((Resto == 10) || (Resto == 11)) 
-    Resto = 0
-
-  if (Resto != parseInt(strCPF.substring(9, 10)) )
-    return false
-
-  Soma = 0
-
-  for (i = 1; i <= 10; i++)
-    Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (12 - i)
-
-  Resto = (Soma * 10) % 11
-
-  if ((Resto == 10) || (Resto == 11)) 
-    Resto = 0
-
-  if (Resto != parseInt(strCPF.substring(10, 11) ) )
-    return false
-
-  return true
-}
+                var Soma = 0
+                var Resto
+                var strCPF = String(cpf).replace(/[^\d]/g, '')
+                if (strCPF.length !== 11)
+                    return false
+                if ([
+                    '00000000000',
+                    '11111111111',
+                    '22222222222',
+                    '33333333333',
+                    '44444444444',
+                    '55555555555',
+                    '66666666666',
+                    '77777777777',
+                    '88888888888',
+                    '99999999999',
+                ].indexOf(strCPF) !== -1)
+                return false
+                for (i=1; i<=9; i++)
+                    Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (11 - i);
+                    Resto = (Soma * 10) % 11
+                    if ((Resto == 10) || (Resto == 11)) 
+                        Resto = 0
+                    if (Resto != parseInt(strCPF.substring(9, 10)) )
+                    return false
+                    Soma = 0
+                    for (i = 1; i <= 10; i++)
+                        Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (12 - i)
+                        Resto = (Soma * 10) % 11
+                        if ((Resto == 10) || (Resto == 11)) 
+                            Resto = 0
+                        if (Resto != parseInt(strCPF.substring(10, 11) ) )
+                            return false
+                return true
+            }
         </script>
     </head>
     <body>
@@ -512,7 +472,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         $rs0 = pg_query($ConecPes, "SELECT ".$xPes.".pessoas.id, ".$xPes.".pessoas.cpf, ".$xPes.".pessoas.nome_completo 
         FROM ".$xPes.".pessoas  
-        WHERE ".$xPes.".pessoas.id != 0  ORDER BY ".$xPes.".pessoas.nome_completo");
+        WHERE pessoas.id != 0 And nome_completo IS NOT NULL ORDER BY nome_completo");
         $row0 = pg_num_rows($rs0);  // , ".$xPes.".pessoas.usuario 
 
         //Para carregar os select de dia e mês
@@ -525,17 +485,19 @@ if(!isset($_SESSION["usuarioID"])){
             $OpcoesAdm = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
         }
         $OpcoesSetor = pg_query($Conec, "SELECT CodSet, SiglaSetor FROM ".$xProj.".setores ORDER BY SiglaSetor");
-//        $OpcoesSetor = pg_query($ConecPes, "SELECT id, sigla FROM ".$xPes.".setor ORDER BY sigla");
         ?>
+
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
         <input type="hidden" id="guardaSiglaSetor" value="<?php echo addslashes($_SESSION["SiglaSetor"]) ?>" />
         <input type="hidden" id="guardaCodSetor" value="<?php echo addslashes($_SESSION["CodSetorUsu"]) ?>" />
         <input type="hidden" id="guardaid_click" value="0" />
+        <input type="hidden" id="guardaid_cpf" value="0" />
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
         <input type="hidden" id="guarda_usulogado_id" value="<?php echo $_SESSION["usuarioID"]; ?>" />
         <input type="hidden" id="admCadUsu" value="<?php echo $_SESSION["AdmCad"]; ?>" />
         <input type="hidden" id="admEditUsu" value="<?php echo $_SESSION["AdmEdit"]; ?>" />
         <input type="hidden" id="guardaidpessoa" value="0" />
+        <input type="hidden" id="guardaAtiv" value="1" />
         
         <div style="margin: 20px; border: 2px solid blue; border-radius: 15px; padding: 20px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
@@ -547,6 +509,7 @@ if(!isset($_SESSION["usuarioID"])){
             <table id="idTabelaUsu" class="display" style="width:85%">
                 <thead>
                     <tr>
+                        <th style="display: none;"></th>
                         <th>Login</th>
                         <th style="display: none;"></th>
                         <th>Nome Usual</th>
@@ -560,16 +523,18 @@ if(!isset($_SESSION["usuarioID"])){
                 <?php
                     while ($tbl0 = pg_fetch_row($rs0)){
                         $Cod = $tbl0[0]; // id
+                        $Cpf = $tbl0[1];
                         $rs1 = pg_query($Conec, "SELECT ".$xProj.".poslog.ativo, to_char(".$xProj.".poslog.logini, 'DD/MM/YYYY HH24:MI'), codsetor 
                         FROM ".$xProj.".poslog  
-                        WHERE ".$xProj.".poslog.pessoas_id = $Cod");
+                        WHERE ".$xProj.".poslog.cpf = '$Cpf' ");   //  WHERE ".$xProj.".poslog.pessoas_id = $Cod");
                         $row1 = pg_num_rows($rs1);
-                        if($row1 > 0){ // se constar da tabela poslog
+
+                        // se constar da tabela poslog
+                        if($row1 > 0){
                             $tbl1 = pg_fetch_row($rs1);
                             $Ativ = $tbl1[0]; // ativo
                             $DataLog = $tbl1[1];
                             $CodSetor = $tbl1[2];
-//                            $rs2 = pg_query($ConecPes, "SELECT sigla FROM ".$xPes.".setor WHERE id = $CodSetor");
                             $rs2 = pg_query($Conec, "SELECT siglasetor FROM ".$xProj.".setores WHERE codset = $CodSetor");
                             $row2 = pg_num_rows($rs2);
                             if($row2 > 0){
@@ -585,6 +550,7 @@ if(!isset($_SESSION["usuarioID"])){
                             }
                         ?>
                         <tr>
+                            <td style="display: none;"></td>
                             <td><?php echo formatCnpjCpf($tbl0[1]); ?></td> <!-- cpf -->
                             <td style="display: none;"><?php echo $Cod; ?></td>
                             <td><?php echo $tbl0[2]; ?></td> <!-- seria 6 - usuario -->
@@ -595,6 +561,7 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <?php
                         }
+
                     }
                     ?>
                 </tbody>
@@ -674,27 +641,12 @@ if(!isset($_SESSION["usuarioID"])){
 
                         <td colspan="2" style="text-align: right;">
                             <label class="etiq">Aniversário: -Dia: </label>
-                            <select disabled id="diaAniv" name="diaAniv" style="font-size: 1rem; width: 50px;" title="Selecione um dia." onchange="modif();"">
-                            <?php 
-                            if($OpcoesDia){
-                                while ($Opcoes = pg_fetch_row($OpcoesDia)){ ?>
-                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
-                                <?php 
-                                }
-                            }
-                            ?>
-                            </select>
+                            <input type="text" disabled id="diaAniv" style="text-align: center; font-size: .8rem; width: 50px;">
+
+
                             <label class="etiq"> -Mês: </label>
-                            <select disabled id="mesAniv" name="mesAniv" style="font-size: 1rem; width: 50px;" title="Selecione um mês." onchange="modif();">
-                            <?php 
-                            if($OpcoesMes){
-                                while ($Opcoes = pg_fetch_row($OpcoesMes)){ ?>
-                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
-                                <?php 
-                                }
-                            }
-                            ?>
-                            </select>
+                            <input type="text" disabled id="mesAniv" style="text-align: center; font-size: .8rem; width: 50px;">
+
                         </td>
                     </tr>
                     <tr>

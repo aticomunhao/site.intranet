@@ -56,6 +56,7 @@
             <div class="modal-content-Msg">
                 <span class="close" onclick="fechaMensagem();">&times;</span>
                 <br />
+                <h2><img src="imagens/LogoComunhao.png" height="40px;">Sucesso</h2>
                 <div id="textoMsg" style="text-align: center; font-weight: bold; padding: 10px;"></div>
             </div>
         </div>

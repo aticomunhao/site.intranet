@@ -4,6 +4,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title></title>
+        <script src="comp/js/jquery.mask.js"></script>
         <style type="text/css">
             .etiq{
                 text-align: right; color: #036; font-size: .9em; font-weight: bold; padding: 3px;
@@ -27,10 +28,9 @@
                         }
                     }
                 }
-
-//                $(document).ready(function(){
-//                });
-
+                $(document).ready(function(){
+                    $("#dataIniLeitura").mask("99/99/9999");
+                });
                 function salvaParam(Valor, Param){
                     ajaxIni();
                     if(ajax){
@@ -49,7 +49,6 @@
                         ajax.send(null);
                     } 
                 }
-
                 function MarcaAdm(obj){
                     if(obj.checked === true){
                         Valor = 1;
@@ -71,20 +70,66 @@
                             }
                         };
                         ajax.send(null);
-                    } 
+                    }
+                }
+
+                function salvaLeitIni(Valor){
+                    if(document.getElementById("valorIniLeitura").value === ""){
+                        return false;
+                    }
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/config/registr.php?acao=valorleitura&valor="+document.getElementById("valorIniLeitura").value, true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");
+                                    if(parseInt(Resp.coderro) > 0){
+                                        alert("Houve erro ao salvar");
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                }
+                function salvaDataIni(Valor){
+                    if(document.getElementById("dataIniLeitura").value === ""){
+                        return false;
+                    }
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/config/registr.php?acao=dataleitura&valor="+encodeURIComponent(document.getElementById("dataIniLeitura").value), true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");
+                                    if(parseInt(Resp.coderro) > 0){
+                                        alert("Houve erro ao salvar");
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
                 }
         </script>
     </head>
     <body>
         <?php
             require_once("abrealas.php");
-//
-            $rsSis = pg_query($Conec, "SELECT admvisu, admedit, admcad, insevento, editevento, instarefa, edittarefa, insramais, editramais, instelef, edittelef, editpagina, insarq, insaniver, editaniver, instroca, edittroca, insocor, editocor 
+
+            $rsSis = pg_query($Conec, "SELECT admvisu, admedit, admcad, insevento, editevento, instarefa, edittarefa, insramais, editramais, instelef, edittelef, 
+            editpagina, insarq, insaniver, editaniver, instroca, edittroca, insocor, editocor, insleitura, editleitura, TO_CHAR(datainileitura , 'DD/MM/YYYY'), valorinileitura 
             FROM ".$xProj.".paramsis WHERE idPar = 1");
             $ProcSis = pg_fetch_row($rsSis);
             $admVisu = $ProcSis[0]; // admVisu - administrador visualiza usuários
             $admEdit = $ProcSis[1]; // admEdit - administrador edita usuários
             $admCad = $ProcSis[2];  // admCad - administrador cadastra usuários
+            $DataIniLeitura = $ProcSis[21]; // controle de consumo de água - leitura do hidrômetro
+            $ValorIniLeitura = $ProcSis[22];  // controle de consumo de água - data inicial
 
             $insEvento = $ProcSis[3];   // insEvento - inserção de eventos no calendário
             $rs1 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $insEvento");
@@ -95,6 +140,16 @@
             $rs2 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $editEvento");
             $Proc2 = pg_fetch_row($rs2);
             $nomeEditEvento = $Proc2[0];
+
+            $insLeitura = $ProcSis[19];   // insLeitura - inserção de leitura do hidrômetro
+            $rs1 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $insLeitura");
+            $Proc1 = pg_fetch_row($rs1);
+            $nomeInsLeitura = $Proc1[0];
+
+            $editLeitura = $ProcSis[20];   // editLeitura - edição de leitura
+            $rs2 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $editLeitura");
+            $Proc2 = pg_fetch_row($rs2);
+            $nomeEditLeitura = $Proc2[0];
 
             $insTarefa = $ProcSis[5];   // insTarefa - inserção de tarefas
             $rs3 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $insTarefa");
@@ -169,6 +224,9 @@
 
             $OpAdmInsEv = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             $OpAdmEditEv = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            
+            $OpAdmInsLeit = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            $OpAdmEditLeit = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
 
             $OpAdmInsTar = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             $OpAdmEditTar = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
@@ -182,9 +240,6 @@
             $OpAdmEditPag = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             $OpAdmInsArq = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
 
-            $OpAdmInsAniver = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
-            $OpAdmEditAniver = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
-            
             $OpAdmInsTroca = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             $OpAdmEditTroca = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
 
@@ -196,46 +251,6 @@
         <div style="margin: 0 auto; margin-top: 40px; padding: 20px; border: 2px solid blue; border-radius: 15px; width: 50%; min-height: 200px;">
             <div style="text-align: center;">
                 <h4>Parâmetros do Sistema</h4>
-            </div>
-
-
-<!-- Aniversariantes  -->
-            <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
-                - <b>Aniversariantes</b>:<br>
-                <table style="margin: 0 auto;">
-                    <tr>
-                        <td>Nível mínimo para INSERIR aniversariantes:</td>
-                        <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'insAniver');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
-                        <option value="<?php echo $insAniver; ?>"><?php echo $nomeInsAniver; ?></option>
-                            <?php 
-                            if($OpAdmInsAniver){
-                                while ($Opcoes = pg_fetch_row($OpAdmInsAniver)){ ?>
-                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
-                                <?php 
-                                }
-                            }
-                            ?>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Nível mínimo para EDITAR aniversariantes:</td>
-                        <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'editAniver');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
-                        <option value="<?php echo $editAniver; ?>"><?php echo $nomeEditAniver; ?></option>
-                            <?php 
-                            if($OpAdmEditAniver){
-                                while ($Opcoes = pg_fetch_row($OpAdmEditAniver)){ ?>
-                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
-                                <?php 
-                                }
-                            }
-                            ?>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
             </div>
 
 
@@ -283,6 +298,60 @@
             </div>
 
 
+<!-- Leitura Hidrômetro  -->
+<div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
+                - <b>Controle do Consumo de Água - Leitura do Hidrômetro</b>:<br>
+                <table style="margin: 0 auto;">
+                    <tr>
+                        <td>Nível mínimo para INSERIR leitura:</td>
+                        <td style="padding-left: 5px;">
+                        <select onchange="salvaParam(value, 'insLeitura');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                            <option value="<?php echo $insLeitura; ?>"><?php echo $nomeInsLeitura; ?></option>
+                            <?php 
+                            if($OpAdmInsLeit){
+                                while ($Opcoes = pg_fetch_row($OpAdmInsLeit)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                <?php 
+                                }
+                            }
+                            ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                    <td>Nível mínimo para EDITAR leitura:</td>
+                        <td style="padding-left: 5px;">
+                        <select onchange="salvaParam(value, 'editLeitura');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <option value="<?php echo $editLeitura; ?>"><?php echo $nomeEditLeitura; ?></option>
+                            <?php 
+                            if($OpAdmEditLeit){
+                                while ($Opcoes = pg_fetch_row($OpAdmEditLeit)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                <?php 
+                                }
+                            }
+                            ?>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="text-align: right; font-size: 80%; padding-right: 3px;">Data Inicial:</td>
+                        <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="dataIniLeitura" value="<?php echo $DataIniLeitura; ?>" onchange="salvaDataIni(value);" style="width: 90px; text-align: center;"></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; font-size: 80%; padding-right: 3px;">Leitura Inicial:</td>
+                        <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="valorIniLeitura" value="<?php echo $ValorIniLeitura; ?>" onchange="salvaLeitIni(value);" style="width: 90px; text-align: center;"></td>
+                    </tr>
+
+                </table>
+            </div>
+
+
 <!-- Páginas  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
                 - <b>Páginas das Diretorias/Assessorias</b>:<br>
@@ -324,7 +393,7 @@
 
 <!-- Ramais  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
-                - <b>Ramais</b>:<br>
+                - <b>Ramais Internos</b>:<br>
                 <table style="margin: 0 auto;">
                     <tr>
                         <td>Nível mínimo para INSERIR ramais:</td>
@@ -452,7 +521,7 @@
 
 <!-- Telefones  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
-                - <b>Telefones</b>:<br>
+                - <b>Telefones Úteis</b>:<br>
                 <table style="margin: 0 auto;">
                     <tr>
                         <td>Nível mínimo para INSERIR telefones:</td>
@@ -495,7 +564,7 @@
 
 <!-- Trocas  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
-                - <b>Trocas</b>: <label style="color: gray; font-size: .8em;">É editável pelo setor que inseriu</label><br>
+                - <b>Trocas de Objetos</b>: <label style="color: gray; font-size: .8em;">É editável pelo setor que inseriu</label><br>
                 <table style="margin: 0 auto;">
                     <tr>
                         <td>Nível mínimo para INSERIR trocas:</td>

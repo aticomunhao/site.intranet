@@ -19,13 +19,7 @@
         die("<br>Faltam tabelas. Informe à ATI");
         return false;
     }
-    //usando a tabela anivers
-    function pegaAniver___($param, $mdate, $ddate, $Conec, $xProj) {
-        $rs0 = pg_query($Conec, "SELECT ".$xProj.".anivers.nomeUsu, ".$xProj.".anivers.nomeCompl, ".$xProj.".anivers.diaaniv, ".$xProj.".anivers.mesaniv FROM ".$xProj.".anivers 
-        WHERE ".$xProj.".anivers.mesaniv = '$mdate' And ".$xProj.".anivers.diaaniv $param '$ddate' 
-        ORDER BY ".$xProj.".anivers.mesaniv, ".$xProj.".anivers.diaaniv");
-        return $rs0;
-    }
+
     //usando a data de nascimento na tabela pessoas
     function pegaAniver($param, $mdate, $ddate, $ConecPes, $xPes) {
         $rs0 = pg_query($ConecPes, "SELECT nome_completo, nome_completo, TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') 
@@ -34,7 +28,7 @@
         ORDER BY TO_CHAR(dt_nascimento, 'MM'), TO_CHAR(dt_nascimento, 'DD')");
         return $rs0;
     }
-
+    $NiverHoje = 0;
     echo "<div style='text-align: center;'>";
         echo "<table style='margin: 0 auto;'>";
             echo "<tr>";
@@ -51,19 +45,21 @@
                             echo "<td style='color: red; text-align: right; padding-right: 10px; font-size: 80%;'>";
                             echo $tbl[2]."/". $tbl[3];
                             echo "</td>";
-                            echo "<td style='color: red; text-align: left; padding-left: 5px;'> font-size: 80%;";
+                            echo "<td style='color: red; text-align: left; padding-left: 5px; font-size: 80%;'>";
                                 echo "<b>" . $tbl[1] . "</b>";
                             echo "</td>";
                             echo "</tr>";
                         }
+                        $NiverHoje = 1; // tem hoje
                     }else{
                         echo "<tr>";
                         echo "<td colspan='2' style='color: red; text-align: center; font-weight: normal; font-size: 80%;'>Nenhum aniversariante hoje</td>";
                         echo "</tr>";
+                        
                     }
                 }
                         
-            //aniversariantes do $dias seguintes:
+            //aniversariantes dos $dias seguintes:
             $aniver = pegaAniver('>', $mdate, $ddate, $ConecPes, $xPes);
                 if($aniver){
                     $row = pg_num_rows($aniver);
@@ -78,9 +74,11 @@
                             echo "</td>";
                         }
                     }else{
-                        echo "<tr>";
-                        echo "<td colspan='2' style='color: red; text-align: center; font-weight: normal;'>Nenhum aniversariante neste mês</td>";
-                        echo "</tr>";
+                        if($NiverHoje == 0){ // se também não tem aniver hoje
+                            echo "<tr>";
+                            echo "<td colspan='2' style='color: red; text-align: center; font-weight: normal;'>Nenhum aniversariante neste mês</td>";
+                            echo "</tr>";
+                        }
                     }
                 }
         echo "</table>";

@@ -63,6 +63,9 @@ function openhref(Num){
     if(parseInt(Num) === 33){
         $('#container3').load('modulos/ocorrencias/pagOcor.php');
     }
+    if(parseInt(Num) === 34){
+        $('#container3').load('modulos/leituras/pagleitura.php?tipo=1');
+    }
 
     if(parseInt(Num) === 70){
         $('#container3').load('modulos/conteudo/tarefas.php');

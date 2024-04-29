@@ -149,11 +149,20 @@
 						echo "<li>";
 							echo "<a href='#' onclick='openhref(25);'>Aniversariantes</a>";
 						echo "</li>";
+						echo "<li>";
+							echo "<a href='#' onclick='openhref(28);'>Atualizar Senha</a>";
+						echo "</li>";
 						if($Adm == 4 && $_SESSION['AdmVisu'] == 1 || $Adm == 7){ // administrador pode ver lista de usuários ou superusu
 							echo "<li>";
 					   			echo "<a href='#' onclick='openhref(27);'>Cadastro de Usuários</a>";
 							echo "</li>";
 						}
+						if($_SESSION["AdmUsu"] >= 3){ // gerente
+							echo "<li>";
+								echo "<a href='#' onclick='openhref(34);'>Leitura Hidrômetro</a>";
+							echo "</li>";
+						}
+
 						if($_SESSION["AdmUsu"] > 6){ // superusuário
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(31);'>Parâmetros do Sistema</a>";

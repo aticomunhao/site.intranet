@@ -63,10 +63,6 @@ if(!isset($_SESSION["usuarioID"])){
                 display: inline;
                 margin: 5px;
             }
-            tr td{
-                border: 0px solid;
-            }
-
         </style>
         <script type="text/javascript">
             new DataTable('#idTabela', {
@@ -308,6 +304,7 @@ if(!isset($_SESSION["usuarioID"])){
             $admIns = parAdm("insocor", $Conec, $xProj);   // nível para inserir 
             $admEdit = parAdm("editocor", $Conec, $xProj); // nível para editar
             $hoje = date('d/m/Y');
+            $folder = "modulos/ocorrencias/imagens/";
 
             //Conta quantos registros já fez
             $rsQuant = pg_query($Conec, "SELECT codocor FROM ".$xProj.".ocorrencias WHERE ativo = 1 And usuins = ".$_SESSION["usuarioID"]." ORDER BY datains");
@@ -315,13 +312,12 @@ if(!isset($_SESSION["usuarioID"])){
     
             pg_query($Conec, "DELETE FROM ".$xProj.".ocorrideogr WHERE codprov = ".$_SESSION['usuarioID']); // limpar restos
             if($_SESSION["AdmUsu"] > 6){
-                $rs0 = pg_query($Conec, "SELECT codocor, numocor, to_char(datains, 'DD/MM/YYYY'), usuins, to_char(dataocor, 'DD/MM/YYYY'), ocorrencia FROM ".$xProj.".ocorrencias WHERE ativo = 1 ORDER BY datains DESC LIMIT 50");
+                $rs0 = pg_query($Conec, "SELECT codocor, numocor, to_char(datains, 'DD/MM/YYYY'), usuins, to_char(dataocor, 'DD/MM/YYYY'), ocorrencia FROM ".$xProj.".ocorrencias WHERE ativo = 1 And AGE(datains, CURRENT_DATE) <= '10 YEAR' ORDER BY datains DESC LIMIT 50");
             }else{    
-                $rs0 = pg_query($Conec, "SELECT codocor, numocor, to_char(datains, 'DD/MM/YYYY'), usuins, to_char(dataocor, 'DD/MM/YYYY'), ocorrencia FROM ".$xProj.".ocorrencias WHERE usuins = ".$_SESSION["usuarioID"]." And ativo = 1 ORDER BY datains DESC");
+                $rs0 = pg_query($Conec, "SELECT codocor, numocor, to_char(datains, 'DD/MM/YYYY'), usuins, to_char(dataocor, 'DD/MM/YYYY'), ocorrencia FROM ".$xProj.".ocorrencias WHERE usuins = ".$_SESSION["usuarioID"]." And ativo = 1 And AGE(datains, CURRENT_DATE) <= '10 YEAR' ORDER BY datains DESC");
             }
             $row0 = pg_num_rows($rs0);
-//            if($row0 > 0){
-                ?>
+            ?>
                 <table id="idTabela" class="display" style="width:85%">
                 <thead>
                     <tr>
@@ -333,7 +329,6 @@ if(!isset($_SESSION["usuarioID"])){
                         <th style="text-align: center;">Ideogramas</th>
                         <th style="text-align: center;">Ocorrência</th>
                         <th style="text-align: center;">Usuário</th>
-<!--                        <th style="text-align: center;">Modif</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -344,8 +339,7 @@ if(!isset($_SESSION["usuarioID"])){
                     $NumOcor = $Tbl0[1]; // NumOcor
                     $DataIns = $Tbl0[2]; // DataIns
                     $CodUsu = $Tbl0[3];  // usuIns
-                    
-//                    if($DataIns == "31/12/3000 00:00"){
+
                     if($DataIns == "31/12/3000"){
                         $DataIns = "";
                     }
@@ -363,34 +357,24 @@ if(!isset($_SESSION["usuarioID"])){
                         <td><?php echo $DataIns; ?></td>
                         <td><?php echo $DataOcor; ?></td>
                         <td><?php  
-                    
                         $rsIdeo = pg_query($Conec, "SELECT descideo FROM ".$xProj.".ocorrideogr WHERE coddaocor = $CodOcor ORDER BY codideo");
                         $rowIdeo = pg_num_rows($rsIdeo);
                         if($rowIdeo > 0){
                             while ($TblIdeo = pg_fetch_row($rsIdeo)){
-                                $Ideogr = $TblIdeo[0];
+                                $Ideogr = $folder.$TblIdeo[0];
                                 echo "<div style='display: inline; padding: 2px;'><img src='$Ideogr' width='40px' height='40px;'></div>";
                             }
                         }
                         ?>
                         </td>
-                        <td style="text-align: left;"><?php echo $Ocor; ?></td>
+                        <td style="text-align: left;" title="Clique para editar."><?php echo $Ocor; ?></td>
                         <td style="text-align: center;"><?php echo $CodUsu; ?></td>
-<!--                        <td style="text-align: center;">
-                            <div title='Editar' style='cursor: pointer;' onclick='carregaModal($CodOcor);'>&#9997;</div>
-                        </td>
--->
                     </tr>
                     <?php
                     }
                     ?>
                 </tbody>
             </table>
-            <?php
-//            }else{
-//                echo "Nenhuma ocorrência registrada por ".$_SESSION["NomeCompl"];
-//            }
-            ?>
         </div>
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
         <input type="hidden" id="admInsOcor" value="<?php echo $admIns ?>" />
@@ -402,16 +386,14 @@ if(!isset($_SESSION["usuarioID"])){
         
         <input type="hidden" id="nomeUsuLogado" value="<?php echo $_SESSION["NomeCompl"] ?>" />
 
-        <!-- div modal para registrar ocorrêencia  -->
+        <!-- div modal para registrar ocorrência  -->
         <div id="relacmodalOcor" class="relacmodal">
             <div class="modal-content-InsOcor">
                 <span class="close" onclick="fechaModal();">&times;</span>
                 <h3 id="titulomodal" style="text-align: center; color: #666;">Registrar Ocorrência</h3>
                 <div style="border: 2px solid blue; border-radius: 10px;">
-                
                     <div id="container5"></div>
                     <div id="container6"></div>
-
                     <div style="text-align: center;">
                         <button class="resetbotazul" onclick="salvaModal();">Salvar</button>
                     </div>

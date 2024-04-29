@@ -423,13 +423,14 @@ if(!isset($_SESSION["usuarioID"])){
 
         <div style='margin: 20px; border: 3px solid green; border-radius: 10px;'>
             <?php
-//            if($Adm == 7){ // Superusuários
+//  if($Adm == 7){ // Superusuários
             if($Adm >= $admEdit){
                 $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio 
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
                 WHERE ".$xProj.".tarefas.ativo > 0 
                 ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
             }else{
+//echo "usulogadoid ".$UsuLogadoId;
                 $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio 
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
                 WHERE ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.usuexec = $UsuLogadoId Or ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.usuins = $UsuLogadoId
