@@ -99,7 +99,6 @@ if($Acao =="loglog"){
                         $CodigoNovo = ($Codigo+1); 
                         pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, logini, numacessos, cpf, nomecompl)  VALUES ($CodigoNovo, $id, NOW(), 1, '$Login', '$NomeCompl') "); 
                     }
-//                    $rs4 = pg_query($ConecPes, "SELECT id FROM ".$xPes.".pessoas WHERE cpf = '$Login' "); 
                     $rs4 = pg_query($Conec, "SELECT id FROM ".$xProj.".pessoas WHERE cpf = '$Login' "); 
                     $row4 = pg_num_rows($rs4);
                     if($row4 == 0){
@@ -490,11 +489,11 @@ if($Acao =="salvaParam"){
     $responseText = json_encode($var);
     echo $responseText;
 }
-if($Acao =="valorleitura"){
+if($Acao =="valorleituraAgua"){
     $Val = filter_input(INPUT_GET, 'valor');
     $Valor = str_replace(",", ".", $Val);
     $Erro = 0;
-    $rs = pg_query($Conec, "UPDATE ".$xProj.".paramsis SET valorinileitura = $Valor WHERE idPar = 1");
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".paramsis SET valoriniagua = $Valor WHERE idPar = 1");
     if(!$rs){
         $Erro = 1;
     }
@@ -502,11 +501,11 @@ if($Acao =="valorleitura"){
     $responseText = json_encode($var);
     echo $responseText;
 }
-if($Acao =="dataleitura"){
+if($Acao =="dataleituraAgua"){
     $PegaData = addslashes(filter_input(INPUT_GET, 'valor')); 
     $PegaDia = implode("-", array_reverse(explode("/", $PegaData))); // date('d/m/Y', strtotime("+ 1 days", strtotime($DataI)));
     $Erro = 0;
-    $rs = pg_query($Conec, "UPDATE ".$xProj.".paramsis SET datainileitura = '$PegaDia' WHERE idPar = 1");
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".paramsis SET datainiagua = '$PegaDia' WHERE idPar = 1");
     if(!$rs){
         $Erro = 1;
     }
@@ -514,7 +513,50 @@ if($Acao =="dataleitura"){
     $responseText = json_encode($var);
     echo $responseText;
 }
-
+if($Acao =="valorleituraEletric"){
+    $Val = filter_input(INPUT_GET, 'valor');
+    $Valor = str_replace(",", ".", $Val);
+    $Erro = 0;
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".paramsis SET valorinieletric = $Valor WHERE idPar = 1");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+if($Acao =="dataleituraEletric"){
+    $PegaData = addslashes(filter_input(INPUT_GET, 'valor')); 
+    $PegaDia = implode("-", array_reverse(explode("/", $PegaData))); // date('d/m/Y', strtotime("+ 1 days", strtotime($DataI)));
+    $Erro = 0;
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".paramsis SET datainieletric = '$PegaDia' WHERE idPar = 1");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+if($Acao =="apagaAgua"){
+    $Erro = 0;
+//    $rs = pg_query($Conec, "TRUNCATE TABLE ".$xProj.".leitura_agua");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+if($Acao =="apagaEletric"){
+    $Erro = 0;
+    $rs = pg_query($Conec, "TRUNCATE TABLE ".$xProj.".leitura_eletric");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
 
 function removeInj($VemDePost){  // função para remover injeções SQL
     $VemDePost = addslashes($VemDePost);

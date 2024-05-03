@@ -3,17 +3,12 @@
 require_once("config/abrealas.php");
 pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ativo = 0"); //Elimina dados apagados da tabela calendário
 pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ((CURRENT_DATE - dataini)/365 > 5)"); //Apaga da tabela calendário eventos passados há mais de 5 anos
-pg_query($Conec, "DELETE FROM ".$xProj.".leituras WHERE ((CURRENT_DATE - dataleitura)/365 > 5)"); //Apaga da tabela lançamentos de leitura do hidrômetro passados há mais de 5 anos
-//Colunas acrescentadaS
-pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS avcalend smallint NOT NULL DEFAULT 1;"); // 1 - emitir avisos do calendário
-pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS avhoje date ;"); // não quer mais avisos odo calendário só por hoje
-pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".calendev ADD COLUMN IF NOT EXISTS avobrig smallint NOT NULL DEFAULT 0 ;"); // marca para mensagem com aviso obrigatório
-pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".calendev ADD COLUMN IF NOT EXISTS avok smallint NOT NULL DEFAULT 0 ;"); // marca de que o aviso foi dispensado 
-
+pg_query($Conec, "DELETE FROM ".$xProj.".leitura_agua WHERE ((CURRENT_DATE - dataleitura)/365 > 5)"); //Apaga da tabela lançamentos de leitura do hidrômetro passados há mais de 5 anos
+pg_query($Conec, "DELETE FROM ".$xProj.".tarefas WHERE datains > CURRENT_DATE - interval '5 years' "); //Apaga da tabela lançamentos de tarefas há mais de 5 anos
+pg_query($Conec, "DELETE FROM ".$xProj.".tarefas_msg WHERE datamsg > CURRENT_DATE - interval '5 years' "); //Apaga mensagens trocadas nas tarefas há mais de 5 anos
 
 //$Senha = password_hash('123456789', PASSWORD_DEFAULT);
 //pg_query($Conec, "UPDATE ".$xProj.".poslog SET senha = '$Senha' WHERE senha IS NULL");
-
 
 //echo password_hash('123456', PASSWORD_DEFAULT);
 //echo "<br>";
@@ -21,7 +16,6 @@ pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".calendev ADD COLUMN IF NOT EX
 //echo "<br>";
 //echo password_hash('123456', PASSWORD_BCRYPT);
 echo "<br>";
-
 
 
 pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".poslog (

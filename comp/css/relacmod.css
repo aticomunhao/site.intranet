@@ -47,6 +47,7 @@
     border: 1px solid #888;
     border-radius: 15px;
     width: 40%; /* acertar de acordo com a tela */
+    max-width: 400px;;
 }
 .modal-content-CadUsu{
     background: linear-gradient(180deg, white, #86c1eb);
@@ -87,6 +88,23 @@
     border: 1px solid #888;
     border-radius: 15px;
     width: 50%;
+}
+.modal-content-imprLeitura{
+    background: linear-gradient(180deg, white, #FFF8DC);
+    margin: 12% auto; /* 10% do topo e centrado */
+    padding: 10px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 40%;
+}
+.modal-content-Eletric{
+    background: linear-gradient(180deg, white, #d0eb86);
+    margin: 7% auto; /* 10% do topo e centrado */
+    padding: 10px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 30%;
+    max-width: 500px;
 }
 
 .modal-content-matrix{
@@ -184,6 +202,38 @@
     padding-right: 5px; 
     border-radius: 5px;
  }
+
+ .botpadr{
+    text-align: center;
+    padding-left: 15px;
+    padding-right: 15px; 
+    border-radius: 5px;
+    font-size: 80%;
+    font-weight: bold;
+ }
+ .botpadrred{
+    text-align: center;
+    padding-left: 15px;
+    padding-right: 15px; 
+    border-radius: 5px;
+    font-size: 80%;
+    font-weight: bold;
+    color: white;
+    background-color: red;
+ }
+ .botpadrblue{
+    text-align: center;
+    padding-left: 15px;
+    padding-right: 15px; 
+    border-radius: 5px;
+    font-size: 80%;
+    font-weight: bold;
+    color: white;
+    background-color: blue;
+ }
+ .botpadr:hover, .botpadrred:hover, .botpadrblue:hover {
+    border-radius: 10px;
+}
 
 /* Botão fechar */
 .close{

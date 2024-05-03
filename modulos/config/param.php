@@ -4,7 +4,10 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title></title>
+        <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
+        <script src="comp/js/jquery.min.js"></script> <!-- versão 3.6.3 -->
         <script src="comp/js/jquery.mask.js"></script>
+        <script src="comp/js/jquery-confirm.min.js"></script>   <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
         <style type="text/css">
             .etiq{
                 text-align: right; color: #036; font-size: .9em; font-weight: bold; padding: 3px;
@@ -29,7 +32,8 @@
                     }
                 }
                 $(document).ready(function(){
-                    $("#dataIniLeitura").mask("99/99/9999");
+                    $("#dataIniAgua").mask("99/99/9999");
+                    $("#dataIniEletric").mask("99/99/9999");
                 });
                 function salvaParam(Valor, Param){
                     ajaxIni();
@@ -73,13 +77,13 @@
                     }
                 }
 
-                function salvaLeitIni(Valor){
-                    if(document.getElementById("valorIniLeitura").value === ""){
+                function salvaLeitIniAgua(Valor){
+                    if(document.getElementById("valoriniagua").value === ""){
                         return false;
                     }
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/config/registr.php?acao=valorleitura&valor="+document.getElementById("valorIniLeitura").value, true);
+                        ajax.open("POST", "modulos/config/registr.php?acao=valorleituraAgua&valor="+document.getElementById("valoriniagua").value, true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -87,6 +91,8 @@
                                     Resp = eval("(" + ajax.responseText + ")");
                                     if(parseInt(Resp.coderro) > 0){
                                         alert("Houve erro ao salvar");
+                                    }else{
+                                        alert("Valor anotado.");
                                     }
                                 }
                             }
@@ -94,13 +100,13 @@
                         ajax.send(null);
                     }
                 }
-                function salvaDataIni(Valor){
-                    if(document.getElementById("dataIniLeitura").value === ""){
+                function salvaDataIniAgua(Valor){
+                    if(document.getElementById("dataIniAgua").value === ""){
                         return false;
                     }
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/config/registr.php?acao=dataleitura&valor="+encodeURIComponent(document.getElementById("dataIniLeitura").value), true);
+                        ajax.open("POST", "modulos/config/registr.php?acao=dataleituraAgua&valor="+encodeURIComponent(document.getElementById("dataIniAgua").value), true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -108,6 +114,8 @@
                                     Resp = eval("(" + ajax.responseText + ")");
                                     if(parseInt(Resp.coderro) > 0){
                                         alert("Houve erro ao salvar");
+                                    }else{
+                                        alert("Valor anotado.");
                                     }
                                 }
                             }
@@ -115,6 +123,148 @@
                         ajax.send(null);
                     }
                 }
+                function salvaLeitIniEletric(Valor){
+                    if(document.getElementById("valoriniagua").value === ""){
+                        return false;
+                    }
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/config/registr.php?acao=valorleituraEletric&valor="+document.getElementById("valorIniEletric").value, true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");
+                                    if(parseInt(Resp.coderro) > 0){
+                                        alert("Houve erro ao salvar");
+                                    }else{
+                                        alert("Valor anotado.");
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                }
+                function salvaDataIniEletric(Valor){
+                    if(document.getElementById("dataIniAgua").value === ""){
+                        return false;
+                    }
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/config/registr.php?acao=dataleituraEletric&valor="+encodeURIComponent(document.getElementById("dataIniEletric").value), true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");
+                                    if(parseInt(Resp.coderro) > 0){
+                                        alert("Houve erro ao salvar");
+                                    }else{
+                                        alert("Valor anotado.");
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                }
+
+                function zeraAgua(){
+                    $.confirm({
+                    title: 'Apagar',
+                    content: 'Confirma apagar todos os lançamentos do Controle do Consumo de Água?  Não haverá possibilidade de recuperação. Continua?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            zeraAguaDef();
+                        },
+                        Não: function () {
+                        }
+                    }
+                });
+            }
+            function zeraAguaDef(){
+                $.confirm({
+                    title: 'Tem certeza?',
+                    content: 'Tem certeza que quer apagar todos os lançamentos?  Não haverá possibilidade de recuperação. Continua?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/config/registr.php?acao=apagaAgua", true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro no servidor.")
+                                            }else{
+                                                alert("Arquivos zerados.")
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                        }
+                    }
+                });
+            }
+            function zeraEletric(){
+                    $.confirm({
+                    title: 'Apagar',
+                    content: 'Confirma apagar todos os lançamentos do Controle do Consumo de Energia Elétrica?  Não haverá possibilidade de recuperação. Continua?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            zeraEletricDef();
+                        },
+                        Não: function () {
+                        }
+                    }
+                });
+            }
+            function zeraEletricDef(){
+                $.confirm({
+                    title: 'Tem certeza?',
+                    content: 'Tem certeza que quer apagar todos os lançamentos?  Não haverá possibilidade de recuperação. Continua?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/config/registr.php?acao=apagaEletric", true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro no servidor.")
+                                            }else{
+                                                alert("Arquivos zerados.")
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                        }
+                    }
+                });
+            }
+
         </script>
     </head>
     <body>
@@ -122,14 +272,16 @@
             require_once("abrealas.php");
 
             $rsSis = pg_query($Conec, "SELECT admvisu, admedit, admcad, insevento, editevento, instarefa, edittarefa, insramais, editramais, instelef, edittelef, 
-            editpagina, insarq, insaniver, editaniver, instroca, edittroca, insocor, editocor, insleitura, editleitura, TO_CHAR(datainileitura , 'DD/MM/YYYY'), valorinileitura 
+            editpagina, insarq, insaniver, editaniver, instroca, edittroca, insocor, editocor, insleituraagua, editleituraagua, TO_CHAR(datainiagua , 'DD/MM/YYYY'), valoriniagua, insleituraeletric, editleituraeletric, TO_CHAR(datainieletric , 'DD/MM/YYYY'), valorinieletric 
             FROM ".$xProj.".paramsis WHERE idPar = 1");
             $ProcSis = pg_fetch_row($rsSis);
             $admVisu = $ProcSis[0]; // admVisu - administrador visualiza usuários
             $admEdit = $ProcSis[1]; // admEdit - administrador edita usuários
             $admCad = $ProcSis[2];  // admCad - administrador cadastra usuários
-            $DataIniLeitura = $ProcSis[21]; // controle de consumo de água - leitura do hidrômetro
-            $ValorIniLeitura = $ProcSis[22];  // controle de consumo de água - data inicial
+            $DataIniAgua = $ProcSis[21]; // controle de consumo de água - leitura do hidrômetro
+            $ValorIniAgua = $ProcSis[22];  // controle de consumo de água - data inicial
+            $DataIniEletric = $ProcSis[25]; // controle de consumo de eletricidade
+            $ValorIniEletric = $ProcSis[26]; 
 
             $insEvento = $ProcSis[3];   // insEvento - inserção de eventos no calendário
             $rs1 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $insEvento");
@@ -141,15 +293,26 @@
             $Proc2 = pg_fetch_row($rs2);
             $nomeEditEvento = $Proc2[0];
 
-            $insLeitura = $ProcSis[19];   // insLeitura - inserção de leitura do hidrômetro
-            $rs1 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $insLeitura");
+            $insLeituraAgua = $ProcSis[19];   // insLeitura - inserção de leitura do hidrômetro
+            $rs1 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $insLeituraAgua");
             $Proc1 = pg_fetch_row($rs1);
-            $nomeInsLeitura = $Proc1[0];
+            $nomeInsLeituraAgua = $Proc1[0];
 
-            $editLeitura = $ProcSis[20];   // editLeitura - edição de leitura
-            $rs2 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $editLeitura");
+            $editAgua = $ProcSis[20];   // editLeitura - edição de leitura
+            $rs2 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $editAgua");
             $Proc2 = pg_fetch_row($rs2);
-            $nomeEditLeitura = $Proc2[0];
+            $nomeEditAgua = $Proc2[0];
+
+            $insLeituraEletric = $ProcSis[19];   // insLeitura - inserção de leitura do medidor
+            $rs1 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $insLeituraEletric");
+            $Proc1 = pg_fetch_row($rs1);
+            $nomeInsLeituraEletric = $Proc1[0];
+
+            $editEletric = $ProcSis[20];   // editLeitura - edição de leitura
+            $rs2 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $editEletric");
+            $Proc2 = pg_fetch_row($rs2);
+            $nomeEditEletric = $Proc2[0];
+
 
             $insTarefa = $ProcSis[5];   // insTarefa - inserção de tarefas
             $rs3 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $insTarefa");
@@ -225,8 +388,11 @@
             $OpAdmInsEv = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             $OpAdmEditEv = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             
-            $OpAdmInsLeit = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
-            $OpAdmEditLeit = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            $OpAdmInsAgua = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            $OpAdmEditAgua = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+
+            $OpAdmInsEletric = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            $OpAdmEditEletric = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
 
             $OpAdmInsTar = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             $OpAdmEditTar = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
@@ -299,17 +465,17 @@
 
 
 <!-- Leitura Hidrômetro  -->
-<div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
+            <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
                 - <b>Controle do Consumo de Água - Leitura do Hidrômetro</b>:<br>
                 <table style="margin: 0 auto;">
                     <tr>
                         <td>Nível mínimo para INSERIR leitura:</td>
                         <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'insLeitura');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
-                            <option value="<?php echo $insLeitura; ?>"><?php echo $nomeInsLeitura; ?></option>
+                        <select onchange="salvaParam(value, 'insleituraagua');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                            <option value="<?php echo $insLeituraAgua; ?>"><?php echo $nomeInsLeituraAgua; ?></option>
                             <?php 
-                            if($OpAdmInsLeit){
-                                while ($Opcoes = pg_fetch_row($OpAdmInsLeit)){ ?>
+                            if($OpAdmInsAgua){
+                                while ($Opcoes = pg_fetch_row($OpAdmInsAgua)){ ?>
                                     <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
                                 <?php 
                                 }
@@ -325,11 +491,11 @@
                     <tr>
                     <td>Nível mínimo para EDITAR leitura:</td>
                         <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'editLeitura');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
-                        <option value="<?php echo $editLeitura; ?>"><?php echo $nomeEditLeitura; ?></option>
+                        <select onchange="salvaParam(value, 'editleituraagua');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <option value="<?php echo $editAgua; ?>"><?php echo $nomeEditAgua; ?></option>
                             <?php 
-                            if($OpAdmEditLeit){
-                                while ($Opcoes = pg_fetch_row($OpAdmEditLeit)){ ?>
+                            if($OpAdmEditAgua){
+                                while ($Opcoes = pg_fetch_row($OpAdmEditAgua)){ ?>
                                     <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
                                 <?php 
                                 }
@@ -341,16 +507,70 @@
 
                     <tr>
                         <td style="text-align: right; font-size: 80%; padding-right: 3px;">Data Inicial:</td>
-                        <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="dataIniLeitura" value="<?php echo $DataIniLeitura; ?>" onchange="salvaDataIni(value);" style="width: 90px; text-align: center;"></td>
+                        <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="dataIniAgua" value="<?php echo $DataIniAgua; ?>" onchange="salvaDataIniAgua(value);" style="width: 90px; text-align: center;"></td>
                     </tr>
                     <tr>
                         <td style="text-align: right; font-size: 80%; padding-right: 3px;">Leitura Inicial:</td>
-                        <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="valorIniLeitura" value="<?php echo $ValorIniLeitura; ?>" onchange="salvaLeitIni(value);" style="width: 90px; text-align: center;"></td>
+                        <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="valoriniagua" value="<?php echo $ValorIniAgua; ?>" onchange="salvaLeitIniAgua(value);" style="width: 90px; text-align: center;"></td>
                     </tr>
-
                 </table>
+                <div style="text-align: right;">
+                <button class="botpadr" onclick="zeraAgua();">Apagar Tudo</button></div>
             </div>
 
+<!-- Leitura Eletricidade  -->
+            <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
+                - <b>Controle do Consumo de Eletricidade - Leitura do Medidor</b>:<br>
+                <table style="margin: 0 auto;">
+                    <tr>
+                        <td>Nível mínimo para INSERIR leitura:</td>
+                        <td style="padding-left: 5px;">
+                        <select onchange="salvaParam(value, 'insleituraeletric');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                            <option value="<?php echo $insLeituraEletric; ?>"><?php echo $nomeInsLeituraEletric; ?></option>
+                            <?php 
+                            if($OpAdmInsEletric){
+                                while ($Opcoes = pg_fetch_row($OpAdmInsEletric)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                <?php 
+                                }
+                            }
+                            ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                    <td>Nível mínimo para EDITAR leitura:</td>
+                        <td style="padding-left: 5px;">
+                        <select onchange="salvaParam(value, 'editleituraeletric');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <option value="<?php echo $editEletric; ?>"><?php echo $nomeEditEletric; ?></option>
+                            <?php 
+                            if($OpAdmEditEletric){
+                                while ($Opcoes = pg_fetch_row($OpAdmEditEletric)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                <?php 
+                                }
+                            }
+                            ?>
+                            </select>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="text-align: right; font-size: 80%; padding-right: 3px;">Data Inicial:</td>
+                        <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="dataIniEletric" value="<?php echo $DataIniEletric; ?>" onchange="salvaDataIniEletric(value);" style="width: 90px; text-align: center;"></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; font-size: 80%; padding-right: 3px;">Leitura Inicial:</td>
+                        <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="valorIniEletric" value="<?php echo $ValorIniEletric; ?>" onchange="salvaLeitIniEletric(value);" style="width: 90px; text-align: center;"></td>
+                    </tr>
+                </table>
+                <div style="text-align: right;">
+                <button class="botpadr" onclick="zeraEletric();">Apagar Tudo</button></div>
+            </div>
 
 <!-- Páginas  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">

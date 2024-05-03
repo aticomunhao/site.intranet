@@ -323,12 +323,12 @@ if(!isset($_SESSION["usuarioID"])){
                     <tr>
                         <th style="display: none;">-</th>
                         <th style="display: none;"></th>
-                        <th style="text-align: center;">Nº Ocorrência</th>
-                        <th style="text-align: center;">Data Ins</th>
-                        <th style="text-align: center;">Data Ocor</th>
-                        <th style="text-align: center;">Ideogramas</th>
+                        <th style="text-align: center; font-size: 80%;">Nº da<br>Ocorrência</th>
+                        <th style="text-align: center; font-size: 80%;">Data da<br>Inserção</th>
+                        <th style="text-align: center; font-size: 80%;">Data da<br>Ocorrência</th>
+                        <th style="text-align: center; font-size: 80%;">Ideogramas</th>
                         <th style="text-align: center;">Ocorrência</th>
-                        <th style="text-align: center;">Usuário</th>
+                        <th style="text-align: center; font-size: 80%;">Usuário</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -349,7 +349,7 @@ if(!isset($_SESSION["usuarioID"])){
                     }else{
                         $Ocor = nl2br($Tbl0[5]); // Ocorrencia
                     }
-                ?>
+                    ?>
                     <tr>
                         <td style="display: none;"></td>
                         <td style="display: none;"><?php echo $CodOcor; ?></td>

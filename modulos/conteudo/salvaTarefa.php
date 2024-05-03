@@ -97,6 +97,9 @@ if($Acao=="salvaTarefa"){
             $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET usuexec = $usuExec, tittarefa = '$textoEvid', textotarefa = '$textoExt', sit = $Status, prio = $Priorid, ativo = 2, usumodif = $usuLogado, datamodif = NOW() WHERE idtar = $idTarefa"); 
         }else{
             $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET usuexec = $usuExec, tittarefa = '$textoEvid', textotarefa = '$textoExt', sit = $Status, prio = $Priorid, ativo = 1, usumodif = $usuLogado, datamodif = NOW() WHERE idtar = $idTarefa"); 
+            if($Status == 1){ // póde ser modificação para voltar a designada
+                $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit2 = '3000-12-31', datasit3 = '3000-12-31', datasit4 = '3000-12-31' WHERE idtar = $idTarefa"); 
+            }
         }
         if(!$Sql){
             $Erro = 1;

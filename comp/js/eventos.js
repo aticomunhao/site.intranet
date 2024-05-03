@@ -64,8 +64,12 @@ function openhref(Num){
         $('#container3').load('modulos/ocorrencias/pagOcor.php');
     }
     if(parseInt(Num) === 34){
-        $('#container3').load('modulos/leituras/pagleitura.php?tipo=1');
+        $('#container3').load('modulos/leituras/pag_agua.php?tipo=1');
     }
+    if(parseInt(Num) === 35){
+        $('#container3').load('modulos/leituras/pag_eletric.php?tipo=1');
+    }
+
 
     if(parseInt(Num) === 70){
         $('#container3').load('modulos/conteudo/tarefas.php');

@@ -33,10 +33,6 @@ if(!isset($_SESSION["usuarioID"])){
                 font-size: .8rem;
                 border-radius: 7px;
             }
-            tr td{
-/*                 border: 1px solid; */
-               border: 0;
-            }
             .etiqLat{
                 font-size: 1.5rem;
                 font-weight: bold;
@@ -425,17 +421,17 @@ if(!isset($_SESSION["usuarioID"])){
             <?php
 //  if($Adm == 7){ // Superusuários
             if($Adm >= $admEdit){
-                $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio 
+                $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI')  
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
                 WHERE ".$xProj.".tarefas.ativo > 0 
                 ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
             }else{
-//echo "usulogadoid ".$UsuLogadoId;
-                $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio 
+                $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
                 WHERE ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.usuexec = $UsuLogadoId Or ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.usuins = $UsuLogadoId
                 ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
             }
+//echo "usulogadoid ".$UsuLogadoId;
             $row = pg_num_rows($resultT);
             ?>
             <table style="margin: 0 auto; border: 0; width: 80%;" >
@@ -445,13 +441,13 @@ if(!isset($_SESSION["usuarioID"])){
                 echo "<td></td>";
                 echo "<td style='text-align: center; font-weight: 600;'>Tarefa<br>Designada</td>";
                 echo "<td></td>";
-                echo "<td style='text-align: center; font-weight: 600;'>Tarefa<br>Recebida</td>";
+                echo "<td style='text-align: center; font-weight: 600;'>Tarefa<br>Aceita</td>";
                 echo "<td></td>";
                 echo "<td style='text-align: center; font-weight: 600;'>Tarefa<br>Em Andamento</td>";
                 echo "<td></td>";
                 echo "<td style='text-align: center; font-weight: 600;'>Tarefa<br>Terminada</td>";
                 echo "</tr>";
-                
+
                 if($row > 0){
                     While ($tbl = pg_fetch_row($resultT)){
                         $idTar = $tbl[1];   // idtar
@@ -467,6 +463,9 @@ if(!isset($_SESSION["usuarioID"])){
                             $DataVisu = "";
                         }
                         $Priorid = $tbl[10];  //Prio
+                        $DataSit2= $tbl[11];
+                        $DataSit3= $tbl[12];
+                        $DataSit4= $tbl[13];
 
                         $rs1 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $usuIns"); //mandante
                         $row1 = pg_num_rows($rs1);
@@ -507,12 +506,22 @@ if(!isset($_SESSION["usuarioID"])){
                         echo "<tr>";  //Primeira coluna à esquerda - data e nomes
                         echo "<td style='vertical-align: top;'><div style='padding-bottom: 8px; padding-top: 2px; color: #808080;'><sup>Em $DataInsert para:</sup></div>";
                             echo "<div class='etiqLat'>" . $NomeExec;
-                            echo "<div style='position: relative; top: -10px; font-size: .5em; text-align: center;'> <sub>Visto em: " . $DataVisu . "</sub></div>";
+                            echo "<div style='position: relative; top: -10px; font-size: .5em; text-align: center;'> <sub>Ciência em: " . $DataVisu . "</sub></div>";
+                            if($DataSit2 != "31/12/3000 00:00"){
+                                echo "<div style='position: relative; top: -13px; font-size: .5em; text-align: center;'> <sub>Aceita em: " . $DataSit2 . "</sub></div>";
+                            }
+                            if($DataSit3 != "31/12/3000 00:00"){
+                                echo "<div style='position: relative; top: -13px; font-size: .5em; text-align: center;'> <sub>Em andamento em: " . $DataSit3 . "</sub></div>";
+                            }
+                            if($DataSit4 != "31/12/3000 00:00"){
+                                echo "<div style='position: relative; top: -13px; font-size: .5em; text-align: center; color: blue;'> <sub>Terminada em: " . $DataSit4 . "</sub></div>";
+                            }
+
                         echo "</div>";
                         echo "<div><sub>Pedido de: " . $NomeIns . "</sub></div>";
                         echo "</td>";
 
-                        echo "<td>";
+                        echo "<td style='text-align: center;'>";
                         if($Status == 1 && $Ativo != 2){
                             echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' id='posicaotit' ondrag='PegaCod($idTar, $Ativo);' ondrop='drop(event)' ondragover='allowDrop(event)' title='Arraste o quadro amarelo para a direita'>$Titulo</div>";
                         }elseif($Status == 1 && $Ativo == 2){
@@ -524,7 +533,7 @@ if(!isset($_SESSION["usuarioID"])){
 
                         echo "<td title='Arraste o quadro amarelo para a direita'>&#10144;</td>";
 
-                        echo "<td>";
+                        echo "<td style='text-align: center;'>";
                         if($Status == 2 && $Ativo != 2){
                             echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' id='posicaotit' ondrag='PegaCod($idTar, $Ativo);' ondrop='drop(event)' ondragover='allowDrop(event)' title='Arraste o quadro amarelo para a direita'>$Titulo</div>";
                         }elseif($Status == 2 && $Ativo == 2){
@@ -536,7 +545,7 @@ if(!isset($_SESSION["usuarioID"])){
 
                         echo "<td title='Arraste o quadro amarelo para a direita'>&#10144;</td>";
 
-                        echo "<td>";
+                        echo "<td style='text-align: center;'>";
                         if($Status == 3 && $Ativo != 2){
                             echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' id='posicaotit' ondrag='PegaCod($idTar, $Ativo);' ondrop='drop(event)' ondragover='allowDrop(event)' title='Arraste o quadro amarelo para a direita'>$Titulo</div>";
                         }elseif($Status == 3 && $Ativo == 2){
@@ -548,7 +557,7 @@ if(!isset($_SESSION["usuarioID"])){
 
                         echo "<td title='Arraste o quadro amarelo para a direita'>&#10144;</td>";
 
-                        echo "<td>";
+                        echo "<td style='text-align: center;'>";
                         if($Status == 4 && $Ativo != 2){
                             echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' id='posicaotit' ondrag='PegaCod($idTar, $Ativo);' ondrop='drop(dr)' ondragover='allowDrop(event)' title='Arraste o quadro amarelo para a direita'>$Titulo</div>";
                             

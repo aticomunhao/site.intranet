@@ -326,7 +326,6 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("mesAniv").value = "";
                 document.getElementById("acessos").value = "-";
                 document.getElementById("ultlog").value = "-";
-//                document.getElementById("setor").value = document.getElementById("guardaCodSetor").value;
                 if(parseInt(document.getElementById("UsuAdm").value) < 7){
                     document.getElementById("setor").disabled = true;
                     document.getElementById("flAdm").value = 2; // usuário registrado
@@ -465,6 +464,7 @@ if(!isset($_SESSION["usuarioID"])){
             $Tipo = 1;
         }
         require_once("modais.php");
+//dblink
 //        $rs0 = pg_query($Conec, "SELECT * FROM dblink('host=127.0.0.1  user=postgres  password=postgres   dbname=pessoal ', 
 //                'SELECT pessoas.id, cpf, nome_completo, ".$xProj.".poslog.ativo, ".$xProj.".poslog.logini, ".$xProj.".poslog.codsetor 
 //                FROM pessoas INNER JOIN cesb.poslog ON pessoas.id = cesb.poslog.pessoas_id  ') 
