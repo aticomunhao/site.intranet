@@ -446,8 +446,6 @@ if(!isset($_SESSION['AdmUsu'])){
 
     }
 
-
-
     if($Acao == "listamesEletric"){
         $Busca = addslashes(filter_input(INPUT_GET, 'mesano')); 
         $Proc = explode("/", $Busca);

@@ -59,7 +59,7 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#selecMesAno").change(function(){
                     document.getElementById("selecAno").value = "";
                     if(document.getElementById("selecMesAno").value != ""){
-                        window.open("modulos/leituras/imprLista.php?acao=listames&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), document.getElementById("selecMesAno").value);
+                        window.open("modulos/leituras/imprLista.php?acao=listamesAgua&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), document.getElementById("selecMesAno").value);
                         document.getElementById("selecMesAno").value = "";
                         document.getElementById("relacimprLeitura").style.display = "none";
                     }
@@ -67,7 +67,7 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#selecAno").change(function(){
                     document.getElementById("selecMesAno").value = "";
                     if(document.getElementById("selecAno").value != ""){
-                        window.open("modulos/leituras/imprLista.php?acao=listaano&ano="+encodeURIComponent(document.getElementById("selecAno").value), document.getElementById("selecAno").value);
+                        window.open("modulos/leituras/imprLista.php?acao=listaanoAgua&ano="+encodeURIComponent(document.getElementById("selecAno").value), document.getElementById("selecAno").value);
                         document.getElementById("selecAno").value = "";
                         document.getElementById("relacimprLeitura").style.display = "none";
                     }
@@ -223,21 +223,20 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 }
             }
-            function imprMesLeitura(){
-                if(document.getElementById("selecMesAno").value == ""){
-                    return false;
-                }
-                window.open("modulos/leituras/imprLista.php?acao=listames&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
-                document.getElementById("relacimprLeitura").style.display = "none";
-            }
-            function imprAnoLeitura(){
-                if(document.getElementById("selecAno").value == ""){
-                    return false;
-                }
-                window.open("modulos/leituras/imprLista.php?acao=listaano&ano="+encodeURIComponent(document.getElementById("selecAno").value));
-                document.getElementById("relacimprLeitura").style.display = "none";
-            }
-
+//            function imprMesLeitura(){
+//                if(document.getElementById("selecMesAno").value == ""){
+//                    return false;
+//                }
+//                window.open("modulos/leituras/imprLista.php?acao=listamesAgua&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
+//                document.getElementById("relacimprLeitura").style.display = "none";
+//            }
+//            function imprAnoLeitura(){
+//                if(document.getElementById("selecAno").value == ""){
+//                    return false;
+//                }
+//                window.open("modulos/leituras/imprLista.php?acao=listaanoAgua&ano="+encodeURIComponent(document.getElementById("selecAno").value));
+//                document.getElementById("relacimprLeitura").style.display = "none";
+//            }
             function abreImprLeitura(){
                 document.getElementById("relacimprLeitura").style.display = "block";
             }
@@ -284,7 +283,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardahoje" value="<?php echo $Hoje; ?>" />
         <input type="hidden" id="guardaerro" value="<?php echo $Erro; ?>" />
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
-        
+
             <div class="row"> <!-- botões Inserir e Imprimir-->
                 <div class="col" style="margin: 0 auto; text-align: center;"><button class="botpadr" onclick="insereModal();">Inserir</button></div> <!-- quadro -->
                 <div class="col-1"></div> <!-- espaçamento entre colunas  -->
@@ -346,7 +345,6 @@ if(!isset($_SESSION["usuarioID"])){
                                     }
                                     ?>
                             </td>
-                            
 <!--                            <td><label style="padding-left: 15px;"></label><button class="botpadrblue" onclick="imprAnoLeitura();">Prosseguir</button></td> -->
                         </tr>
 

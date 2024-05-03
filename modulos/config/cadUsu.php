@@ -641,11 +641,11 @@ if(!isset($_SESSION["usuarioID"])){
 
                         <td colspan="2" style="text-align: right;">
                             <label class="etiq">Aniversário: -Dia: </label>
-                            <input type="text" disabled id="diaAniv" style="text-align: center; font-size: .8rem; width: 50px;">
+                            <input type="text" disabled id="diaAniv" style="text-align: center; font-size: .8rem; width: 40px;">
 
 
                             <label class="etiq"> -Mês: </label>
-                            <input type="text" disabled id="mesAniv" style="text-align: center; font-size: .8rem; width: 50px;">
+                            <input type="text" disabled id="mesAniv" style="text-align: center; font-size: .8rem; width: 40px;">
 
                         </td>
                     </tr>

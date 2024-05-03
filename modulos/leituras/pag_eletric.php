@@ -232,14 +232,14 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("selecMesAno").value == ""){
                     return false;
                 }
-                window.open("modulos/leituras/imprLista.php?acao=listames&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
+                window.open("modulos/leituras/imprLista.php?acao=listamesEletric&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
                 document.getElementById("relacimprLeituraEletric").style.display = "none";
             }
             function imprAnoLeitura(){
                 if(document.getElementById("selecAno").value == ""){
                     return false;
                 }
-                window.open("modulos/leituras/imprLista.php?acao=listaano&ano="+encodeURIComponent(document.getElementById("selecAno").value));
+                window.open("modulos/leituras/imprLista.php?acao=listaanoEletric&ano="+encodeURIComponent(document.getElementById("selecAno").value));
                 document.getElementById("relacimprLeituraEletric").style.display = "none";
             }
 

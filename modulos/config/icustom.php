@@ -26,8 +26,6 @@ if($rs){
     echo "Acerto de icustom em paramsis: ".$Sen."<br>";
 }
 
-
-
 pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".poslog (
     id SERIAL PRIMARY KEY, 
     pessoas_id bigint NOT NULL DEFAULT 0, 
@@ -51,13 +49,13 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".poslog (
     senha character varying(255) 
     ) ");
 
-    
 
 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS nome_completo varchar(100);"); // auxiliar para compor caixas de seleção de usuários para tarefas
 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS cpf varchar(20);"); // guardar para eventualidades
 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS sexo smallint NOT NULL DEFAULT 1;"); 
 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS senha varchar(255);"); // hash
 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS dt_nascimento date;"); 
+pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE cpf IS NULL"); 
 
 
 $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE cpf = '13652176049' ");
@@ -73,6 +71,8 @@ if($row1 > 0){
     pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, ativo, adm, codsetor, numacessos, datains, logini, nomecompl, cpf, senha)  VALUES ($CodigoNovo, 1, 1, 7, 2, 1, NOW(), NOW(), 'Ludinir Picelli', '13652176049', '$Senha') "); 
     echo "Inserido"."<br>";
 }
+
+
 pg_query($Conec, "UPDATE ".$xProj.".poslog SET senha = '$Senha' WHERE senha IS NULL "); 
 pg_query($Conec, "UPDATE ".$xProj.".poslog SET senha = '$Senha' WHERE cpf = '13652176049'"); 
 
@@ -134,8 +134,8 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".leitura_agua (
         (2,'2024-03-02',1706.805,1711.366,1717.391,1,0,NOW(),0,NOW()),
         (3,'2024-03-03',1718.328,1719.167,1720.432,1,0,NOW(),0,NOW()),
         (4,'2024-03-04',1720.615,1724.922,1729.228,1,0,NOW(),0,NOW()),
-        (5,'2024-03-05',1729.572,1733.429,1738.67, 1,0,NOW(),0,NOW()),
-        (6,'2024-03-06',1740.52,1745.172,1748.33,  1,0,NOW(),0,NOW()),
+        (5,'2024-03-05',1729.572,1733.429,1738.67,1,0,NOW(),0,NOW()),
+        (6,'2024-03-06',1740.52,1745.172,1748.33,1,0,NOW(),0,NOW()),
         (7,'2024-03-07',1748.585,1753.175,1756.061,1,0,NOW(),0,NOW()),
         (8,'2024-03-08',1757.115,1763.958,1767.866,1,0,NOW(),0,NOW()),
         (9,'2024-03-09',1768.114,1772.556,1777.259,1,0,NOW(),0,NOW()),
