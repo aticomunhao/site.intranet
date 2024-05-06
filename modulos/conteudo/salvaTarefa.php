@@ -114,7 +114,7 @@ if($Acao=="salvaTarefa"){
             $tblCod = pg_fetch_row($rsCod);
             $Codigo = $tblCod[0];
             $CodigoNovo = ($Codigo+1);
-            $Sql = pg_query($Conec, "INSERT INTO ".$xProj.".tarefas (idtar, usuins, usuexec, tittarefa, textotarefa, datains, datasit1, sit, prio) VALUES($CodigoNovo, $usuLogado, $usuExec, '$textoEvid', '$textoExt', NOW(), NOW(), 1, $Priorid)"); 
+            $Sql = pg_query($Conec, "INSERT INTO ".$xProj.".tarefas (idtar, usuins, usuexec, tittarefa, textotarefa, datains, sit, prio) VALUES($CodigoNovo, $usuLogado, $usuExec, '$textoEvid', '$textoExt', NOW(), 1, $Priorid)"); 
             if(!$Sql){
                 $Erro = 1;
             }

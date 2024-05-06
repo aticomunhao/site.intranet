@@ -51,9 +51,23 @@ if(!isset($_SESSION["usuarioID"])){
                 if(parseInt(document.getElementById("guardaerro").value) === 0){
                     $("#container5").load("modulos/leituras/carAgua.php");
                     $("#container6").load("modulos/leituras/carEstatAgua.php");
-//                    if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
-//                        carregaModal($id);
-//                    }
+                   
+                    if(parseInt(document.getElementById("InsIndiv").value) > 0){ // se houver alguém designado para fazer a leitura
+                        if(parseInt(document.getElementById("InsIndiv").value) === parseInt(document.getElementById("guardaUsuId").value)){ //checa se é o designado
+                            document.getElementById("botInserir").disabled = false;
+                        }else{
+                            document.getElementById("botInserir").disabled = true;
+                        }
+                    }else{
+                        if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
+                            document.getElementById("botInserir").disabled = false;
+                        }else{
+                            document.getElementById("botInserir").disabled = true;
+                        }
+                    }
+                    if(parseInt(document.getElementById("UsuAdm").value) >= 7){ // superusuário
+                        document.getElementById("botInserir").disabled = false;
+                    }
                 };
 
                 $("#selecMesAno").change(function(){
@@ -223,20 +237,21 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 }
             }
-//            function imprMesLeitura(){
-//                if(document.getElementById("selecMesAno").value == ""){
-//                    return false;
-//                }
-//                window.open("modulos/leituras/imprLista.php?acao=listamesAgua&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
-//                document.getElementById("relacimprLeitura").style.display = "none";
-//            }
-//            function imprAnoLeitura(){
-//                if(document.getElementById("selecAno").value == ""){
-//                    return false;
-//                }
-//                window.open("modulos/leituras/imprLista.php?acao=listaanoAgua&ano="+encodeURIComponent(document.getElementById("selecAno").value));
-//                document.getElementById("relacimprLeitura").style.display = "none";
-//            }
+            function imprMesLeitura(){
+                if(document.getElementById("selecMesAno").value == ""){
+                    return false;
+                }
+                window.open("modulos/leituras/imprLista.php?acao=listames&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
+                document.getElementById("relacimprLeitura").style.display = "none";
+            }
+            function imprAnoLeitura(){
+                if(document.getElementById("selecAno").value == ""){
+                    return false;
+                }
+                window.open("modulos/leituras/imprLista.php?acao=listaano&ano="+encodeURIComponent(document.getElementById("selecAno").value));
+                document.getElementById("relacimprLeitura").style.display = "none";
+            }
+
             function abreImprLeitura(){
                 document.getElementById("relacimprLeitura").style.display = "block";
             }
@@ -274,6 +289,22 @@ if(!isset($_SESSION["usuarioID"])){
                 $Erro = 1;
                 echo "Faltam tabelas. Informe à ATI.";
             }
+            $admIns = parAdm("insleituraagua", $Conec, $xProj);   // nível para inserir 
+            $admEdit = parAdm("editleituraagua", $Conec, $xProj); // nível para editar
+            $insIndiv = parAdm("insaguaindiv", $Conec, $xProj);   // autorização para um só indivíduo inserir
+            if($insIndiv > 0){
+                $rs0 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $insIndiv");
+                $row0 = pg_num_rows($rs0);
+                if($row0 > 0){
+                    $tbl0 = pg_fetch_row($rs0);
+                    $NomeInsAgua = $tbl0[0];
+                }else{
+                    $NomeInsAgua = "";
+                }
+            }else{
+                $NomeInsAgua = "";
+            }
+
             // Preenche caixa de escolha mes/ano para impressão
             $OpcoesEscMes = pg_query($Conec, "SELECT EXTRACT(MONTH FROM ".$xProj.".leitura_agua.dataleitura)::text ||'/'|| EXTRACT(YEAR FROM ".$xProj.".leitura_agua.dataleitura)::text 
             FROM ".$xProj.".leitura_agua GROUP BY 1 ORDER BY 1 DESC ");
@@ -282,10 +313,14 @@ if(!isset($_SESSION["usuarioID"])){
         ?>
         <input type="hidden" id="guardahoje" value="<?php echo $Hoje; ?>" />
         <input type="hidden" id="guardaerro" value="<?php echo $Erro; ?>" />
-        <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
+        <input type="hidden" id="guardaUsuId" value="<?php echo $_SESSION["usuarioID"]; ?>" />
+        <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
+        <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->
+        <input type="hidden" id="InsIndiv" value="<?php echo $insIndiv; ?>" /> <!-- autorização para um só indivíduo inserir as leituras -->
 
+        <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->
-                <div class="col" style="margin: 0 auto; text-align: center;"><button class="botpadr" onclick="insereModal();">Inserir</button></div> <!-- quadro -->
+                <div class="col" style="margin: 0 auto; text-align: center;" title="<?php if($NomeInsAgua != ""){echo "Função atribuida a ".$NomeInsAgua;} ?>"><button id="botInserir" class="botpadr" onclick="insereModal();">Inserir</button></div> <!-- quadro -->
                 <div class="col-1"></div> <!-- espaçamento entre colunas  -->
 <!--                <div class="col" style="margin: 0 auto; text-align: center;"><button class="resetbotred" style="padding-left: 12px; padding-right: 12px; font-size: 80%;" onclick="abreImprLeitura();">PDF</button></div>  -->
                 <div class="col" style="margin: 0 auto; text-align: center;"><button class="botpadrred" onclick="abreImprLeitura();">PDF</button></div> <!-- quadro -->
@@ -345,6 +380,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     }
                                     ?>
                             </td>
+
 <!--                            <td><label style="padding-left: 15px;"></label><button class="botpadrblue" onclick="imprAnoLeitura();">Prosseguir</button></td> -->
                         </tr>
 

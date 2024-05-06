@@ -164,7 +164,8 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".leitura_agua (
         "); 
         echo "Inseridos em Leitura_agua"."<br>";
     }
-
+    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS insaguaindiv smallint DEFAULT 0 ;"); // para indicação individual do leitor
+    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS inseletricindiv smallint DEFAULT 0 ;"); // para indicação individual do leitor
 
     pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".leitura_eletric (
         id SERIAL PRIMARY KEY, 
@@ -191,3 +192,163 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".leitura_agua (
         }
 
         $rs1 = pg_query($Conec, "UPDATE ".$xProj.".setores SET siglasetor = 'DPS' WHERE codset = 9 ");
+
+
+        
+//pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".setores_bom");
+//pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".setores_ant AS TABLE ".$xProj.".setores ORDER BY codset");
+//pg_query($Conec, "CREATE TABLE ".$xProj.".setores_bom AS TABLE ".$xProj.".setores ORDER BY codset");
+//pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".setores");
+
+pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".setores (
+   codset SERIAL PRIMARY KEY, 
+   siglasetor character varying(10), 
+   descsetor character varying(100), 
+   mordem smallint NOT NULL DEFAULT 0,
+   menu smallint NOT NULL DEFAULT 0,
+   usuins smallint NOT NULL DEFAULT 0,
+   datains timestamp without time zone DEFAULT CURRENT_TIMESTAMP, 
+   usumodif smallint NOT NULL DEFAULT 0, 
+   datamodif timestamp without time zone DEFAULT CURRENT_TIMESTAMP, 
+   ativo smallint NOT NULL DEFAULT 1,
+   cabec1 character varying(200), 
+   cabec2 character varying(200), 
+   cabec3 character varying(200), 
+   textopag text
+   ) ");
+
+//   $rs1 = pg_query($Conec, "SELECT codset FROM ".$xProj.".setores ");
+//   $row1 = pg_num_rows($rs1);
+//   if($row1 > 0){
+//       echo "Tabela setores OK"."<br>";
+//   }else{
+//
+//   pg_query($Conec, "INSERT INTO ".$xProj.".setores (codset, siglasetor, descsetor, mordem, menu, usuins, datains, usumodif, datamodif, ativo, cabec1, cabec2, cabec3, textopag)  VALUES 
+//   (1,'','',0,0,1,NOW(),1,NOW(),1,'','','',''),
+//   (2,'PR','Presidência',0,1,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','Presidência','',''),
+//   (3,'VPR','Vice-Presidência',0,1,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','VicePresidência','',''),
+//   (4,'DG','Diretoria-Geral',1,1,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','Diretoria-Geral','','&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;span style=&quot;font-size: 20pt;&quot;&gt;Diretoria-Geral&lt;/span&gt;&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;&lt;p style=&quot;text-align: justify;&quot;&gt;&lt;span style=&quot;font-size: 13pt;&quot;&gt;&lt;span class=&quot;BxUVEf ILfuVd&quot; lang=&quot;pt&quot;&gt;&lt;span class=&quot;hgKElc&quot;&gt;Dirigir\, planejar\, organizar e controlar as atividades de diversas &amp;aacute;reas da Comunh&amp;atilde;o Esp&amp;iacute;rita de Bras&amp;iacute;lia\, fixando pol&amp;iacute;ticas de gest&amp;atilde;o dos recursos financeiros\, &lt;/span&gt;&lt;/span&gt;&lt;span style=&quot;font-family: &quot;Open Sans&quot;\, Arial\, sans-serif; text-align: justify; background-color: #ffffff;&quot;&gt;&lt;img style=&quot;float: left;&quot; src=&quot;itr/DG-652203438beba-LogoComunhao.png&quot; alt=&quot;&quot; width=&quot;125&quot; height=&quot;110&quot; /&gt;&lt;/span&gt;&lt;span class=&quot;BxUVEf ILfuVd&quot; lang=&quot;pt&quot;&gt;&lt;span class=&quot;hgKElc&quot;&gt;administrativos\, estrutura&amp;ccedil;&amp;atilde;o\, racionaliza&amp;ccedil;&amp;atilde;o\, e adequa&amp;ccedil;&amp;atilde;o dos diversos servi&amp;ccedil;os.&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style=&quot;text-align: justify;&quot;&gt;&lt;span style=&quot;font-size: 13pt;&quot;&gt;&lt;span style=&quot;font-family: &quot;Open Sans&quot;\, Arial\, sans-serif; text-align: justify; background-color: #ffffff;&quot;&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp; &lt;/span&gt;&lt;span class=&quot;BxUVEf ILfuVd&quot; lang=&quot;pt&quot;&gt;&lt;span class=&quot;hgKElc&quot;&gt;Trata da assessoria pessoal e institucional da Presid&amp;ecirc;ncia\, atendendo pessoas\, organizando audi&amp;ecirc;ncias e agenda\, viabilizando o relacionamento do Presidente com as diretorias e assessorias\, exercendo atividades articuladas com todos os &amp;oacute;rg&amp;atilde;os da Casa.&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/p&gt;&lt;p style=&quot;text-align: center;&quot;&gt;&lt;strong&gt;&lt;span style=&quot;text-decoration: underline;&quot;&gt;&lt;span style=&quot;font-family: &quot;Open Sans&quot;\, Arial\, sans-serif; text-align: justify; background-color: #ffffff;&quot;&gt;FIM&lt;/span&gt;&lt;/span&gt;&lt;/strong&gt;&lt;/p&gt;'),
+//   (5,'DAC','Diretoria de Arte e Cultura',2,1,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','Diretoria de Arte e Cultura','',''),
+//   (6,'DAE','Diretoria de Assistência Espiritual',3,1,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','Diretoria de Assistência Espiritual','',''),
+//   (7,'DAF','Diretoria Administrativa e Financeira',4,1,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','Diretoria Administrativa e Financeira','',''),
+//   (8,'DAO','Diretoria de Atendimento e Orientação',5,1,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','Diretoria de Atendimento e Orientação','',''),
+//   (9,'DED','Diretoria de Estudos Doutrinários',6,1,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','Diretoria de Estudos Doutrinários','',''),
+//   (10,'DIJ','Diretoria de Infância e Juventude',7,1,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','Diretoria de Infância e Juventude','',''),
+//   (11,'DPS','Diretoria de Promoção Social',8,1,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','Diretoria de Promoção Social','',''),
+//   (12,'AAD','Assessoria de Assuntos Doutrinários',9,2,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','Assessoria de Assuntos Doutrinários','',''),
+//   (13,'ACE','Assessoria de Comunicação e Eventos',10,2,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','Assessoria de Comunicação e Eventos','',''),
+//   (14,'ADI','Assessoria de Desenvolvimento Institucional',11,2,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','Assessoria de Desenvolvimento Institucional','',''),
+//   (15,'AJU','Assessoria Jurídica',12,2,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','Assessoria Jurídica','',''),
+//   (16,'AME','Assessoria de Estudos e Aplicações de Medicina Espiritual',13,2,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','Assessoria de Estudos e Aplicações de Medicina Espiritual','',''),
+//   (17,'APE','Assessoria de Planejamento Estratégico',14,2,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','Assessoria de Planejamento Estratégico','',''),
+//   (18,'APV','Assessoria da Pomada do Vovô Pedro',15,2,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','Assessoria da Pomada do Vovô Pedro','',''),
+//   (19,'ATI','Assessoria de Tecnologia da Informação',16,2,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','Assessoria de Tecnologia da Informação','',''),
+//   (20,'OUV','Ouvidoria',17,2,1,NOW(),1,NOW(),1,'COMUNHÃO ESPÍRITA DE BRASÍLIA','Ouvidoria','','')
+//   "); 
+
+//      $rs = pg_query($Conec, "SELECT codset, textopag FROM ".$xProj.".setores_bom ");
+//      while($tbl = pg_fetch_row($rs)){
+//         $Cod = $tbl[0];
+//         $Cod = $Cod + 2;
+//         $Texto = $tbl[1];
+//         pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE ".$xProj.".setores.codset = $Cod ");
+//      }
+
+//      $rs = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores_ant WHERE codset = 2"); // DG
+//      $tbl = pg_fetch_row($rs);
+//      $Texto = $tbl[0];
+//      pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE codset = 4"); // DG
+
+//      $rs = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores_ant WHERE codset = 3"); // DAC
+//      $tbl = pg_fetch_row($rs);
+//      $Texto = $tbl[0];
+//      pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE codset = 5"); // DAC
+
+//      $rs = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores_ant WHERE codset = 4"); // DAE
+//      $tbl = pg_fetch_row($rs);
+//      $Texto = $tbl[0];
+//      pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE codset = 6"); // DAE
+
+//      $rs = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores_ant WHERE codset = 5"); // DAF
+//      $tbl = pg_fetch_row($rs);
+//      $Texto = $tbl[0];
+//      pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE codset = 7"); // DAF
+
+//      $rs = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores_ant WHERE codset = 6"); // DAO
+//      $tbl = pg_fetch_row($rs);
+//      $Texto = $tbl[0];
+//      pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE codset = 8"); // DAO
+
+//      $rs = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores_ant WHERE codset = 7"); // DED
+//      $tbl = pg_fetch_row($rs);
+//      $Texto = $tbl[0];
+//      pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE codset = 9"); // DED
+
+//      $rs = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores_ant WHERE codset = 8"); // DIJ
+//      $tbl = pg_fetch_row($rs);
+//      $Texto = $tbl[0];
+//      pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE codset = 10"); // DIJ
+
+//      $rs = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores_ant WHERE codset = 9"); // DPS
+//      $tbl = pg_fetch_row($rs);
+//      $Texto = $tbl[0];
+//      pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE codset = 11"); // DPS
+
+//      $rs = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores_ant WHERE codset = 10"); // AAD
+//      $tbl = pg_fetch_row($rs);
+//      $Texto = $tbl[0];
+//      pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE codset = 12"); // AAD
+
+//      $rs = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores_ant WHERE codset = 11"); // ACE
+//      $tbl = pg_fetch_row($rs);
+//      $Texto = $tbl[0];
+//      pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE codset = 13"); // ACE
+
+//      $rs = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores_ant WHERE codset = 12"); // ADI
+//      $tbl = pg_fetch_row($rs);
+//      $Texto = $tbl[0];
+//      pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE codset = 14"); // ADI
+
+//      $rs = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores_ant WHERE codset = 13"); // AJU
+//      $tbl = pg_fetch_row($rs);
+//      $Texto = $tbl[0];
+//      pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE codset = 15"); // AJU
+
+//      $rs = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores_ant WHERE codset = 14"); // AME
+//      $tbl = pg_fetch_row($rs);
+//      $Texto = $tbl[0];
+//      pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE codset = 16"); // AME
+
+//      $rs = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores_ant WHERE codset = 15"); // APE
+//      $tbl = pg_fetch_row($rs);
+//      $Texto = $tbl[0];
+//      pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE codset = 17"); // APE
+
+//      $rs = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores_ant WHERE codset = 16"); // APV
+//      $tbl = pg_fetch_row($rs);
+//      $Texto = $tbl[0];
+//      pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE codset = 18"); // APV
+
+//      $rs = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores_ant WHERE codset = 17"); // ATI
+//      $tbl = pg_fetch_row($rs);
+//      $Texto = $tbl[0];
+//      pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE codset = 19"); // ATI
+
+//      $rs = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores_ant WHERE codset = 18"); // OUV
+//      $tbl = pg_fetch_row($rs);
+//      $Texto = $tbl[0];
+//      pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE codset = 20"); // OUV
+
+//      pg_query($Conec, "UPDATE ".$xProj.".setores SET mordem = codset");
+//      pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".setores_bom");
+
+//      echo "Tabela ".$xProj.".setores checada. <br>";
+//   }
+
+//pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".ocorrencias ADD COLUMN IF NOT EXISTS usuant bigint NOT NULL DEFAULT 0 ;"); // recebi svc do 
+//pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".ocorrencias ADD COLUMN IF NOT EXISTS usuprox bigint NOT NULL DEFAULT 0 ;"); // passei para 
+//pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".ocorrencias ADD COLUMN IF NOT EXISTS turno smallint NOT NULL DEFAULT 0 ;"); // passei para 
+//pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".ocorrencias ADD COLUMN IF NOT EXISTS alter_rcb text ;"); // recebi com as seg alterações 
+//pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".ocorrencias ADD COLUMN IF NOT EXISTS descturno VARCHAR(50);"); // passei para 
+
+// Ten Ariana ou Alessandra 3364-7834

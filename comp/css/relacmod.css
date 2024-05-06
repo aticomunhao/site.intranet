@@ -3,6 +3,9 @@
 .etiq{
     text-align: right; color: #9C9C9C; font-size: 70%; font-weight: bold; padding-right: 1px; padding-bottom: 1px;
  }
+ .etiqAzul{
+    text-align: right; color: #036; font-style: italic; font-size: 80%; padding-right: 1px; padding-bottom: 1px;
+ }
  .relacmodal{
      display: none; /* oculto default */
      position: fixed;
@@ -18,7 +21,7 @@
  /* caixa do Modal Content */
  .modal-content-Aniver{
      background: linear-gradient(180deg, white, #86c1eb);
-     margin: 15% auto; /* 10% do topo e centrado */
+     margin: 15% auto; /* 15% do topo e centrado */
      padding: 20px;
      border: 1px solid #888;
      border-radius: 15px;
@@ -26,48 +29,49 @@
  }
 .modal-content-Telef{
     background: linear-gradient(135deg, white, #EEDD82);
-    margin: 10% auto; /* 10% do topo e centrado */
+    margin: 10% auto; 
     padding: 20px;
     border: 1px solid #888;
     border-radius: 15px;
-    width: 40%; /* acertar de acordo com a tela */
+    width: 40%; 
 }
 .modal-content-Ramais{
     background: linear-gradient(135deg, white, #9bc9bf);
-    margin: 15% auto; /* 10% do topo e centrado */
+    margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
     border-radius: 15px;
-    width: 40%; /* acertar de acordo com a tela */
+    width: 40%;
 }
 .modal-content-Login{
     background: linear-gradient(180deg, white, #86c1eb);
-    margin: 15% auto; /* 10% do topo e centrado */
+    margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
     border-radius: 15px;
-    width: 40%; /* acertar de acordo com a tela */
-    max-width: 400px;;
+    width: 40%;
+    max-width: 500px;
 }
 .modal-content-CadUsu{
     background: linear-gradient(180deg, white, #86c1eb);
-    margin: 15% auto; /* 10% do topo e centrado */
+    margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
     border-radius: 15px;
-    width: 50%; /* acertar de acordo com a tela */
+    width: 50%; 
 }
 .modal-content-trocaSenha{
     background: linear-gradient(180deg, white, #86c1eb);
-    margin: 10% auto; /* 10% do topo e centrado */
+    margin: 10% auto;
     padding: 20px;
     border: 1px solid #888;
     border-radius: 15px;
-    width: 40%; /* acertar de acordo com a tela */
+    width: 40%;
+    max-width: 500px;
 }
 .modal-content-InsOcorIni{
     background: linear-gradient(180deg, white, #86c1eb);
-    margin: 7% auto; /* 10% do topo e centrado */
+    margin: 7% auto;
     padding: 20px;
     border: 1px solid #888;
     border-radius: 15px;
@@ -75,7 +79,7 @@
 }
 .modal-content-InsOcor{
     background: linear-gradient(180deg, white, #86c1eb);
-    margin: 7% auto; /* 10% do topo e centrado */
+    margin: 7% auto;
     padding: 20px;
     border: 1px solid #888;
     border-radius: 15px;
@@ -83,7 +87,7 @@
 }
 .modal-content-Leitura{
     background: linear-gradient(180deg, white, #86c1eb);
-    margin: 7% auto; /* 10% do topo e centrado */
+    margin: 7% auto;
     padding: 10px;
     border: 1px solid #888;
     border-radius: 15px;
@@ -91,7 +95,7 @@
 }
 .modal-content-imprLeitura{
     background: linear-gradient(180deg, white, #FFF8DC);
-    margin: 12% auto; /* 10% do topo e centrado */
+    margin: 12% auto;
     padding: 10px;
     border: 1px solid #888;
     border-radius: 15px;
@@ -99,12 +103,28 @@
 }
 .modal-content-Eletric{
     background: linear-gradient(180deg, white, #d0eb86);
-    margin: 7% auto; /* 10% do topo e centrado */
+    margin: 7% auto;
     padding: 10px;
     border: 1px solid #888;
     border-radius: 15px;
     width: 30%;
     max-width: 500px;
+}
+.modal-content-Diretorias{
+    background: linear-gradient(180deg, white, #FFF8DC);
+    margin: 12% auto;
+    padding: 10px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 40%;
+}
+.modal-content-UsuAdmDir{
+    background: linear-gradient(180deg, white, #FFF8DC);
+    margin: 12% auto;
+    padding: 10px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 40%;
 }
 
 .modal-content-matrix{

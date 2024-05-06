@@ -396,7 +396,6 @@ if($Acao =="confsenhaant"){
     echo $responseText;
 }
 
-
 if($Acao =="trocasenha"){
 //    $Usu = $_SESSION["usuarioID"];
     $Cpf = $_SESSION["usuarioCPF"];
@@ -557,6 +556,37 @@ if($Acao =="apagaEletric"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
+if($Acao =="buscadir"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Erro = 0;
+    $rs = pg_query($Conec, "SELECT siglasetor, descsetor FROM ".$xProj.".setores WHERE codset = $Cod");
+    $row = pg_num_rows($rs);
+    if($row > 0){
+        $tbl = pg_fetch_row($rs);
+        
+    }else{
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro, "sigla"=>$tbl[0], "desc"=> $tbl[1]);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="salvadir"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Sigla = filter_input(INPUT_GET, 'sigladir');
+    $Desc = filter_input(INPUT_GET, 'descdir');
+    $Erro = 0;
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".setores SET siglasetor = '$Sigla', descsetor = '$Desc' WHERE codset = $Cod");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
 
 function removeInj($VemDePost){  // função para remover injeções SQL
     $VemDePost = addslashes($VemDePost);

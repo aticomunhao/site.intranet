@@ -4,9 +4,12 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title></title>
+        <link rel="stylesheet" type="text/css" media="screen" href="class/dataTable/datatables.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="comp/css/relacmod.css" />
         <script src="comp/js/jquery.min.js"></script> <!-- versão 3.6.3 -->
         <script src="comp/js/jquery.mask.js"></script>
+        <script src="class/dataTable/datatables.min.js"></script>  <!-- https://datatables.net/examples/basic_init/filter_only.html -->
         <script src="comp/js/jquery-confirm.min.js"></script>   <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
         <style type="text/css">
             .etiq{
@@ -34,7 +37,9 @@
                 $(document).ready(function(){
                     $("#dataIniAgua").mask("99/99/9999");
                     $("#dataIniEletric").mask("99/99/9999");
+                    $("#cardiretoria").load("modulos/config/carDir.php");
                 });
+
                 function salvaParam(Valor, Param){
                     ajaxIni();
                     if(ajax){
@@ -264,15 +269,70 @@
                     }
                 });
             }
-
+            function carregaModal(Cod){
+                document.getElementById("guardacodsetor").value = Cod;
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/config/registr.php?acao=buscadir&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) > 0){
+                                    alert("Houve erro ao salvar");
+                                }else{
+                                    document.getElementById("sigladir").value = Resp.sigla;
+                                    document.getElementById("descdir").value = Resp.desc;
+                                    $("#relausuarios").load("modulos/config/relDir.php?codigo="+Cod); // está em relDir.php
+                                    document.getElementById("relacmodalDir").style.display = "block"; // está em carDir.php
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+            function salvaModalDir(){
+                if(parseInt(document.getElementById("mudou").value) === 1){
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/config/registr.php?acao=salvadir&codigo="+document.getElementById("guardacod").value
+                        +"&sigladir="+document.getElementById("sigladir").value
+                        +"&descdir="+document.getElementById("descdir").value, true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");
+                                    if(parseInt(Resp.coderro) > 0){
+                                        alert("Houve erro ao salvar");
+                                    }else{
+                                        $("#cardiretoria").load("modulos/config/carDir.php");
+                                        document.getElementById("relacmodalDir").style.display = "none";
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                }else{
+                    document.getElementById("relacmodalDir").style.display = "none";
+                }
+            }
+            function fechaModalDir(){
+                document.getElementById("relacmodalDir").style.display = "none";
+            }
+            function modif(){ // assinala se houve qualquer modificação nos campos do modal durante a edição para evitar salvar desnecessariamente
+                document.getElementById("mudou").value = "1";
+            }
         </script>
     </head>
     <body>
         <?php
             require_once("abrealas.php");
-
             $rsSis = pg_query($Conec, "SELECT admvisu, admedit, admcad, insevento, editevento, instarefa, edittarefa, insramais, editramais, instelef, edittelef, 
-            editpagina, insarq, insaniver, editaniver, instroca, edittroca, insocor, editocor, insleituraagua, editleituraagua, TO_CHAR(datainiagua , 'DD/MM/YYYY'), valoriniagua, insleituraeletric, editleituraeletric, TO_CHAR(datainieletric , 'DD/MM/YYYY'), valorinieletric 
+            editpagina, insarq, insaniver, editaniver, instroca, edittroca, insocor, editocor, insleituraagua, editleituraagua, TO_CHAR(datainiagua , 'DD/MM/YYYY'), valoriniagua, insleituraeletric, editleituraeletric, TO_CHAR(datainieletric , 'DD/MM/YYYY'), valorinieletric, insaguaindiv, inseletricindiv 
             FROM ".$xProj.".paramsis WHERE idPar = 1");
             $ProcSis = pg_fetch_row($rsSis);
             $admVisu = $ProcSis[0]; // admVisu - administrador visualiza usuários
@@ -303,12 +363,30 @@
             $Proc2 = pg_fetch_row($rs2);
             $nomeEditAgua = $Proc2[0];
 
-            $insLeituraEletric = $ProcSis[19];   // insLeitura - inserção de leitura do medidor
+            $InsAguaIndiv = $ProcSis[27]; 
+            if($InsAguaIndiv > 0){
+                $rs3 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $InsAguaIndiv");
+                $Proc3 = pg_fetch_row($rs3);
+                $nomeInsAgua = $Proc3[0];
+            }else{
+                $nomeInsAgua = "";
+            }
+
+            $InsEletricIndiv = $ProcSis[28]; 
+            if($InsEletricIndiv > 0){
+                $rs3 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $InsEletricIndiv");
+                $Proc3 = pg_fetch_row($rs3);
+                $nomeInsEletric = $Proc3[0];
+            }else{
+                $nomeInsEletric = "";
+            }
+
+            $insLeituraEletric = $ProcSis[23];   // insLeitura - inserção de leitura do medidor
             $rs1 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $insLeituraEletric");
             $Proc1 = pg_fetch_row($rs1);
             $nomeInsLeituraEletric = $Proc1[0];
 
-            $editEletric = $ProcSis[20];   // editLeitura - edição de leitura
+            $editEletric = $ProcSis[24];   // editLeitura - edição de leitura
             $rs2 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $editEletric");
             $Proc2 = pg_fetch_row($rs2);
             $nomeEditEletric = $Proc2[0];
@@ -391,6 +469,9 @@
             $OpAdmInsAgua = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             $OpAdmEditAgua = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
 
+            $OpInsAguaIndiv = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE Ativo = 1 ORDER BY nomecompl"); 
+            $OpInsEletricIndiv = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE Ativo = 1 ORDER BY nomecompl");
+
             $OpAdmInsEletric = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             $OpAdmEditEletric = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
 
@@ -413,8 +494,10 @@
             $OpAdmEditOcor = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
 
         ?>
-
-        <div style="margin: 0 auto; margin-top: 40px; padding: 20px; border: 2px solid blue; border-radius: 15px; width: 50%; min-height: 200px;">
+        <input type="hidden" id="guardacod" value="0" /> <!-- id ocorrência -->
+        <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
+        
+        <div style="margin: 0 auto; margin-top: 40px; padding: 20px; border: 2px solid blue; border-radius: 15px; width: 70%; min-height: 200px;">
             <div style="text-align: center;">
                 <h4>Parâmetros do Sistema</h4>
             </div>
@@ -471,11 +554,26 @@
                     <tr>
                         <td>Nível mínimo para INSERIR leitura:</td>
                         <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'insleituraagua');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <select id="selectLeituraAgua" onchange="salvaParam(value, 'insleituraagua');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                             <option value="<?php echo $insLeituraAgua; ?>"><?php echo $nomeInsLeituraAgua; ?></option>
                             <?php 
                             if($OpAdmInsAgua){
                                 while ($Opcoes = pg_fetch_row($OpAdmInsAgua)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                <?php 
+                                }
+                            }
+                            ?>
+                            </select>
+                        </td>
+                        <td title="Autorização para um só usuário realizar as leituras. Sobrepõe-se ao nível mínimo selecionado."> Individual:</td>
+                        <td>
+                        <select id="selectAguaIndiv" onchange="salvaParam(value, 'insaguaindiv');" style="font-size: 1rem; width: 200px;"  title="Autorização para um só usuário realizar as leituras. Sobrepõe-se ao nível mínimo selecionado. Selecione um usuário.">
+                            <option value="<?php echo $InsAguaIndiv; ?>"><?php echo $nomeInsAgua; ?></option>
+                            <option value="0"></option>
+                            <?php 
+                            if($OpInsAguaIndiv){
+                                while ($Opcoes = pg_fetch_row($OpInsAguaIndiv)){ ?>
                                     <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
                                 <?php 
                                 }
@@ -530,6 +628,22 @@
                             <?php 
                             if($OpAdmInsEletric){
                                 while ($Opcoes = pg_fetch_row($OpAdmInsEletric)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                <?php 
+                                }
+                            }
+                            ?>
+                            </select>
+                        </td>
+
+                        <td title="Autorização para um só usuário realizar as leituras. Sobrepõe-se ao nível mínimo selecionado."> Individual:</td>
+                        <td>
+                        <select id="selectAguaIndiv" onchange="salvaParam(value, 'inseletricindiv');" style="font-size: 1rem; width: 200px;"  title="Autorização para um só usuário realizar as leituras. Sobrepõe-se ao nível mínimo selecionado. Selecione um usuário.">
+                            <option value="<?php echo $InsEletricIndiv; ?>"><?php echo $nomeInsEletric; ?></option>
+                            <option value="0"></option>
+                            <?php 
+                            if($OpInsEletricIndiv){
+                                while ($Opcoes = pg_fetch_row($OpInsEletricIndiv)){ ?>
                                     <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
                                 <?php 
                                 }
@@ -824,20 +938,10 @@
                     </tr>
                 </table>
             </div>
-<br><br><br>
-<!--
-            <div style="border: 1px solid; border-radius: 10px; padding: 15px;">
-                - Usuários:<br>
-                <input type="checkbox" id="admVisu" onclick="MarcaAdm(this, 'admVisu');" value="admVisu" <?php if($admVisu == 1) {echo "checked";} ?>>
-                <label for="admVisu" class="etiq">Administradores podem acessar lista de usuários</label>
-                <br>
-                <input type="checkbox" id="admEdit" onclick="MarcaAdm(this, 'admEdit');" value="admEdit" <?php if($admEdit == 1) {echo "checked";} ?>>
-                <label for="admEdit" class="etiq">Administradores podem EDITAR usuários</label>
-                <br>
-                <input type="checkbox" id="admCad" onclick="MarcaAdm(this, 'admCad');" value="admCad" <?php if($admCad == 1) {echo "checked";} ?>>
-                <label for="admCad" class="etiq">Administradores podem CADASTRAR usuários</label>
-            </div>
--->
+            <br>
+            <hr>
+            <br>
+            <div id="cardiretoria"></div> <!-- Mostra as diretores e assessorias mais os seus usuários  -->
         </div>
     </body>
 </html>

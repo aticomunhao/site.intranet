@@ -141,7 +141,6 @@ if(!isset($_SESSION["usuarioID"])){
 
             if($_SESSION["CodSubSetorUsu"] == 1){ // está na diretoria
                 if($_SESSION["CodSetorUsu"] == $_SESSION["PagDir"] && $_SESSION["AdmUsu"] >= $admIns){ // botão upload arquivos
-//                if($_SESSION["SiglaSetor"] == $_SESSION["SiglaPagDir"] && $_SESSION["AdmUsu"] >= $admIns){ // botão editar página
                     echo "<div class='bContainer corFundo' onclick='carregaArq()'> UpLoad &#8673;</div>";
                 }
             }else{ // subdiretorias foram retiradas 02/10/2023

@@ -17,7 +17,6 @@ pg_query($Conec, "DELETE FROM ".$xProj.".tarefas_msg WHERE datamsg > CURRENT_DAT
 //echo password_hash('123456', PASSWORD_BCRYPT);
 echo "<br>";
 
-
 pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".poslog (
    id SERIAL PRIMARY KEY, 
    pessoas_id bigint NOT NULL DEFAULT 0, 

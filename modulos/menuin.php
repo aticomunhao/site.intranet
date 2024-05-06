@@ -8,9 +8,9 @@
                 jQuery(function(){jQuery('ul.sf-menu').superfish();});
 
 				jQuery('ul.sf-menu').superfish({
-					delay:       500,                          	// one second delay on mouseout
-					speed:       'fast',                       	// faster animation speed
-					autoArrows:  false                         	// disable generation of arrow mark-up
+					delay:       500,                // one second delay on mouseout
+					speed:       'fast',             // faster animation speed
+					autoArrows:  false               // disable generation of arrow mark-up
 				});
             });
         </script>
@@ -25,19 +25,19 @@
 		<!-- menu para a página inicial  -->
         <ul id="example" class="sf-menu sf-js-enabled sf-arrows sf-menu-dia<?php echo $diaSemana; ?> ">
             <li class="MenuEstend">
-				<a href="#" onclick="openhref(11);">Início</a>
+				<a href="#" onclick="openhref(51);">Início</a>
 			</li>
             <li class="MenuEstend">
-				<a href="#" onclick="openhref(12);">Organograma</a>
+				<a href="#" onclick="openhref(53);">Organograma</a>
 			</li>
             <li class="current MenuEstend">
 				<a href="#">Telefones</a>
 				<ul>
 					<li class="MenuEstend">
-						<a href="#" onclick="openhref(13);">Ramais Internos</a>
+						<a href="#" onclick="openhref(55);">Ramais Internos</a>
 					</li>
 					<li class="MenuEstend">
-						<a href="#" onclick="openhref(14);">Ramais Externos</a>
+						<a href="#" onclick="openhref(56);">Ramais Externos</a>
 					</li>
 				</ul>
 			</li>

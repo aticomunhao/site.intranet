@@ -120,7 +120,7 @@ if(!isset($_SESSION["usuarioID"])){
                 //Fecha caixa ao clicar na página
                 modalMsg = document.getElementById('relacmodalMsg'); //span[0]
                 spanMsg = document.getElementsByClassName("close")[0];
-                modalHelp = document.getElementById('relacHelpTrocas'); //span[1]
+                modalHelp = document.getElementById('relacHelpTarefas'); //span[1]
                 spanHelp = document.getElementsByClassName("close")[1];
                 window.onclick = function(event){
                     if(event.target === modalMsg){
@@ -147,9 +147,11 @@ if(!isset($_SESSION["usuarioID"])){
                    }
                 }
             }
-            function PegaCod(Cod, Ativo){
+            function PegaCod(Cod, Ativo, UsuExec){
                 document.getElementById("guardaid").value = Cod; //Pega e guarda o código do elemento dragado
                 document.getElementById("guardaAtiv").value = Ativo;
+                document.getElementById("guardaUsuExec").value = UsuExec;
+                
             }
 
             function allowDrop(ev) {
@@ -161,6 +163,10 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function drop(ev, col) {
+                if(parseInt(document.getElementById("guardaUsuExec").value) != document.getElementById("usu_Logado_id").value){ // só o executante pode arrastar os quadros
+                    $('#container3').load('modulos/conteudo/tarefas.php');
+                    return false;
+                }
                 if(parseInt(col) > 0){
                     ajaxIni();
                     if(ajax){
@@ -218,7 +224,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("textoEvid").value = "";
                 document.getElementById("textoExt").value = "";
                 document.getElementById("labelnomeIns").innerHTML = "";
-                document.getElementById("selecprio").value = 2;                
+                document.getElementById("selecprio").value = 3;                
                 document.getElementById("guardaid").value = 0;
                 document.getElementById("mudou").value = "1"; // vai inserir novo
                 document.getElementById("botapagar").disabled = true;
@@ -276,13 +282,12 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("relacmodalTarefa").style.display = "none";
             }
 
-            function carregaHelpTrocas(){
-                document.getElementById("relacHelpTrocas").style.display = "block";
+            function carregaHelpTarefas(){
+                document.getElementById("relacHelpTarefas").style.display = "block";
             }
             function fechaModalHelp(){
-                document.getElementById("relacHelpTrocas").style.display = "none";
+                document.getElementById("relacHelpTarefas").style.display = "none";
             }
-
             
             function modif(){ // assinala se houve qualquer modificação nos campos do modal durante a edição para evitar salvar desnecessariamente
                 document.getElementById("mudou").value = "1";
@@ -407,13 +412,14 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" /> <!-- nível mínimo para inserir tarefas -->
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
         <input type="hidden" id="guardaAtiv" value="1" /> <!-- Guarda se a tarefa foi finalizada-->
+        <input type="hidden" id="guardaUsuExec" value="0" />
 
         <!-- div três colunas -->
         <div class="container" style="margin: 0 auto;">
             <div class="row">
                 <div class="col quadro" style="margin: 0 auto;"> <input type="button" class="resetbot" id="botinserir" value="Inserir" onclick="abreModal();"></div>
                 <div class="col-1"></div> <!-- Central - espaçamento entre colunas  -->
-                <div class="col quadro" style="margin: 0 auto; text-align: right;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpTrocas();" title="Guia rápido"></div> 
+                <div class="col quadro" style="margin: 0 auto; text-align: right;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpTarefas();" title="Guia rápido"></div> 
             </div>
         </div>
 
@@ -446,6 +452,7 @@ if(!isset($_SESSION["usuarioID"])){
                 echo "<td style='text-align: center; font-weight: 600;'>Tarefa<br>Em Andamento</td>";
                 echo "<td></td>";
                 echo "<td style='text-align: center; font-weight: 600;'>Tarefa<br>Terminada</td>";
+                echo "<td></td>";
                 echo "</tr>";
 
                 if($row > 0){
@@ -523,7 +530,7 @@ if(!isset($_SESSION["usuarioID"])){
 
                         echo "<td style='text-align: center;'>";
                         if($Status == 1 && $Ativo != 2){
-                            echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' id='posicaotit' ondrag='PegaCod($idTar, $Ativo);' ondrop='drop(event)' ondragover='allowDrop(event)' title='Arraste o quadro amarelo para a direita'>$Titulo</div>";
+                            echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' id='posicaotit' ondrag='PegaCod($idTar, $Ativo, $usuExec);' ondrop='drop(event)' ondragover='allowDrop(event)' title='Arraste o quadro amarelo para a direita'>$Titulo</div>";
                         }elseif($Status == 1 && $Ativo == 2){
                             echo "<div class='etiqueta etiqInativa' draggable='false' droppable='false'>$Titulo</div>";
                         }else{
@@ -535,7 +542,7 @@ if(!isset($_SESSION["usuarioID"])){
 
                         echo "<td style='text-align: center;'>";
                         if($Status == 2 && $Ativo != 2){
-                            echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' id='posicaotit' ondrag='PegaCod($idTar, $Ativo);' ondrop='drop(event)' ondragover='allowDrop(event)' title='Arraste o quadro amarelo para a direita'>$Titulo</div>";
+                            echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' id='posicaotit' ondrag='PegaCod($idTar, $Ativo, $usuExec);' ondrop='drop(event)' ondragover='allowDrop(event)' title='Arraste o quadro amarelo para a direita'>$Titulo</div>";
                         }elseif($Status == 2 && $Ativo == 2){
                             echo "<div class='etiqueta etiqInativa' draggable='false' droppable='false'>$Titulo</div>";
                         }else{
@@ -547,7 +554,7 @@ if(!isset($_SESSION["usuarioID"])){
 
                         echo "<td style='text-align: center;'>";
                         if($Status == 3 && $Ativo != 2){
-                            echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' id='posicaotit' ondrag='PegaCod($idTar, $Ativo);' ondrop='drop(event)' ondragover='allowDrop(event)' title='Arraste o quadro amarelo para a direita'>$Titulo</div>";
+                            echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' id='posicaotit' ondrag='PegaCod($idTar, $Ativo, $usuExec);' ondrop='drop(event)' ondragover='allowDrop(event)' title='Arraste o quadro amarelo para a direita'>$Titulo</div>";
                         }elseif($Status == 3 && $Ativo == 2){
                             echo "<div class='etiqueta etiqInativa' draggable='false' droppable='false'>$Titulo</div>";
                         }else{
@@ -559,7 +566,7 @@ if(!isset($_SESSION["usuarioID"])){
 
                         echo "<td style='text-align: center;'>";
                         if($Status == 4 && $Ativo != 2){
-                            echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' id='posicaotit' ondrag='PegaCod($idTar, $Ativo);' ondrop='drop(dr)' ondragover='allowDrop(event)' title='Arraste o quadro amarelo para a direita'>$Titulo</div>";
+                            echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' id='posicaotit' ondrag='PegaCod($idTar, $Ativo, $usuExec);' ondrop='drop(dr)' ondragover='allowDrop(event)' title='Arraste o quadro amarelo para a direita'>$Titulo</div>";
                             
                         }elseif($Status == 4 && $Ativo == 2){
                             echo "<div class='etiqueta etiqInativa' draggable='false' droppable='false'>$Titulo</div>";
@@ -572,18 +579,19 @@ if(!isset($_SESSION["usuarioID"])){
                                 echo "<p class='blink' style='font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 5px; color: red; font-size: 1.5em; font-weigth: bold; margin: 0; padding: 0;'><br><br>URGENTE</p>";
                             }
                             if($Priorid == 1){
+                                echo "<p style='font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 5px; color: red; font-size: 1.2em; font-weigth: bold; margin: 0; padding: 0;'><br><br>MUITO IMPORTANTE</p>";
+                            }
+                            if($Priorid == 2){
                                 echo "<p style='font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 5px; color: red; font-size: 1.2em; font-weigth: bold; margin: 0; padding: 0;'><br><br>IMPORTANTE</p>";
                             }
                         }
-
                         echo "</td>";
 
                         echo "<td>";  
-
-                        if($Adm >= $admEdit && $usuExec != $UsuLogadoId){ // usuário logado não pode ser o executante
+//                        if($Adm >= $admEdit && $usuExec != $UsuLogadoId){ // usuário logado não pode ser o executante
+                        if($Adm >= $admEdit || $usuIns == $UsuLogadoId){ // usuário logado não pode ser o executante
                             echo "<div title='Editar' style='cursor: pointer;' onclick='carregaModal($idTar);'>&#9997;</div>";
                         }
-
                         echo "<div title='Mensagens' style='cursor: pointer;' onclick='carregaMsg($idTar);'>";
                             if($row4 > 0 || $row6 > 0){
                                 echo "<p class='blink'>&#9993;</p>";
@@ -650,12 +658,13 @@ if(!isset($_SESSION["usuarioID"])){
                         <td></td>
                     </tr>
                     <tr>
-                    <td id="etiqTextoEvid" class="etiq">Prioridade:</td>
+                    <td id="etiqTextoPrio" class="etiq">Prioridade:</td>
                         <td>  <!-- &nabla; -->
                             <select id="selecprio" title="Prioridade da tarefa" onchange="modif();">
                                 <option value='0'>Urgente</option>
-                                <option value='1'>Importante</option>
-                                <option value='2'>Ordinário</option>
+                                <option value='1'>Muito Importante</option>
+                                <option value='2'>Importante</option>
+                                <option value='3'>Normal</option>
                             </select>
                         </td>
                         <td></td>
@@ -669,7 +678,7 @@ if(!isset($_SESSION["usuarioID"])){
                     </tr> 
                     <tr>
                         <td id="etiqTextoExt" class="etiq">Memória:</td>
-                        <td colspan='4' rowspan='6'><textarea id="textoExt" rows='6' placeholder="Memoire" onchange="modif();" style="font-size: 95%; width: 98%;"></textarea></td>
+                        <td colspan='4' rowspan='6'><textarea id="textoExt" rows='6' placeholder="Detalhes (opcional)" onchange="modif();" style="font-size: 95%; width: 98%;"></textarea></td>
                         <td></td>
                     </tr>
                     <tr>
@@ -738,7 +747,7 @@ if(!isset($_SESSION["usuarioID"])){
         </div>  <!-- Fim Modal Mensagens-->
 
         <!-- div modal para leitura instruções -->
-        <div id="relacHelpTrocas" class="relacmodal">
+        <div id="relacHelpTarefas" class="relacmodal">
             <div class="modalMsg-content">
                 <span class="close" onclick="fechaModalHelp();">&times;</span>
                 <h3 style="text-align: center; color: #666;">Informações</h3>
@@ -746,11 +755,11 @@ if(!isset($_SESSION["usuarioID"])){
                 <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
                     Regras inseridas:
                     <ul>
-                        <li>1 - Um usuário pode emitir tarefa para outros usuários do seu nível administrativo ou inferior, observado o nível administrativo mínimo nos Parâmetros do Sistema.</li>
-                        <li>2 - Uma tarefa só aparece para o usuário que a inseriu e para o que vai executá-la.</li>
-                        <li>3 - Uma vez arrastados para a direita, os quadros não voltam. Mas o usuário que inseriu a tarefa pode editá-la e reposicioná-la nos quadros.</li>
-                        <li>4 - Só o usuário que inseriu a tarefa pode editá-la, mesmo já concluída.</li>
-                        <li>5 - As mensagens são relativas a uma tarefa. Um ícone pisca para indicar que há mensagem não lida.</li>
+                        <li>1 - Um usuário pode emitir tarefa para outros usuários do seu nível administrativo ou inferior, observado o nível administrativo mínimo adequado.</li>
+                        <li>2 - Uma tarefa só aparece para o usuário que a inseriu e para o usuário designado para executá-la.</li>
+                        <li>3 - Apenas o usuário designado para a execução pode arrastar os quadros.</li>
+                        <li>4 - Uma vez arrastados para a direita, os quadros não voltam. Mas o usuário que inseriu a tarefa pode editá-la e reposicioná-la nos quadros, mesmo se já estiver concluída.</li>
+                        <li>5 - Mensagens podem ser trocadas entre os usuários. Elas são relativas a uma tarefa. Um ícone pisca para indicar que há mensagem não lida naquela tarefa.</li>
                         <li>6 - As tarefas classificadas como urgentes se posicionam no topo da relação.</li>
                         <li>7 - As tarefas concluídas vão para o final da relação</li>
                         <li>8 - Um usuário pode emitir tarefa para si próprio.</li>

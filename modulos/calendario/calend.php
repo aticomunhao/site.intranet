@@ -2,6 +2,7 @@
 session_start(); 
 if(!isset($_SESSION["usuarioID"])){
     header("Location: /cesb/index.php");
+    //setInterval("checaCalend()", 3600000) está no indexb.php
 }
 ?>
 <!DOCTYPE html>
@@ -32,6 +33,14 @@ if(!isset($_SESSION["usuarioID"])){
                 background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
             }
             .modalCalend-content{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 10% auto; /* 10% do topo e centrado */
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 40%; /* acertar de acordo com a tela */
+            }
+            .modalMsg-content-Calend{
                 background: linear-gradient(180deg, white, #86c1eb);
                 margin: 10% auto; /* 10% do topo e centrado */
                 padding: 20px;
@@ -90,11 +99,17 @@ if(!isset($_SESSION["usuarioID"])){
 
                 //Fecha caixa ao clicar na página
                 modalCalend = document.getElementById('relacmodalCalend'); //span[0]
+                helpCalend = document.getElementById('relacHelpCalend'); //span[1]
                 spanCalend = document.getElementsByClassName("close")[0];
+                spanHelp = document.getElementsByClassName("close")[1];
+
                 window.onclick = function(event){
                     if(event.target === modalCalend){
                         modalCalend.style.display = "none";
                     }
+                    if(event.target === helpCalend){
+                        helpCalend.style.display = "none";
+                    }                    
                 };
 
             });
@@ -373,7 +388,12 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 } 
             }
-
+            function carregaHelpCalend(){
+                document.getElementById("relacHelpCalend").style.display = "block";
+            }
+            function fechaModalHelp(){
+                document.getElementById("relacHelpCalend").style.display = "none";
+            }
          /* Brazilian initialisation for the jQuery UI date picker plugin. */
          /* Written by Leonildo Costa Silva (leocsilva@gmail.com). */
          jQuery(function($){
@@ -432,6 +452,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <div style="position: absolute; left: 10px; top: 8px;">
                     <input type="checkbox" id="admCad" onclick="AvisosCalend(this);" <?php if($avCalend == 1) {echo "checked";} ?>>
                     <label for="admCad" class="etiq">Emitir Avisos <label id='avisoSusp'> <?php if($AvisosSupensos == 1){ echo " (suspensos)";} ?></label></label>
+                    <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer; padding-left: 10px;" onclick="carregaHelpCalend();" title="Guia rápido">
                 </div>
                 <h2>Eventos</h2>
                 <div id="releventos" style="min-height: 650px; text-align: left; padding: 5px; border: 2px solid blue; border-radius: 15px;"></div>
@@ -550,5 +571,25 @@ if(!isset($_SESSION["usuarioID"])){
                 </div>
             </div>
         </div>  <!-- Fim Modal Mensagens-->
+
+        <!-- div modal para leitura instruções -->
+        <div id="relacHelpCalend" class="modalCalend">
+            <div class="modalMsg-content-Calend">
+                <span class="close" onclick="fechaModalHelp();">&times;</span>
+                <h3 style="text-align: center; color: #666;">Informações</h3>
+                <h4 style="text-align: center; color: #666;">Calendário</h4>
+                <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
+                    Regras inseridas:
+                    <ul>
+                        <li>1 - O calendário emite avisos dos eventos para os usuários com a opção Emitir Avisos ligada.</li>
+                        <li>2 - Os avisos se repetem em intervalos de UMA HORA durante o dia do evento.</li>
+                        <li>3 - Os avisos podem ser dispensados para o dia em curso. Esta opção está no próprio aviso e é uma opção individual do usuário.</li>
+                        <li>4 - Os avisos podem ser dispensados definitivamente, desligando a opção Emitir Avisos. Esta é uma opção individual do usuário.</li>
+                        <li>5 - Existe uma opção, no ato de inserir um evento no calendário, que torna aquele evento de aviso obrigatório.</li>
+                        <li>6 - Os eventos de aviso obrigatório aparecem naquele dia mesmo para os usuários com avisos desligados.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>  <!-- Fim Modal Help-->
     </body>
 </html>

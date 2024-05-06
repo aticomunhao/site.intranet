@@ -12,43 +12,42 @@ function openhref(Num){
         document.getElementById("senha").value = "";
         document.getElementById("usuario").focus();
     }
-    if(parseInt(Num) === 11){
+    if(parseInt(Num) === 51){ // inicio
         location.replace("index.php");
     }
-    if(parseInt(Num) === 21){
+    if(parseInt(Num) === 52){ // inicio
         location.replace("indexb.php");
     }
-    // página livre (12) ou página do logado (22)
-    if(parseInt(Num) === 12 || parseInt(Num) === 22){
+    if(parseInt(Num) === 53 || parseInt(Num) === 54){  // página livre ou página do logado
         $('#container3').load('modulos/organog.php');}
-    if(parseInt(Num) === 13){
+    if(parseInt(Num) === 55){
         $('#container3').load('modulos/ramaisInt.php?tipo=1'); // sem log
     }
-    if(parseInt(Num) === 23){
-        $('#container3').load('modulos/ramaisInt.php?tipo=2');  // com usu logado
-    }
-    if(parseInt(Num) === 14){
+    if(parseInt(Num) === 56){
         $('#container3').load('modulos/ramaisExt.php?tipo=1');
     }
-    if(parseInt(Num) === 24){
+    if(parseInt(Num) === 57){
+        $('#container3').load('modulos/ramaisInt.php?tipo=2');  // com usu logado
+    }
+    if(parseInt(Num) === 58){
         $('#container3').load('modulos/ramaisExt.php?tipo=2');
     }
-    if(parseInt(Num) === 25){
+    if(parseInt(Num) === 59){
         $('#container3').load('modulos/aniverRel.php');
     }
-    if(parseInt(Num) === 26){
+    if(parseInt(Num) === 60){
         let Conf = confirm("Verificação das tabelas MySQL. Continua?");
         if(Conf){
             $('#container3').load('modulos/tabelas.php');
         }
     }
-    if(parseInt(Num) === 27){
+    if(parseInt(Num) === 61){
         $('#container3').load('modulos/config/cadUsu.php');
     }
-    if(parseInt(Num) === 28){
+    if(parseInt(Num) === 62){
         $('#container3').load('modulos/config/tpass.php');
     }
-    if(parseInt(Num) === 29){
+    if(parseInt(Num) === 63){
         $('#container3').load('modulos/calendario/calend.php');
     }
     if(parseInt(Num) === 30){
@@ -69,70 +68,14 @@ function openhref(Num){
     if(parseInt(Num) === 35){
         $('#container3').load('modulos/leituras/pag_eletric.php?tipo=1');
     }
-
-
     if(parseInt(Num) === 70){
         $('#container3').load('modulos/conteudo/tarefas.php');
     }
     if(parseInt(Num) === 80){
         $('#container3').load('modulos/trocas/relTrocas.php');
     }
+}
 
-// Diretoria Geral e Assessorias
-
-//Diretorias
-    if(parseInt(Num) === 101){ //Diretoria-Geral
-        $('#container3').load('modulos/conteudo/PagDir.php?Diretoria=2&Subdiretoria=1&SiglaDir=DG');
-    }
-
-    if(parseInt(Num) === 201){ //Diretoria
-        $('#container3').load('modulos/conteudo/PagDir.php?Diretoria=3&Subdiretoria=1&SiglaDir=DAC');
-    }
-    if(parseInt(Num) === 301){
-        $('#container3').load('modulos/conteudo/PagDir.php?Diretoria=4&Subdiretoria=1&SiglaDir=DAE');
-    }
-    if(parseInt(Num) === 401){
-        $('#container3').load('modulos/conteudo/PagDir.php?Diretoria=5&Subdiretoria=1&SiglaDir=DAF');
-    }
-    if(parseInt(Num) === 501){
-        $('#container3').load('modulos/conteudo/PagDir.php?Diretoria=6&Subdiretoria=1&SiglaDir=DAO');
-    }
-    if(parseInt(Num) === 601){
-        $('#container3').load('modulos/conteudo/PagDir.php?Diretoria=7&Subdiretoria=1&SiglaDir=DED');
-    }
-    if(parseInt(Num) === 701){
-        $('#container3').load('modulos/conteudo/PagDir.php?Diretoria=8&Subdiretoria=1&SiglaDir=DIJ');
-    }
-    if(parseInt(Num) === 801){
-        $('#container3').load('modulos/conteudo/PagDir.php?Diretoria=9&Subdiretoria=1&SiglaDir=DPS');
-    }
-
-    if(parseInt(Num) === 901){
-        $('#container3').load('modulos/conteudo/PagDir.php?Diretoria=10&Subdiretoria=1&SiglaDir=AAD');
-    }
-    if(parseInt(Num) === 902){
-        $('#container3').load('modulos/conteudo/PagDir.php?Diretoria=11&Subdiretoria=1&SiglaDir=ACE');
-    }
-    if(parseInt(Num) === 903){
-        $('#container3').load('modulos/conteudo/PagDir.php?Diretoria=12&Subdiretoria=1&SiglaDir=ADI');
-    }
-    if(parseInt(Num) === 904){
-        $('#container3').load('modulos/conteudo/PagDir.php?Diretoria=13&Subdiretoria=1&SiglaDir=AJU');
-    }
-    if(parseInt(Num) === 905){
-        $('#container3').load('modulos/conteudo/PagDir.php?Diretoria=14&Subdiretoria=1&SiglaDir=AME');
-    }
-    if(parseInt(Num) === 906){
-        $('#container3').load('modulos/conteudo/PagDir.php?Diretoria=15&Subdiretoria=1&SiglaDir=APE');
-    }
-    if(parseInt(Num) === 907){
-        $('#container3').load('modulos/conteudo/PagDir.php?Diretoria=16&Subdiretoria=1&SiglaDir=APV');
-    }
-    if(parseInt(Num) === 908){
-        $('#container3').load('modulos/conteudo/PagDir.php?Diretoria=17&Subdiretoria=1&SiglaDir=ATI');
-    }
-    if(parseInt(Num) === 909){
-        $('#container3').load('modulos/conteudo/PagDir.php?Diretoria=18&Subdiretoria=1&SiglaDir=Ouvidoria');
-    }
-
+function openhrefDir(Num){
+    $("#container3").load("modulos/conteudo/PagDir.php?Diretoria="+Num+"&Subdiretoria=1");
 }

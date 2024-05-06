@@ -176,16 +176,19 @@
                         <label>Usuário</label>
                         <input type="text" id="usuario" class="form-control" value="" onkeypress="if(event.keyCode===13){javascript:foco('senha');return false;}">
                     </div>
-                    <div class="mb-3" style="padding-top: 5px;">
-                        <label>Senha</label>
-                        <input type="password" id="senha" class="form-control" value="" title="Termine com Enter" onkeypress="if(event.keyCode===13){logModal();}">
-                        <img id="olhoSecaoSenha" style="cursor: pointer;" title="Mantenha clicado para visualizar a senha inserida." src="imagens/olhosenha.png" alt="" width="25" height="15" draggable="false">
-                    </div>
-                    <table style="margin: 0 auto; width: 90%">
+                    <table style="margin: 0 auto; width: 100%">
+                        <tr style="padding-top: 5px;">
+                            <td><label>Senha</label></td>
+                            <td></td>
+                        </tr>
                         <tr>
-                            <td style="text-align: center; padding-top: 5px;"><div id="mensagem" style="color: red; font-weight: bold;"></div></td>
+                            <td><input type="password" id="senha" class="form-control" value="" title="Termine com Enter" onkeypress="if(event.keyCode===13){logModal();}"></td>
+                            <td style="text-align: center;"><img id="olhoSecaoSenha" style="cursor: pointer;" title="Mantenha clicado para visualizar a senha inserida." src="imagens/olhosenha.png" alt="" width="25" height="15" draggable="false"></td>
+                    </tr>
                         <tr>
-                            <td style="text-align: center; padding-top: 10px;"><input type="button" class="btn btn-primary resetbot" id="entrar" value="Entrar" onclick="logModal();"></td>
+                            <td colspan="2" style="text-align: center; padding-top: 5px;"><div id="mensagem" style="color: red; font-weight: bold;"></div></td>
+                        <tr>
+                            <td colspan="2" style="text-align: center; padding-top: 10px;"><input type="button" class="btn btn-primary resetbot" id="entrar" value="Entrar" onclick="logModal();"></td>
                         </tr>
                     </table>
                 </div>

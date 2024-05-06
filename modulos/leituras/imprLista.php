@@ -158,7 +158,7 @@ if(!isset($_SESSION['AdmUsu'])){
                 $pdf->Cell(20, 4, "Cons Diário", 0, 1, 'L');
                 $pdf->SetTextColor(0, 0, 0);
                 $lin = $pdf->GetY();
-                $pdf->SetDrawColor(200); // cinza claro                
+                $pdf->SetDrawColor(200); // cinza claro
                 $pdf->Line(10, $lin, 200, $lin);
 
                 while ($tbl0 = pg_fetch_row($rs0)){
@@ -676,7 +676,7 @@ if(!isset($_SESSION['AdmUsu'])){
             }else{
                 $pdf->SetFont('Arial', '', 10);
                 $pdf->ln(10);
-                $pdf->Cell(20, 4, "Ndenhum registro encontrado. Informe à ATI,", 0, 1, 'L');
+                $pdf->Cell(20, 4, "Nenhum registro encontrado. Informe à ATI,", 0, 1, 'L');
             }
 
 

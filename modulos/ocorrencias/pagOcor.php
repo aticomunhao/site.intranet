@@ -59,6 +59,14 @@ if(!isset($_SESSION["usuarioID"])){
                 padding-left: 10px; 
                 padding-right: 10px; 
             }
+            .modalMsg-content{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 7% auto; /* 10% do topo e centrado */
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 50%; /* acertar de acordo com a tela */
+            }
             .ideogr{
                 display: inline;
                 margin: 5px;
@@ -92,17 +100,20 @@ if(!isset($_SESSION["usuarioID"])){
                     zeroRecords: 'Nada foi encontrado'
                 }
             });
+
             table = new DataTable('#idTabela');
             table.on('click', 'tbody tr', function () {
                 data = table.row(this).data();
                 $id = data[1];
                 document.getElementById("guardacod").value = $id;                
-                if($id !== 0){
-                    if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEditOcor").value)){
+                if($id !== 0){ // se nível adm for igual ao inserido em Parâmetros do Sistema ou se foi o prósprio usuário que inseriu a ocorrência
+                    if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) || parseInt(document.getElementById("usuarioID").value) === parseInt(data[7])){
                         carregaModal($id);
                     }
+
                 }
             });
+
             function ajaxIni(){
                 try{
                     ajax = new ActiveXObject("Microsoft.XMLHTTP");}
@@ -122,10 +133,25 @@ if(!isset($_SESSION["usuarioID"])){
             $(document).ready(function(){
                 if(parseInt(document.getElementById("UsuAdm").value) < parseInt(document.getElementById("admInsOcor").value)){
                     document.getElementById("botinserir").style.visibility = "hidden"; // botão de inserir
-                } 
+                }else{
+                    document.getElementById("botinserir").style.visibility = "visible"; // botão de inserir
+                }
+                if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value)){
+                    document.getElementById("botimpr").style.visibility = "visible"; // botão de imprimir
+                }else{
+                    document.getElementById("botimpr").style.visibility = "hidden"; // botão de imprimir
+                }
+                //Fecha caixa ao clicar na página
+                modalHelp = document.getElementById('relacHelpOcorrencias'); //span[0]
+                spanHelp = document.getElementsByClassName("close")[0];
+                window.onclick = function(event){
+                    if(event.target === modalHelp){
+                        modalHelp.style.display = "none";
+                    }
+                };
             });
 
-            function regOcor(){
+            function regOcor(){ //registar ocorrência
                 $("#container5").load("modulos/ocorrencias/relIdeogr.php");
                 $("#container6").load("modulos/ocorrencias/insOcor.php");
                 document.getElementById("guardacod").value = 0;  // novo lançamento
@@ -136,7 +162,7 @@ if(!isset($_SESSION["usuarioID"])){
                 if(parseInt(document.getElementById("mudou").value) === 1){
                     $.confirm({
                         title: 'Sair sem salvar?',
-                        content: 'Há modificações que não foram salvas. As informações serão PERDIDAS. Continua?',
+                        content: 'Há modificações que não foram salvas. As informações serão PERDIDAS.  Fechar mesmo assim?',
                         draggable: true,
                         buttons: {
                             Sim: function () {
@@ -244,7 +270,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                 }
                                             },
                                             Não: function () {
-//                                                $.alert('Something else?');
+//                                                $.alert('qq coisa');
                                             }
                                         }
                                     });
@@ -288,16 +314,30 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
             }
+            function imprOcor(){
+                if(parseInt(document.getElementById("guardacod").value) != 0){
+                    window.open("modulos/ocorrencias/imprOcor.php?acao=impr&codigo="+document.getElementById("guardacod").value, document.getElementById("guardacod").value);
+                }
+            }
+            function carregaHelpOcor(){
+                document.getElementById("relacHelpOcorrencias").style.display = "block";
+            }
+            function fechaModalHelp(){
+                document.getElementById("relacHelpOcorrencias").style.display = "none";
+            }
         </script>
     </head>
     <body>
         <div style="margin: 6px; padding: 10px; min-height: 500px; border: 2px solid blue; border-radius: 15px; text-align: center;">
-            <h3>Registro de Ocorrências</h3>
-            <div class="box" style="position: absolute; left: 30px; top: 25px;">
-                <input type="button" id="botinserir" class="resetbot" value="Registrar Ocorrência" onclick="regOcor();">
+        <!-- div três colunas -->
+        <div class="container" style="margin: 0 auto;">
+            <div class="row">
+                <div class="col quadro" style="margin: 0 auto;"> <input type="button" id="botinserir" class="resetbot" value="Registrar Ocorrência" onclick="regOcor();"></div>
+                <div class="col quadro"><h3>Registro de Ocorrências</h3></div> <!-- Central - espaçamento entre colunas  -->
+                <div class="col quadro" style="margin: 0 auto; text-align: right;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpOcor();" title="Guia rápido"></div> 
             </div>
+        </div>
             <hr>
-
             <?php
             date_default_timezone_set('America/Sao_Paulo');
             require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
@@ -311,7 +351,7 @@ if(!isset($_SESSION["usuarioID"])){
             $Quant = pg_num_rows($rsQuant);
     
             pg_query($Conec, "DELETE FROM ".$xProj.".ocorrideogr WHERE codprov = ".$_SESSION['usuarioID']); // limpar restos
-            if($_SESSION["AdmUsu"] > 6){
+            if($_SESSION["AdmUsu"] >= $admEdit){
                 $rs0 = pg_query($Conec, "SELECT codocor, numocor, to_char(datains, 'DD/MM/YYYY'), usuins, to_char(dataocor, 'DD/MM/YYYY'), ocorrencia FROM ".$xProj.".ocorrencias WHERE ativo = 1 And AGE(datains, CURRENT_DATE) <= '10 YEAR' ORDER BY datains DESC LIMIT 50");
             }else{    
                 $rs0 = pg_query($Conec, "SELECT codocor, numocor, to_char(datains, 'DD/MM/YYYY'), usuins, to_char(dataocor, 'DD/MM/YYYY'), ocorrencia FROM ".$xProj.".ocorrencias WHERE usuins = ".$_SESSION["usuarioID"]." And ativo = 1 And AGE(datains, CURRENT_DATE) <= '10 YEAR' ORDER BY datains DESC");
@@ -377,28 +417,46 @@ if(!isset($_SESSION["usuarioID"])){
             </table>
         </div>
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
+        <input type="hidden" id="usuarioID" value="<?php echo $_SESSION["usuarioID"] ?>" />
         <input type="hidden" id="admInsOcor" value="<?php echo $admIns ?>" />
-        <input type="hidden" id="admEditOcor" value="<?php echo $admEdit ?>" />
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" /> <!-- nível mínimo para editar -->
         <input type="hidden" id="guardacod" value="0" /> <!-- id ocorrência -->
         <input type="hidden" id="mudou" value="0" />
-        
         <input type="hidden" id="nomeUsuLogado" value="<?php echo $_SESSION["NomeCompl"] ?>" />
 
         <!-- div modal para registrar ocorrência  -->
         <div id="relacmodalOcor" class="relacmodal">
             <div class="modal-content-InsOcor">
+                <div style="position: absolute;"><button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprOcor();">PDF</button></div>
                 <span class="close" onclick="fechaModal();">&times;</span>
                 <h3 id="titulomodal" style="text-align: center; color: #666;">Registrar Ocorrência</h3>
                 <div style="border: 2px solid blue; border-radius: 10px;">
                     <div id="container5"></div>
                     <div id="container6"></div>
-                    <div style="text-align: center;">
-                        <button class="resetbotazul" onclick="salvaModal();">Salvar</button>
+                    <div style="text-align: center; padding-bottom: 20px;">
+                        <button class="botpadrblue" onclick="salvaModal();">Salvar</button>
                     </div>
                 </div>
            </div>
         </div> <!-- Fim Modal-->
+
+        <!-- div modal para leitura instruções -->
+        <div id="relacHelpOcorrencias" class="relacmodal">
+            <div class="modalMsg-content">
+                <span class="close" onclick="fechaModalHelp();">&times;</span>
+                <h3 style="text-align: center; color: #666;">Informações</h3>
+                <h4 style="text-align: center; color: #666;">Registro de Ocorrências</h4>
+                <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
+                    Regras inseridas:
+                    <ul>
+                        <li>1 - Uma ocorrência registrada só é visível para o usuário que a inseriu e para os administradores designados.</li>
+                        <li>2 - O usuário que inseriu pode editar o relato já registrado.</li>
+                        <li>3 - As imagens (ideogramas) servem para dar uma ideia inicial do ocorrido, antes de se efetuar a leitura.</li>
+                        <li>4 - Do quadro da esquerda, os ideogramas podem ser arrastados com o mouse para o quadro da direita.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>  <!-- Fim Modal Help-->
     </body>
 </html>
