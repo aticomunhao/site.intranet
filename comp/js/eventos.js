@@ -36,10 +36,19 @@ function openhref(Num){
         $('#container3').load('modulos/aniverRel.php');
     }
     if(parseInt(Num) === 60){
-        let Conf = confirm("Verificação das tabelas MySQL. Continua?");
-        if(Conf){
-            $('#container3').load('modulos/tabelas.php');
-        }
+        $.confirm({
+            title: "Confirmação!",
+            content: "Verificação das tabelas. Continua?",
+            draggable: true,
+            buttons: {
+                Sim: function () {
+                    $('#container3').load('modulos/tabelas.php');
+                },
+                Não: function () {
+
+                }
+            }
+        });
     }
     if(parseInt(Num) === 61){
         $('#container3').load('modulos/config/cadUsu.php');
@@ -50,6 +59,7 @@ function openhref(Num){
     if(parseInt(Num) === 63){
         $('#container3').load('modulos/calendario/calend.php');
     }
+
     if(parseInt(Num) === 30){
         $('#container3').load('modulos/trafego/PagArq.php');
     }
@@ -67,6 +77,9 @@ function openhref(Num){
     }
     if(parseInt(Num) === 35){
         $('#container3').load('modulos/leituras/pag_eletric.php?tipo=1');
+    }
+    if(parseInt(Num) === 36){
+        $('#container3').load('modulos/lro/livroReg.php');
     }
     if(parseInt(Num) === 70){
         $('#container3').load('modulos/conteudo/tarefas.php');

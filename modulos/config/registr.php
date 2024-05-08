@@ -5,7 +5,7 @@ if(isset($_REQUEST["acao"])){
     require_once("abrealas.php");
     $Conec = conecPost(); // habilitar a extensão: extension=pgsql no phpini
     $ConecPes = conecPes();
-
+    date_default_timezone_set('America/Sao_Paulo');
 //    $ConecPes = "sConec";
     if($ConecPes == "sConec" || $ConecPes == "sFunc"){
         $ConecPes = $Conec;
@@ -68,7 +68,7 @@ if($Acao =="loglog"){
                     $_SESSION['arquivo'] = "";
                     $_SESSION["CodSetorUsu"] = 0 ;
                     $_SESSION["SiglaSetor"] = "n/d";
-                    $_SESSION["CodSubSetorUsu"] = 1; // não tem subdiretorias - deixar 1
+                    $_SESSION["CodSubSetorUsu"] = 1; // não tem mais subdiretorias - deixar 1
                     $_SESSION["AdmUsu"] = 2;
                     //Parâmetros do sistema
                     $rsSis = pg_query($Conec, "SELECT admVisu, admCad, admEdit FROM ".$xProj.".paramsis WHERE idPar = 1");
@@ -107,6 +107,24 @@ if($Acao =="loglog"){
                         $Codigo = $tblCod[0];
                         $CodigoNovo = ($Codigo+1); 
                         pg_query($Conec, "INSERT INTO ".$xProj.".pessoas (id, pessoas_id, cpf, nome_completo, dt_nascimento, sexo, status, datains) VALUES ($CodigoNovo, $id, '$Login', '$NomeCompl', '$DNasc', ".$_SESSION['sexo'].", 1, NOW() ) "); 
+                    }
+
+                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS dataelim date DEFAULT '2023-10-09'");
+                    $rs5 = pg_query($Conec, "SELECT dataelim FROM ".$xProj.".paramsis WHERE idpar = 1 ");
+                    $row5 = pg_num_rows($rs5);
+                    if($row5 > 0){ 
+                        $tbl5 = pg_fetch_row($rs5);
+                        $DataElim = $tbl5[0];
+                        $Hoje = date('Y/m/d');
+                        if(strtotime($DataElim) < strtotime($Hoje)){ // o primeiro que logar executa
+                            pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ativo = 0"); //Elimina dados apagados da tabela calendário
+                            pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ((CURRENT_DATE - dataini)/365 > 5)"); //Apaga da tabela calendário eventos passados há mais de 5 anos
+                            pg_query($Conec, "DELETE FROM ".$xProj.".leitura_agua WHERE ((CURRENT_DATE - dataleitura)/365 > 5)"); //Apaga da tabela lançamentos de leitura do hidrômetro passados há mais de 5 anos
+                            pg_query($Conec, "DELETE FROM ".$xProj.".tarefas WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga da tabela lançamentos de tarefas há mais de 5 anos
+                            pg_query($Conec, "DELETE FROM ".$xProj.".tarefas_msg WHERE datamsg < CURRENT_DATE - interval '5 years' "); //Apaga mensagens trocadas nas tarefas há mais de 5 anos
+                            pg_query($Conec, "DELETE FROM ".$xProj.".livroreg WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga registros do livro de ocorrências há mais de 5 anos
+                            pg_query($Conec, "UPDATE ".$xProj.".paramsis SET dataelim = NOW() WHERE idpar = 1 "); // para que os próximos não executem
+                        }
                     }
 
                     if($_SESSION["AdmUsu"] == 0){
@@ -209,7 +227,7 @@ if($Acao =="buscausu"){
     $Erro = 0;
 
     $rs0 = pg_query($ConecPes, "SELECT ".$xPes.".pessoas.cpf,".$xPes.".pessoas.nome_completo, to_char(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') FROM ".$xPes.".pessoas WHERE cpf = '$GuardaCpf' ");
-    $rs = pg_query($Conec, "SELECT adm, codsetor, ativo, to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf' ");  //pessoas_id = $Usu ");
+    $rs = pg_query($Conec, "SELECT adm, codsetor, ativo, to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, lro FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf' ");  //pessoas_id = $Usu ");
     $row = pg_num_rows($rs);
     if($row == 0){
         $Erro = 1;
@@ -222,11 +240,28 @@ if($Acao =="buscausu"){
             $UltLog = "31/12/3000";
         }
         $Proc0 = pg_fetch_row($rs0);    
-        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "usuarioNome"=>$Proc0[1], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$Proc[3], "acessos"=>$Proc[4], "diaAniv"=>$Proc0[2], "mesAniv"=>$Proc0[3], "cpf"=>$GuardaCpf);
+        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "usuarioNome"=>$Proc0[1], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$Proc[3], "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "diaAniv"=>$Proc0[2], "mesAniv"=>$Proc0[3], "cpf"=>$GuardaCpf);
     }
     $responseText = json_encode($var);
     echo $responseText;
 }
+
+if($Acao =="checaLro"){
+    $Param = (int) filter_input(INPUT_GET, 'param'); 
+    $Cpf = filter_input(INPUT_GET, 'numero'); 
+    $Cpf1 = addslashes($Cpf);
+    $Cpf2 = str_replace(".", "", $Cpf1);
+    $Cpf = str_replace("-", "", $Cpf2);
+    $Erro = 0;
+    $rs0 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET lro = $Param WHERE cpf = '$Cpf' ");
+    if(!$rs0){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
 if($Acao =="resetsenha"){
     $Cpf = filter_input(INPUT_GET, 'numero'); 
     $Cpf1 = addslashes($Cpf);

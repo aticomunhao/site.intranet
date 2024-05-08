@@ -436,13 +436,11 @@ if(!isset($_SESSION["usuarioID"])){
                 }else{
                     $Data = "";
                 }
-                
                 if(strtotime($Data) == strtotime($Hoje)){ // quando não quer mais ver avisos só por hoje
                     $AvisosSupensos = 1;
                 }
             }
         ?>
-        
 
 <!-- Divisão da tela - lista à esquerda e calendário à direita   -->
 
@@ -452,9 +450,8 @@ if(!isset($_SESSION["usuarioID"])){
                 <div style="position: absolute; left: 10px; top: 8px;">
                     <input type="checkbox" id="admCad" onclick="AvisosCalend(this);" <?php if($avCalend == 1) {echo "checked";} ?>>
                     <label for="admCad" class="etiq">Emitir Avisos <label id='avisoSusp'> <?php if($AvisosSupensos == 1){ echo " (suspensos)";} ?></label></label>
-                    <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer; padding-left: 10px;" onclick="carregaHelpCalend();" title="Guia rápido">
                 </div>
-                <h2>Eventos</h2>
+                <h2>Eventos <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer; padding-left: 10px;" onclick="carregaHelpCalend();" title="Guia rápido"></h2>
                 <div id="releventos" style="min-height: 650px; text-align: left; padding: 5px; border: 2px solid blue; border-radius: 15px;"></div>
             </div>
         </div>
@@ -538,7 +535,7 @@ if(!isset($_SESSION["usuarioID"])){
                     </div>
 
                     <div style="text-align: center;">
-                        <textarea id="localev" rows="3" value="" placeholder="Local do evento" style="font-size: .9em; width: 98%;" onchange='modif();'></textarea>
+                        <textarea id="localev" rows="3" value="" placeholder="Local do evento (opcional)" style="font-size: .9em; width: 98%; border: 1px solid blue; border-radius: 5px;"  onchange='modif();'></textarea>
                     </div>
                     <hr style="margin: 2px; padding: 2px;">
 

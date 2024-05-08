@@ -1,0 +1,88 @@
+<?php
+session_start();
+require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
+?>
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8"> 
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title></title>
+        <script>
+           new DataTable('#idTabela', {
+                lengthMenu: [
+                    [100, 200, 500],
+                    [100, 200, 500]
+                ],
+                language: {
+                    info: 'Mostrando Página _PAGE_ of _PAGES_',
+                    infoEmpty: 'Nenhum registro encontrado',
+                    infoFiltered: '(filtrado de _MAX_ registros)',
+                    lengthMenu: 'Mostrando _MENU_ registros por página',
+                    zeroRecords: 'Nada foi encontrado'
+                }
+            });
+
+            table = new DataTable('#idTabela');
+            table.on('click', 'tbody tr', function () {
+                data = table.row(this).data();
+                $id = data[1];
+                document.getElementById("guardacod").value = $id;      
+                if($id !== ""){
+//                    if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value)){ // nível adm
+                    mostraModal($id);
+//                    }
+                }
+            });
+
+        </script>
+    </head>
+    <body> 
+        <?php
+            $Cod = (int) filter_input(INPUT_GET, 'codigo');
+        ?>
+         <!-- Apresenta os usuários do setor com o nível administrativo -->
+        <div style="padding: 10px;">
+            <?php
+            $rs0 = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), turno, descturno, numrelato, nomecompl, usuant, relatoini, relato 
+            FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id
+            WHERE ".$xProj.".livroreg.ativo = 1 And AGE(".$xProj.".livroreg.dataocor, CURRENT_DATE) <= '1 YEAR' 
+            ORDER BY ".$xProj.".livroreg.dataocor DESC, ".$xProj.".livroreg.turno ASC");
+            ?>
+
+            <table id="idTabela" class="display" style="width:85%">
+                <thead>
+                    <tr>
+                        <th style="display: none;"></th>
+                        <th style="display: none;"></th>
+                        <th>Data</th>
+                        <th>Turno</th>
+                        <th style="text-align: center;">Número</th>
+                        <th style="text-align: center;">Registrado por:</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php
+                    while ($tbl0 = pg_fetch_row($rs0)){
+                        $Cod = $tbl0[0]; // id
+                        $Data = $tbl0[1]; 
+                        $Turno = $tbl0[2]; 
+                        $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".livroreg WHERE to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY') = '$Data' And turno = $Turno And id != $Cod");
+                        $row1 = pg_num_rows($rs1);
+                    ?>
+                        <tr>
+                            <td style="display: none;"></td>
+                            <td style="display: none;"><?php echo $Cod; ?></td>
+                            <td><?php echo $tbl0[1]; ?></td> <!-- data -->
+                            <td style="<?php if($row1 > 0){echo 'color: red;'; } ?>" ><?php echo $tbl0[2]." - ".$tbl0[3]; ?></td> <!-- turno -->
+                            <td style="text-align: center;"><?php echo $tbl0[4]; ?></td> <!-- numocor -->
+                            <td style="text-align: center;"><?php echo $tbl0[5]; ?></td> <!-- ususvc -->
+                        </tr>
+                    <?php
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>

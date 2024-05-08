@@ -109,8 +109,8 @@
 					</li>
 				</ul>
 			</li>
-            <li>
-				<a href="#" onclick="openhref(63);">Calendário</a>
+            <li title="Livro de Registro de Ocorrências">
+				<a href="#" onclick="openhref(36);">LRO</a>
 			</li>
             <li>
 				<a href="#" href="#" onclick="openhref(70);">Tarefas</a>
@@ -139,6 +139,10 @@
 					   			echo "<a href='#' onclick='openhref(61);'>Cadastro de Usuários</a>";
 							echo "</li>";
 						}
+						echo "<li>";
+							echo "<a href='#' onclick='openhref(63);'>Calendário</a>";
+						echo "</li>";
+
 						if($_SESSION["AdmUsu"] >= 3){ // gerente
 							echo "<li>";
 								echo "<a href='#'>Leituras</a>";
@@ -152,15 +156,14 @@
 								echo "</ul>";
 							echo "</li>";
 						}
-
 						if($_SESSION["AdmUsu"] > 6){ // superusuário
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(31);'>Parâmetros do Sistema</a>";
 							echo "</li>";
+							echo "<li>";
+								echo "<a href='#' onclick='openhref(33);'>Registro de Ocorrências</a>";
+							echo "</li>";
 						}
-						echo "<li>";
-							echo "<a href='#' onclick='openhref(33);'>Registro de Ocorrências</a>";
-						echo "</li>";
 						echo "<li>";
 							echo "<a href='#' onclick='openhref(30);'>Tráfego de Arquivos</a>";
 						echo "</li>";

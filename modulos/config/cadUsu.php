@@ -83,10 +83,8 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
             $(document).ready(function(){
-//                document.getElementById("botapagar").style.visibility = "hidden"; // botão para deletar usuário
                 document.getElementById("botinserir").style.visibility = "hidden"; // botão de inserir usuário
                 if(parseInt(document.getElementById("UsuAdm").value) === 7){ // superusuário 
-//                    document.getElementById("botapagar").style.visibility = "visible";
                     document.getElementById("botinserir").style.visibility = "visible";
                 }
                 if(parseInt(document.getElementById("UsuAdm").value) === 4){ // administador
@@ -138,8 +136,12 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("atividade2").checked = "true";
                                     }
+                                    if(parseInt(Resp.lroPortaria) === 1){
+                                        document.getElementById("preencheLro").checked = true;
+                                    }else{
+                                        document.getElementById("preencheLro").checked = false;
+                                    }
                                     document.getElementById("titulomodal").innerHTML = "Edição de Usuários";
-//                                    document.getElementById("botapagar").disabled = false;
                                     document.getElementById("ressetsenha").disabled = false;
                                     document.getElementById("mudou").value = "0";
                                     document.getElementById("relacmodalUsu").style.display = "block";
@@ -333,7 +335,6 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 document.getElementById("atividade1").checked = "true";
                 document.getElementById("titulomodal").innerHTML = "Inserção de Usuário";
-//                document.getElementById("botapagar").disabled = true;
                 document.getElementById("ressetsenha").disabled = true;
                 document.getElementById("relacmodalUsu").style.display = "block";
                 document.getElementById("usulogin").focus();
@@ -408,7 +409,28 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 }
             }
-
+            function checaLro(Obj){
+                Valor = 0;
+                if(Obj.checked === true){
+                    Valor = 1;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/config/registr.php?acao=checaLro&param="+Valor+"&numero="+document.getElementById("guardaid_cpf").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                } 
+            }
             function validaCPF(cpf) {
                 var Soma = 0
                 var Resto
@@ -575,38 +597,38 @@ if(!isset($_SESSION["usuarioID"])){
                 <h3 id="titulomodal" style="text-align: center; color: #666;">Edição de Usuários</h3>
                 <table style="margin: 0 auto; width: 90%">
                     <tr>
-                        <td id="etiqNome" class="etiq">Login:</td>
+                        <td id="etiqNomelog" class="etiq80">Login:</td>
                         <td><input type="text" disabled id="usulogin" style="text-align: center;" placeholder="Login" onchange="checaEntrada();" onkeypress="if(event.keyCode===13){javascript:foco('salvar');return false;}"></td>
                         <td></td>
                         <td></td>
                         <td colspan="2" style="text-align: right;">
-                            <label class="etiq">Último Acesso: </label>
+                            <label class="etiq80">Último Acesso: </label>
                             <input type="text" disabled id="ultlog" style="text-align: center; font-size: .8rem;">
                         </td>
                     </tr>
                     <tr>
-                        <td id="etiqNome" class="etiq">Nome Usual</td>
+                        <td id="etiqNome" class="etiq80">Nome Usual</td>
                         <td><input type="text" disabled id="usuarioNome" placeholder="Nome usual" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('nomecompl');return false;}"></td>
                         <td></td>
                         <td></td>
                         <td colspan="2" style="text-align: right;">
-                            <label class="etiq">Nº acessos: </label>
+                            <label class="etiq80">Nº acessos: </label>
                             <input type="text" disabled id="acessos" style="text-align: center; font-size: .8rem; width: 100px;">
                         </td>
                     </tr>
                     <tr>
-                        <td id="etiqNomeCompl" class="etiq">Nome Completo</td>
+                        <td id="etiqNomeCompl" class="etiq80">Nome Completo</td>
                         <td style="width: 50%;"><input type="text" disabled id="nomecompl" style="width: 100%;" placeholder="Nome completo" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('usulogin');return false;}"></td>
                         <td></td>
                         <td></td>
                         <td colspan="2" style="text-align: right;">
                             <label style="font-size: 12px;" title="Ativo ou inativo">Situação: </label>
-                            <input type="radio" name="atividade" id="atividade1" value="1" title="Ativo no sistema" onclick="salvaAtiv(value);"><label for="atividade1" style="font-size: 12px;">Ativo</label>
-                            <input type="radio" name="atividade" id="atividade2" value="0" title="Bloqueado" onclick="salvaAtiv(value);"><label for="atividade2" style="font-size: 12px;">Bloqueado</label>
+                            <input type="radio" name="atividade" id="atividade1" value="1" title="Ativo no sistema" onclick="salvaAtiv(value);"><label for="atividade1" style="font-size: 12px; padding-left: 3px;"> Ativo</label>
+                            <input type="radio" name="atividade" id="atividade2" value="0" title="Bloqueado" onclick="salvaAtiv(value);"><label for="atividade2" style="font-size: 12px; padding-left: 3px;"> Bloqueado</label>
                         </td>
                     </tr>
                     <tr>
-                        <td class="etiq">Setor de Trabalho</td>
+                        <td class="etiq80">Setor de Trabalho</td>
                         <td>
                             <select id="setor" style="font-size: 1rem;" title="Selecione um local de trabalho." onchange="modif();">
                             <?php 
@@ -624,7 +646,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td style="text-align: right;"><button disabled id="ressetsenha" class="resetbot" style="font-size: .9rem;" onclick="resetSenha();">Ressetar Senha</button></td>
                     </tr>
                     <tr>
-                        <td class="etiq">Nível Admnistrativo</td>
+                        <td class="etiq80">Nível Administrativo</td>
                         <td>
                         <select id="flAdm" style="font-size: 1rem;" title="Selecione o nível administrativo do usuário." onchange="modif();">
                             <?php 
@@ -640,15 +662,24 @@ if(!isset($_SESSION["usuarioID"])){
                         <td></td>
 
                         <td colspan="2" style="text-align: right;">
-                            <label class="etiq">Aniversário: -Dia: </label>
+                            <label class="etiq80">Aniversário: -Dia: </label>
                             <input type="text" disabled id="diaAniv" style="text-align: center; font-size: .8rem; width: 40px;">
-
-
-                            <label class="etiq"> -Mês: </label>
+                            <label class="etiq80"> -Mês: </label>
                             <input type="text" disabled id="mesAniv" style="text-align: center; font-size: .8rem; width: 40px;">
-
                         </td>
                     </tr>
+                    <tr>
+                        <td colspan="6"><hr style="margin: 3px; padding: 2px;"></td>
+                    </tr>  
+                    <tr>
+                        <td class="etiq80" title="Pode registrar ocorrências no LRO">Escala Portaria:</td>
+                        <td colspan="5">
+                            <input type="checkbox" id="preencheLro" title="Registrar ocorrências no LRO" onchange="modif();" onclick="checaLro(this)">
+                            <label for="preencheLro" title="Registrar ocorrências no LRO">acesso ao Livro de Registro de Ocorrências</label>
+                        </td>
+                    </tr>  
+
+
                     <tr>
                         <td colspan="6"><hr style="margin: 3px; padding: 2px;"></td>
                     </tr>  
@@ -656,7 +687,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td colspan="6" style="text-align: center;"><div id="mensagem" style="color: red; font-weight: bold;"></div></td>
                     </tr>   
                     <tr>
-                        <td class="etiq" style="color: red; text-align: left;"> <!--<input type="button" class="resetbotred" id="botapagar" value="Deletar" onclick="deletaModal();"> --></td> 
+                        <td class="etiq80" style="color: red; text-align: left;"></td> 
                         <td></td>
                         <td></td>
                         <td></td>

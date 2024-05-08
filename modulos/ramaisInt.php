@@ -252,10 +252,8 @@ session_start();
         ?>
         <input type="hidden" id="tipo_acesso" value="<?php echo $Tipo; ?>" />
         <input type="hidden" id="UsuAdm" value="<?php echo $idAdm; ?>" />
-
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir -->
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" /> <!-- nível mínimo para editar -->
-
         <input type="hidden" id="guardaid_click" value="0" />
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
 

@@ -199,7 +199,7 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
-//alert(ajax.responseText);
+alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 document.getElementById("idExecSelect").value = Resp.usuExec;
                                 document.getElementById("textoEvid").value = Resp.TitTarefa;
@@ -417,7 +417,7 @@ if(!isset($_SESSION["usuarioID"])){
         <!-- div três colunas -->
         <div class="container" style="margin: 0 auto;">
             <div class="row">
-                <div class="col quadro" style="margin: 0 auto;"> <input type="button" class="resetbot" id="botinserir" value="Inserir" onclick="abreModal();"></div>
+                <div class="col quadro" style="margin: 0 auto;"> <input type="button" class="botpadr" id="botinserir" value="Inserir" onclick="abreModal();"></div>
                 <div class="col-1"></div> <!-- Central - espaçamento entre colunas  -->
                 <div class="col quadro" style="margin: 0 auto; text-align: right;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpTarefas();" title="Guia rápido"></div> 
             </div>
@@ -588,8 +588,7 @@ if(!isset($_SESSION["usuarioID"])){
                         echo "</td>";
 
                         echo "<td>";  
-//                        if($Adm >= $admEdit && $usuExec != $UsuLogadoId){ // usuário logado não pode ser o executante
-                        if($Adm >= $admEdit || $usuIns == $UsuLogadoId){ // usuário logado não pode ser o executante
+                        if($Adm >= $admEdit && $usuIns == $UsuLogadoId || $usuExec == $UsuLogadoId && $usuExec == $usuIns || $Adm > 6){ // Adm >= nível estipulado nos parâmetros e usuins igual ao logado, executante é o mesmo do ins, ou superusuario
                             echo "<div title='Editar' style='cursor: pointer;' onclick='carregaModal($idTar);'>&#9997;</div>";
                         }
                         echo "<div title='Mensagens' style='cursor: pointer;' onclick='carregaMsg($idTar);'>";
@@ -639,7 +638,7 @@ if(!isset($_SESSION["usuarioID"])){
                     </tr>
                     <tr>
                         <td id="etiqTextoEvid" class="etiq">Tarefa:</td>
-                        <td colspan='4' rowspan='3' style="min-width: 500px;"><textarea id="textoEvid" rows='3' placeholder="Descrição sucinta" onchange="modif();" style="font-size:95%; width: 60%;"></textarea>
+                        <td colspan='4' rowspan='3' style="min-width: 500px;"><textarea id="textoEvid" rows='3' placeholder="Descrição sucinta" onchange="modif();" style="font-size:95%; width: 60%; border: 1px solid blue; border-radius: 10px"></textarea>
                     </td>
                         <td></td>
                     </tr>
@@ -678,7 +677,7 @@ if(!isset($_SESSION["usuarioID"])){
                     </tr> 
                     <tr>
                         <td id="etiqTextoExt" class="etiq">Memória:</td>
-                        <td colspan='4' rowspan='6'><textarea id="textoExt" rows='6' placeholder="Detalhes (opcional)" onchange="modif();" style="font-size: 95%; width: 98%;"></textarea></td>
+                        <td colspan='4' rowspan='6'><textarea id="textoExt" rows='6' placeholder="Detalhes (opcional)" onchange="modif();" style="font-size: 95%; width: 98%; border: 1px solid blue; border-radius: 10px"></textarea></td>
                         <td></td>
                     </tr>
                     <tr>
@@ -721,8 +720,8 @@ if(!isset($_SESSION["usuarioID"])){
                         <td></td>
                     </tr>
                     <tr>
-                        <td class="etiq" style="text-align: left;"><input type="button" class="resetbotred" id="botapagar" value="Apagar" onclick="deletaModal();"></td>
-                        <td colspan='4' style="text-align: right; padding-right: 50px;"><input type="button" class="resetbotazul" id="salvar" value="Salvar" onclick="salvaModal();"></td>
+                        <td class="etiq" style="text-align: left;"><input type="button" class="botpadrred" id="botapagar" value="Apagar" onclick="deletaModal();"></td>
+                        <td colspan='4' style="text-align: right; padding-right: 50px;"><input type="button" class="botpadrblue" id="salvar" value="Salvar" onclick="salvaModal();"></td>
                         <td></td>
                     </tr>
                 </table>

@@ -4,8 +4,9 @@ require_once("config/abrealas.php");
 pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ativo = 0"); //Elimina dados apagados da tabela calendário
 pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ((CURRENT_DATE - dataini)/365 > 5)"); //Apaga da tabela calendário eventos passados há mais de 5 anos
 pg_query($Conec, "DELETE FROM ".$xProj.".leitura_agua WHERE ((CURRENT_DATE - dataleitura)/365 > 5)"); //Apaga da tabela lançamentos de leitura do hidrômetro passados há mais de 5 anos
-pg_query($Conec, "DELETE FROM ".$xProj.".tarefas WHERE datains > CURRENT_DATE - interval '5 years' "); //Apaga da tabela lançamentos de tarefas há mais de 5 anos
-pg_query($Conec, "DELETE FROM ".$xProj.".tarefas_msg WHERE datamsg > CURRENT_DATE - interval '5 years' "); //Apaga mensagens trocadas nas tarefas há mais de 5 anos
+pg_query($Conec, "DELETE FROM ".$xProj.".tarefas WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga da tabela lançamentos de tarefas há mais de 5 anos
+pg_query($Conec, "DELETE FROM ".$xProj.".tarefas_msg WHERE datamsg < CURRENT_DATE - interval '5 years' "); //Apaga mensagens trocadas nas tarefas há mais de 5 anos
+//pg_query($Conec, "DELETE FROM ".$xProj.".livroreg WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga registros do livro de ocorrências há mais de 5 anos
 
 //$Senha = password_hash('123456789', PASSWORD_DEFAULT);
 //pg_query($Conec, "UPDATE ".$xProj.".poslog SET senha = '$Senha' WHERE senha IS NULL");
@@ -16,6 +17,47 @@ pg_query($Conec, "DELETE FROM ".$xProj.".tarefas_msg WHERE datamsg > CURRENT_DAT
 //echo "<br>";
 //echo password_hash('123456', PASSWORD_BCRYPT);
 echo "<br>";
+
+pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS lro smallint NOT NULL DEFAULT 0;"); // 1 - preencher LRO 
+
+
+//pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".livroreg");
+pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
+   id SERIAL PRIMARY KEY, 
+   codusu bigint NOT NULL DEFAULT 0,
+   codsetor integer NOT NULL DEFAULT 0,
+   usuant bigint NOT NULL DEFAULT 0,
+   usuprox bigint NOT NULL DEFAULT 0,
+   dataocor date, 
+   datains timestamp without time zone DEFAULT CURRENT_TIMESTAMP, 
+   turno smallint NOT NULL DEFAULT 0, 
+   descturno VARCHAR(30), 
+   usumodif bigint NOT NULL DEFAULT 0,
+   datamodif timestamp without time zone DEFAULT '3000-12-31 00:00:00',
+   ativo smallint NOT NULL DEFAULT 1, 
+   numrelato VARCHAR(50), 
+   relatoini text, 
+   relato text ) 
+   ");
+
+   //pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".livroturnos");
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroturnos (
+      id SERIAL PRIMARY KEY, 
+      codturno smallint NOT NULL DEFAULT 0,
+      descturno VARCHAR(30) 
+   ) 
+      ");
+      $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".livroturnos ");
+      $row1 = pg_num_rows($rs1);
+      if($row1 == 0){
+         pg_query($Conec, "INSERT INTO ".$xProj.".livroturnos (id, codturno, descturno) VALUES 
+         (1,1,'07h00/13h30'),
+         (2,2,'13h15/19h00'),
+         (3,3,'19h00/07h00')
+         ");       
+      }
+   echo "Tabela ".$xProj.".livroreg checada. <br>";
+
 
 pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".poslog (
    id SERIAL PRIMARY KEY, 

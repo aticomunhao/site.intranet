@@ -3,6 +3,10 @@
 .etiq{
     text-align: right; color: #9C9C9C; font-size: 70%; font-weight: bold; padding-right: 1px; padding-bottom: 1px;
  }
+ .etiq80{
+    text-align: right; color: #9C9C9C; font-size: 80%; padding-right: 1px; padding-bottom: 1px;
+ }
+
  .etiqAzul{
     text-align: right; color: #036; font-style: italic; font-size: 80%; padding-right: 1px; padding-bottom: 1px;
  }
@@ -85,6 +89,15 @@
     border-radius: 15px;
     width: 90%;
 }
+.modal-content-RegistroLRO{
+    background: linear-gradient(180deg, white, #86c1eb);
+    margin: 7% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 70%;
+}
+
 .modal-content-Leitura{
     background: linear-gradient(180deg, white, #86c1eb);
     margin: 7% auto;
@@ -253,6 +266,10 @@
  }
  .botpadr:hover, .botpadrred:hover, .botpadrblue:hover {
     border-radius: 10px;
+}
+.destacaBorda{
+    border: 2px solid red;
+    border-radius: 2px;
 }
 
 /* Botão fechar */

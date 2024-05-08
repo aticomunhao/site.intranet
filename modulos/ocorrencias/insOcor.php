@@ -79,11 +79,11 @@
                 <input type="text" id="dataocor" value="<?php echo $hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; width: 100px; text-align: center;">
                 <label class="etiq" style="padding-left: 10px;" title="Imagens podem representar a ocorrência. Arraste uma imagem do quadro à esquerda para o quadro abaixo.">Ideogramas (emojis) podem representar a ocorrência</label>
             </div>
-            <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 6px; height: 155px; text-align: left;">
+            <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 6px; height: 150px; text-align: left;">
                 <div class="box" style="position: relative; float: left;">
                     <label class="etiq">Descrição da Ocorrência: </label><br>
                 </div>
-                <textarea rows="4" cols="75" id="textoocorrencia" ondrop="return false;" onchange="modif();"></textarea>
+                <textarea rows="4" cols="75" id="textoocorrencia" style="border: 1px solid blue; border-radius: 10px;" ondrop="return false;" onchange="modif();"></textarea>
                 <br>
            </div>
            <label class="etiq" id="etiqnomeusuins"></label>

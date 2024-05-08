@@ -68,7 +68,7 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 60%; /* acertar de acordo com a tela */
+                width: 40%; /* acertar de acordo com a tela */
             }
             /* Botão fechar */
             .close{
