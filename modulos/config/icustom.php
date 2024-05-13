@@ -44,17 +44,22 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".poslog (
     motivoinat smallint NOT NULL DEFAULT 0, 
     avcalend smallint NOT NULL DEFAULT 1, 
     avhoje date, 
+    lro smallint NOT NULL DEFAULT 0,
+    bens smallint NOT NULL DEFAULT 0,
     cpf character varying(20), 
     nomecompl character varying(150), 
-    senha character varying(255) 
+    senha character varying(255), 
+    sexo smallint NOT NULL DEFAULT 1 
     ) ");
 
 
-pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS nome_completo varchar(100);"); // auxiliar para compor caixas de seleção de usuários para tarefas
-pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS cpf varchar(20);"); // guardar para eventualidades
 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS sexo smallint NOT NULL DEFAULT 1;"); 
 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS senha varchar(255);"); // hash
-pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS dt_nascimento date;"); 
+pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS avcalend smallint NOT NULL DEFAULT 1;"); // 1 - emitir avisos do calendário
+pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS avhoje date ;"); // não quer mais avisos odo calendário só por hoje
+pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS lro smallint NOT NULL DEFAULT 0;"); // 1 - preencher LRO 
+pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS bens smallint NOT NULL DEFAULT 0;"); // 1 - bens Achados e perdidos 
+
 pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE cpf IS NULL"); 
 
 
@@ -98,8 +103,6 @@ if($row1 > 0){
     echo "Inserido"."<br>";
 }
 
-pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS avcalend smallint NOT NULL DEFAULT 1;"); // 1 - emitir avisos do calendário
-pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS avhoje date ;"); // não quer mais avisos odo calendário só por hoje
 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".calendev ADD COLUMN IF NOT EXISTS avobrig smallint NOT NULL DEFAULT 0 ;"); // marca para mensagem com aviso obrigatório
 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".calendev ADD COLUMN IF NOT EXISTS avok smallint NOT NULL DEFAULT 0 ;"); // marca de que o aviso foi dispensado 
 
@@ -108,7 +111,6 @@ pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".setores ADD COLUMN IF NOT EXI
 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".setores ADD COLUMN IF NOT EXISTS cabec3 VARCHAR(200) ;"); // Cabeçaçho relat
 pg_query($Conec, "UPDATE ".$xProj.".setores SET cabec1 = 'COMUNHÃO ESPÍRITA DE BRASÍLIA' WHERE cabec1 IS NULL And codset > 1");
 pg_query($Conec, "UPDATE ".$xProj.".setores SET cabec2 = descsetor WHERE cabec2 IS NULL");
-pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS lro smallint NOT NULL DEFAULT 0;"); // 1 - preencher LRO 
 
 pg_query($Conec, "DROP TABLE IF EXISTS cesb.leituras");
 pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".leitura_agua (

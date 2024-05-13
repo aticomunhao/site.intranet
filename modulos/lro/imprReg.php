@@ -66,7 +66,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
 //    $rs = pg_query($Conec, "SELECT usuins, TO_CHAR(datains, 'DD/MM/YYYY'), TO_CHAR(dataocor, 'DD/MM/YYYY'), codsetor, ocorrencia, numocor FROM ".$xProj.".ocorrencias WHERE codocor = $Num ");
     
-    $rs = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, to_char(".$xProj.".livroreg.datains, 'DD/MM/YYYY'), turno, descturno, numrelato, nomecompl, usuant, relatoini, relato 
+    $rs = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, to_char(".$xProj.".livroreg.datains, 'DD/MM/YYYY'), turno, descturno, numrelato, nomecompl, usuant, relato 
     FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id
     WHERE ".$xProj.".livroreg.ativo = 1 And ".$xProj.".livroreg.id =  $Num");
 
@@ -109,7 +109,7 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->SetFont('Arial', '', 10);
     $pdf->ln(3);
     $pdf->SetX(15); 
-    $pdf->MultiCell(0, 5, $tbl[8], 0, 'J', false); //relato
+    $pdf->MultiCell(0, 5, $tbl[7], 0, 'J', false); //relato
     $pdf->ln(3);
     $lin = $pdf->GetY();
     $pdf->Line(10, $lin, 200, $lin);

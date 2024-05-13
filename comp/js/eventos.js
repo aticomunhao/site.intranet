@@ -59,6 +59,9 @@ function openhref(Num){
     if(parseInt(Num) === 63){
         $('#container3').load('modulos/calendario/calend.php');
     }
+    if(parseInt(Num) === 64){
+        $('#container3').load('modulos/bensachados/pagBensAch.php');
+    }
 
     if(parseInt(Num) === 30){
         $('#container3').load('modulos/trafego/PagArq.php');

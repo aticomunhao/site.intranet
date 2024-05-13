@@ -76,7 +76,7 @@
 				<ul>
 					<?php
 						$Cont = 101;
-						$rs1 = pg_query($Conec, "SELECT codset, siglasetor, descsetor FROM ".$xProj.".setores WHERE menu = 1 ORDER BY codset");
+						$rs1 = pg_query($Conec, "SELECT codset, siglasetor, descsetor FROM ".$xProj.".setores WHERE menu = 1 And ativo = 1 ORDER BY codset");
 						while($tbl1 = pg_fetch_row($rs1)){
 							echo "<li><a href='#' onclick='openhrefDir($tbl1[0]);'>$tbl1[1] - $tbl1[2]</a></li>";
 							$Cont = $Cont+100;
@@ -90,7 +90,7 @@
 				<ul>
 					<?php
 						$Cont = 901;
-						$rs2 = pg_query($Conec, "SELECT codset, siglasetor, descsetor FROM ".$xProj.".setores WHERE menu = 2 ORDER BY codset");
+						$rs2 = pg_query($Conec, "SELECT codset, siglasetor, descsetor FROM ".$xProj.".setores WHERE menu = 2 And ativo = 1 ORDER BY codset");
 						while($tbl2 = pg_fetch_row($rs2)){
 							echo "<li><a href='#' onclick='openhrefDir($tbl2[0]);'>$tbl2[1] - $tbl2[2]</a></li>";
 							$Cont++;
@@ -134,6 +134,11 @@
 						echo "<li>";
 							echo "<a href='#' onclick='openhref(62);'>Atualizar Senha</a>";
 						echo "</li>";
+
+						echo "<li>";
+							echo "<a href='#' onclick='openhref(64);'>Bens Encontrados</a>";
+						echo "</li>";
+
 						if($Adm == 4 && $_SESSION['AdmVisu'] == 1 || $Adm == 7){ // administrador pode ver lista de usuários ou superusu
 							echo "<li>";
 					   			echo "<a href='#' onclick='openhref(61);'>Cadastro de Usuários</a>";

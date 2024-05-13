@@ -141,6 +141,11 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("preencheLro").checked = false;
                                     }
+                                    if(parseInt(Resp.bens) === 1){
+                                        document.getElementById("preencheBens").checked = true;
+                                    }else{
+                                        document.getElementById("preencheBens").checked = false;
+                                    }
                                     document.getElementById("titulomodal").innerHTML = "Edição de Usuários";
                                     document.getElementById("ressetsenha").disabled = false;
                                     document.getElementById("mudou").value = "0";
@@ -210,9 +215,6 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("mudou").value = "0";
                     document.getElementById("relacmodalUsu").style.display = "none";
                 }
-            }
-            function checaEntrada__(){
-                 checaLogin();
             }
 
             function checaEntrada(){
@@ -431,6 +433,52 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 } 
             }
+            function checaBens(Obj){
+                Valor = 0;
+                if(Obj.checked === true){
+                    Valor = 1;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/config/registr.php?acao=checaBens&param="+Valor+"&numero="+document.getElementById("guardaid_cpf").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                } 
+            }
+            function mudaSetor(){
+                document.getElementById("mudou").value = "1";
+                document.getElementById("preencheLro").checked = false;
+                document.getElementById("preencheBens").checked = false;
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/config/registr.php?acao=checaBoxes&param="+Valor+"&numero="+document.getElementById("guardaid_cpf").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                } 
+
+
+            }
+
             function validaCPF(cpf) {
                 var Soma = 0
                 var Resto
@@ -583,7 +631,6 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <?php
                         }
-
                     }
                     ?>
                 </tbody>
@@ -630,7 +677,7 @@ if(!isset($_SESSION["usuarioID"])){
                     <tr>
                         <td class="etiq80">Setor de Trabalho</td>
                         <td>
-                            <select id="setor" style="font-size: 1rem;" title="Selecione um local de trabalho." onchange="modif();">
+                            <select id="setor" style="font-size: 1rem;" title="Selecione um local de trabalho." onchange="mudaSetor();">
                             <?php 
                             if($OpcoesSetor){
                                 while ($Opcoes = pg_fetch_row($OpcoesSetor)){ ?>
@@ -663,9 +710,9 @@ if(!isset($_SESSION["usuarioID"])){
 
                         <td colspan="2" style="text-align: right;">
                             <label class="etiq80">Aniversário: -Dia: </label>
-                            <input type="text" disabled id="diaAniv" style="text-align: center; font-size: .8rem; width: 40px;">
+                            <input type="text" disabled id="diaAniv" style="text-align: center; font-size: .8rem; width: 25px;">
                             <label class="etiq80"> -Mês: </label>
-                            <input type="text" disabled id="mesAniv" style="text-align: center; font-size: .8rem; width: 40px;">
+                            <input type="text" disabled id="mesAniv" style="text-align: center; font-size: .8rem; width: 25px;">
                         </td>
                     </tr>
                     <tr>
@@ -677,8 +724,15 @@ if(!isset($_SESSION["usuarioID"])){
                             <input type="checkbox" id="preencheLro" title="Registrar ocorrências no LRO" onchange="modif();" onclick="checaLro(this)">
                             <label for="preencheLro" title="Registrar ocorrências no LRO">acesso ao Livro de Registro de Ocorrências</label>
                         </td>
-                    </tr>  
+                    </tr>
 
+                    <tr>
+                        <td class="etiq80" title="Pode registrar ocorrências no LRO">Bens Achados:</td>
+                        <td colspan="5">
+                            <input type="checkbox" id="preencheBens" title="Registrar recebimento e destino de bens encontrados" onchange="modif();" onclick="checaBens(this)">
+                            <label for="preencheBens" title="Registrar recebimento e destino de bens encontrados">acesso ao registro de Bens Encontrados</label>
+                        </td>
+                    </tr>
 
                     <tr>
                         <td colspan="6"><hr style="margin: 3px; padding: 2px;"></td>

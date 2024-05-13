@@ -277,13 +277,17 @@
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
-//alert(ajax.responseText);
+alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");
                                 if(parseInt(Resp.coderro) > 0){
                                     alert("Houve erro ao salvar");
                                 }else{
                                     document.getElementById("sigladir").value = Resp.sigla;
                                     document.getElementById("descdir").value = Resp.desc;
+                                    if(parseInt(Resp.ativo) === 0){
+                                        document.getElementById("atividade1").checked = true;
+                                    }
+                                    document.getElementById("atividade").value = Resp.ativo;
                                     $("#relausuarios").load("modulos/config/relDir.php?codigo="+Cod); // está em relDir.php
                                     document.getElementById("relacmodalDir").style.display = "block"; // está em carDir.php
                                 }
@@ -299,7 +303,9 @@
                     if(ajax){
                         ajax.open("POST", "modulos/config/registr.php?acao=salvadir&codigo="+document.getElementById("guardacod").value
                         +"&sigladir="+document.getElementById("sigladir").value
-                        +"&descdir="+document.getElementById("descdir").value, true);
+                        +"&descdir="+document.getElementById("descdir").value
+                        +"&ativo="+document.getElementById("guardaAtiv").value
+                        , true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -320,6 +326,11 @@
                     document.getElementById("relacmodalDir").style.display = "none";
                 }
             }
+            function salvaAtivDir(Valor){
+                document.getElementById("guardaAtiv").value = Valor;
+                document.getElementById("mudou").value = "1";
+            }
+
             function fechaModalDir(){
                 document.getElementById("relacmodalDir").style.display = "none";
             }
@@ -332,7 +343,9 @@
         <?php
             require_once("abrealas.php");
             $rsSis = pg_query($Conec, "SELECT admvisu, admedit, admcad, insevento, editevento, instarefa, edittarefa, insramais, editramais, instelef, edittelef, 
-            editpagina, insarq, insaniver, editaniver, instroca, edittroca, insocor, editocor, insleituraagua, editleituraagua, TO_CHAR(datainiagua , 'DD/MM/YYYY'), valoriniagua, insleituraeletric, editleituraeletric, TO_CHAR(datainieletric , 'DD/MM/YYYY'), valorinieletric, insaguaindiv, inseletricindiv 
+            editpagina, insarq, insaniver, editaniver, instroca, edittroca, insocor, editocor, insleituraagua, editleituraagua, 
+            TO_CHAR(datainiagua , 'DD/MM/YYYY'), valoriniagua, insleituraeletric, editleituraeletric, TO_CHAR(datainieletric , 'DD/MM/YYYY'), valorinieletric, insaguaindiv, inseletricindiv, inslro, editlro, 
+            editlroindiv, insbens, editbens, editbensindiv 
             FROM ".$xProj.".paramsis WHERE idPar = 1");
             $ProcSis = pg_fetch_row($rsSis);
             $admVisu = $ProcSis[0]; // admVisu - administrador visualiza usuários
@@ -462,6 +475,16 @@
             $Proc16 = pg_fetch_row($rs16);
             $nomeEditOcor = $Proc16[0];
 
+            $insLro = $ProcSis[29];   // insLro - registro no LRO
+            $rs17 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $insLro");
+            $Proc17 = pg_fetch_row($rs17);
+            $nomeInsLro = $Proc17[0];
+
+            $editLro = $ProcSis[30];   // editro - registro no LRO
+            $rs18 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $insLro");
+            $Proc18 = pg_fetch_row($rs18);
+            $nomeEditLro = $Proc18[0];
+
 
             $OpAdmInsEv = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             $OpAdmEditEv = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
@@ -493,10 +516,13 @@
             $OpAdmInsOcor = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             $OpAdmEditOcor = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
 
+            $OpAdmInsLro = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            $OpAdmEditLro = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+
         ?>
         <input type="hidden" id="guardacod" value="0" /> <!-- id ocorrência -->
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
-        
+        <input type="text" id="guardaAtiv" value="0" />
         <div style="margin: 0 auto; margin-top: 40px; padding: 20px; border: 2px solid blue; border-radius: 15px; width: 70%; min-height: 200px;">
             <div style="text-align: center;">
                 <h4>Parâmetros do Sistema</h4>

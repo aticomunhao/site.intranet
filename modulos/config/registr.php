@@ -34,12 +34,12 @@ if($Acao =="loglog"){
             return;
         }
 
-        $rs0 = pg_query($ConecPes, "SELECT nome_completo, sexo, cpf, dt_nascimento FROM ".$xPes.".pessoas WHERE cpf = '$Login' ");
+        $rs0 = pg_query($ConecPes, "SELECT nome_completo, sexo, cpf, dt_nascimento FROM ".$xPes.".pessoas WHERE cpf = '$Login' And status = 1");
         $row0 = pg_num_rows($rs0); 
-        if($row0 > 0){ // está no arquivo pessoas
+        if($row0 == 1){ // está no arquivo pessoas
             $rs1 = pg_query($Conec, "SELECT senha FROM ".$xProj.".poslog WHERE cpf = '$Login' And ativo = 1");
             $row1 = pg_num_rows($rs1);
-            if($row1 > 0){ // está no arquivo poslog
+            if($row1 == 1){ // está no arquivo poslog
                 $tbl1 = pg_fetch_row($rs1);
             
                 if(password_verify($Sen, $tbl1[0])){
@@ -80,7 +80,7 @@ if($Acao =="loglog"){
                     //Verifica se já logou uma vez em poslog
                     $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE cpf = '$Login' "); 
                     $row1 = pg_num_rows($rs1);
-                    if($row1 > 0){ // Já tem - aumenta número de acessos e grava data hora do login 
+                    if($row1 == 1){ // Já tem - aumenta número de acessos e grava data hora do login 
                         pg_query($Conec, "UPDATE ".$xProj.".poslog SET numacessos = (numacessos + 1), logini = NOW() WHERE pessoas_id = $id "); 
                         $rs2 = pg_query($Conec, "SELECT adm, codsetor FROM ".$xProj.".poslog WHERE cpf = '$Login' "); 
                         $tbl2 = pg_fetch_row($rs2);
@@ -123,9 +123,32 @@ if($Acao =="loglog"){
                             pg_query($Conec, "DELETE FROM ".$xProj.".tarefas WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga da tabela lançamentos de tarefas há mais de 5 anos
                             pg_query($Conec, "DELETE FROM ".$xProj.".tarefas_msg WHERE datamsg < CURRENT_DATE - interval '5 years' "); //Apaga mensagens trocadas nas tarefas há mais de 5 anos
                             pg_query($Conec, "DELETE FROM ".$xProj.".livroreg WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga registros do livro de ocorrências há mais de 5 anos
+                            pg_query($Conec, "DELETE FROM ".$xProj.".bensachados WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga registros do achados e perdidos há mais de 5 anos
+
+                            $rs6 = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog ");
+                            $row6 = pg_num_rows($rs6);
+                            if($row6 > 0){
+                                while ($tbl6 = pg_fetch_row($rs6)){
+                                    $Cod = $tbl6[0];
+                                    $rs7 = pg_query($ConecPes, "SELECT nome_completo, status, dt_nascimento, sexo FROM ".$xPes.".pessoas WHERE id = $Cod ");
+                                    $row7 = pg_num_rows($rs7);
+                                    if($row7 == 1){
+                                        $tbl7 = pg_fetch_row($rs7);
+                                        $Nome = $tbl7[0]; // acerta nome e status
+                                        $Ativo = $tbl7[1];
+                                        $DNasc = $tbl7[2];
+                                        $Sexo = $tbl7[3];
+                                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET nomecompl = '$Nome', ativo = $Ativo, sexo = $Sexo WHERE pessoas_id = $Cod");
+                                        pg_query($Conec, "UPDATE ".$xProj.".pessoas SET nome_completo = '$Nome', status = $Ativo, dt_nascimento = '$DNasc', sexo = $Sexo WHERE pessoas_id = $Cod");
+                                    }else{ // se não estiver mais em pessoas
+                                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 0 WHERE pessoas_id = $Cod ");
+                                    }
+                                }
+                            }
                             pg_query($Conec, "UPDATE ".$xProj.".paramsis SET dataelim = NOW() WHERE idpar = 1 "); // para que os próximos não executem
                         }
                     }
+                    $_SESSION["acessoLRO"] = parEsc("lro", $Conec, $xProj, $_SESSION["usuarioID"]); // está na escala svc portaria
 
                     if($_SESSION["AdmUsu"] == 0){
                         $Erro = 4;
@@ -138,7 +161,7 @@ if($Acao =="loglog"){
                     $var = array("coderro"=>$Erro, "msg"=>$Erro_Msg, "usuarioid"=>$id, "usuarioNome"=>$_SESSION["NomeCompl"], "usuarioAdm"=>$_SESSION["AdmUsu"], "usuario"=>$_SESSION["UsuLogado"]); 
                 }else{ // usuário não encontrado 
                     $Erro = 6;
-                    $Erro_Msg = "Usuário ou senha não conferem.";
+                    $Erro_Msg = "Usuário ou senha não conferem. Erro 2244";
                     $var = array("coderro"=>$Erro, "msg"=>$Erro_Msg);
                     $responseText = json_encode($var);
                     echo $responseText;
@@ -146,7 +169,7 @@ if($Acao =="loglog"){
                 }
             }else{ // não está no poslog
                 $Erro = 6;
-                $Erro_Msg = "Usuário e/ou senha não encontrados.";
+                $Erro_Msg = "Usuário e/ou senha não encontrados. Erro 1673";
                 $rs5 = pg_query($Conec, "SELECT ativo FROM ".$xProj.".poslog WHERE cpf = '$Login'");
                 $row5 = pg_num_rows($rs5);
                 if($row5 > 0){
@@ -158,9 +181,9 @@ if($Acao =="loglog"){
                 }
                 $var = array("coderro"=>$Erro, "msg"=>$Erro_Msg);
             }
-        }else{ // não está em pessoas
+        }else{ // não está em pessoas ou está com status 0
             $Erro = 6;
-            $Erro_Msg = "Usuário ou senha não cadastrados.";
+            $Erro_Msg = "Usuário ou senha não cadastrados. Erro 1244";
             $var = array("coderro"=>$Erro, "msg"=>$Erro_Msg);
         }
     }else{ // sem contato com o postgre
@@ -227,7 +250,7 @@ if($Acao =="buscausu"){
     $Erro = 0;
 
     $rs0 = pg_query($ConecPes, "SELECT ".$xPes.".pessoas.cpf,".$xPes.".pessoas.nome_completo, to_char(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') FROM ".$xPes.".pessoas WHERE cpf = '$GuardaCpf' ");
-    $rs = pg_query($Conec, "SELECT adm, codsetor, ativo, to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, lro FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf' ");  //pessoas_id = $Usu ");
+    $rs = pg_query($Conec, "SELECT adm, codsetor, ativo, to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, lro, bens FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf' ");  //pessoas_id = $Usu ");
     $row = pg_num_rows($rs);
     if($row == 0){
         $Erro = 1;
@@ -240,7 +263,7 @@ if($Acao =="buscausu"){
             $UltLog = "31/12/3000";
         }
         $Proc0 = pg_fetch_row($rs0);    
-        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "usuarioNome"=>$Proc0[1], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$Proc[3], "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "diaAniv"=>$Proc0[2], "mesAniv"=>$Proc0[3], "cpf"=>$GuardaCpf);
+        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "usuarioNome"=>$Proc0[1], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$Proc[3], "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "bens"=>$Proc[6], "diaAniv"=>$Proc0[2], "mesAniv"=>$Proc0[3], "cpf"=>$GuardaCpf);
     }
     $responseText = json_encode($var);
     echo $responseText;
@@ -254,6 +277,36 @@ if($Acao =="checaLro"){
     $Cpf = str_replace("-", "", $Cpf2);
     $Erro = 0;
     $rs0 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET lro = $Param WHERE cpf = '$Cpf' ");
+    if(!$rs0){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+if($Acao =="checaBens"){
+    $Param = (int) filter_input(INPUT_GET, 'param'); 
+    $Cpf = filter_input(INPUT_GET, 'numero'); 
+    $Cpf1 = addslashes($Cpf);
+    $Cpf2 = str_replace(".", "", $Cpf1);
+    $Cpf = str_replace("-", "", $Cpf2);
+    $Erro = 0;
+    $rs0 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET bens = $Param WHERE cpf = '$Cpf' ");
+    if(!$rs0){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+if($Acao =="checaBoxes"){ // por mudança de setor
+    $Param = (int) filter_input(INPUT_GET, 'param'); 
+    $Cpf = filter_input(INPUT_GET, 'numero'); 
+    $Cpf1 = addslashes($Cpf);
+    $Cpf2 = str_replace(".", "", $Cpf1);
+    $Cpf = str_replace("-", "", $Cpf2);
+    $Erro = 0;
+    $rs0 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET lro = 0, bens = 0 WHERE cpf = '$Cpf' ");
     if(!$rs0){
         $Erro = 1;
     }
@@ -595,7 +648,7 @@ if($Acao =="apagaEletric"){
 if($Acao =="buscadir"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Erro = 0;
-    $rs = pg_query($Conec, "SELECT siglasetor, descsetor FROM ".$xProj.".setores WHERE codset = $Cod");
+    $rs = pg_query($Conec, "SELECT siglasetor, descsetor, ativo FROM ".$xProj.".setores WHERE codset = $Cod");
     $row = pg_num_rows($rs);
     if($row > 0){
         $tbl = pg_fetch_row($rs);
@@ -603,7 +656,7 @@ if($Acao =="buscadir"){
     }else{
         $Erro = 1;
     }
-    $var = array("coderro"=>$Erro, "sigla"=>$tbl[0], "desc"=> $tbl[1]);
+    $var = array("coderro"=>$Erro, "sigla"=>$tbl[0], "desc"=> $tbl[1], "ativo"=> $tbl[2]);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -612,8 +665,23 @@ if($Acao =="salvadir"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Sigla = filter_input(INPUT_GET, 'sigladir');
     $Desc = filter_input(INPUT_GET, 'descdir');
+    $Ativo = (int) filter_input(INPUT_GET, 'ativo');
     $Erro = 0;
-    $rs = pg_query($Conec, "UPDATE ".$xProj.".setores SET siglasetor = '$Sigla', descsetor = '$Desc' WHERE codset = $Cod");
+    if($Cod > 0){
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".setores SET siglasetor = '$Sigla', descsetor = '$Desc', ativo = $Ativo WHERE codset = $Cod");
+    }else{
+        $AdDir = substr($Desc, 0, 3);
+        if($AdDir == "Dir"){
+            $Menu = 1;
+        }else{
+            $Menu = 2;
+        }
+        $rsCod = pg_query($Conec, "SELECT MAX(codset) FROM ".$xProj.".setores");
+        $tblCod = pg_fetch_row($rsCod);
+        $Codigo = $tblCod[0];
+        $CodigoNovo = ($Codigo+1); 
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".setores (codset, siglasetor, descsetor, menu, ativo, cabec1, cabec2, textopag) VALUES ($CodigoNovo, '$Sigla', '$Desc', $Menu, 1, 'COMUNHÃO ESPÍRITA DE BRASÍLIA', '$Desc', '&lt;p&gt;Página Exclusiva&lt;/p&gt;' )");
+    }
     if(!$rs){
         $Erro = 1;
     }
@@ -621,7 +689,18 @@ if($Acao =="salvadir"){
     $responseText = json_encode($var);
     echo $responseText;
 }
-
+if($Acao =="salvaAtivDir"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Valor = filter_input(INPUT_GET, 'valor');
+    $Erro = 0;
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".setores SET ativo = $Valor WHERE codset = $Cod");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
 
 function removeInj($VemDePost){  // função para remover injeções SQL
     $VemDePost = addslashes($VemDePost);

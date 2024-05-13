@@ -65,7 +65,7 @@ if(!isset($_SESSION["usuarioID"])){
                             document.getElementById("botInserir").disabled = true;
                         }
                     }
-                    if(parseInt(document.getElementById("UsuAdm").value) >= 7){ // superusuário
+                    if(parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
                         document.getElementById("botInserir").disabled = false;
                     }
                 };
@@ -322,7 +322,6 @@ if(!isset($_SESSION["usuarioID"])){
             <div class="row"> <!-- botões Inserir e Imprimir-->
                 <div class="col" style="margin: 0 auto; text-align: center;" title="<?php if($NomeInsAgua != ""){echo "Função atribuida a ".$NomeInsAgua;} ?>"><button id="botInserir" class="botpadr" onclick="insereModal();">Inserir</button></div> <!-- quadro -->
                 <div class="col-1"></div> <!-- espaçamento entre colunas  -->
-<!--                <div class="col" style="margin: 0 auto; text-align: center;"><button class="resetbotred" style="padding-left: 12px; padding-right: 12px; font-size: 80%;" onclick="abreImprLeitura();">PDF</button></div>  -->
                 <div class="col" style="margin: 0 auto; text-align: center;"><button class="botpadrred" onclick="abreImprLeitura();">PDF</button></div> <!-- quadro -->
             </div>
 
@@ -362,10 +361,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     ?>
                                     
                             </td>
-                            
-<!--                            <td><label style="padding-left: 15px;"></label><button class="botpadrblue" onclick="imprMesLeitura();">Prosseguir</button></td> -->
                         </tr>
-
                         <tr>
                             <td style="text-align: right;"><label style="font-size: 80%;">Anual - Selecione o Ano: </label></td>
                             <td>
@@ -380,10 +376,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     }
                                     ?>
                             </td>
-
-<!--                            <td><label style="padding-left: 15px;"></label><button class="botpadrblue" onclick="imprAnoLeitura();">Prosseguir</button></td> -->
                         </tr>
-
                     </table>
                 </div>
                 <div style="padding-bottom: 20px;"></div>

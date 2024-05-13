@@ -139,6 +139,14 @@
     border-radius: 15px;
     width: 40%;
 }
+.modal-content-Bens{
+    background: linear-gradient(180deg, white, #FFF8DC);
+    margin: 12% auto;
+    padding: 10px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 60%;
+}
 
 .modal-content-matrix{
     background-color: #fefefe;
@@ -256,6 +264,7 @@
  }
  .botpadrblue{
     text-align: center;
+    padding: 5px; 
     padding-left: 15px;
     padding-right: 15px; 
     border-radius: 5px;
@@ -266,6 +275,53 @@
  }
  .botpadr:hover, .botpadrred:hover, .botpadrblue:hover {
     border-radius: 10px;
+}
+
+.botpadrGr{
+    text-align: center;
+    outline: none;
+    padding-left: 15px;
+    padding-right: 15px; 
+    border-radius: 15px;
+    font-family: Montserrat, Arial, san-serif !important;
+    color: #082bff;
+    font-weight: bold;
+ }
+.botpadrGr:hover{
+    background-color: #fbf0ff;
+}
+.altura20{
+    height: 10px;
+}
+.altura20{
+    height: 20px;
+}
+.altura30{
+    height: 30px;
+}
+
+.botTable{
+    min-width: 30px;
+    min-height: 20px; 
+    text-align: center;
+    outline: none;
+    padding-left: 5px;
+    padding-right: 5px; 
+    border-radius: 10px;
+    font-family: Montserrat, Arial, san-serif !important;
+    font-size: 70%;
+    color: #082bff;
+    font-weight: bold;
+ }
+
+.fundoAmarelo{
+    background-color: #FFD700;
+}
+.fundoCinza{
+    background-color: #EFF5FB;
+}
+.corAzulClaro{
+    color: #81BEF7;
 }
 .destacaBorda{
     border: 2px solid red;

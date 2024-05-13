@@ -5,6 +5,7 @@ $Conec = conecPost(); // habilitar a extensão: extension=pgsql no phpini
 if($Conec != "sConec" && $Conec != "sFunc"){
    $xProj =  "cesb";  //$_SESSION["Projeto"]; 
    $xPes = "public";
+//   echo "Conectado";
 }else{
    die("<br>Não foi possível conectar-se ao banco de dados.");
 }
@@ -23,3 +24,15 @@ function parAdm($Campo, $Conec, $xProj){
     $admSis = $ProcSis[0]; // nível para inserir 
     return $admSis;
  }
+
+ function parEsc($Campo, $Conec, $xProj, $Cod){
+   $rsSis = pg_query($Conec, "SELECT $Campo FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
+   $row = pg_num_rows($rsSis);
+   if($row > 0){
+      $ProcSis = pg_fetch_row($rsSis);
+      $escSis = $ProcSis[0]; // nível para inserir 
+   }else{
+      $escSis = 0;
+   }
+   return $escSis;
+}

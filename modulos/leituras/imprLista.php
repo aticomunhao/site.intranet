@@ -74,7 +74,7 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->AddPage();
     //Monta o arquivo pdf        
     $pdf->SetFont('Arial', '' , 12); 
-    $pdf->SetTitle('Relação', $isUTF8=TRUE);
+    $pdf->SetTitle('Relação Mensal Água', $isUTF8=TRUE);
     if($Dom != "" && $Dom != "NULL"){
         if(file_exists('../../imagens/'.$Dom)){
             if(getimagesize('../../imagens/'.$Dom)!=0){
@@ -113,9 +113,7 @@ if(!isset($_SESSION['AdmUsu'])){
         $DataIniAgua = $tbl[1];
         $ValorIniEletric = $tbl[2];
         $DataIniEletric = $tbl[3];
-
     }
-
 
     if($Acao == "listamesAgua"){
         $Busca = addslashes(filter_input(INPUT_GET, 'mesano')); 
@@ -334,6 +332,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
     if($Acao == "listaanoAgua"){
         $Ano = addslashes(filter_input(INPUT_GET, 'ano')); 
+		$pdf->SetTitle('Relação Anual Água', $isUTF8=TRUE);
         if($ValorIniAgua > 0 && !is_null($DataIniAgua)){
             $pdf->ln(7);
             $pdf->SetFont('Arial', 'I', 14);
@@ -448,6 +447,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
     if($Acao == "listamesEletric"){
         $Busca = addslashes(filter_input(INPUT_GET, 'mesano')); 
+		$pdf->SetTitle('Relação Mensal Eletricidade', $isUTF8=TRUE);
         $Proc = explode("/", $Busca);
         $Mes = $Proc[0];
         if($Mes < 10){
@@ -596,6 +596,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
     if($Acao == "listaanoEletric"){
         $Ano = addslashes(filter_input(INPUT_GET, 'ano')); 
+		$pdf->SetTitle('Relação Anual Eletricidade', $isUTF8=TRUE);
         if($ValorIniEletric > 0 && !is_null($DataIniEletric)){
             $pdf->ln(7);
             $pdf->SetFont('Arial', 'I', 14);
@@ -670,23 +671,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         $pdf->Cell(26, 5, "Consumo Anual: ", 0, 0, 'R');
                         $pdf->SetX(122); 
                         $pdf->Cell(26, 5, number_format($SomaAno, 3, ",",".")." kWh", 0, 1, 'R');
-
-                        
                     }
             }else{
                 $pdf->SetFont('Arial', '', 10);
                 $pdf->ln(10);
                 $pdf->Cell(20, 4, "Nenhum registro encontrado. Informe à ATI,", 0, 1, 'L');
             }
-
-
         }else{
             $pdf->SetFont('Arial', '', 10);
             $pdf->ln(10);
             $pdf->Cell(20, 4, "É necessário inserir os valores iniciais da medição nos parâmetros do sistema. Informe à ATI,", 0, 1, 'L');
         }
-
     }
-
  }
  $pdf->Output();

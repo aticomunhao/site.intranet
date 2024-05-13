@@ -27,6 +27,7 @@ require_once("abrealas.php");
             $(document).ready(function(){
                 
             });
+
         </script>
     </head>
     <body> 
@@ -38,7 +39,7 @@ require_once("abrealas.php");
             <label class="etiqAzul">Os nomes dos usuários de cada setor são mostrados na edição</label>
         </div>
             <?php
-                $rs0 = pg_query($Conec, "SELECT codset, siglasetor, descsetor FROM ".$xProj.".setores WHERE ativo = 1 And codset > 1 ORDER BY codset");
+                $rs0 = pg_query($Conec, "SELECT codset, siglasetor, descsetor, ativo FROM ".$xProj.".setores WHERE codset > 1 ORDER BY codset");
             ?>
             <table id="idTabela" class="display" style="width:85%">
                 <thead>
@@ -48,6 +49,7 @@ require_once("abrealas.php");
                         <th style="text-align: center; font-size: 80%;">Descrição</th>
                         <th style="text-align: center; font-size: 80%;" title="Não inclui administradores">Usuários</th>
                         <th style="text-align: center; font-size: 80%;" title="Não inclui usuários">Adm+</th>
+                        <th style="text-align: center; font-size: 80%;">Ativo</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -65,18 +67,33 @@ require_once("abrealas.php");
                         <td><?php echo $tbl0[2]; ?></td>
                         <td style="text-align: center; font-size: 80%;"><?php echo $row1; ?></td>
                         <td style="text-align: center; font-size: 80%;"><?php echo $row2; ?></td>
+                        <td style="text-align: center; font-size: 80%;">
+                        <?php 
+                        if($tbl0[3] == 1){
+                            echo "<img src='imagens/ok.png' height='15px;' title='Ativa'>";
+                        }else{
+                            echo "<img src='imagens/oknao.png' height='15px;' title='Inativa'>";
+                        }
+                        ?>
+                        </td>
                     </tr>
                 <?php
                 }
                 ?>
                 </tbody>
             </table>
+            <br><br>
+            <div style="text-align: center;"><button class="botpadrblue" onclick="insModalDir();">Inserir</button></div>
         </div>
+        <br><br>
+
+        
+
        <!-- div modal para editar diretorias  -->
         <div id="relacmodalDir" class="relacmodal">
             <div class="modal-content-Diretorias">
                 <span class="close" onclick="fechaModalDir();">&times;</span>
-                <h4 id="titulomodal" style="text-align: center; color: #666;">Edição de Diretorias e Assessorias</h4>
+                <h5 id="titulomodal" style="text-align: center; color: #666;">Edição de Diretorias e Assessorias</h5>
                 <div style="border: 2px solid blue; border-radius: 10px; padding: 10px;">
                     <table style="margin: 0 auto; width: 100%;">
                         <tr>
@@ -86,6 +103,14 @@ require_once("abrealas.php");
                         <tr>
                             <td class="etiqAzul">Descrição:</td>
                             <td><input type="text" id="descdir" style="width: 100%;" value="" onchange="modif();"></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul"></td>
+                            <td style="text-align: right:">
+                                <label style="font-size: 12px;" title="Ativo ou inativo">Situação: </label>
+                                <input type="radio" name="atividade" id="atividade1" value="1" title="Ativo no sistema" onclick="salvaAtivDir(value);"><label for="atividade1" style="font-size: 12px; padding-left: 3px;"> Ativa</label>
+                                <input type="radio" name="atividade" id="atividade2" value="0" title="Bloqueado" onclick="salvaAtivDir(value);"><label for="atividade2" style="font-size: 12px; padding-left: 3px;"> Inativa</label>
+                            </td>
                         </tr>
                     </table>
                     <div style="text-align: center; margin: 5px;">

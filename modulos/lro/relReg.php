@@ -27,14 +27,23 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             table.on('click', 'tbody tr', function () {
                 data = table.row(this).data();
                 $id = data[1];
-                document.getElementById("guardacod").value = $id;      
+                document.getElementById("guardacod").value = $id; 
                 if($id !== ""){
-//                    if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value)){ // nível adm
-                    mostraModal($id);
-//                    }
+                    if(parseInt(document.getElementById("acessoLRO").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+                        mostraModal($id);
+                    }else{
+                        $.confirm({
+                            title: 'Informação!',
+                            content: 'Usuário não cadastrado para acesso ao LRO. <br>O acesso é proporcionado pela ATI.',
+                            autoClose: 'OK|7000',
+                            draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                        });
+                    }
                 }
             });
-
         </script>
     </head>
     <body> 
@@ -44,11 +53,13 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
          <!-- Apresenta os usuários do setor com o nível administrativo -->
         <div style="padding: 10px;">
             <?php
-            $rs0 = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), turno, descturno, numrelato, nomecompl, usuant, relatoini, relato 
+            $rs0 = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), turno, descturno, numrelato, nomecompl, usuant, enviado, codusu 
             FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id
             WHERE ".$xProj.".livroreg.ativo = 1 And AGE(".$xProj.".livroreg.dataocor, CURRENT_DATE) <= '1 YEAR' 
-            ORDER BY ".$xProj.".livroreg.dataocor DESC, ".$xProj.".livroreg.turno ASC");
+            ORDER BY ".$xProj.".livroreg.dataocor DESC, ".$xProj.".livroreg.turno ASC, ".$xProj.".livroreg.descturno");
             ?>
+            <input type="hidden" id="acessoLRO" value="<?php echo $_SESSION["acessoLRO"] ?>" />
+            <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
 
             <table id="idTabela" class="display" style="width:85%">
                 <thead>
@@ -59,6 +70,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <th>Turno</th>
                         <th style="text-align: center;">Número</th>
                         <th style="text-align: center;">Registrado por:</th>
+                        <th style="display: none;"></th>
+                        <th style="display: none;"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -77,6 +90,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td style="<?php if($row1 > 0){echo 'color: red;'; } ?>" ><?php echo $tbl0[2]." - ".$tbl0[3]; ?></td> <!-- turno -->
                             <td style="text-align: center;"><?php echo $tbl0[4]; ?></td> <!-- numocor -->
                             <td style="text-align: center;"><?php echo $tbl0[5]; ?></td> <!-- ususvc -->
+                            <td  style="display: none;"><?php echo $tbl0[7]; ?></td> <!-- relato já enviado -->
+                            <td  style="display: none;"><?php echo $tbl0[8]; ?></td> <!-- codusu - quem inseriu o relato -->
                         </tr>
                     <?php
                     }

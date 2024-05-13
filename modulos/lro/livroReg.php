@@ -33,6 +33,8 @@ session_start();
             $(document).ready(function(){
                 $("#carregaReg").load("modulos/lro/relReg.php");
                 $("#dataocor").mask("99/99/9999");
+                document.getElementById("dataocor").disabled = true; // não deixar mudar a data do registro no LRO
+
                 var nHora = new Date();   //   function mostraRelogio()  //em relacao.js da SCer
                 var hora = nHora.getHours();
                 var minuto = nHora.getMinutes();
@@ -49,14 +51,6 @@ session_start();
                     document.getElementById("selecturno").value = "3";
                 }
 
-//                if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value)){
-                if(parseInt(document.getElementById("UsuAdm").value) > 6){
-                    document.getElementById("botimpr").style.visibility = "visible"; // botão de imprimir
-                    document.getElementById("botedit").style.visibility = "visible"; // botão de editar
-                }else{
-                    document.getElementById("botimpr").style.visibility = "hidden"; // botão de imprimir
-                    document.getElementById("botedit").style.visibility = "hidden"; // botão de editar
-                }
                 modalMostra = document.getElementById('relacMostramodalReg'); //span[0]
                 spanMostra = document.getElementsByClassName("close")[0];
                 window.onclick = function(event){
@@ -68,6 +62,8 @@ session_start();
             });
             
             function InsRegistro(){ // inserir novo registro 
+                document.getElementById("jatem").value = "0";
+                document.getElementById("numrelato").value = "";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/lro/salvaReg.php?acao=buscaAcessoLro&geradata="+document.getElementById("guardahoje").value+"&geraturno="+document.getElementById("selecturno").value, true);
@@ -89,33 +85,23 @@ session_start();
                                         document.getElementById("relacmodalReg").style.display = "block";
 
                                         if(parseInt(Resp.jatem) > 0){
-//                                            $.confirm({
-//                                                title: 'Confirmação!',
-//                                                content: 'Parece que este turno já foi lançado. <br>Confirma inserir outro registro?',
-//                                                draggable: true,
-//                                                buttons: {
-//                                                    Sim: function () {
-//                                                        //continua
-//                                                    },
-//                                                    Não: function () {
-//                                                        document.getElementById("relacmodalReg").style.display = "none";
-//                                                    }
-//                                                }
-//                                            });
-
-                                        $.confirm({
-                                            title: 'Informação!',
-                                            content: 'Este turno já foi lançado.',
-                                            draggable: true,
-                                            buttons: {
-                                                OK: function(){}
-                                            }
-                                        });
-                                    }
+                                            document.getElementById("jatem").value = "1";
+                                            document.getElementById("numrelato").value = Resp.numrelato;
+                                            $.confirm({
+                                                title: "Atenção!",
+                                                content: "Este turno "+document.getElementById("dataocor").value+" - "+Resp.descturno+"  já foi lançado.",
+                                                draggable: true,
+                                                buttons: {
+                                                    OK: function(){}
+                                                }
+                                            });
+                                            document.getElementById("selecturno").value = "";
+                                        }
                                     }else{
                                         $.confirm({
                                             title: 'Informação!',
-                                            content: 'Usuário não cadastrado para acesso ao LRO. <br>Solicite acesso à ATI.',
+                                            content: 'Usuário não cadastrado para acesso ao LRO. <br>O acesso é proporcionado pela ATI.',
+                                            autoClose: 'OK|7000',
                                             draggable: true,
                                             buttons: {
                                                 OK: function(){}
@@ -131,6 +117,7 @@ session_start();
             }
 
             function mostraModal(Cod){ // só mostra após o clique, para editar chama carregaModal()
+                document.getElementById("mostramensagem").innerHTML = "";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/lro/salvaReg.php?acao=buscaReg&codigo="+Cod, true);
@@ -149,7 +136,33 @@ session_start();
                                         document.getElementById("mostranomeusuario").innerHTML = Resp.nomeusuins;
                                         document.getElementById("mostraselectusuant").value = Resp.nomeusuant;
                                         document.getElementById("mostrarelato").value = Resp.relato;
+                                        document.getElementById("numrelato").value = Resp.numrelato;
+                                        document.getElementById("guardausuins").value = Resp.codusuins; // usuário que inseriu o relato
+                                        document.getElementById("guardaenviado").value = Resp.enviado; // encerrou o relato - não edita mais
+                                        if(parseInt(Resp.enviado) === 1){
+                                            document.getElementById("mostramensagem").innerHTML = "Registro Enviado.";
+                                        }
                                         document.getElementById("relacMostramodalReg").style.display = "block";
+                                    }
+                                    document.getElementById("botedit").style.visibility = "hidden"; // botão de editar
+                                    document.getElementById("botimpr").style.visibility = "hidden"; // botão de imprimir
+                                    document.getElementById("mostrabotimpr").style.visibility = "hidden"; // botão de imprimir na visualização
+                                    if(parseInt(Resp.enviado) === 0 && parseInt(Resp.codusuins) === parseInt(document.getElementById("guardaUsuId").value)){ // ainda não fechou e foi o usu logado que inseriu
+                                        document.getElementById("botedit").style.visibility = "visible"; // botão de editar
+                                    }
+                                    if(parseInt(document.getElementById("EditIndiv").value) > 0){ // se houver alguém designado para fazer a conferência
+                                        if(parseInt(document.getElementById("EditIndiv").value) === parseInt(document.getElementById("guardaUsuId").value)){ //checa se é o designado
+                                            document.getElementById("mostrabotimpr").style.visibility = "visible"; // botão de imprimir na visualização
+                                        }else{
+                                            document.getElementById("mostrabotimpr").style.visibility = "hidden"; // botão de imprimir na visualização
+                                        }
+                                    }else{
+                                        if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value)){
+                                            document.getElementById("mostrabotimpr").style.visibility = "visible";
+                                        }
+                                    }
+                                    if(parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
+                                        document.getElementById("mostrabotimpr").style.visibility = "visible"; // botão de imprimir na visualização
                                     }
                                 }
                             }
@@ -190,12 +203,104 @@ session_start();
                 element.classList.remove('destacaBorda');
             }
 
-            function salvaModalReg(){
+            function enviaModalReg(Envia){
+                if(parseInt(Envia) === 1){
+                    $.confirm({
+                        title: 'Confirmação!',
+                        content: "O relato será enviado ao setor competente e não poderá ser modificado.<br> Se quiser apenas editar antes de teminar o turno, clique no botão Salvar e deixe para enviar ao final do turno. <br><br>Confirma enviar agora?",
+                        autoClose: 'Não|15000',
+                        draggable: true,
+                        buttons: {
+                            Sim: function () {
+                                if(parseInt(document.getElementById("mudou").value) === 1){
+                                    salvaModalReg(Envia);
+                                }else{
+                                    salvaRegEnv(Envia);
+                                }
+                            },
+                            Não: function () {
+                            }
+                        }
+                    });
+                }
+            }
+            function salvaRegEnv(Envia){
+                if(document.getElementById("dataocor").value === ""){
+                    let element = document.getElementById('dataocor');
+                    element.classList.add('destacaBorda');
+
+                    document.getElementById("dataocor").focus();
+                    $('#mensagem').fadeIn("slow");
+                    document.getElementById("mensagem").innerHTML = "Insira a data do registro";
+                    $('#mensagem').fadeOut(5000);
+                    return false;
+                }
+                if(document.getElementById("selecturno").value === ""){
+                    let element = document.getElementById('selecturno');
+                    element.classList.add('destacaBorda');
+
+                    document.getElementById("selecturno").focus();
+                    $('#mensagem').fadeIn("slow");
+                    document.getElementById("mensagem").innerHTML = "Selecione o turno do serviço";
+                    $('#mensagem').fadeOut(5000);
+                    return false;
+                }
+                if(document.getElementById("selectusuant").value === ""){
+                    let element = document.getElementById('selectusuant');
+                    element.classList.add('destacaBorda');
+                    document.getElementById("selectusuant").focus();
+                    $('#mensagem').fadeIn("slow");
+                    document.getElementById("mensagem").innerHTML = "Selecione o funcionário anterior";
+                    $('#mensagem').fadeOut(5000);
+                    return false;
+                }
+                if(document.getElementById("relato").value === ""){
+                    let element = document.getElementById('relato');
+                    element.classList.add('destacaBorda');
+                    document.getElementById("relato").focus();
+                    $('#mensagem').fadeIn("slow");
+                    document.getElementById("mensagem").innerHTML = "Escreva o relato";
+                    $('#mensagem').fadeOut(5000);
+                    return false;
+                }
+                 if(!validaData(document.getElementById("dataocor").value)){
+                    let element = document.getElementById('dataocor');
+                    element.classList.add('destacaBorda');
+                    $.confirm({
+                        title: 'Informação!',
+                        content: 'A data está incorreta.',
+                        draggable: true,
+                        buttons: {
+                            OK: function(){}
+                        }
+                    });
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/lro/salvaReg.php?acao=salvaRegEnv&codigo="+document.getElementById("guardacod").value+"&envia="+Envia, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.")
+                                }else{
+                                    document.getElementById("relacmodalReg").style.display = "none";
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function salvaModalReg(Envia){
                 if(parseInt(document.getElementById("mudou").value) === 0){
                     document.getElementById("relacmodalReg").style.display = "none";
                     return false;
                 }
-
                 if(document.getElementById("dataocor").value === ""){
                     let element = document.getElementById('dataocor');
                     element.classList.add('destacaBorda');
@@ -253,6 +358,9 @@ session_start();
                     "&datareg="+encodeURIComponent(document.getElementById("dataocor").value)+
                     "&turno="+document.getElementById("selecturno").value+
                     "&usuant="+document.getElementById("selectusuant").value+
+                    "&envia="+Envia+
+                    "&jatem="+document.getElementById("jatem").value+
+                    "&numrelato="+encodeURIComponent(document.getElementById("numrelato").value)+
                     "&relato="+encodeURIComponent(document.getElementById("relato").value), true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
@@ -261,9 +369,6 @@ session_start();
                                 Resp = eval("(" + ajax.responseText + ")");
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.")
-                                }else if(parseInt(Resp.coderro) === 2){
-                                    alert("A data não está correta.");
-
                                 }else{
                                     document.getElementById("guardacod").value = Resp.codigonovo;
                                     document.getElementById("mudou").value = "0";
@@ -276,8 +381,10 @@ session_start();
                     ajax.send(null);
                 }
             }
+            
             function modifTurno(){
                 document.getElementById("mudou").value = "1";
+                document.getElementById("jatem").value = "0";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/lro/salvaReg.php?acao=buscaTurno&datareg="+document.getElementById("dataocor").value+"&turnoreg="+document.getElementById("selecturno").value, true);
@@ -289,7 +396,9 @@ session_start();
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.")
                                 }else{
-                                    if(parseInt(Resp.jatem) === 1){
+                                    if(parseInt(Resp.jatem) > 0){
+                                        document.getElementById("jatem").value = "1";
+                                        document.getElementById("numrelato").value = Resp.numrelato;
                                         $.confirm({
                                             title: 'Confirmação!',
                                             content: 'Parece que este turno já foi lançado. Confirma redigir outro registro?',
@@ -393,16 +502,39 @@ session_start();
             echo "Faltam tabelas. Informe à ATI.";
             return false;
         }
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".livroreg SET enviado = 1 WHERE datains < (NOW() - interval '13 hour') "); // marca enviado após 13 horas de inserido - o turno 3 tem 12 horas
+
         $admIns = parAdm("insocor", $Conec, $xProj);   // nível para inserir 
         $admEdit = parAdm("editocor", $Conec, $xProj); // nível para editar
+        $editIndiv = parAdm("editlroindiv", $Conec, $xProj);   // autorização para um só indivíduo inserir
+        if($editIndiv > 0){
+            $rs0 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $editIndiv");
+            $row0 = pg_num_rows($rs0);
+            if($row0 > 0){
+                $tbl0 = pg_fetch_row($rs0);
+                $nomeEditLroIndiv = $tbl0[0];
+            }else{
+                $nomeEditLroIndiv = "";
+            }
+        }else{
+            $nomeEditLroIndiv = "";
+        }
+
         $OpUsuAnt = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE lro = 1 And Ativo = 1 And pessoas_id != ".$_SESSION["usuarioID"]." ORDER BY nomecompl"); // And codsetor = 
         ?>
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
+        <input type="hidden" id="guardaUsuId" value="<?php echo $_SESSION["usuarioID"] ?>" />
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" /> <!-- nível mínimo para editar -->
         <input type="hidden" id="guardacod" value="0" /> <!-- id ocorrência -->
+        <input type="hidden" id="guardaenviado" value="0" /> <!-- relato fechado -->
         <input type="hidden" id="guardahoje" value="<?php echo $Hoje; ?>" /> <!-- data -->
+        <input type="hidden" id="EditIndiv" value="<?php echo $editIndiv; ?>" /> <!-- autorização para um só indivíduo conferir o LRO -->
+        <input type="hidden" id="NomeEditIndiv" value="<?php echo $nomeEditLroIndiv; ?>" />
         <input type="hidden" id="mudou" value="0" />
+        <input type="hidden" id="jatem" value="0" />
+        <input type="hidden" id="numrelato" value="" />
+        <input type="hidden" id="guardausuins" value="0" />
 
         <div style="margin: 20px; border: 2px solid green; border-radius: 15px; padding: 20px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
@@ -417,8 +549,9 @@ session_start();
         <!-- div modal para mostrar ocorrência  -->
         <div id="relacMostramodalReg" class="relacmodal">
             <div class="modal-content-RegistroLRO">
+                <div style="position: absolute;"><button class="botpadrred" style="font-size: 80%;" id="mostrabotimpr" onclick="imprReg();">Gerar PDF</button></div>
                 <span class="close" onclick="fechaMostraModal();">&times;</span>
-                <h3 id="titulomodal" style="text-align: center; color: #666;">Livro de Registro de Ocorrências</h3>
+                <h3 id="mostratitulomodal" style="text-align: center; color: #666;" title="<?php if($nomeEditLroIndiv != ''){echo "Conferência LRO atribuida a ".$nomeEditLroIndiv;} ?>">Livro de Registro de Ocorrências</h3>
 
                 <div style="border: 2px solid blue; border-radius: 10px; padding: 10px; text-align: center;">
                     <div style="paddling-left: 5%;">
@@ -454,15 +587,20 @@ session_start();
         <!-- div modal para registrar ocorrência  -->
         <div id="relacmodalReg" class="relacmodal">
             <div class="modal-content-RegistroLRO">
-                <div style="position: absolute;"><button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprReg();">Gerar PDF</button></div>
                 <span class="close" onclick="fechaModal();">&times;</span>
-                <h3 id="titulomodal" style="text-align: center; color: #666;">Livro de Registro de Ocorrências</h3>
-
+                <!-- div três colunas -->
+                <div class="container" style="margin: 0 auto;">
+                    <div class="row">
+                        <div class="col quadro" style="margin: 0 auto;"> <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprReg();">Gerar PDF</button></div>
+                        <div class="col quadro"><h4 id="titulomodal" style="text-align: center; color: #666;">Livro de Registro de Ocorrências</h4></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col quadro" style="margin: 0 auto; text-align: center;"><button class="botpadrred" onclick="enviaModalReg(1);">Enviar</button></div> 
+                    </div>
+                </div>
                 <div style="border: 2px solid blue; border-radius: 10px; padding: 10px; text-align: center;">
                     <div style="paddling-left: 5%;">
                         <br>
                         <label class="etiqAzul">Escritura do Livro de Registro de Ocorrências em: </label>
-                        
+
                         <input type="text" id="dataocor" onclick="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; width: 100px; text-align: center;">
 
                         <label class="etiqAzul"> - Turno: </label><label id="turnosvc" style="font-size: 1.2rem; padding-left: 3px;"></label>
@@ -497,7 +635,7 @@ session_start();
                     <div id="mensagem" style="color: red; font-weight: bold;"></div>
                     <br>
                     <div style="text-align: center; padding-bottom: 20px;">
-                        <button class="botpadrblue" onclick="salvaModalReg();">Salvar</button>
+                        <button class="botpadrblue" onclick="salvaModalReg(0);">Salvar</button>
                     </div>
                 </div>
            </div>

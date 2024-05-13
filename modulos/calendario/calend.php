@@ -451,7 +451,7 @@ if(!isset($_SESSION["usuarioID"])){
                     <input type="checkbox" id="admCad" onclick="AvisosCalend(this);" <?php if($avCalend == 1) {echo "checked";} ?>>
                     <label for="admCad" class="etiq">Emitir Avisos <label id='avisoSusp'> <?php if($AvisosSupensos == 1){ echo " (suspensos)";} ?></label></label>
                 </div>
-                <h2>Eventos <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer; padding-left: 10px;" onclick="carregaHelpCalend();" title="Guia rápido"></h2>
+                <h4>Eventos <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer; padding-left: 10px;" onclick="carregaHelpCalend();" title="Guia rápido"></h4>
                 <div id="releventos" style="min-height: 650px; text-align: left; padding: 5px; border: 2px solid blue; border-radius: 15px;"></div>
             </div>
         </div>
