@@ -13,6 +13,7 @@ if(!isset($_SESSION['AdmUsu'])){
     require_once('../../class/fpdf/fpdf.php'); // adaptado ao PHP 7.2 - 8.2
     define('FPDF_FONTPATH', '../../class/fpdf/font/');  
     $Dom = "logo_comunhao_completa_cor_pos_150px.png";
+    $Hoje = date('d/m/Y');
 
     $rsCabec = pg_query($Conec, "SELECT cabec1, cabec2, cabec3 FROM ".$xProj.".setores WHERE codset = ".$_SESSION["CodSetorUsu"]." ");
     $rowCabec = pg_num_rows($rsCabec);
@@ -81,8 +82,6 @@ if(!isset($_SESSION['AdmUsu'])){
     }else{
         $DescDestino = "";
     }
-
-
     
     class PDF extends FPDF{
         function Footer(){
@@ -337,7 +336,6 @@ if(!isset($_SESSION['AdmUsu'])){
         $pdf->ln(10);
         $pdf->SetX(15); 
 
-
         if($UsuArquiv > 0){
             $pdf->SetFont('Arial', '', 10);
             $pdf->MultiCell(0, 5, "Este processo (".$Processo.") foi encerrado e arquivado em ".$tbl[22].".", 1, 'C', true);
@@ -350,6 +348,112 @@ if(!isset($_SESSION['AdmUsu'])){
                 $pdf->MultiCell(0, 5, "Processo ".$Processo." está aberto.", 1, 'C', true);
             }
         }
+    }
+    if($Acao == "imprReciboRest"){
+        $NomePropriet = $_REQUEST["nomeproprietario"];
+        $CpfPropriet = $_REQUEST["cpfproprietario"];
+        $TelfPropriet = $_REQUEST["telefproprietario"];
+
+        $pdf->MultiCell(0, 8, "RECIBO DE RESTITUIÇÃO DE BEM ENCONTRADO", 1, 'C', true);
+        $pdf->ln(3);
+
+        $pdf->Cell(0, 4, "- Processo: ".$tbl[1]." registrado em ".$tbl[0], 0, 1, 'L');
+
+        $lin = $pdf->GetY();
+        if($UsuRestit > 0){
+            $pdf->SetY($lin-4); 
+            $pdf->SetTextColor(184, 2, 2);
+            $pdf->SetX(125); 
+            $pdf->Cell(0, 4, "- RESTITUÍDO - ", 0, 1, 'L');
+            $pdf->SetTextColor(0, 0, 0);
+        }
+
+        $pdf->ln(2);
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetDrawColor(200); // cinza claro
+
+        $pdf->SetX(15); 
+        $pdf->SetFont('Arial', 'I', 8);
+        $pdf->Cell(0, 4, "Descrição do bem encontrado: ", 0, 1, 'L');
+        $pdf->SetX(25); 
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->MultiCell(0, 5, $tbl[2], 0, 'J', true); //relato
+        $pdf->ln(3);
+
+
+        $pdf->SetX(15); 
+        $pdf->SetFont('Arial', 'I', 8);
+        $pdf->Cell(40, 4, "Data em que foi encontrado: ", 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(0, 4, $tbl[3], 0, 1, 'L');
+        $pdf->ln(2);
+
+        $pdf->SetX(15); 
+        $pdf->SetFont('Arial', 'I', 8);
+        $pdf->Cell(0, 4, "Local em que foi encontrado: 	", 0, 1, 'L');
+        $pdf->SetX(25); 
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(0, 4, $tbl[4], 0, 1, 'L');
+        $pdf->ln(2);
+
+        $pdf->SetX(15); 
+        $pdf->SetFont('Arial', 'I', 8);
+        $pdf->Cell(0, 4, "Nome do colaborador que encontrou: ", 0, 1, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->SetX(25); 
+        $pdf->Cell(0, 4, $tbl[5], 0, 1, 'L');
+        $pdf->ln(2);
+
+        $pdf->SetX(15); 
+        $pdf->SetFont('Arial', 'I', 8);
+        $pdf->Cell(55, 4, "Telefone do colaborador que encontrou: ", 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(0, 4, $tbl[6], 0, 1, 'L');
+        $pdf->ln(2);
+
+
+        $lin = $pdf->GetY();
+        $pdf->Line(10, $lin, 200, $lin);
+        $pdf->ln(5);
+
+
+        $pdf->ln(2);
+        $lin = $pdf->GetY();
+
+        $pdf->SetDrawColor(184, 2, 2); // 
+        $pdf-> Rect(23, $lin, 165, 15, 'F');
+        $pdf->SetDrawColor(200); // cinza claro
+        
+        $pdf->ln(3);
+        $pdf->SetX(35); 
+        $pdf->SetFont('Arial', 'I', 8);
+        $pdf->Cell(55, 4, "Nome do Proprietário: ", 0, 0, 'L');
+        $pdf->SetX(65); 
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(55, 4, $NomePropriet , 0, 1, 'L');
+
+        $pdf->ln(1);
+        $pdf->SetFont('Arial', 'I', 8);
+        $pdf->SetX(56); 
+        $pdf->Cell(10, 4, "CPF: ", 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(55, 4, $CpfPropriet, 0, 0, 'L');
+
+        $pdf->SetX(120); 
+        $pdf->Cell(20, 4, "Telefone: ", 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(20, 4, $TelfPropriet, 0, 1, 'L');
+
+        $pdf->ln(10);
+        $pdf->SetFont('Arial', 'I', 8);
+        if($UsuRestit > 0){ // já foi feita a restit
+            $pdf->MultiCell(0, 4, "Informo ter recebido o bem acima descrito em ".$tbl[14], 0, 'C', false);
+        }else{
+            $pdf->MultiCell(0, 4, "Informo ter recebido o bem acima descrito em ".$Hoje, 0, 'C', false);
+        }
+        $pdf->ln(10);
+        $pdf->MultiCell(0, 4, "______________________________________________________", 0, 'C', false);
+        $pdf->MultiCell(0, 4, $NomePropriet, 0, 'C', false);
     }
 }
 $pdf->Output();

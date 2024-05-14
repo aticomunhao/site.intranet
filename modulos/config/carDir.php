@@ -87,14 +87,12 @@ require_once("abrealas.php");
         </div>
         <br><br>
 
-        
-
        <!-- div modal para editar diretorias  -->
         <div id="relacmodalDir" class="relacmodal">
             <div class="modal-content-Diretorias">
                 <span class="close" onclick="fechaModalDir();">&times;</span>
                 <h5 id="titulomodal" style="text-align: center; color: #666;">Edição de Diretorias e Assessorias</h5>
-                <div style="border: 2px solid blue; border-radius: 10px; padding: 10px;">
+                <div style="margin-top: 10px; border: 2px solid blue; border-radius: 10px; padding: 10px;">
                     <table style="margin: 0 auto; width: 100%;">
                         <tr>
                             <td class="etiqAzul">Sigla:</td>
@@ -111,6 +109,9 @@ require_once("abrealas.php");
                                 <input type="radio" name="atividade" id="atividade1" value="1" title="Ativo no sistema" onclick="salvaAtivDir(value);"><label for="atividade1" style="font-size: 12px; padding-left: 3px;"> Ativa</label>
                                 <input type="radio" name="atividade" id="atividade2" value="0" title="Bloqueado" onclick="salvaAtivDir(value);"><label for="atividade2" style="font-size: 12px; padding-left: 3px;"> Inativa</label>
                             </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2"><div id="mensagemDir" style="color: red; font-weight: bold; text-align: center;"></div></td>
                         </tr>
                     </table>
                     <div style="text-align: center; margin: 5px;">

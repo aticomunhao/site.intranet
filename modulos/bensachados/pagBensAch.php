@@ -53,7 +53,6 @@ session_start();
 
             function abreRegistro(){
                 document.getElementById("guardacod").value = 0;
-//                document.getElementById("botimprReg").style.visibility = "hidden"; 
                 document.getElementById("botsalvareg").style.visibility = "visible"; 
                 document.getElementById("dataregistro").value = document.getElementById("guardahoje").value;
                 document.getElementById("dataachado").value = document.getElementById("guardahoje").value;
@@ -159,8 +158,6 @@ session_start();
                                     document.getElementById("guardacod").value = Resp.codigonovo;
                                     document.getElementById("guardaNumRelat").value = Resp.numrelat;
                                     document.getElementById("mudou").value = "0";
-//                                    document.getElementById("botsalvareg").style.visibility = "hidden"; 
-//                                    document.getElementById("botimprReg").style.visibility = "visible"; 
                                     $("#carregaBens").load("modulos/bensachados/relBens.php");
                                     document.getElementById("relacmodalRegistro").style.display = "none";
                                 }
@@ -203,7 +200,7 @@ session_start();
                 }
             }
 
-            function mostraBem(Cod, modal){
+            function mostraBem(Cod, modal, Restit){
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/bensachados/salvaBens.php?acao=buscaBem&codigo="+Cod, true);
@@ -225,12 +222,24 @@ session_start();
                                         document.getElementById("relacmodalTransfGuarda").style.display = "block";
                                     }
                                     if(parseInt(modal) === 2){
+                                        if(parseInt(Restit) > 0){
+                                            document.getElementById('nomeproprietario').disabled = true;
+                                            document.getElementById('cpfproprietario').disabled = true;
+                                            document.getElementById('telefproprietario').disabled = true;
+                                            document.getElementById('botsalvaRestit').disabled = true;
+                                        }else{
+                                            document.getElementById('nomeproprietario').disabled = false;
+                                            document.getElementById('cpfproprietario').disabled = false;
+                                            document.getElementById('telefproprietario').disabled = false;
+                                            document.getElementById('botsalvaRestit').disabled = false;
+                                        }
+                                     
                                         document.getElementById("numprocessoRest").innerHTML = Resp.numprocesso;
                                         document.getElementById("etiqprocessoRest").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
                                         document.getElementById("descdobemRest").innerHTML = Resp.descdobem;
-                                        document.getElementById('nomeproprietario').value = "";
-                                        document.getElementById('cpfproprietario').value = "";
-                                        document.getElementById('telefproprietario').value = "";
+                                        document.getElementById('nomeproprietario').value = Resp.nomepropriet;
+                                        document.getElementById('cpfproprietario').value = Resp.cpfpropriet;
+                                        document.getElementById('telefproprietario').value = Resp.telefpropriet;
                                         document.getElementById("relacmodalRestit").style.display = "block";
                                     }
                                     if(parseInt(modal) === 3){
@@ -248,13 +257,12 @@ session_start();
                                             document.getElementById("numprocessoEncam").innerHTML = Resp.numprocesso;
                                             document.getElementById("etiqprocessoEncam").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
                                             document.getElementById("descdobemEncam").innerHTML = Resp.descdobem;
-                                            document.getElementById('nomeproprietario').value = "";
-                                            document.getElementById('cpfproprietario').value = "";
-                                            document.getElementById('telefproprietario').value = "";
+//                                            document.getElementById('nomeproprietario').value = "";
+//                                            document.getElementById('cpfproprietario').value = "";
+//                                            document.getElementById('telefproprietario').value = "";
                                             document.getElementById("relacmodalEncam").style.display = "block";
                                         }
                                     }
-
                                     if(parseInt(modal) === 4){
                                         document.getElementById("numprocessoDest").innerHTML = Resp.numprocesso;
                                         document.getElementById("etiqprocessoDest").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
@@ -262,9 +270,9 @@ session_start();
                                         document.getElementById("selecdestino").value = Resp.destino;
                                         document.getElementById("setordestino").value = Resp.setordestino;
                                         document.getElementById("nomefuncionario").value = Resp.nomerecebeu;
-                                        document.getElementById('nomeproprietario').value = "";
-                                        document.getElementById('cpfproprietario').value = "";
-                                        document.getElementById('telefproprietario').value = "";
+                                        document.getElementById('nomeproprietario').value = Resp.nomepropriet;
+                                        document.getElementById('cpfproprietario').value = Resp.cpfpropriet;
+                                        document.getElementById('telefproprietario').value = Resp.telefpropriet;
                                         document.getElementById("relacmodalDest").style.display = "block";
                                     }
 
@@ -528,6 +536,13 @@ session_start();
             function imprProcesso(Cod){
                 window.open("modulos/bensachados/imprReg.php?acao=imprProcesso&codigo="+Cod, Cod);
             }
+            function imprRestit(){
+                if(document.getElementById("nomeproprietario").value === ""){
+                    alert("Insira o nome do proprietário.");
+                    return false;
+                }
+                window.open("modulos/bensachados/imprReg.php?acao=imprReciboRest&codigo="+document.getElementById("guardacod").value+"&nomeproprietario="+document.getElementById("nomeproprietario").value+"&cpfproprietario="+document.getElementById("cpfproprietario").value+"&telefproprietario="+document.getElementById("telefproprietario").value, document.getElementById("guardacod").value);
+            }
 
             function fechaModalTransf(){
                 document.getElementById("relacmodalTransfGuarda").style.display = "none";
@@ -639,7 +654,7 @@ session_start();
         }
         $admIns = parAdm("insbens", $Conec, $xProj);   // nível para inserir 
         $admEdit = parAdm("editbens", $Conec, $xProj); // nível para editar -> foi para relBens.php
-        $escEdit = 0; // parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // está na escala
+        $escEdit = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // está na escala
         $OpDestBens = pg_query($Conec, "SELECT numdest, descdest FROM ".$xProj.".bensdestinos ORDER BY descdest");
 
         ?>
@@ -647,7 +662,7 @@ session_start();
         <div class="container" style="margin: 0 auto;">
             <div class="row">
                 <div class="col quadro"><button class="botpadrGr fundoAmarelo" id="botInsReg" onclick="abreRegistro();" >Registro de Recebimento</button></div>
-                <div class="col quadro"><h3>Registro de Bens Encontrados</h3></div> <!-- Central - espaçamento entre colunas  -->
+                <div class="col quadro"><h5>Registro de Bens Encontrados</h5></div> <!-- Central - espaçamento entre colunas  -->
                 <div class="col quadro"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpOcor();" title="Guia rápido"></div> 
             </div>
         </div>
@@ -667,7 +682,7 @@ session_start();
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" /> <!-- nível mínimo para editar -->
 
         
-        <div style="margin: 10px; border: 2px solid blue; border-radius: 15px; padding: 20px;">
+        <div style="margin: 10px; border: 2px solid blue; border-radius: 15px; padding: 10px;">
             <div id="carregaBens"></div>
         </div>
 
@@ -787,7 +802,7 @@ session_start();
                 <!-- div três colunas -->
                 <div class="container" style="margin: 0 auto;">
                     <div class="row">
-                        <div class="col quadro" style="margin: 0 auto;"></div>
+                        <div class="col quadro" style="margin: 0 auto;"><button class="botpadrred" onclick="imprRestit();">Recibo PDF</button>  </div>
                         <div class="col quadro"><h5 id="titulomodal" style="color: #666;">Registro de Restituição</h5></div> <!-- Central - espaçamento entre colunas  -->
                         <div class="col quadro" style="margin: 0 auto; text-align: center;"><!-- <button class="botpadrred" onclick="enviaModalReg(1);">Enviar</button> --> </div> 
                     </div>
@@ -832,7 +847,7 @@ session_start();
                         </tr>
                         <tr>
                             <td></td>
-                            <td style="text-align: center; padding-top: 25px;"><button class="botpadrblue" id="botsalvareg" onclick="modalRestit();">Objeto Restituido</button></td>
+                            <td style="text-align: center; padding-top: 25px;"><button class="botpadrblue" id="botsalvaRestit" onclick="modalRestit();">Objeto Restituido</button></td>
                         </tr>
                         <tr>
                             <td></td>

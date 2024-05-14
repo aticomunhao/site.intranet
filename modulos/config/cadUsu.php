@@ -132,9 +132,9 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("flAdm").value = Resp.usuarioAdm;
                                     document.getElementById("setor").value = Resp.setor;
                                     if(parseInt(Resp.ativo) === 1){
-                                        document.getElementById("atividade1").checked = "true";
+                                        document.getElementById("atividade1").checked = true;
                                     }else{
-                                        document.getElementById("atividade2").checked = "true";
+                                        document.getElementById("atividade2").checked = true;
                                     }
                                     if(parseInt(Resp.lroPortaria) === 1){
                                         document.getElementById("preencheLro").checked = true;
@@ -181,6 +181,14 @@ if(!isset($_SESSION["usuarioID"])){
                     $('#mensagem').fadeOut(3000);
                     return false;
                 }
+                Lro = 0;
+                if(document.getElementById("preencheLro").checked === true){
+                    Lro = 1;
+                }
+                Bens = 0;
+                if(document.getElementById("preencheBens").checked === true){
+                    Bens = 1;
+                }
                 if(parseInt(document.getElementById("mudou").value) === 1){
                     ajaxIni();
                     if(ajax){
@@ -190,7 +198,9 @@ if(!isset($_SESSION["usuarioID"])){
                         +"&usulogado="+document.getElementById("guarda_usulogado_id").value
                         +"&ativo="+document.getElementById("guardaAtiv").value
                         +"&setor="+document.getElementById("setor").value
-                        +"&flAdm="+document.getElementById("flAdm").value, true);
+                        +"&flAdm="+document.getElementById("flAdm").value
+                        +"&lro="+Lro
+                        +"&bens="+Bens, true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -218,6 +228,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function checaEntrada(){
+                checaLogin();
                 if(validaCPF(document.getElementById("usulogin").value)){
                     checaLogin();
                 }else{
@@ -253,9 +264,9 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById("diaAniv").value = Resp.dianasc;
                                             document.getElementById("mesAniv").value = Resp.mesnasc;
                                             if(parseInt(Resp.ativo) === 1){
-                                                document.getElementById("atividade1").checked = "true";
+                                                document.getElementById("atividade1").checked = true;
                                             }else{
-                                                document.getElementById("atividade2").checked = "true";
+                                                document.getElementById("atividade2").checked = true;
                                             }
                                             document.getElementById("ultlog").value = Resp.ultlog;
                                             document.getElementById("acessos").value = Resp.acessos;
@@ -286,9 +297,9 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("diaAniv").value = Resp.dianasc;
                                     document.getElementById("mesAniv").value = Resp.mesnasc;
                                     if(parseInt(Resp.ativo) === 1){
-                                        document.getElementById("atividade1").checked = "true";
+                                        document.getElementById("atividade1").checked = true;
                                     }else{
-                                        document.getElementById("atividade2").checked = "true";
+                                        document.getElementById("atividade2").checked = true;
                                     }
                                     document.getElementById("ultlog").value = Resp.ultlog;
                                     document.getElementById("acessos").value = Resp.acessos;
@@ -335,7 +346,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("flAdm").value = 2; // usuário registrado
                     document.getElementById("flAdm").disabled = true;
                 }
-                document.getElementById("atividade1").checked = "true";
+                document.getElementById("atividade1").checked = true;
                 document.getElementById("titulomodal").innerHTML = "Inserção de Usuário";
                 document.getElementById("ressetsenha").disabled = true;
                 document.getElementById("relacmodalUsu").style.display = "block";
@@ -411,51 +422,8 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 }
             }
-            function checaLro(Obj){
-                Valor = 0;
-                if(Obj.checked === true){
-                    Valor = 1;
-                }
-                ajaxIni();
-                if(ajax){
-                    ajax.open("POST", "modulos/config/registr.php?acao=checaLro&param="+Valor+"&numero="+document.getElementById("guardaid_cpf").value, true);
-                    ajax.onreadystatechange = function(){
-                        if(ajax.readyState === 4 ){
-                            if(ajax.responseText){
-//alert(ajax.responseText);
-                                Resp = eval("(" + ajax.responseText + ")");
-                                if(parseInt(Resp.coderro) === 1){
-                                    alert("Houve um erro no servidor.")
-                                }
-                            }
-                        }
-                    };
-                    ajax.send(null);
-                } 
-            }
-            function checaBens(Obj){
-                Valor = 0;
-                if(Obj.checked === true){
-                    Valor = 1;
-                }
-                ajaxIni();
-                if(ajax){
-                    ajax.open("POST", "modulos/config/registr.php?acao=checaBens&param="+Valor+"&numero="+document.getElementById("guardaid_cpf").value, true);
-                    ajax.onreadystatechange = function(){
-                        if(ajax.readyState === 4 ){
-                            if(ajax.responseText){
-//alert(ajax.responseText);
-                                Resp = eval("(" + ajax.responseText + ")");
-                                if(parseInt(Resp.coderro) === 1){
-                                    alert("Houve um erro no servidor.")
-                                }
-                            }
-                        }
-                    };
-                    ajax.send(null);
-                } 
-            }
-            function mudaSetor(){
+
+            function mudaSetor(){ // Qdo muda de setor desmarca 
                 document.getElementById("mudou").value = "1";
                 document.getElementById("preencheLro").checked = false;
                 document.getElementById("preencheBens").checked = false;
@@ -568,6 +536,8 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="admEditUsu" value="<?php echo $_SESSION["AdmEdit"]; ?>" />
         <input type="hidden" id="guardaidpessoa" value="0" />
         <input type="hidden" id="guardaAtiv" value="1" />
+        <input type="hidden" id="guardaLro" value="0" />
+        <input type="hidden" id="guardaBens" value="0" />
         
         <div style="margin: 20px; border: 2px solid blue; border-radius: 15px; padding: 20px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
@@ -721,7 +691,7 @@ if(!isset($_SESSION["usuarioID"])){
                     <tr>
                         <td class="etiq80" title="Pode registrar ocorrências no LRO">Escala Portaria:</td>
                         <td colspan="5">
-                            <input type="checkbox" id="preencheLro" title="Registrar ocorrências no LRO" onchange="modif();" onclick="checaLro(this)">
+                            <input type="checkbox" id="preencheLro" title="Registrar ocorrências no LRO" onchange="modif();" >
                             <label for="preencheLro" title="Registrar ocorrências no LRO">acesso ao Livro de Registro de Ocorrências</label>
                         </td>
                     </tr>
@@ -729,7 +699,7 @@ if(!isset($_SESSION["usuarioID"])){
                     <tr>
                         <td class="etiq80" title="Pode registrar ocorrências no LRO">Bens Achados:</td>
                         <td colspan="5">
-                            <input type="checkbox" id="preencheBens" title="Registrar recebimento e destino de bens encontrados" onchange="modif();" onclick="checaBens(this)">
+                            <input type="checkbox" id="preencheBens" title="Registrar recebimento e destino de bens encontrados" onchange="modif();" >
                             <label for="preencheBens" title="Registrar recebimento e destino de bens encontrados">acesso ao registro de Bens Encontrados</label>
                         </td>
                     </tr>

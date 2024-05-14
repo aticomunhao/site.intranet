@@ -20,8 +20,13 @@ if($ConecPes != "sConec" && $Conec != "sFunc"){
 
 function parAdm($Campo, $Conec, $xProj){
     $rsSis = pg_query($Conec, "SELECT $Campo FROM ".$xProj.".paramsis WHERE idpar = 1");
-    $ProcSis = pg_fetch_row($rsSis);
-    $admSis = $ProcSis[0]; // nível para inserir 
+    $row = pg_num_rows($rsSis);
+    if($row > 0){
+      $ProcSis = pg_fetch_row($rsSis);  
+      $admSis = $ProcSis[0]; // nível para inserir 
+    }else{
+      $admSis = 0;
+    }
     return $admSis;
  }
 

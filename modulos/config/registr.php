@@ -269,7 +269,7 @@ if($Acao =="buscausu"){
     echo $responseText;
 }
 
-if($Acao =="checaLro"){
+if($Acao =="checaLro"){  // Sem uso
     $Param = (int) filter_input(INPUT_GET, 'param'); 
     $Cpf = filter_input(INPUT_GET, 'numero'); 
     $Cpf1 = addslashes($Cpf);
@@ -284,7 +284,7 @@ if($Acao =="checaLro"){
     $responseText = json_encode($var);
     echo $responseText;
 }
-if($Acao =="checaBens"){
+if($Acao =="checaBens"){  // Sem uso
     $Param = (int) filter_input(INPUT_GET, 'param'); 
     $Cpf = filter_input(INPUT_GET, 'numero'); 
     $Cpf1 = addslashes($Cpf);
@@ -352,6 +352,8 @@ if($Acao =="salvaUsu"){
     $Cpf = filter_input(INPUT_GET, 'cpf');
     $Ativo = (int) filter_input(INPUT_GET, 'ativo');
     $NomeCompl = filter_input(INPUT_GET, 'nomecompl');
+    $Lro  = (int) filter_input(INPUT_GET, 'lro'); // só cadastro novo
+    $Bens  = (int) filter_input(INPUT_GET, 'bens');
 
     $Cpf1 = addslashes($Cpf);
     $Cpf2 = str_replace(".", "", $Cpf1);
@@ -369,7 +371,7 @@ if($Acao =="salvaUsu"){
     }
 
     if($Usu > 0){  // salvar
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET codsetor = $Setor, adm = $Adm, ativo = $Ativo, usumodif = $UsuLogado, datamodif = NOW(), nomecompl = '$NomeCompl' WHERE cpf = '$Cpf'");  // pessoas_id = $Usu");
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET codsetor = $Setor, adm = $Adm, ativo = $Ativo, usumodif = $UsuLogado, datamodif = NOW(), nomecompl = '$NomeCompl', lro = $Lro, bens = $Bens WHERE cpf = '$Cpf'");  // 
         pg_query($Conec, "UPDATE ".$xProj.".pessoas SET pessoas_id = $Usu, nome_completo = '$NomeCompl', sexo = $Sexo, status = $Ativo WHERE cpf = '$Cpf' "); //coleção
 
         if(!is_null($DNasc)){
@@ -386,9 +388,8 @@ if($Acao =="salvaUsu"){
             $Codigo = $tblCod[0];
             $CodigoNovo = ($Codigo+1);
             $Senha = password_hash($Cpf, PASSWORD_DEFAULT);
-
-            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, codsetor, adm, usuins, datains, cpf, nomecompl, senha, ativo) 
-            VALUES ($CodigoNovo, $GuardaId, $Setor, $Adm, $UsuLogado, NOW(), '$Cpf', '$NomeCompl', '$Senha', 1 )");
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, codsetor, adm, usuins, datains, cpf, nomecompl, senha, ativo, lro, bens) 
+            VALUES ($CodigoNovo, $GuardaId, $Setor, $Adm, $UsuLogado, NOW(), '$Cpf', '$NomeCompl', '$Senha', 1, $Lro, $Bens )");
             if(!$rs){
                 $Erro = 12;
             }
@@ -667,9 +668,7 @@ if($Acao =="salvadir"){
     $Desc = filter_input(INPUT_GET, 'descdir');
     $Ativo = (int) filter_input(INPUT_GET, 'ativo');
     $Erro = 0;
-    if($Cod > 0){
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".setores SET siglasetor = '$Sigla', descsetor = '$Desc', ativo = $Ativo WHERE codset = $Cod");
-    }else{
+    if($Cod == 0){
         $AdDir = substr($Desc, 0, 3);
         if($AdDir == "Dir"){
             $Menu = 1;
@@ -681,6 +680,8 @@ if($Acao =="salvadir"){
         $Codigo = $tblCod[0];
         $CodigoNovo = ($Codigo+1); 
         $rs = pg_query($Conec, "INSERT INTO ".$xProj.".setores (codset, siglasetor, descsetor, menu, ativo, cabec1, cabec2, textopag) VALUES ($CodigoNovo, '$Sigla', '$Desc', $Menu, 1, 'COMUNHÃO ESPÍRITA DE BRASÍLIA', '$Desc', '&lt;p&gt;Página Exclusiva&lt;/p&gt;' )");
+    }else{
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".setores SET siglasetor = '$Sigla', descsetor = '$Desc', ativo = $Ativo WHERE codset = $Cod");
     }
     if(!$rs){
         $Erro = 1;

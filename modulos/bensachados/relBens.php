@@ -10,38 +10,38 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <title></title>
         <script>
            new DataTable('#idTabela', {
-                columnDefs: [
-                    {
-                        target: 5,
-                        searchable: false,
-                        orderable: false
-                    },
-                    {
-                        target: 6,
-                        searchable: false,
-                        orderable: false
-                    },
-                    {
-                        target: 7,
-                        searchable: false,
-                        orderable: false
-                    },
-                    {
-                        target: 8,
-                        searchable: false,
-                        orderable: false
-                    },
-                    {
-                        target: 9,
-                        searchable: false,
-                        orderable: false
-                    },
-                    {
-                        target: 10,
-                        searchable: false,
-                        orderable: false
-                    }
-                ],
+//                columnDefs: [
+//                    {
+//                        target: 5,
+//                        searchable: false,
+//                        orderable: false
+//                    },
+//                    {
+//                        target: 6,
+//                        searchable: false,
+//                        orderable: false
+//                    },
+//                    {
+//                        target: 7,
+//                        searchable: false,
+//                        orderable: false
+//                    },
+//                    {
+//                        target: 8,
+//                        searchable: false,
+//                        orderable: false
+//                    },
+//                    {
+//                        target: 9,
+//                        searchable: false,
+//                        orderable: false
+//                    },
+//                    {
+//                        target: 10,
+//                        searchable: false,
+//                        orderable: false
+//                    }
+//                ],
                 lengthMenu: [
                     [50, 100, 200, 500],
                     [50, 100, 200, 500]
@@ -71,10 +71,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             ORDER BY ".$xProj.".bensachados.datareceb DESC");
 
             $Edit = 0;
-            $admEdit = parAdm("editbens", $Conec, $xProj); // nível para editar
-            $escEdit = 0;// parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // está na escala
-            if($escEdit == 1){
-                if($admEdit >= $_SESSION["AdmUsu"] || $_SESSION["AdmUsu"] > 6){
+            $admEdit = parAdm("editbens", $Conec, $xProj); // nível administrativo
+            $Edit = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // está marcado no cadastro de usu
+            if($Edit == 1){
+                if($admEdit >= $_SESSION["AdmUsu"] || $_SESSION["AdmUsu"] > 6){ // nível administrativo
                     $Edit = 1;
                 }
             }
@@ -87,12 +87,19 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <th>Data</th>
                         <th style="text-align: center;">Nº Processo</th>
                         <th style="text-align: center;">Descrição do Bem</th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
+                        <?php
+                        if($Edit == 1){
+                        ?>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        <?php
+                        }
+                        ?>
+                        
                     </tr>
                 </thead>
                 <tbody>
@@ -110,6 +117,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td><?php echo $tbl0[1]; ?></td> <!-- data -->
                             <td style="text-align: center;"><?php echo $tbl0[2]; ?></td> <!-- num processo -->
                             <td><?php echo nl2br($tbl0[3]); ?></td> <!-- descrição do bem -->
+                            <?php
+                            if($Edit == 1){
+                            ?>
+
                             <td title="Visualizar o registro de recebimento">
                                 <?php 
                                 if($Edit == 1 && $SobGuarda == 0 && $Restit == 0 && $Arquivado == 0){
@@ -122,7 +133,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td title="Transferir para a guarda da DAF por 90 dias">
                                 <?php 
                                 if($Edit == 1 && $SobGuarda == 0 && $Restit == 0 && $Arquivado == 0){
-                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 1);'>Guarda</button>";
+                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 1, $Restit);'>Guarda</button>";
                                 } else{
                                     echo "<button disabled class='botTable fundoCinza corAzulClaro'>Guarda</button>";
                                 }
@@ -130,17 +141,18 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             </td>
                             <td title="Registro de restituição do bem">
                                 <?php 
-                                if($Edit == 1 && $Restit == 0 && $GuardaCSG == 0 && $Arquivado == 0){
-                                        echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2);'>Restituição</button>";
-                                    }else{
-                                        echo "<button disabled class='botTable fundoCinza corAzulClaro'>Restituição</button>";
-                                    }
+                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);'>Restituição</button>";
+//                                if($Edit == 1 && $Restit == 0 && $GuardaCSG == 0 && $Arquivado == 0){
+//                                        echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);'>Restituição</button>";
+//                                    }else{
+//                                        echo "<button disabled class='botTable fundoCinza corAzulClaro'>Restituição</button>";
+//                                    }
                                 ?>
                             </td>
                             <td title="Encaminhamento para CSG após 90 dias">
                                 <?php 
                                 if($Edit == 1 && $Restit == 0 && $GuardaCSG == 0 && $Arquivado == 0 && $Intervalo > 2){
-                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 3);'>CSG</button>";
+                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 3, $Restit);'>CSG</button>";
                                 }else{
                                     echo "<button disabled class='botTable fundoCinza corAzulClaro'>CSG</button>";
                                 }
@@ -149,7 +161,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td title="Destinação após 90 dias">
                                 <?php 
                                 if($Edit == 1 && $Arquivado == 0 && $Intervalo > 2){
-                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 4);'>Destinação</button>";
+                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 4, $Restit);'>Destinação</button>";
                                 }else{
                                     echo "<button disabled class='botTable fundoCinza corAzulClaro'>Destinação</button>";
                                 }
@@ -158,6 +170,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td title="Gerar PDF do processo">
                                 <?php echo "<button class='botTable fundoAmarelo' onclick='imprProcesso($tbl0[0]);'>PDF</button>"; ?>
                             </td>
+
+                            <?php
+                            }
+                            ?>
                         </tr>
                     <?php
                     }

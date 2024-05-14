@@ -277,17 +277,19 @@
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
-alert(ajax.responseText);
+//alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");
                                 if(parseInt(Resp.coderro) > 0){
                                     alert("Houve erro ao salvar");
                                 }else{
                                     document.getElementById("sigladir").value = Resp.sigla;
                                     document.getElementById("descdir").value = Resp.desc;
-                                    if(parseInt(Resp.ativo) === 0){
+                                    if(parseInt(Resp.ativo) === 1){
                                         document.getElementById("atividade1").checked = true;
+                                    }else{
+                                        document.getElementById("atividade2").checked = true;
                                     }
-                                    document.getElementById("atividade").value = Resp.ativo;
+                                    document.getElementById("guardaAtiv").value = Resp.ativo;
                                     $("#relausuarios").load("modulos/config/relDir.php?codigo="+Cod); // está em relDir.php
                                     document.getElementById("relacmodalDir").style.display = "block"; // está em carDir.php
                                 }
@@ -297,8 +299,29 @@ alert(ajax.responseText);
                     ajax.send(null);
                 }
             }
+            function insModalDir(){
+                document.getElementById("sigladir").value = "";
+                document.getElementById("descdir").value = "";
+                document.getElementById("atividade1").checked = true;
+                document.getElementById("guardaAtiv").value = 1;
+                document.getElementById("mudou").value = 1;
+                document.getElementById("relacmodalDir").style.display = "block"; // está em carDir.php
+            }
+
             function salvaModalDir(){
                 if(parseInt(document.getElementById("mudou").value) === 1){
+                    if(document.getElementById("sigladir").value === ""){
+                        $('#mensagemDir').fadeIn("slow");
+                        document.getElementById("mensagemDir").innerHTML = "Preencha o campo <u>Sigla</u> da Diretoria/Assessoria";
+                        $('#mensagemDir').fadeOut(3000);
+                        return false;
+                    }
+                    if(document.getElementById("descdir").value === ""){
+                        $('#mensagemDir').fadeIn("slow");
+                        document.getElementById("mensagemDir").innerHTML = "Preencha o campo <u>Descrição</u> da Diretoria/Assessoria";
+                        $('#mensagemDir').fadeOut(3000);
+                        return false;
+                    }
                     ajaxIni();
                     if(ajax){
                         ajax.open("POST", "modulos/config/registr.php?acao=salvadir&codigo="+document.getElementById("guardacod").value
@@ -522,7 +545,7 @@ alert(ajax.responseText);
         ?>
         <input type="hidden" id="guardacod" value="0" /> <!-- id ocorrência -->
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
-        <input type="text" id="guardaAtiv" value="0" />
+        <input type="hidden" id="guardaAtiv" value="0" />
         <div style="margin: 0 auto; margin-top: 40px; padding: 20px; border: 2px solid blue; border-radius: 15px; width: 70%; min-height: 200px;">
             <div style="text-align: center;">
                 <h4>Parâmetros do Sistema</h4>

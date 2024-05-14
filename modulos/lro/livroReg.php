@@ -51,6 +51,14 @@ session_start();
                     document.getElementById("selecturno").value = "3";
                 }
 
+                document.getElementById("botinserir").style.visibility = "hidden"; 
+                if(parseInt(document.getElementById("guardaescala").value) === 1){ // tem que estar autorizado no cadastro de usuários
+                    document.getElementById("botinserir").style.visibility = "visible"; 
+                    if(parseInt(document.getElementById("UsuAdm").value) > 6){
+                        document.getElementById("botinserir").style.visibility = "visible"; 
+                    }
+                }
+
                 modalMostra = document.getElementById('relacMostramodalReg'); //span[0]
                 spanMostra = document.getElementsByClassName("close")[0];
                 window.onclick = function(event){
@@ -519,7 +527,7 @@ session_start();
         }else{
             $nomeEditLroIndiv = "";
         }
-
+        $Escala = parEsc("lro", $Conec, $xProj, $_SESSION["usuarioID"]); // está na escala
         $OpUsuAnt = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE lro = 1 And Ativo = 1 And pessoas_id != ".$_SESSION["usuarioID"]." ORDER BY nomecompl"); // And codsetor = 
         ?>
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
@@ -535,13 +543,14 @@ session_start();
         <input type="hidden" id="jatem" value="0" />
         <input type="hidden" id="numrelato" value="" />
         <input type="hidden" id="guardausuins" value="0" />
+        <input type="hidden" id="guardaescala" value="<?php echo $Escala; ?>" />
 
         <div style="margin: 20px; border: 2px solid green; border-radius: 15px; padding: 20px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
                 <input type="button" id="botinserir" class="botpadr" value="Inserir Registro" onclick="InsRegistro();">
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
-                <h3>Livro de Registro de Ocorrências</h3>
+                <h5>Livro de Registro de Ocorrências</h5>
             </div>
             <div id="carregaReg"></div>
         </div>
