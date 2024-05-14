@@ -817,7 +817,6 @@
                 </table>
             </div>
 
-
 <!-- Ocorrrências  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
                 - <b>Registro de Ocorrêncas</b>: <label style="color: gray; font-size: .8em;">Cada usuário só pode ver as ocorrências que inseriu</label><br>
@@ -856,7 +855,6 @@
                     </tr>
                 </table>
             </div>
-
 
 <!-- Tarefas  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
@@ -900,7 +898,6 @@
                     </tr>
                 </table>
             </div>
-
 
 <!-- Telefones  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
