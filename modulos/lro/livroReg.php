@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('America/Sao_Paulo');
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -31,32 +32,66 @@ session_start();
                 }
             }
             $(document).ready(function(){
-                $("#carregaReg").load("modulos/lro/relReg.php");
-                $("#dataocor").mask("99/99/9999");
-                document.getElementById("dataocor").disabled = true; // não deixar mudar a data do registro no LRO
-
                 var nHora = new Date();   //   function mostraRelogio()  //em relacao.js da SCer
                 var hora = nHora.getHours();
                 var minuto = nHora.getMinutes();
+                var Cumpr = "Bom Dia!";
                 if(hora >= 0){
                     document.getElementById("selecturno").value = "3";
                 }
                 if(hora >= 7){
                     document.getElementById("selecturno").value = "1";
                 }
-                if(hora > 13){
+                if(hora >= 12){
+                    Cumpr = "Boa Tarde!";
+                }
+                if(hora >= 13){
                     document.getElementById("selecturno").value = "2";
                 }
-                if(hora > 19){
+                if(hora >= 18){
+                    Cumpr = "Boa Noite!";
+                }
+                if(hora >= 19){
                     document.getElementById("selecturno").value = "3";
                 }
 
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/lro/salvaReg.php?acao=AcessoLro", true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.")
+                                }else{
+                                    if(parseInt(Resp.lro) === 0 && parseInt(Resp.fisclro) === 0 && parseInt(document.getElementById("UsuAdm").value) < 7){
+                                        $.confirm({
+                                            title: Cumpr,
+                                            content: 'Usuário não cadastrado para acesso ao LRO. <br>O acesso é proporcionado pela ATI.',
+                                            autoClose: 'OK|7000',
+                                            draggable: true,
+                                            buttons: {
+                                                OK: function(){}
+                                            }
+                                        });
+                                    }else{
+                                        $("#carregaReg").load("modulos/lro/relReg.php");
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+
+                $("#dataocor").mask("99/99/9999");
+                document.getElementById("dataocor").disabled = true; // não deixar mudar a data do registro no LRO
+
                 document.getElementById("botinserir").style.visibility = "hidden"; 
-                if(parseInt(document.getElementById("guardaescala").value) === 1){ // tem que estar autorizado no cadastro de usuários
+                if(parseInt(document.getElementById("acessoLRO").value) === 1){ // tem que estar autorizado no cadastro de usuários
                     document.getElementById("botinserir").style.visibility = "visible"; 
-                    if(parseInt(document.getElementById("UsuAdm").value) > 6){
-                        document.getElementById("botinserir").style.visibility = "visible"; 
-                    }
                 }
 
                 modalMostra = document.getElementById('relacMostramodalReg'); //span[0]
@@ -91,7 +126,6 @@ session_start();
                                         document.getElementById("selectusuant").value = "";
                                         document.getElementById("relato").value = "";
                                         document.getElementById("relacmodalReg").style.display = "block";
-
                                         if(parseInt(Resp.jatem) > 0){
                                             document.getElementById("jatem").value = "1";
                                             document.getElementById("numrelato").value = Resp.numrelato;
@@ -108,7 +142,7 @@ session_start();
                                     }else{
                                         $.confirm({
                                             title: 'Informação!',
-                                            content: 'Usuário não cadastrado para acesso ao LRO. <br>O acesso é proporcionado pela ATI.',
+                                            content: 'Usuário não cadastrado para inserir registros no LRO. <br>O acesso é proporcionado pela ATI.',
                                             autoClose: 'OK|7000',
                                             draggable: true,
                                             buttons: {
@@ -137,7 +171,7 @@ session_start();
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.")
                                 }else{
-                                    if(parseInt(Resp.acessoLro) === 1){
+                                    if(parseInt(Resp.acessoLro) === 1 || parseInt(Resp.fiscalizaLro) === 1){
                                         document.getElementById("guardacod").value = Cod;
                                         document.getElementById("mostradataocor").value = Resp.data;
                                         document.getElementById("mostraselecturno").value = Resp.descturno;
@@ -158,18 +192,16 @@ session_start();
                                     if(parseInt(Resp.enviado) === 0 && parseInt(Resp.codusuins) === parseInt(document.getElementById("guardaUsuId").value)){ // ainda não fechou e foi o usu logado que inseriu
                                         document.getElementById("botedit").style.visibility = "visible"; // botão de editar
                                     }
-                                    if(parseInt(document.getElementById("EditIndiv").value) > 0){ // se houver alguém designado para fazer a conferência
-                                        if(parseInt(document.getElementById("EditIndiv").value) === parseInt(document.getElementById("guardaUsuId").value)){ //checa se é o designado
-                                            document.getElementById("mostrabotimpr").style.visibility = "visible"; // botão de imprimir na visualização
-                                        }else{
-                                            document.getElementById("mostrabotimpr").style.visibility = "hidden"; // botão de imprimir na visualização
-                                        }
+                                    if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) && parseInt(Resp.fiscalizaLro) === 1){
+                                        document.getElementById("mostrabotimpr").style.visibility = "visible";
+                                    }
+
+                                    if(parseInt(Resp.codusuins) === parseInt(document.getElementById("guardaUsuId").value)){
                                     }else{
-                                        if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value)){
-                                            document.getElementById("mostrabotimpr").style.visibility = "visible";
-                                        }
+                                        document.getElementById("mostrabotimpr").style.visibility = "hidden"; // botão de imprimir na visualização
                                     }
                                     if(parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
+                                        document.getElementById("botimpr").style.visibility = "visible";
                                         document.getElementById("mostrabotimpr").style.visibility = "visible"; // botão de imprimir na visualização
                                     }
                                 }
@@ -496,7 +528,7 @@ session_start();
     </head>
     <body>
         <?php
-        date_default_timezone_set('America/Sao_Paulo');
+        
         require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         $Hoje = date('d/m/Y');
         if(!$Conec){
@@ -513,21 +545,11 @@ session_start();
         $rs = pg_query($Conec, "UPDATE ".$xProj.".livroreg SET enviado = 1 WHERE datains < (NOW() - interval '13 hour') "); // marca enviado após 13 horas de inserido - o turno 3 tem 12 horas
 
         $admIns = parAdm("insocor", $Conec, $xProj);   // nível para inserir 
-        $admEdit = parAdm("editocor", $Conec, $xProj); // nível para editar
-        $editIndiv = parAdm("editlroindiv", $Conec, $xProj);   // autorização para um só indivíduo inserir
-        if($editIndiv > 0){
-            $rs0 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $editIndiv");
-            $row0 = pg_num_rows($rs0);
-            if($row0 > 0){
-                $tbl0 = pg_fetch_row($rs0);
-                $nomeEditLroIndiv = $tbl0[0];
-            }else{
-                $nomeEditLroIndiv = "";
-            }
-        }else{
-            $nomeEditLroIndiv = "";
-        }
-        $Escala = parEsc("lro", $Conec, $xProj, $_SESSION["usuarioID"]); // está na escala
+        $admEdit = parAdm("editocor", $Conec, $xProj); // nível para edita
+
+        $Lro = parEsc("lro", $Conec, $xProj, $_SESSION["usuarioID"]);
+        $FiscLro = parEsc("fisclro", $Conec, $xProj, $_SESSION["usuarioID"]);
+
         $OpUsuAnt = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE lro = 1 And Ativo = 1 And pessoas_id != ".$_SESSION["usuarioID"]." ORDER BY nomecompl"); // And codsetor = 
         ?>
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
@@ -537,15 +559,17 @@ session_start();
         <input type="hidden" id="guardacod" value="0" /> <!-- id ocorrência -->
         <input type="hidden" id="guardaenviado" value="0" /> <!-- relato fechado -->
         <input type="hidden" id="guardahoje" value="<?php echo $Hoje; ?>" /> <!-- data -->
-        <input type="hidden" id="EditIndiv" value="<?php echo $editIndiv; ?>" /> <!-- autorização para um só indivíduo conferir o LRO -->
-        <input type="hidden" id="NomeEditIndiv" value="<?php echo $nomeEditLroIndiv; ?>" />
+        <input type="hidden" id="EditIndiv" value="0" /> <!-- autorização para um só indivíduo conferir o LRO -->
         <input type="hidden" id="mudou" value="0" />
         <input type="hidden" id="jatem" value="0" />
         <input type="hidden" id="numrelato" value="" />
         <input type="hidden" id="guardausuins" value="0" />
-        <input type="hidden" id="guardaescala" value="<?php echo $Escala; ?>" />
+        <input type="hidden" id="acessoLRO" value="<?php echo $Lro; ?>" />
+        <input type="hidden" id="fiscalLRO" value="<?php echo $FiscLro; ?>" />
 
-        <div style="margin: 20px; border: 2px solid green; border-radius: 15px; padding: 20px;">
+
+
+        <div style="margin: 20px; border: 2px solid green; border-radius: 15px; padding: 20px; min-height: 70px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
                 <input type="button" id="botinserir" class="botpadr" value="Inserir Registro" onclick="InsRegistro();">
             </div>
@@ -560,11 +584,11 @@ session_start();
             <div class="modal-content-RegistroLRO">
                 <div style="position: absolute;"><button class="botpadrred" style="font-size: 80%;" id="mostrabotimpr" onclick="imprReg();">Gerar PDF</button></div>
                 <span class="close" onclick="fechaMostraModal();">&times;</span>
-                <h3 id="mostratitulomodal" style="text-align: center; color: #666;" title="<?php if($nomeEditLroIndiv != ''){echo "Conferência LRO atribuida a ".$nomeEditLroIndiv;} ?>">Livro de Registro de Ocorrências</h3>
+                <h5 id="mostratitulomodal" style="text-align: center; color: #666;">Livro de Registro de Ocorrências</h5>
 
-                <div style="border: 2px solid blue; border-radius: 10px; padding: 10px; text-align: center;">
+                <div style="border: 2px solid blue; border-radius: 10px; padding: 5px; text-align: center;">
                     <div style="paddling-left: 5%;">
-                        <br>
+                        
                         <label class="etiqAzul">Escritura do Livro de Registro de Ocorrências em: </label>
                         
                         <input disabled type="text" id="mostradataocor" value="<?php echo $Hoje; ?>" placeholder="Data" style="font-size: .9em; width: 100px; text-align: center;">
@@ -582,11 +606,10 @@ session_start();
                             <br><br>
                             <textarea disabled id="mostrarelato" style="border: 1px solid blue; border-radius: 10px;" rows="10" cols="85"></textarea>
                         </div>
-                        <br>
                     </div>
                     <div id="mostramensagem" style="color: red; font-weight: bold;"></div>
                     <br>
-                    <div style="text-align: center; padding-bottom: 20px;">
+                    <div style="text-align: center; padding-bottom: 10px;">
                         <button id="botedit" class="botpadrblue" onclick="carregaModal();">Editar</button>
                     </div>
                 </div>
@@ -601,13 +624,13 @@ session_start();
                 <div class="container" style="margin: 0 auto;">
                     <div class="row">
                         <div class="col quadro" style="margin: 0 auto;"> <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprReg();">Gerar PDF</button></div>
-                        <div class="col quadro"><h4 id="titulomodal" style="text-align: center; color: #666;">Livro de Registro de Ocorrências</h4></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col quadro"><h5 id="titulomodal" style="text-align: center; color: #666;">Livro de Registro de Ocorrências</h5></div> <!-- Central - espaçamento entre colunas  -->
                         <div class="col quadro" style="margin: 0 auto; text-align: center;"><button class="botpadrred" onclick="enviaModalReg(1);">Enviar</button></div> 
                     </div>
                 </div>
-                <div style="border: 2px solid blue; border-radius: 10px; padding: 10px; text-align: center;">
+                <div style="border: 2px solid blue; border-radius: 10px; padding: 5px; text-align: center;">
                     <div style="paddling-left: 5%;">
-                        <br>
+
                         <label class="etiqAzul">Escritura do Livro de Registro de Ocorrências em: </label>
 
                         <input type="text" id="dataocor" onclick="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; width: 100px; text-align: center;">
@@ -637,13 +660,12 @@ session_start();
                             </select>
                             <label class="etiqAzul"> com as seguintes alterações: </label>
                             <br><br>
-                            <textarea style="border: 1px solid blue; border-radius: 10px;" rows="10" cols="85" id="relato" onclick="tiraBorda(id);" onchange="modif();"></textarea>
+                            <textarea style="border: 1px solid blue; border-radius: 10px;" rows="8" cols="85" id="relato" onclick="tiraBorda(id);" onchange="modif();"></textarea>
                         </div>
                         <br>
                     </div>
                     <div id="mensagem" style="color: red; font-weight: bold;"></div>
-                    <br>
-                    <div style="text-align: center; padding-bottom: 20px;">
+                    <div style="text-align: center; padding-bottom: 10px;">
                         <button class="botpadrblue" onclick="salvaModalReg(0);">Salvar</button>
                     </div>
                 </div>

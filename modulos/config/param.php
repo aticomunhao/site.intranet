@@ -368,7 +368,7 @@
             $rsSis = pg_query($Conec, "SELECT admvisu, admedit, admcad, insevento, editevento, instarefa, edittarefa, insramais, editramais, instelef, edittelef, 
             editpagina, insarq, insaniver, editaniver, instroca, edittroca, insocor, editocor, insleituraagua, editleituraagua, 
             TO_CHAR(datainiagua , 'DD/MM/YYYY'), valoriniagua, insleituraeletric, editleituraeletric, TO_CHAR(datainieletric , 'DD/MM/YYYY'), valorinieletric, insaguaindiv, inseletricindiv, inslro, editlro, 
-            editlroindiv, insbens, editbens, editbensindiv 
+            insbens, editbens, editbensindiv 
             FROM ".$xProj.".paramsis WHERE idPar = 1");
             $ProcSis = pg_fetch_row($rsSis);
             $admVisu = $ProcSis[0]; // admVisu - administrador visualiza usuários
@@ -819,7 +819,7 @@
 
 <!-- Ocorrrências  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
-                - <b>Registro de Ocorrêncas</b>: <label style="color: gray; font-size: .8em;">Cada usuário só pode ver as ocorrências que inseriu</label><br>
+                - <b>Registro de Ocorrêncas - LRO</b>: <label style="color: gray; font-size: .8em;">Usuários precisam estar autorizados no cadastro de usuários</label><br>
                 <table style="margin: 0 auto;">
                     <tr>
                         <td>Nível mínimo para INSERIR ocorrência:</td>

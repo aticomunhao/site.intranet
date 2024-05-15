@@ -16,6 +16,14 @@ session_start();
             .quadro{
                 position: relative; float: left; text-align: center; margin: 5px; width: 95%; padding: 2px; padding-top: 5px;
             }
+            .modalMsg-content{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 7% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 50%; /* acertar de acordo com a tela */
+            }
         </style>
         <script>
              function ajaxIni(){
@@ -561,6 +569,13 @@ session_start();
                 document.getElementById("relacmodalEncam").style.display = "none";
             }
 
+            function carregaHelpBens(){
+                document.getElementById("relacHelpBens").style.display = "block";
+            }
+            function fechaModalHelp(){
+                document.getElementById("relacHelpBens").style.display = "none";
+            }
+
             function validaData (valor) { // tks ao Arthur Ronconi  - https://devarthur.com/blog/funcao-para-validar-data-em-javascript
                 // Verifica se a entrada é uma string
                 if (typeof valor !== 'string') {
@@ -663,7 +678,7 @@ session_start();
             <div class="row">
                 <div class="col quadro"><button class="botpadrGr fundoAmarelo" id="botInsReg" onclick="abreRegistro();" >Registro de Recebimento</button></div>
                 <div class="col quadro"><h5>Registro de Bens Encontrados</h5></div> <!-- Central - espaçamento entre colunas  -->
-                <div class="col quadro"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpOcor();" title="Guia rápido"></div> 
+                <div class="col quadro"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpBens();" title="Guia rápido"></div> 
             </div>
         </div>
         <br>
@@ -1006,6 +1021,22 @@ session_start();
                 </div>
            </div>
         </div> <!-- Fim Modal-->
-
+        <!-- div modal para leitura instruções -->
+        <div id="relacHelpBens" class="relacmodal">
+            <div class="modalMsg-content">
+                <span class="close" onclick="fechaModalHelp();">&times;</span>
+                <h4 style="text-align: center; color: #666;">Informações</h4>
+                <h5 style="text-align: center; color: #666;">Bens Encontrados</h5>
+                <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
+                    Regras inseridas:
+                    <ul>
+                        <li>1 - Bens encontrados no recinto devem ser encaminhados para guarda da Diretoria Administrativa e Financeira (DAF).</li>
+                        <li>2 - Todos os usuários do site podem ver a relação dos objetos encontrados.</li>
+                        <li>3 - Alguns funcionários são autorizados a registrar e dar andamento aos processos.</li>
+                        <li>4 - Após noventa dias o programa abre a possibilidade de encaminhamento para doação, descarte, destruição, venda, etc.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>  <!-- Fim Modal Help-->
     </body>
 </html>

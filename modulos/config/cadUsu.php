@@ -141,6 +141,13 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("preencheLro").checked = false;
                                     }
+
+                                    if(parseInt(Resp.lroFiscaliza) === 1){
+                                        document.getElementById("fiscalizaLro").checked = true;
+                                    }else{
+                                        document.getElementById("fiscalizaLro").checked = false;
+                                    }
+                                    
                                     if(parseInt(Resp.bens) === 1){
                                         document.getElementById("preencheBens").checked = true;
                                     }else{
@@ -185,6 +192,11 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("preencheLro").checked === true){
                     Lro = 1;
                 }
+                FiscLro = 0;
+                if(document.getElementById("fiscalizaLro").checked === true){
+                    FiscLro = 1;
+                }
+
                 Bens = 0;
                 if(document.getElementById("preencheBens").checked === true){
                     Bens = 1;
@@ -200,6 +212,7 @@ if(!isset($_SESSION["usuarioID"])){
                         +"&setor="+document.getElementById("setor").value
                         +"&flAdm="+document.getElementById("flAdm").value
                         +"&lro="+Lro
+                        +"&fisclro="+FiscLro
                         +"&bens="+Bens, true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
@@ -508,6 +521,9 @@ if(!isset($_SESSION["usuarioID"])){
 //                FROM pessoas INNER JOIN cesb.poslog ON pessoas.id = cesb.poslog.pessoas_id  ') 
 //                t (id int, cpf text, nome_completo text, ativo text, logini text, codsetor int);" );
 
+//Provisório
+        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisclro smallint NOT NULL DEFAULT 0;"); // 1 - fiscalizar o LRO 
+
         $rs0 = pg_query($ConecPes, "SELECT ".$xPes.".pessoas.id, ".$xPes.".pessoas.cpf, ".$xPes.".pessoas.nome_completo 
         FROM ".$xPes.".pessoas  
         WHERE pessoas.id != 0 And nome_completo IS NOT NULL ORDER BY nome_completo");
@@ -687,12 +703,21 @@ if(!isset($_SESSION["usuarioID"])){
                     </tr>
                     <tr>
                         <td colspan="6"><hr style="margin: 3px; padding: 2px;"></td>
-                    </tr>  
+                    </tr>
+
                     <tr>
-                        <td class="etiq80" title="Pode registrar ocorrências no LRO">Escala Portaria:</td>
+                        <td class="etiq80" title="Pode registrar ocorrências no LRO">Preenchar o LRO:</td>
                         <td colspan="5">
                             <input type="checkbox" id="preencheLro" title="Registrar ocorrências no LRO" onchange="modif();" >
-                            <label for="preencheLro" title="Registrar ocorrências no LRO">acesso ao Livro de Registro de Ocorrências</label>
+                            <label for="preencheLro" title="Registrar ocorrências no LRO">preencher o Livro de Registro de Ocorrências</label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq80" title="Fiscaliza os registros de ocorrências no LRO">Administrar LRO:</td>
+                        <td colspan="5">
+                            <input type="checkbox" id="fiscalizaLro" title="Fiscalizar os registros de ocorrências no LRO" onchange="modif();" >
+                            <label for="fiscalizaLro" title="Fiscalizar os registros de ocorrências no LRO">fiscalizar o Livro de Registro de Ocorrências</label>
                         </td>
                     </tr>
 

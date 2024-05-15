@@ -25,6 +25,7 @@ if($Acao=="buscaReg"){
             $Data = $tbl[0];
             $CodUsu = $tbl[7];
             $NomeIns = "";
+
             $rs0 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodUsu");
             $row0 = pg_num_rows($rs0);
             if($row0 > 0){
@@ -44,6 +45,7 @@ if($Acao=="buscaReg"){
             }else{
                 $NomeAnt = "";
             }
+
             $rs2 = pg_query($Conec, "SELECT descturno FROM ".$xProj.".livroturnos WHERE codturno = $tbl[3]");
             $row2 = pg_num_rows($rs2);
             if($row2 > 0){
@@ -53,11 +55,26 @@ if($Acao=="buscaReg"){
                 $DescTurno = "";
             }
 
-            $Lro = $_SESSION["acessoLRO"];
-            if($_SESSION["AdmUsu"] > 6){
-                $Lro = 1; // superusuário tem acesso ao LRO
+            //Tem que ser separado da query $rs
+            $rs3 = pg_query($Conec, "SELECT lro, fisclro FROM ".$xProj.".poslog WHERE pessoas_id = ". $_SESSION['usuarioID']."");
+            $row3 = pg_num_rows($rs3);
+            if($row3 > 0){
+                $tbl3 = pg_fetch_row($rs3);
+                $Lro = $tbl3[0];
+                if($_SESSION["AdmUsu"] > 6){
+                    $Lro = 1; // superusuário tem acesso ao LRO
+                }
+                $FiscLro = $tbl3[1];
+                if($_SESSION["AdmUsu"] > 6){
+                    $FiscLro = 1; // superusuário tem acesso ao LRO
+                }
+            }else{
+                $Lro = 0;
+                $FiscLro = 0;
             }
-            $var = array("coderro"=>$Erro, "data"=>$Data, "codusuins"=>$tbl[7], "nomeusuins"=>$NomeIns, "usuant"=>$tbl[2], "nomeusuant"=>$NomeAnt, "turno"=>$tbl[3], "descturno"=>$DescTurno, "numrelato"=>$tbl[4], "enviado"=>$tbl[5], "relato"=>$tbl[6], "acessoLro"=>$Lro);
+
+
+            $var = array("coderro"=>$Erro, "data"=>$Data, "codusuins"=>$tbl[7], "nomeusuins"=>$NomeIns, "usuant"=>$tbl[2], "nomeusuant"=>$NomeAnt, "turno"=>$tbl[3], "descturno"=>$DescTurno, "numrelato"=>$tbl[4], "enviado"=>$tbl[5], "relato"=>$tbl[6], "acessoLro"=>$Lro, "fiscalizaLro"=>$FiscLro);
         }else{
             $var = array("coderro"=>$Erro);
         }
@@ -115,7 +132,6 @@ if($Acao=="salvaReg"){
 
         $Sql = pg_query($Conec, "INSERT INTO ".$xProj.".livroreg (id, codusu, usuant, turno, descturno, dataocor, datains, ativo, numrelato, relato, enviado) 
         VALUES($CodigoNovo, $UsuIns, $UsuAnt, $Turno, '$DescTurno', '$RevData', NOW(), 1, '$NumRelat', '$Relato', $Envia)");
-//        VALUES($CodigoNovo, $UsuIns, $UsuAnt, $Turno, '$DescTurno', '$RevData', NOW(), 1, CONCAT('$Num', '/', '$y'), '$Relato', $Envia)");
         if(!$Sql){
             $Erro = 1;
         }else{
@@ -144,12 +160,28 @@ if($Acao=="salvaRegEnv"){
     echo $responseText;
 }
 
+if($Acao=="AcessoLro"){
+    $Erro = 0;
+    $rs1 = pg_query($Conec, "SELECT lro, fisclro FROM ".$xProj.".poslog WHERE pessoas_id = ".$_SESSION["usuarioID"]. " ");
+    $row1 = pg_num_rows($rs1);
+    if($row1 > 0){
+       $tbl1 = pg_fetch_row($rs1);
+       $Lro = $tbl1[0];
+       $FiscLro = $tbl1[1];
+    }else{
+        $Erro = 1;
+        $Lro = 0;
+        $FiscLro = 0; 
+    }
+    $var = array("coderro"=>$Erro, "lro"=>$Lro, "fisclro"=>$FiscLro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
 
 if($Acao=="buscaAcessoLro"){
     $Data = addslashes($_REQUEST['geradata']); 
     $Turno = (int) filter_input(INPUT_GET, 'geraturno');
     $Erro = 0;
-    $Lro = $_SESSION["acessoLRO"];
 
     $rs2 = pg_query($Conec, "SELECT descturno FROM ".$xProj.".livroturnos WHERE codturno = $Turno");
     $row2 = pg_num_rows($rs2);
@@ -164,11 +196,24 @@ if($Acao=="buscaAcessoLro"){
     $row1 = pg_num_rows($rs1);
     if($row1 > 0){
        $tbl1 = pg_fetch_row($rs1);
-       $NumRelat = $tbl1 [1];
+       $NumRelat = $tbl1[1];
     }else{
         $NumRelat = "";
     }
-      $var = array("coderro"=>$Erro, "acessoLro"=>$Lro, "jatem"=>$row1, "descturno"=>$DescTurno, "numrelato"=>$NumRelat);
+
+    $rs3 = pg_query($Conec, "SELECT lro, fisclro FROM ".$xProj.".poslog WHERE pessoas_id = ".$_SESSION["usuarioID"]." ");
+    $row3 = pg_num_rows($rs3);
+    if($row3 > 0){
+       $tbl3 = pg_fetch_row($rs3);
+       $Lro = $tbl3[0];
+       $FiscLro = $tbl3[1];
+    }else{
+        $Erro = 1;
+        $Lro = 0;
+        $FiscLro = 0; 
+    }
+
+    $var = array("coderro"=>$Erro, "acessoLro"=>$Lro, "fisclro"=>$FiscLro, "jatem"=>$row1, "descturno"=>$DescTurno, "numrelato"=>$NumRelat);
     $responseText = json_encode($var);
     echo $responseText;
 }

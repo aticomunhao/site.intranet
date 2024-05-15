@@ -29,19 +29,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 $id = data[1];
                 document.getElementById("guardacod").value = $id; 
                 if($id !== ""){
-                    if(parseInt(document.getElementById("acessoLRO").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
-                        mostraModal($id);
-                    }else{
-                        $.confirm({
-                            title: 'Informação!',
-                            content: 'Usuário não cadastrado para acesso ao LRO. <br>O acesso é proporcionado pela ATI.',
-                            autoClose: 'OK|7000',
-                            draggable: true,
-                                buttons: {
-                                    OK: function(){}
-                                }
-                        });
-                    }
+                    mostraModal($id);
                 }
             });
         </script>
@@ -58,9 +46,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             WHERE ".$xProj.".livroreg.ativo = 1 And AGE(".$xProj.".livroreg.dataocor, CURRENT_DATE) <= '1 YEAR' 
             ORDER BY ".$xProj.".livroreg.dataocor DESC, ".$xProj.".livroreg.turno ASC, ".$xProj.".livroreg.descturno");
             ?>
-            <input type="hidden" id="acessoLRO" value="<?php echo $_SESSION["acessoLRO"] ?>" />
-            <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
-
             <table id="idTabela" class="display" style="width:85%">
                 <thead>
                     <tr>
