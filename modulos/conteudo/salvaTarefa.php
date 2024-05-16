@@ -30,18 +30,28 @@ if($Acao=="mudaStatus"){
     }
 
     //procura a situação Sit no bd
-    $rs0 = pg_query($Conec, "SELECT sit FROM ".$xProj.".tarefas WHERE idtar = $Num");
+    $rs0 = pg_query($Conec, "SELECT sit, to_char(datasit2, 'YYYY/MM/DD'), to_char(datasit3, 'YYYY/MM/DD') FROM ".$xProj.".tarefas WHERE idtar = $Num");
     $tbl = pg_fetch_row($rs0);
     $SitOrig = $tbl[0];
+    $DataSit2 = $tbl[1];
+    $DataSit3 = $tbl[2];
 
     $Erro = 0;
     if($Sit > $SitOrig){ // Não deixa voltar a tarefa
         if($Num > 0){
-//            $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET sit = $Sit, datasit".$Sit." = NOW(), usumodifsit = $UsuModif, ativo = IF($Sit = 4, 2, $Ativo) WHERE idtar = $Num");
             if($Sit == 4){
                 $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET sit = $Sit, datasit".$Sit." = NOW(), usumodifsit = $UsuModif, ativo = 2 WHERE idtar = $Num");
+                if($DataSit2 == '3000/12/31'){ // passou direto para Terminada
+                    $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit2 = NOW() WHERE idtar = $Num");
+                }
+                if($DataSit3 == '3000/12/31'){ // passou direto para Terminada
+                    $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit3 = NOW() WHERE idtar = $Num");
+                }
             }else{
                 $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET sit = $Sit, datasit".$Sit." = NOW(), usumodifsit = $UsuModif, ativo = $Ativo WHERE idtar = $Num");
+                if($Sit == 3 && $DataSit2 == '3000/12/31'){ // passou direto para Em andamento
+                    $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit2 = NOW() WHERE idtar = $Num");
+                }
             }
             if(!$Sql){
                 $Erro = 1;

@@ -513,15 +513,15 @@ if(!isset($_SESSION["usuarioID"])){
                         echo "<tr>";  //Primeira coluna à esquerda - data e nomes
                         echo "<td style='vertical-align: top;'><div style='padding-bottom: 8px; padding-top: 2px; color: #808080;'><sup>Em $DataInsert para:</sup></div>";
                             echo "<div class='etiqLat'>" . $NomeExec;
-                            echo "<div style='position: relative; top: -10px; font-size: .5em; text-align: center;'> <sub>Ciência em: " . $DataVisu . "</sub></div>";
+                            echo "<div style='position: relative; top: -10px; font-size: .5em; text-align: center;'> <sub>Ciência: " . $DataVisu . "</sub></div>";
                             if($DataSit2 != "31/12/3000 00:00"){
-                                echo "<div style='position: relative; top: -13px; font-size: .5em; text-align: center;'> <sub>Aceita em: " . $DataSit2 . "</sub></div>";
+                                echo "<div style='position: relative; top: -13px; font-size: .5em; text-align: center;'> <sub>Aceita: " . $DataSit2 . "</sub></div>";
                             }
                             if($DataSit3 != "31/12/3000 00:00"){
-                                echo "<div style='position: relative; top: -13px; font-size: .5em; text-align: center;'> <sub>Em andamento em: " . $DataSit3 . "</sub></div>";
+                                echo "<div style='position: relative; top: -13px; font-size: .5em; text-align: center;'> <sub>Andamento: " . $DataSit3 . "</sub></div>";
                             }
                             if($DataSit4 != "31/12/3000 00:00"){
-                                echo "<div style='position: relative; top: -13px; font-size: .5em; text-align: center; color: blue;'> <sub>Terminada em: " . $DataSit4 . "</sub></div>";
+                                echo "<div style='position: relative; top: -13px; font-size: .5em; text-align: center; color: blue;'> <sub>Terminada: " . $DataSit4 . "</sub></div>";
                             }
 
                         echo "</div>";

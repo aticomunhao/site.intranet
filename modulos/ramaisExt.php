@@ -49,9 +49,17 @@ session_start();
                 $id = data[1];
                 document.getElementById("guardaid_click").value = $id;
                 if($id !== ""){
-                    if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value)){
-                        carregaModal($id);
+                    if(parseInt(document.getElementById("UsuAdm").value) < parseInt(document.getElementById("admEdit").value)){
+                        document.getElementById("SiglaEmpresa").disabled = true;
+                        document.getElementById("NomeEmpresa").disabled = true;
+                        document.getElementById("Setor").disabled = true;
+						document.getElementById("ContatoNome").disabled = true;
+                        document.getElementById("TelefoneFixo").disabled = true;
+                        document.getElementById("TelefoneCel").disabled = true;
+                        document.getElementById("salvar").style.visibility = "hidden"; // botão salvar
+                        document.getElementById("titulomodal").innerHTML = "Telefones Úteis";
                     }
+                    carregaModal($id);
                 }
             });
             
@@ -76,6 +84,7 @@ session_start();
                 if(parseInt(document.getElementById("UsuAdm").value) < parseInt(document.getElementById("admIns").value)){ // acima de Registrado
                     document.getElementById("botapagar").style.visibility = "hidden"; // botão para apagar
                     document.getElementById("botinserir").style.visibility = "hidden"; // botão de inserir
+                    document.getElementById("salvar").style.visibility = "hidden"; // botão salvar
                 }
                 modalEdit = document.getElementById('relacmodal'); //span[0]
                 spanEdit = document.getElementsByClassName("close")[0];
@@ -101,7 +110,7 @@ session_start();
 								document.getElementById("ContatoNome").value = Resp.ContatoNome;
                                 document.getElementById("TelefoneFixo").value = Resp.TelefoneFixo;
                                 document.getElementById("TelefoneCel").value = Resp.TelefoneCel;
-                                document.getElementById("titulomodal").innerHTML = "Edição de Telefones Úteis";
+//                                document.getElementById("titulomodal").innerHTML = "Edição de Telefones Úteis";
                                 document.getElementById("botapagar").disabled = false;
                                 document.getElementById("mudou").value = "0";
                                 document.getElementById("relacmodal").style.display = "block";
@@ -307,7 +316,7 @@ session_start();
        <div id="relacmodal" class="relacmodal">  <!-- ("close")[0] -->
             <div class="modal-content-Telef">
                 <span class="close" onclick="fechaModal();">&times;</span>
-                <h3 id="titulomodal" style="text-align: center; color: #666;">Edição de Ramal Telefônico</h3>
+                <h4 id="titulomodal" style="text-align: center; color: #666;">Edição de Ramal Telefônico</h4>
                 <table style="margin: 0 auto;">
                     <tr>
                         <td id="etiqNome" class="etiq">Sigla/Nome</td>
@@ -336,7 +345,7 @@ session_start();
                     </tr>                    
                     <tr>
                         <td class="etiq" style="text-align: left;"><input type="button" class="resetbotred" id="botapagar" value="Apagar" onclick="deletaModal();"></td>
-                        <td colspan="3" style="text-align: right; padding-right: 50px;"><input type="button" class="resetbotazul" name="salvar" id="salvar" value="Salvar" onclick="salvaModal();"></td>
+                        <td colspan="3" style="text-align: right; padding-right: 50px;"><input type="button" class="resetbotazul" id="salvar" value="Salvar" onclick="salvaModal();"></td>
                     </tr>
                 </table>
            </div>
