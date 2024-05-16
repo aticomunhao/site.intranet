@@ -1,7 +1,7 @@
 <?php
 session_start(); 
 if(!isset($_SESSION["usuarioID"])){
-    header("Location: /cesb/index.php");
+    header("Location: ../../index.php");
 }
 require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 $Acao = "";
@@ -72,7 +72,6 @@ if($Acao=="buscaReg"){
                 $Lro = 0;
                 $FiscLro = 0;
             }
-
 
             $var = array("coderro"=>$Erro, "data"=>$Data, "codusuins"=>$tbl[7], "nomeusuins"=>$NomeIns, "usuant"=>$tbl[2], "nomeusuant"=>$NomeAnt, "turno"=>$tbl[3], "descturno"=>$DescTurno, "numrelato"=>$tbl[4], "enviado"=>$tbl[5], "relato"=>$tbl[6], "acessoLro"=>$Lro, "fiscalizaLro"=>$FiscLro);
         }else{
@@ -221,17 +220,32 @@ if($Acao=="buscaTurno"){
     $Data = addslashes($_REQUEST['datareg']); 
     $Turno = (int) filter_input(INPUT_GET, 'turnoreg');
     $Erro = 0;
+    $CodUsu = 0;
 
-    $rs1 = pg_query($Conec, "SELECT id, numrelato FROM ".$xProj.".livroreg WHERE to_char(dataocor, 'DD/MM/YYYY') = '$Data' And turno = $Turno");
+    $rs1 = pg_query($Conec, "SELECT id, numrelato, codusu FROM ".$xProj.".livroreg WHERE to_char(dataocor, 'DD/MM/YYYY') = '$Data' And turno = $Turno");
     $row1 = pg_num_rows($rs1);
     if($row1 > 0){
        $tbl1 = pg_fetch_row($rs1);
-       $NumRelat = $tbl1 [1];
+       $NumRelat = $tbl1[1];
+       $CodUsu = $tbl1[2];
     }else{
         $NumRelat = "";
     }
 
-    $var = array("coderro"=>$Erro, "jatem"=>$row1, "numrelato"=>$NumRelat);
+    if($CodUsu > 0){
+        if($CodUsu != $_SESSION["usuarioID"]){
+            $rs2 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodUsu");
+            $row2 = pg_num_rows($rs2);
+            $tbl2 = pg_fetch_row($rs2);
+            $NomeFunc = $tbl2[0];
+        }else{
+            $NomeFunc = $_SESSION["NomeCompl"];
+        }
+    }else{
+        $NomeFunc = "";
+    }
+
+    $var = array("coderro"=>$Erro, "jatem"=>$row1, "numrelato"=>$NumRelat, "codusu"=>$CodUsu, "nomeusu"=>$NomeFunc);
     $responseText = json_encode($var);
     echo $responseText;
 }

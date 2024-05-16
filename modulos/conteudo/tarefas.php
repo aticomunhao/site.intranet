@@ -1,7 +1,7 @@
 <?php
 session_start();
 if(!isset($_SESSION["usuarioID"])){
-    header("Location: /cesb/index.php");
+    header("Location: ../../index.php");
 }
 ?>
 <!DOCTYPE html>
@@ -199,7 +199,7 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
-alert(ajax.responseText);
+//alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 document.getElementById("idExecSelect").value = Resp.usuExec;
                                 document.getElementById("textoEvid").value = Resp.TitTarefa;

@@ -2,7 +2,7 @@
 session_start();
 require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 if(!isset($_SESSION["usuarioID"])){
-    header("Location: /cesb/index.php");
+    header("Location: ../../index.php");
 }
 ?>
 <!DOCTYPE html>

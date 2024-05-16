@@ -2,7 +2,7 @@
 session_start();
 require_once("abrealas.php");
 if(!isset($_SESSION["usuarioID"])){
-    header("Location: /cesb/index.php");
+    header("Location: ../../index.php");
 }
 ?>
 <!DOCTYPE html>
@@ -676,7 +676,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td style="text-align: right;"><button disabled id="ressetsenha" class="resetbot" style="font-size: .9rem;" onclick="resetSenha();">Ressetar Senha</button></td>
+                        <td style="text-align: right;"><button disabled id="ressetsenha" class="resetbot" style="font-size: .9rem;" onclick="resetSenha();">Ressetar Senha</button></td> <!-- https://www.dicionarioinformal.com.br/ressetar/ -->
                     </tr>
                     <tr>
                         <td class="etiq80">Nível Administrativo</td>

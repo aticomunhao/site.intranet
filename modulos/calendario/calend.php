@@ -1,8 +1,7 @@
 <?php
 session_start(); 
 if(!isset($_SESSION["usuarioID"])){
-    header("Location: /cesb/index.php");
-    //setInterval("checaCalend()", 3600000) está no indexb.php
+    header("Location: ../../index.php");
 }
 ?>
 <!DOCTYPE html>

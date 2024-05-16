@@ -546,10 +546,23 @@ session_start();
             }
             function imprRestit(){
                 if(document.getElementById("nomeproprietario").value === ""){
-                    alert("Insira o nome do proprietário.");
-                    return false;
+                    $.confirm({
+                        title: 'Confirmação!',
+                        content: 'Quer imprimir sem o nome do proprietário?',
+                        autoClose: 'Não|10000',
+                        draggable: true,
+                        buttons: {
+                            Sim: function () {
+                                window.open("modulos/bensachados/imprReg.php?acao=imprReciboRest&codigo="+document.getElementById("guardacod").value+"&nomeproprietario="+document.getElementById("nomeproprietario").value+"&cpfproprietario="+document.getElementById("cpfproprietario").value+"&telefproprietario="+document.getElementById("telefproprietario").value, document.getElementById("guardacod").value);
+                            },
+                            Não: function () {
+                                document.getElementById("nomeproprietario").focus();
+                            }
+                        }
+                    });
+                }else{
+                    window.open("modulos/bensachados/imprReg.php?acao=imprReciboRest&codigo="+document.getElementById("guardacod").value+"&nomeproprietario="+document.getElementById("nomeproprietario").value+"&cpfproprietario="+document.getElementById("cpfproprietario").value+"&telefproprietario="+document.getElementById("telefproprietario").value, document.getElementById("guardacod").value);
                 }
-                window.open("modulos/bensachados/imprReg.php?acao=imprReciboRest&codigo="+document.getElementById("guardacod").value+"&nomeproprietario="+document.getElementById("nomeproprietario").value+"&cpfproprietario="+document.getElementById("cpfproprietario").value+"&telefproprietario="+document.getElementById("telefproprietario").value, document.getElementById("guardacod").value);
             }
 
             function fechaModalTransf(){
@@ -659,7 +672,6 @@ session_start();
             echo "Sem contato com o PostGresql";
             return false;
         }
-
         $rs = pg_query($Conec, "SELECT column_name, data_type, character_maximum_length FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'livroreg'");
         $row = pg_num_rows($rs);
         if($row == 0){
@@ -1033,7 +1045,7 @@ session_start();
                         <li>1 - Bens encontrados no recinto devem ser encaminhados para guarda da Diretoria Administrativa e Financeira (DAF).</li>
                         <li>2 - Todos os usuários do site podem ver a relação dos objetos encontrados.</li>
                         <li>3 - Alguns funcionários são autorizados a registrar e dar andamento aos processos.</li>
-                        <li>4 - Após noventa dias o programa abre a possibilidade de encaminhamento para doação, descarte, destruição, venda, etc.</li>
+                        <li>4 - Após noventa dias são abertos os recursos de encaminhamento para doação, descarte, destruição, venda, etc.</li>
                     </ul>
                 </div>
             </div>
