@@ -14,12 +14,17 @@ if(isset($_REQUEST["acao"])){
 }
 
 if($Acao =="loglog"){
-    $Usu = filter_input(INPUT_GET, 'usuario'); 
+    $Cpf = filter_input(INPUT_GET, 'usuario'); 
+    $Cpf1 = addslashes($Cpf);
+    $Cpf2 = str_replace(".", "", $Cpf1);
+    $Usu = str_replace("-", "", $Cpf2);
+    $Login = removeInj($Usu);
+
     $Sen = filter_input(INPUT_GET, 'senha');
+    $Sen = removeInj($Sen);
+
     $Erro = 0;
     $Erro_Msg = "";
-    $Login = removeInj($Usu);
-    $Sen = removeInj($Sen);
     $id = 0; 
 
     if($Conec != "sConec" && $Conec != "sFunc"){
@@ -41,7 +46,7 @@ if($Acao =="loglog"){
             $row1 = pg_num_rows($rs1);
             if($row1 == 1){ // está no arquivo poslog
                 $tbl1 = pg_fetch_row($rs1);
-            
+
                 if(password_verify($Sen, $tbl1[0])){
                     $tbl0 = pg_fetch_row($rs0);
                     $rs = pg_query($ConecPes, "SELECT ".$xPes.".pessoas.id, ".$xPes.".pessoas.cpf, ".$xPes.".pessoas.nome_completo, TO_CHAR(".$xPes.".pessoas.dt_nascimento, 'DD/MM/YYYY'), TO_CHAR(".$xPes.".pessoas.dt_nascimento, 'DD'), TO_CHAR(".$xPes.".pessoas.dt_nascimento, 'MM'), sexo 

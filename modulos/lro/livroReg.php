@@ -14,6 +14,16 @@ date_default_timezone_set('America/Sao_Paulo');
         <script src="class/dataTable/datatables.min.js"></script>
         <script src="comp/js/jquery-confirm.min.js"></script> <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
         <script src="comp/js/jquery.mask.js"></script>
+        <style>
+            .modalMsg-content{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 7% auto; /* 10% do topo e centrado */
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 50%; /* acertar de acordo com a tela */
+            }
+        </style>
         <script>
              function ajaxIni(){
                 try{
@@ -423,6 +433,7 @@ date_default_timezone_set('America/Sao_Paulo');
             }
             
             function modifTurno(){
+                if(document.getElementById("selecturno").value != ""){
                 document.getElementById("mudou").value = "1";
                 document.getElementById("jatem").value = "0";
                 ajaxIni();
@@ -439,25 +450,41 @@ date_default_timezone_set('America/Sao_Paulo');
                                     if(parseInt(Resp.jatem) > 0){
                                         document.getElementById("jatem").value = "1";
                                         document.getElementById("numrelato").value = Resp.numrelato;
-                                        $.confirm({
-                                            title: 'Confirmação!',
-                                            content: 'Parece que este turno já foi lançado. Confirma redigir outro registro?',
-                                            draggable: true,
-                                            buttons: {
-                                                Sim: function () {
-                                                    //continua
-                                                },
-                                                Não: function () {
-                                                    document.getElementById("relacmodalReg").style.display = "none";
+                                        if(parseInt(Resp.codusu) !== parseInt(document.getElementById("guardaUsuId").value)){ // turno de outro funcionário
+                                           
+                                            $.confirm({
+                                                title: 'Informação!',
+                                                content: 'Este turno foi cumprido por '+Resp.nomeusu,
+                                                draggable: true,
+                                                buttons: {
+                                                    OK: function(){
+                                                        document.getElementById("relacmodalReg").style.display = "none";
+                                                    }
                                                 }
-                                            }
-                                        });
+                                            });
+                                            return false;
+                                        }else{
+                                            $.confirm({
+                                                title: 'Confirmação!',
+                                                content: 'Parece que este turno já foi lançado. Confirma redigir outro registro?',
+                                                draggable: true,
+                                                buttons: {
+                                                    Sim: function () {
+                                                        //continua
+                                                    },
+                                                    Não: function () {
+                                                        document.getElementById("relacmodalReg").style.display = "none";
+                                                    }
+                                                }
+                                            });
+                                        }
                                     }
                                 }
                             }
                         }
                     };
                     ajax.send(null);
+                }
                 }
             }
 
@@ -470,6 +497,12 @@ date_default_timezone_set('America/Sao_Paulo');
             }
             function fechaMostraModal(){
                 document.getElementById("relacMostramodalReg").style.display = "none";
+            }
+            function carregaHelpLRO(){
+                document.getElementById("relacHelpLRO").style.display = "block";
+            }
+            function fechaHelpLRO(){
+                document.getElementById("relacHelpLRO").style.display = "none";
             }
             function imprReg(){
                 if(parseInt(document.getElementById("guardacod").value) != 0){
@@ -567,8 +600,6 @@ date_default_timezone_set('America/Sao_Paulo');
         <input type="hidden" id="acessoLRO" value="<?php echo $Lro; ?>" />
         <input type="hidden" id="fiscalLRO" value="<?php echo $FiscLro; ?>" />
 
-
-
         <div style="margin: 20px; border: 2px solid green; border-radius: 15px; padding: 20px; min-height: 70px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
                 <input type="button" id="botinserir" class="botpadr" value="Inserir Registro" onclick="InsRegistro();">
@@ -576,6 +607,10 @@ date_default_timezone_set('America/Sao_Paulo');
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <h5>Livro de Registro de Ocorrências</h5>
             </div>
+            <div class="box" style="position: relative; float: left; width: 33%; text-align: right;">
+                <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpLRO();" title="Guia rápido">
+            </div>
+
             <div id="carregaReg"></div>
         </div>
 
@@ -671,5 +706,27 @@ date_default_timezone_set('America/Sao_Paulo');
                 </div>
            </div>
         </div> <!-- Fim Modal-->
+
+        <!-- div modal para leitura instruções -->
+        <div id="relacHelpLRO" class="relacmodal">
+            <div class="modalMsg-content">
+                <span class="close" onclick="fechaHelpLRO();">&times;</span>
+                <h4 style="text-align: center; color: #666;">Informações</h4>
+                <h5 style="text-align: center; color: #666;">Livro de Registro de Ocorrências</h5>
+                <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
+                    Regras inseridas:
+                    <ul>
+                        <li>1 - O Livro de Registro de Ocorrências (LRO) destina-se a registrar os acontecimentos durante os turnos de serviço na portaria.</li>
+                        <li>2 - O funcionário destacado para o serviço deve anotar ao final do turno (botão Inserir Registro) tudo o que ocorreu durante seu serviço.</li>
+                        <li>3 - Se quiser, o funcionário pode iniciar o registro (botão Inserir Registro) já no início do turno, salvar e deixar para enviar o relato ao final do serviço.</li>
+                        <li>4 - Ao salvar o registro, ele aparecerá no topo da relação e pode ser editado até o final do turno. Basta clicar sobre linha do registro e depois em Editar na caixa que aparece.</li>
+                        <li>5 - Ao final do turno um clique no botão Enviar encerra o serviço e envia o relato para a administração.</li>
+                        <li>6 - Depois de enviado o registro não poderá mais ser alterado.</li>
+                        <li>7 - Caso haja necessidade de complementar o registro depois de enviado, é possível inserir outro registro para o mesmo turno no mesmo dia.</li>
+                        <li>8 - Esse segundo registro terá o mesmo número e será nomeado como complementar. Não pode ser feito em outro dia.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>  <!-- Fim Modal Help-->
     </body>
 </html>

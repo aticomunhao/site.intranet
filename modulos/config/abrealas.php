@@ -1,18 +1,22 @@
 <?php
 require_once("dbcclass.php");
+$url = $_SERVER["PHP_SELF"];
+if(strtolower($url) == $urlIni."modulos/config/abrealas.php"){
+   $_SESSION["usuarioID"] = 0;
+   header("Location: $urlIni");
+}
 
-$Conec = conecPost(); // habilitar a extensão: extension=pgsql no phpini
+$Conec = conecPost(); // habilitar a extensão: extension = pgsql no phpini
 if($Conec != "sConec" && $Conec != "sFunc"){
-   $xProj =  "cesb";  //$_SESSION["Projeto"]; 
+   $xProj =  "cesb"; 
    $xPes = "public";
-//   echo "Conectado";
 }else{
    die("<br>Não foi possível conectar-se ao banco de dados.");
 }
 
 $ConecPes = conecPes();
 if($ConecPes != "sConec" && $Conec != "sFunc"){
-   $xProj =  "cesb";  //$_SESSION["Projeto"]; 
+   $xProj =  "cesb";
    $xPes = "public";
 }else{
    die("<br>Não foi possível conectar-se ao banco de dados de pessoal.");

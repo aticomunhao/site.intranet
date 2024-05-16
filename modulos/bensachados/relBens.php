@@ -78,6 +78,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     $Edit = 1;
                 }
             }
+            if($_SESSION["AdmUsu"] > 6){
+                $Edit = 1;
+            }
             ?>
             <table id="idTabela" class="display" style="width:85%">
                 <thead>

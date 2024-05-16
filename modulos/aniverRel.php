@@ -3,7 +3,7 @@
    if(file_exists("config/abrealas.php")){
     include_once("config/abrealas.php");
     if(!isset($_SESSION["usuarioID"])){
-        header("Location: /cesb/index.php");
+        header("Location: ../index.php");
     }
  }else{
     echo "404 - Not Found";

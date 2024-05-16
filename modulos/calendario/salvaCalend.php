@@ -1,41 +1,44 @@
 <?php
-session_start(); // inicia uma sessão
+session_start();
 if(!isset($_SESSION["usuarioID"])){
-    header("Location: /cesb/index.php");
+    header("Location: ../../index.php");
 }
+
 require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
+
 date_default_timezone_set('America/Sao_Paulo'); 
 if(isset($_REQUEST["acao"])){
     $Acao = $_REQUEST["acao"];
-}
-if($Acao =="busca"){
-    $Sent = (int) filter_input(INPUT_GET, 'sentido');
-    $time = (int) filter_input(INPUT_GET, 'monthTime');
-    $Erro = 0;
-    if($Sent == 1){
-        $mesAno = prevMonth($time);
-        $numMes = (int) prevNumMes($time);
-        $data = strtotime('-1 month', $time);
-    }
-    if($Sent == 2){
-        $mesAno = nextMonth($time);
-        $numMes = (int) nextNumMes($time);
-        $data = strtotime('+1 month', $time);
-    }
-    $Ingl = array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
-    $Port = array("Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro");
-    $Trad = str_replace($Ingl, $Port, $mesAno);
-    $var = array("result"=>$mesAno, "numMes"=>$numMes, "monthTime"=>$data, "mesTrad"=> $Trad);
-    $responseText = json_encode($var);
-    echo $responseText;
-}
-if($Acao =="buscadata"){
-    $time = filter_input(INPUT_GET, 'dataDia');
-    $date = new DateTime("@$time");
-    $Dia = $date->format('d-m-Y');   //  $var = $date->format('U = Y-m-d H:i:s'); // U é o timestamp unix
 
-    $admIns = parAdm("insevento", $Conec, $xProj);   // nível para inserir 
-    $admEdit = parAdm("editevento", $Conec, $xProj); // nível para editar
+    if($Acao =="busca"){
+        $Sent = (int) filter_input(INPUT_GET, 'sentido');
+        $time = (int) filter_input(INPUT_GET, 'monthTime');
+        $Erro = 0;
+        if($Sent == 1){
+            $mesAno = prevMonth($time);
+            $numMes = (int) prevNumMes($time);
+            $data = strtotime('-1 month', $time);
+        }
+        if($Sent == 2){
+            $mesAno = nextMonth($time);
+            $numMes = (int) nextNumMes($time);
+            $data = strtotime('+1 month', $time);
+        }
+        $Ingl = array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
+        $Port = array("Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro");
+        $Trad = str_replace($Ingl, $Port, $mesAno);
+        $var = array("result"=>$mesAno, "numMes"=>$numMes, "monthTime"=>$data, "mesTrad"=> $Trad);
+        $responseText = json_encode($var);
+        echo $responseText;
+    }
+
+    if($Acao =="buscadata"){
+        $time = filter_input(INPUT_GET, 'dataDia');
+        $date = new DateTime("@$time");
+        $Dia = $date->format('d-m-Y');   //  $var = $date->format('U = Y-m-d H:i:s'); // U é o timestamp unix
+
+        $admIns = parAdm("insevento", $Conec, $xProj);   // nível para inserir 
+        $admEdit = parAdm("editevento", $Conec, $xProj); // nível para editar
 
     $InsEv = 0;
     $EditEv = 0;
@@ -280,3 +283,4 @@ function nextNumMes($time){
     return date('m', strtotime('+1 month', $time));
 }
 
+} // Fim da Acao

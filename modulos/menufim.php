@@ -189,15 +189,19 @@
 			</li>
             <li style="border-right: 0; border-left: 0px;">
 				<?php
-					if($Adm > 3){
-						echo "<a href='#'><img src='imagens/icoadm.png' height='20px;'></a>";
-					}else{
-						echo "<a href='#'><img src='imagens/icousu.png' height='20px;'></a>";
+					if($Adm < 4){
+						echo "<a href='#'><img src='imagens/icousu.png' height='20px;' title='Usuário $Setor'></a>";
+					}
+					if($Adm >= 4 && $Adm < 7){
+						echo "<a href='#'><img src='imagens/icoadm.png' height='20px; title='Administrador $Setor'></a>";
+					}
+					if($Adm > 6){
+						echo "<a href='#'><img src='imagens/icosuper.png' height='20px;' title='Superusuário'></a>";
 					}
 				?>
 			</li>
 			<li>
-				<a href="#" onclick="openhref(98);"><sup>Sair - Encerrar Sessão <div id="nomeLogado"  style="padding-top: 2px;"> <?php echo $Nome; ?></sup> <?php echo $Setor; ?></div></a> <!-- vai para o  -->
+				<a href="#" onclick="openhref(98);"><sup>Sair - Encerrar Sessão <div id="nomeLogado" style="padding-top: 2px;"> <?php echo $Nome; ?></sup> <?php echo $Setor; ?></div></a> <!-- vai para o  -->
 			</li>
         </ul>
     </body>
