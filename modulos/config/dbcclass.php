@@ -7,8 +7,7 @@ if(strtolower($url) == $urlIni."modulos/config/dbcclass.php"){
     function conecPost(){
         if($_SERVER['HTTP_HOST'] == "localhost"){
             $con_string = "host = localhost port=5432 dbname=cesb user=postgres password=postgres";
-        }
-        else{
+        }else{
             $con_string = "host= 192.168.1.143 port=5432 dbname=pessoal user=postgres password=scga2298";
         }
         if(function_exists("pg_pconnect")){ // para o caso de a extension=pgsql não estar habilitada no phpini
