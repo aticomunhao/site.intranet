@@ -9,7 +9,7 @@ session_start();
         <title></title>
     </head>
     <body> 
-        <div style='margin: 20px; border: 3px solid green; border-radius: 10px;'>
+        <div style='margin: 20px; padding-top: 5px; border: 3px solid green; border-radius: 15px;'>
             <table style="margin: 0 auto; border: 0; width: 80%;" >
                 <?php
                 $_SESSION["itrArq"] = "";// guarda o nome da imagem icorporada em postAceptor.php
@@ -28,16 +28,15 @@ session_start();
                         $idSetor = $tbl[2];
                         $LadoEsq = $tbl[4]."<br>".$tbl[5];
                         echo "<tr>";
-                            echo "<td style='width: 30px; texto-align: center;'><div style='margin: 10px; text-alig: center; padding: 10px; border: 1px solid blue; border-radius: 20px;'>$LadoEsq</div>";
+                            echo "<td style='width: 30px; texto-align: center;'><div style='margin: 10px; text-alig: center; padding: 10px; border: 2px solid blue; border-radius: 20px;'>$LadoEsq</div>";
                             if($idSetor == $_SESSION["CodSetorUsu"] && $_SESSION["AdmUsu"] >= $admEdit){
-                                echo"<div style='padding-left: 20px; padding-right: 20px;'>&nbsp;<div class='iContainer' style='width: 70%; font-size: .9rem;' onclick='abreEdit($Cod)'> Editar </div><div class='modalConfirm' data-bs-toggle='modal' data-bs-target='#deletaModal' onclick='guardaCod($Cod)'> &#10008; </div></div>";
+                                echo"<div style='padding-left: 20px; padding-right: 20px;'>&nbsp;<div class='iContainer' style='width: 70%; font-size: 1.1rem;' onclick='abreEdit($Cod)' title='Editar anúncio'> Editar </div><div class='modalConfirm' data-bs-toggle='modal' data-bs-target='#deletaModal' onclick='guardaCod($Cod)' title='Apagar anúncio'> &#10008; </div></div>";
                             }
                             echo "</td>";
-                            echo "<td style='width: 80%;'>".$tbl[3]."</td>";
+                            echo "<td style='width: 80%; '><div style='margin: 10px; padding: 5px; border: 2px solid blue; border-radius: 15px;'>".$tbl[3]."</div></td>";
                         echo "</tr>";
-                        echo "<tr>";
-                            echo "<td colspan='2'><hr></td>";
-                        echo "</tr>";
+                        
+         
                     }
                 }
                 ?>

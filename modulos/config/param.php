@@ -367,8 +367,8 @@
             require_once("abrealas.php");
             $rsSis = pg_query($Conec, "SELECT admvisu, admedit, admcad, insevento, editevento, instarefa, edittarefa, insramais, editramais, instelef, edittelef, 
             editpagina, insarq, insaniver, editaniver, instroca, edittroca, insocor, editocor, insleituraagua, editleituraagua, 
-            TO_CHAR(datainiagua , 'DD/MM/YYYY'), valoriniagua, insleituraeletric, editleituraeletric, TO_CHAR(datainieletric , 'DD/MM/YYYY'), valorinieletric, insaguaindiv, inseletricindiv, inslro, editlro, 
-            insbens, editbens, editbensindiv 
+            TO_CHAR(datainiagua , 'DD/MM/YYYY'), valoriniagua, insleituraeletric, editleituraeletric, TO_CHAR(datainieletric , 'DD/MM/YYYY'), valorinieletric, inslro, editlro, 
+            insbens, editbens  
             FROM ".$xProj.".paramsis WHERE idPar = 1");
             $ProcSis = pg_fetch_row($rsSis);
             $admVisu = $ProcSis[0]; // admVisu - administrador visualiza usuários
@@ -398,24 +398,6 @@
             $rs2 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $editAgua");
             $Proc2 = pg_fetch_row($rs2);
             $nomeEditAgua = $Proc2[0];
-
-            $InsAguaIndiv = $ProcSis[27]; 
-            if($InsAguaIndiv > 0){
-                $rs3 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $InsAguaIndiv");
-                $Proc3 = pg_fetch_row($rs3);
-                $nomeInsAgua = $Proc3[0];
-            }else{
-                $nomeInsAgua = "";
-            }
-
-            $InsEletricIndiv = $ProcSis[28]; 
-            if($InsEletricIndiv > 0){
-                $rs3 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $InsEletricIndiv");
-                $Proc3 = pg_fetch_row($rs3);
-                $nomeInsEletric = $Proc3[0];
-            }else{
-                $nomeInsEletric = "";
-            }
 
             $insLeituraEletric = $ProcSis[23];   // insLeitura - inserção de leitura do medidor
             $rs1 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $insLeituraEletric");
@@ -515,9 +497,6 @@
             $OpAdmInsAgua = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             $OpAdmEditAgua = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
 
-            $OpInsAguaIndiv = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE Ativo = 1 ORDER BY nomecompl"); 
-            $OpInsEletricIndiv = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE Ativo = 1 ORDER BY nomecompl");
-
             $OpAdmInsEletric = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             $OpAdmEditEletric = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
 
@@ -615,21 +594,8 @@
                             ?>
                             </select>
                         </td>
-                        <td title="Autorização para um só usuário realizar as leituras. Sobrepõe-se ao nível mínimo selecionado."> Individual:</td>
-                        <td>
-                        <select id="selectAguaIndiv" onchange="salvaParam(value, 'insaguaindiv');" style="font-size: 1rem; width: 200px;"  title="Autorização para um só usuário realizar as leituras. Sobrepõe-se ao nível mínimo selecionado. Selecione um usuário.">
-                            <option value="<?php echo $InsAguaIndiv; ?>"><?php echo $nomeInsAgua; ?></option>
-                            <option value="0"></option>
-                            <?php 
-                            if($OpInsAguaIndiv){
-                                while ($Opcoes = pg_fetch_row($OpInsAguaIndiv)){ ?>
-                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
-                                <?php 
-                                }
-                            }
-                            ?>
-                            </select>
-                        </td>
+                        <td></td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td></td>
@@ -684,22 +650,8 @@
                             ?>
                             </select>
                         </td>
-
-                        <td title="Autorização para um só usuário realizar as leituras. Sobrepõe-se ao nível mínimo selecionado."> Individual:</td>
-                        <td>
-                        <select id="selectAguaIndiv" onchange="salvaParam(value, 'inseletricindiv');" style="font-size: 1rem; width: 200px;"  title="Autorização para um só usuário realizar as leituras. Sobrepõe-se ao nível mínimo selecionado. Selecione um usuário.">
-                            <option value="<?php echo $InsEletricIndiv; ?>"><?php echo $nomeInsEletric; ?></option>
-                            <option value="0"></option>
-                            <?php 
-                            if($OpInsEletricIndiv){
-                                while ($Opcoes = pg_fetch_row($OpInsEletricIndiv)){ ?>
-                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
-                                <?php 
-                                }
-                            }
-                            ?>
-                            </select>
-                        </td>
+                        <td></td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td></td>

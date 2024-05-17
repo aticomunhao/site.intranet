@@ -153,6 +153,18 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("preencheBens").checked = false;
                                     }
+
+                                    if(parseInt(Resp.leituraAgua) === 1){
+                                        document.getElementById("leituraAgua").checked = true;
+                                    }else{
+                                        document.getElementById("leituraAgua").checked = false;
+                                    }
+                                    if(parseInt(Resp.leituraEletric) === 1){
+                                        document.getElementById("leituraEletric").checked = true;
+                                    }else{
+                                        document.getElementById("leituraEletric").checked = false;
+                                    }
+                                    
                                     document.getElementById("titulomodal").innerHTML = "Edição de Usuários";
                                     document.getElementById("ressetsenha").disabled = false;
                                     document.getElementById("mudou").value = "0";
@@ -201,6 +213,15 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("preencheBens").checked === true){
                     Bens = 1;
                 }
+                Agua = 0;
+                if(document.getElementById("leituraAgua").checked === true){
+                    Agua = 1;
+                }
+                Eletric = 0;
+                if(document.getElementById("leituraEletric").checked === true){
+                    Eletric = 1;
+                }
+
                 if(parseInt(document.getElementById("mudou").value) === 1){
                     ajaxIni();
                     if(ajax){
@@ -213,7 +234,9 @@ if(!isset($_SESSION["usuarioID"])){
                         +"&flAdm="+document.getElementById("flAdm").value
                         +"&lro="+Lro
                         +"&fisclro="+FiscLro
-                        +"&bens="+Bens, true);
+                        +"&bens="+Bens
+                        +"&agua="+Agua
+                        +"&eletric="+Eletric, true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -440,6 +463,8 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("mudou").value = "1";
                 document.getElementById("preencheLro").checked = false;
                 document.getElementById("preencheBens").checked = false;
+                document.getElementById("leituraAgua").checked = false;
+                document.getElementById("leituraEletric").checked = false;
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/config/registr.php?acao=checaBoxes&param="+Valor+"&numero="+document.getElementById("guardaid_cpf").value, true);
@@ -726,6 +751,21 @@ if(!isset($_SESSION["usuarioID"])){
                         <td colspan="5">
                             <input type="checkbox" id="preencheBens" title="Registrar recebimento e destino de bens encontrados" onchange="modif();" >
                             <label for="preencheBens" title="Registrar recebimento e destino de bens encontrados">acesso ao registro de Bens Encontrados</label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq80" title="Pode registrar as leituras diárias do consumo de água">Leitura Água:</td>
+                        <td colspan="5">
+                            <input type="checkbox" id="leituraAgua" title="Pode registrar as leituras diárias do consumo de água" onchange="modif();" >
+                            <label for="leituraAgua" title="Pode registrar as leituras diárias do consumo de água">registrar leitura diária do Hidrômetro</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="etiq80" title="Pode registrar as leituras diárias do consumo de eletricidade">Energia Elétrica:</td>
+                        <td colspan="5">
+                            <input type="checkbox" id="leituraEletric" title="Pode registrar as leituras diárias do consumo de energia elétrica" onchange="modif();" >
+                            <label for="leituraEletric" title="Pode registrar as leituras diárias do consumo de energia elétrica">registrar leitura diária do Medidor de Energia Elétrica</label>
                         </td>
                     </tr>
 

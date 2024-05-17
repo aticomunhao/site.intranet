@@ -148,7 +148,7 @@
 							echo "<a href='#' onclick='openhref(63);'>Calendário</a>";
 						echo "</li>";
 
-						if($_SESSION["AdmUsu"] >= 3){ // gerente
+
 							echo "<li>";
 								echo "<a href='#'>Leituras</a>";
 								echo "<ul>";
@@ -160,7 +160,7 @@
 									echo "</li>";
 								echo "</ul>";
 							echo "</li>";
-						}
+						
 						if($_SESSION["AdmUsu"] > 6){ // superusuário
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(31);'>Parâmetros do Sistema</a>";

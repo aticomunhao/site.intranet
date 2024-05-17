@@ -243,7 +243,16 @@
     padding-right: 5px; 
     border-radius: 5px;
  }
-
+.botpadrDesativ{
+    text-align: center;
+    padding-left: 15px;
+    padding-right: 15px; 
+    border-radius: 5px;
+    font-size: 80%;
+    font-weight: bold;
+    background-color: #D3D3D3;
+    color: #FFE4E1;
+}
  .botpadr{
     text-align: center;
     padding-left: 15px;
@@ -316,6 +325,9 @@
 
 .fundoAmarelo{
     background-color: #FFD700;
+}
+.fundoAzul{
+    background-color: #87CEFA;
 }
 .fundoCinza{
     background-color: #EFF5FB;

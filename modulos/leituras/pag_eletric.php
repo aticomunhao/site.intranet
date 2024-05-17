@@ -49,24 +49,40 @@ if(!isset($_SESSION["usuarioID"])){
             }
             $(document).ready(function(){
                 if(parseInt(document.getElementById("guardaerro").value) === 0){
-                    $("#container5").load("modulos/leituras/carEletric.php");
-                    $("#container6").load("modulos/leituras/carEstatEletric.php");
+                    document.getElementById("botImprimir").disabled = true;
 
-                    if(parseInt(document.getElementById("InsIndiv").value) > 0){ // se houver alguém designado para fazer a leitura
-                        if(parseInt(document.getElementById("InsIndiv").value) === parseInt(document.getElementById("guardaUsuId").value)){ //checa se é o designado
-                            document.getElementById("botInserir").disabled = false;
-                        }else{
-                            document.getElementById("botInserir").disabled = true;
-                        }
+                    if(parseInt(document.getElementById("InsLeituraEletric").value) === 1){ // // se estiver marcado em cadusu para fazer a leitura
+                        document.getElementById("botInserir").disabled = false;
+                        $("#container5").load("modulos/leituras/carEletric.php");
+                        $("#container6").load("modulos/leituras/carEstatEletric.php");
                     }else{
                         if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
                             document.getElementById("botInserir").disabled = false;
+                            $("#container5").load("modulos/leituras/carEletric.php");
+                            $("#container6").load("modulos/leituras/carEstatEletric.php");
                         }else{
                             document.getElementById("botInserir").disabled = true;
+                            document.getElementById("botImprimir").disabled = true;
+                            document.getElementById("botInserir").style.backgroundColor = "#808080";
+                            document.getElementById("botInserir").style.color = "#A9A9A9";
+                            document.getElementById("botImprimir").style.backgroundColor = "#808080";
+                            document.getElementById("botImprimir").style.color = "#A9A9A9";
+
+                            $("#container5").load("modulos/leituras/carMsg.php");
+                            $("#container6").load("modulos/leituras/carMsg.php");
                         }
                     }
-                    if(parseInt(document.getElementById("UsuAdm").value) >= 7){ // superusuário
+                    if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value)){
+                        document.getElementById("botImprimir").disabled = false;
+                    }else{
+                        document.getElementById("botImprimir").style.backgroundColor = "#808080";
+                        document.getElementById("botImprimir").style.color = "#A9A9A9";
+                    }
+                    if(parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
                         document.getElementById("botInserir").disabled = false;
+                        document.getElementById("botImprimir").disabled = false;
+                        $("#container5").load("modulos/leituras/carEletric.php");
+                        $("#container6").load("modulos/leituras/carEstatEletric.php");
                     }
                 };
 
@@ -296,27 +312,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
             $admIns = parAdm("insleituraeletric", $Conec, $xProj);   // nível para inserir 
             $admEdit = parAdm("editleituraeletric", $Conec, $xProj); // nível para editar
-            $insIndiv = parAdm("inseletricindiv", $Conec, $xProj);   // autorização para um só indivíduo inserir
-            if($insIndiv > 0){
-                $rs0 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $insIndiv");
-                $row0 = pg_num_rows($rs0);
-                if($row0 > 0){
-                    $tbl0 = pg_fetch_row($rs0);
-                    $InsEletric = $tbl0[0];
-                }else{
-                    $InsEletric = "";
-                }
-            }else{
-                $rs0 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $admIns");
-                $row0 = pg_num_rows($rs0);
-                if($row0 > 0){
-                    $tbl0 = pg_fetch_row($rs0);
-                    $InsEletric = $tbl0[0];
-                }else{
-                    $InsEletric = "";
-                }
-            }
-
+            $InsEletric = parEsc("eletric", $Conec, $xProj, $_SESSION["usuarioID"]); // procura coluna eletric em poslog 
 
             // Preenche caixa de escolha mes/ano para impressão
             $OpcoesEscMes = pg_query($Conec, "SELECT EXTRACT(MONTH FROM ".$xProj.".leitura_eletric.dataleitura)::text ||'/'|| EXTRACT(YEAR FROM ".$xProj.".leitura_eletric.dataleitura)::text 
@@ -329,15 +325,14 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardaUsuId" value="<?php echo $_SESSION["usuarioID"]; ?>" />
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->
-        <input type="hidden" id="InsIndiv" value="<?php echo $insIndiv; ?>" /> <!-- autorização para um só indivíduo inserir as leituras -->
-
+        <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" />
+        <input type="hidden" id="InsLeituraEletric" value="<?php echo $InsEletric; ?>" /> <!-- autorização para um só indivíduo inserir as leituras -->
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
-                    <div class="row"> <!-- botões Inserir e Imprimir-->
-                <div class="col" style="margin: 0 auto; text-align: center;" title="<?php if($InsEletric != ""){echo "Função atribuida a ".$InsEletric;} ?>"><button id="botInserir" class="botpadr" onclick="insereModal();">Inserir</button></div> <!-- quadro -->
-                <div class="col-1"></div> <!-- espaçamento entre colunas  -->
-<!--                <div class="col" style="margin: 0 auto; text-align: center;"><button class="resetbotred" style="padding-left: 12px; padding-right: 12px; font-size: 80%;" onclick="abreImprLeitura();">PDF</button></div>  -->
-                <div class="col" style="margin: 0 auto; text-align: center;"><button class="botpadrred" onclick="abreImprLeitura();">PDF</button></div> <!-- quadro -->
+            <div class="row"> <!-- botões Inserir e Imprimir-->
+                <div class="col" style="margin: 0 auto; text-align: center;" title="Inserir leitura do medidor de energia elétrica"><button id="botInserir" class="botpadrblue" onclick="insereModal();">Inserir</button></div> <!-- quadro -->
+                <div class="col" style="text-align: center;">Controle do Consumo de Energia Elétrica</div> <!-- espaçamento entre colunas  -->
+                <div class="col" style="margin: 0 auto; text-align: center;"><button id="botImprimir" class="botpadrred" onclick="abreImprLeitura();">PDF</button></div> <!-- quadro -->
             </div>
 
             <div style="padding: 10px; display: flex; align-items: center; justify-content: center;"> 

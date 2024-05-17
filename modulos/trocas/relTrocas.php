@@ -22,6 +22,14 @@ if(!isset($_SESSION["usuarioID"])){
                 border-radius: 15px;
                 width: 75%; /* acertar de acordo com a tela */
             }
+            .modalMsg-content{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 7% auto; /* 10% do topo e centrado */
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 60%; /* acertar de acordo com a tela */
+            }
         </style>
         <script type="text/javascript">
             $(document).ready(function(){
@@ -169,6 +177,12 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("relacmodalTrocas").style.display = "block";
                 document.getElementById("guardaTroca").value = "0";
             }
+            function carregaHelpTrocas(){
+                document.getElementById("relacHelpTrocas").style.display = "block";
+            }
+            function fechaHelpTrocas(){
+                document.getElementById("relacHelpTrocas").style.display = "none";
+            }
         </script>
     </head>
     <body>
@@ -177,18 +191,29 @@ if(!isset($_SESSION["usuarioID"])){
             $admIns = parAdm("instroca", $Conec, $xProj);   // nível para inserir
             $admEdit = parAdm("edittroca", $Conec, $xProj); // nível para editar - atravessado para relTrocas.php
         ?>
+        <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" />
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" />
-        <div class="container-fluid" style="margin: 10px; text-align: center;">
-            <h3>Material para Troca ou Descarte</h3>
-            <div class="box" style="position: absolute; top: 10px; left: 10px; width: 10%; text-align: left;">
-            <?php
-            if($_SESSION["AdmUsu"] >= $admIns){ // botão inserir
-                echo "<input type='button' id='botinserir' class='resetbot' value='Inserir' onclick='insTroca();' title='Apagar este anúncio.'>";
-            }
-            ?>
+
+        <!-- div três colunas -->
+        <div class="container" style="margin: 0 auto;">
+            <div class="row">
+                <div class="col quadro">
+                    <?php
+                    if($_SESSION["AdmUsu"] >= $admIns){ // botão inserir
+                        echo "<button class='botpadrGr fundoAzul' id='botinserir' onclick='insTroca();' >Inserir Anúncio</button>";
+                    }
+                    ?>
+                </div>
+                <div class="col quadro" style="text-align: center;"><h4>Material Disponível</h4></div> <!-- Central - espaçamento entre colunas  -->
+                <div class="col quadro" style="text-align: right;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpTrocas();" title="Guia rápido"></div> 
             </div>
+        </div>
+        <br>
+
+        <div class="container-fluid" style="margin: 10px; text-align: center;">
             <div id="contentPag"></div>
         </div>
+
         <input type="hidden" id="guardaTroca" value="0" />
 
         <!-- div modal para edição da página  -->
@@ -227,5 +252,23 @@ if(!isset($_SESSION["usuarioID"])){
                 </div>
             </div>
         </div> <!-- Fim Modal Confirmação-->
+
+        <!-- div modal para leitura instruções -->
+        <div id="relacHelpTrocas" class="relacmodal">
+            <div class="modalMsg-content">
+                <span class="close" onclick="fechaHelpTrocas();">&times;</span>
+                <h4 style="text-align: center; color: #666;">Informações</h4>
+                <h5 style="text-align: center; color: #666;">Troca de Materiais</h5>
+                <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
+                    Regras inseridas:
+                    <ul>
+                        <li>1 - Este módulo destina-se a informar que existe um material que será descartado.</li>
+                        <li>2 - Os usuários com nível administrativo apropriado podem inserir um anúncio com a descrição do material e ajuntar fotografia.</li>
+                        <li>3 - O setor que tiver interesse em receber o material, antes que ele seja doado, descartado ou destruído, deve entrar em contato com o setor anunciante e demostrar seu interesse.</li>
+                        <li>4 - Ao dar destino ao material, o usuário que inseriu o anúncio, ou outro do mesmo nível administrativo e da mesma diretoria, pode deletar o anúncio.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>  <!-- Fim Modal Help-->
     </body>
 </html>

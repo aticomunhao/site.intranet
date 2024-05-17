@@ -96,7 +96,8 @@ session_start();
 //alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 document.getElementById("usuario").value = Resp.usuario;
-                                document.getElementById("nomecompl").value = Resp.nomecompl;
+                                document.getElementById("codnomecompl").value = Resp.idposlog;
+
                                 document.getElementById("setor").value = Resp.setor;
                                 document.getElementById("ramal").value = Resp.ramal;
                                 document.getElementById("titulomodal").innerHTML = "Edição de Ramal Telefônico";
@@ -117,15 +118,9 @@ session_start();
                     $('#mensagem').fadeOut(3000);
                     return false;
                 }
-                if(document.getElementById("nomecompl").value === ""){
+                if(document.getElementById("codnomecompl").value === ""){
                     $('#mensagem').fadeIn("slow");
                     document.getElementById("mensagem").innerHTML = "Preencha o campo Nome Completo";
-                    $('#mensagem').fadeOut(3000);
-                    return false;
-                }
-                if(document.getElementById("setor").value === ""){
-                    $('#mensagem').fadeIn("slow");
-                    document.getElementById("mensagem").innerHTML = "Preencha o campo Setor";
                     $('#mensagem').fadeOut(3000);
                     return false;
                 }
@@ -141,8 +136,7 @@ session_start();
                     if(ajax){
                         ajax.open("POST", "modulos/salvaRamais.php?acao=salvaRamal&tipo=1&numero="+document.getElementById("guardaid_click").value
                         +"&usuario="+document.getElementById("usuario").value
-                        +"&nomecompl="+document.getElementById("nomecompl").value
-                        +"&setor="+document.getElementById("setor").value
+                        +"&nomecompl="+document.getElementById("codnomecompl").value
                         +"&ramal="+document.getElementById("ramal").value, true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
@@ -176,7 +170,7 @@ session_start();
             }
             function InsRamais(){
                 document.getElementById("usuario").value = "";
-                document.getElementById("nomecompl").value = "";
+                document.getElementById("codnomecompl").value = "";
                 document.getElementById("setor").value = "";
                 document.getElementById("ramal").value = "";
                 document.getElementById("guardaid_click").value = 0;
@@ -184,6 +178,30 @@ session_start();
                 document.getElementById("titulomodal").innerHTML = "Inserção de Ramal Telefônico";
                 document.getElementById("relacmodal").style.display = "block";
             }
+
+            function buscaNome(){
+                document.getElementById("guardaid_click").value = 0;
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/salvaRamais.php?acao=buscaNome&tipo=1&numero="+document.getElementById("codnomecompl").value, true); // tipo 1 = ramal interno
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                document.getElementById("setor").value = Resp.siglasetor;
+                                if(parseInt(Resp.jatem) > 0){
+                                    document.getElementById("usuario").value = Resp.nomeusual;
+                                    document.getElementById("ramal").value = Resp.ramal;
+                                    document.getElementById("guardaid_click").value = document.getElementById("codnomecompl").value;
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
             function deletaModal(){
                 $.confirm({
                     title: 'Apagar lançamento.',
@@ -238,20 +256,26 @@ session_start();
             return false;
         }
         $Tipo = (int) filter_input(INPUT_GET, 'tipo');
-        if($Tipo == 2){
-            $idAdm = $_SESSION["AdmUsu"];
-        }else{
-            $idAdm = 0;
-        }
-
         $admIns = parAdm("insramais", $Conec, $xProj);   // nível para inserir 
         $admEdit = parAdm("editramais", $Conec, $xProj); // nível para editar
 
-        $rs0 = pg_query($Conec, "SELECT codtel, nomeusu, nomecompl, ramal, setor FROM ".$xProj.".ramais_int WHERE nomeusu != '' And ativo = 1 ORDER BY nomeusu");
+        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".ramais_int ADD COLUMN IF NOT EXISTS poslog_id bigint NOT NULL DEFAULT 0");
+        $rs = pg_query($Conec, "SELECT nomeusu FROM ".$xProj.".ramais_int WHERE codtel = 2 And nomeusu = 'Fulano'");
+        $row = pg_num_rows($rs);
+        if($row > 0){
+            pg_query($Conec, "TRUNCATE TABLE ".$xProj.".ramais_int");
+        }
+
+        $OpNomes = pg_query($Conec, "SELECT id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
+
+        $rs0 = pg_query($Conec, "SELECT poslog_id, ".$xProj.".ramais_int.nomeusu, ".$xProj.".poslog.nomecompl, ramal, ".$xProj.".poslog.codsetor 
+        FROM ".$xProj.".ramais_int INNER JOIN ".$xProj.".poslog ON ".$xProj.".ramais_int.poslog_id = ".$xProj.".poslog.id 
+        WHERE ".$xProj.".ramais_int.ramal != '' And ".$xProj.".poslog.ativo = 1 ORDER BY ".$xProj.".poslog.nomecompl");
         $row0 = pg_num_rows($rs0);
+
         ?>
         <input type="hidden" id="tipo_acesso" value="<?php echo $Tipo; ?>" />
-        <input type="hidden" id="UsuAdm" value="<?php echo $idAdm; ?>" />
+        <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>" />
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir -->
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" /> <!-- nível mínimo para editar -->
         <input type="hidden" id="guardaid_click" value="0" />
@@ -307,15 +331,27 @@ session_start();
                 <table style="margin: 0 auto;">
                     <tr>
                         <td id="etiqNome" class="etiq">Nome Usual</td>
-                        <td><input type="text" id="usuario" name="usuario" style="width: 50%;" placeholder="Nome usual" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('nomecompl');return false;}"></td>
+                        <td><input type="text" id="usuario" name="usuario" style="width: 50%;" placeholder="Nome usual" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('setor');return false;}"></td>
                     </tr>
                     <tr>
                         <td id="etiqNomeCompl" class="etiq">Nome Completo</td>
-                        <td><input type="text" id="nomecompl" name="nomecompl" style="width: 99%;" placeholder="Nome completo" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('setor');return false;}"></td>
+                        <td>
+                        <select id="codnomecompl" onchange="buscaNome();" style="font-size: 1rem; width: 99%;" title="Selecione um usuário.">
+                            <option value=""></option>
+                            <?php 
+                            if($OpNomes){
+                                while ($Opcoes = pg_fetch_row($OpNomes)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                <?php 
+                                }
+                            }
+                            ?>
+                            </select>
+                    </td>
                     </tr>
                     <tr>
                         <td id="etiqSetor" class="etiq">Setor</td>
-                        <td><input type="text" id="setor" name="setor" style="width: 50%;" placeholder="Setor" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('ramal');return false;}"></td>
+                        <td><input disabled type="text" id="setor" name="setor" style="width: 50%;" placeholder="Setor" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('ramal');return false;}"></td>
                     </tr>
                     <tr>
                         <td id="etiqRamal" class="etiq">Ramal</td>

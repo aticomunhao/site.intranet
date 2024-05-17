@@ -114,6 +114,10 @@ if($Acao =="loglog"){
                         pg_query($Conec, "INSERT INTO ".$xProj.".pessoas (id, pessoas_id, cpf, nome_completo, dt_nascimento, sexo, status, datains) VALUES ($CodigoNovo, $id, '$Login', '$NomeCompl', '$DNasc', ".$_SESSION['sexo'].", 1, NOW() ) "); 
                     }
 
+//Provisório
+                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS agua smallint NOT NULL DEFAULT 0");
+                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS eletric smallint NOT NULL DEFAULT 0");
+
                     pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS dataelim date DEFAULT '2023-10-09'");
                     $rs5 = pg_query($Conec, "SELECT dataelim FROM ".$xProj.".paramsis WHERE idpar = 1 ");
                     $row5 = pg_num_rows($rs5);
@@ -255,7 +259,7 @@ if($Acao =="buscausu"){
     $Erro = 0;
 
     $rs0 = pg_query($ConecPes, "SELECT ".$xPes.".pessoas.cpf,".$xPes.".pessoas.nome_completo, to_char(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') FROM ".$xPes.".pessoas WHERE cpf = '$GuardaCpf' ");
-    $rs = pg_query($Conec, "SELECT adm, codsetor, ativo, to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, lro, bens, fisclro FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf' ");  //pessoas_id = $Usu ");
+    $rs = pg_query($Conec, "SELECT adm, codsetor, ativo, to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, lro, bens, fisclro, agua, eletric FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf' ");  //pessoas_id = $Usu ");
     $row = pg_num_rows($rs);
     if($row == 0){
         $Erro = 1;
@@ -268,7 +272,7 @@ if($Acao =="buscausu"){
             $UltLog = "31/12/3000";
         }
         $Proc0 = pg_fetch_row($rs0);    
-        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "usuarioNome"=>$Proc0[1], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$Proc[3], "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "bens"=>$Proc[6], "lroFiscaliza"=>$Proc[7], "diaAniv"=>$Proc0[2], "mesAniv"=>$Proc0[3], "cpf"=>$GuardaCpf);
+        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "usuarioNome"=>$Proc0[1], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$Proc[3], "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "bens"=>$Proc[6], "lroFiscaliza"=>$Proc[7], "leituraAgua"=>$Proc[8], "leituraEletric"=>$Proc[9], "diaAniv"=>$Proc0[2], "mesAniv"=>$Proc0[3], "cpf"=>$GuardaCpf);
     }
     $responseText = json_encode($var);
     echo $responseText;
@@ -359,8 +363,9 @@ if($Acao =="salvaUsu"){
     $NomeCompl = filter_input(INPUT_GET, 'nomecompl');
     $Lro  = (int) filter_input(INPUT_GET, 'lro');
     $FiscLro  = (int) filter_input(INPUT_GET, 'fisclro');
-    
     $Bens  = (int) filter_input(INPUT_GET, 'bens');
+    $Agua  = (int) filter_input(INPUT_GET, 'agua');
+    $Eletric = (int) filter_input(INPUT_GET, 'eletric');
 
     $Cpf1 = addslashes($Cpf);
     $Cpf2 = str_replace(".", "", $Cpf1);
@@ -378,7 +383,7 @@ if($Acao =="salvaUsu"){
     }
 
     if($Usu > 0){  // salvar
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET codsetor = $Setor, adm = $Adm, ativo = $Ativo, usumodif = $UsuLogado, datamodif = NOW(), nomecompl = '$NomeCompl', lro = $Lro, fisclro = $FiscLro, bens = $Bens WHERE cpf = '$Cpf'");  // 
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET codsetor = $Setor, adm = $Adm, ativo = $Ativo, usumodif = $UsuLogado, datamodif = NOW(), nomecompl = '$NomeCompl', lro = $Lro, fisclro = $FiscLro, bens = $Bens, agua = $Agua, eletric = $Eletric WHERE cpf = '$Cpf'");  // 
         pg_query($Conec, "UPDATE ".$xProj.".pessoas SET pessoas_id = $Usu, nome_completo = '$NomeCompl', sexo = $Sexo, status = $Ativo WHERE cpf = '$Cpf' "); //coleção
 
         if(!is_null($DNasc)){
@@ -395,8 +400,8 @@ if($Acao =="salvaUsu"){
             $Codigo = $tblCod[0];
             $CodigoNovo = ($Codigo+1);
             $Senha = password_hash($Cpf, PASSWORD_DEFAULT);
-            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, codsetor, adm, usuins, datains, cpf, nomecompl, senha, ativo, lro, fisclro, bens) 
-            VALUES ($CodigoNovo, $GuardaId, $Setor, $Adm, $UsuLogado, NOW(), '$Cpf', '$NomeCompl', '$Senha', 1, $Lro, $FiscLro, $Bens )");
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, codsetor, adm, usuins, datains, cpf, nomecompl, senha, ativo, lro, fisclro, bens, agua, eletric) 
+            VALUES ($CodigoNovo, $GuardaId, $Setor, $Adm, $UsuLogado, NOW(), '$Cpf', '$NomeCompl', '$Senha', 1, $Lro, $FiscLro, $Bens, $Agua, $Eletric )");
             if(!$rs){
                 $Erro = 12;
             }
