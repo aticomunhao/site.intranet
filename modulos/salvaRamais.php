@@ -11,33 +11,42 @@ if($Tipo == 1){
     if($Acao =="buscaNome"){
         $Num = (int) filter_input(INPUT_GET, 'numero'); // id
         $Erro = 0;
+        $CodTel = 0;
+        $CodSetor = "";
         $SiglaSetor = "";
-        $CodNome = 0;
+        $NomeUsual = "";
+        $NomeCompl = "";
         $Ramal = "";
         $JaTem = 0;
 
-        $Sql = pg_query($Conec, "SELECT siglasetor, ".$xProj.".poslog.id 
-        FROM ".$xProj.".poslog INNER JOIN ".$xProj.".setores ON ".$xProj.".poslog.codsetor = ".$xProj.".setores.codset
-        WHERE id = $Num");
-        if(!$Sql){
-           $Erro = 1;
-        }else{
-            $Proc = pg_fetch_row($Sql);
-            $SiglaSetor = $Proc[0];
-            $CodNome = $Proc[1];
-            if($CodNome > 0){
-                $JaTem = 1;
-                $rs1 = pg_query($Conec, "SELECT nomeusu, ramal FROM ".$xProj.".ramais_int WHERE poslog_id = $CodNome");
+        if($Num > 0){ // veio um número do select usuários de poslog
+            $rs = pg_query($Conec, "SELECT nomecompl, codsetor FROM ".$xProj.".poslog WHERE id = $Num");
+            $row = pg_num_rows($rs);
+            if($row > 0){
+                $tbl = pg_fetch_row($rs);
+                $NomeCompl = $tbl[0];
+                $CodSetor = $tbl[1]; 
+                $rs1 = pg_query($Conec, "SELECT siglasetor FROM ".$xProj.".setores WHERE codset = $CodSetor");
                 $row1 = pg_num_rows($rs1);
                 if($row1 > 0){
                     $tbl1 = pg_fetch_row($rs1);
-                    $NomeUsual = $tbl1[0];
-                    $Ramal = $tbl1[1];
+                    $SiglaSetor = $tbl1[0];
                 }
             }
-            
+            //Verifica se já foi inserido em ramais_int
+            $rs2 = pg_query($Conec, "SELECT codtel, nomeusu, nomecompl, ramal FROM ".$xProj.".ramais_int WHERE poslog_id = $Num");
+            $row2 = pg_num_rows($rs2);
+            if($row2 > 0){ //pega o codtel de ramais_int
+                $JaTem = 1;
+                $tbl2 = pg_fetch_row($rs2);
+                $CodTel = $tbl2[0];
+                $NomeUsual = $tbl2[1];
+                $NomeCompl = $tbl2[2];
+                $Ramal = $tbl2[3];
+            }
         }
-        $var = array("coderro"=>$Erro, "jatem"=>$JaTem, "siglasetor"=>$SiglaSetor, "nomeusual"=>$NomeUsual, "ramal"=>$Ramal);
+
+        $var = array("coderro"=>$Erro, 'jatem'=>$JaTem, "codtel"=>$CodTel, "codsetor"=>$CodSetor, "siglasetor"=>$SiglaSetor, "nomeusual"=>$NomeUsual, "nomecompleto"=>$NomeCompl, "ramal"=>$Ramal);
         $responseText = json_encode($var);
         echo $responseText;
     }
@@ -46,31 +55,55 @@ if($Tipo == 1){
         $Num = (int) filter_input(INPUT_GET, 'numero'); // id
         $Erro = 0;
         $row = 0;
-        $Sql = pg_query($Conec, "SELECT ".$xProj.".poslog.id, nomeusu, ".$xProj.".poslog.codsetor, ramal 
-        FROM ".$xProj.".ramais_int INNER JOIN ".$xProj.".poslog ON ".$xProj.".ramais_int.poslog_id = ".$xProj.".poslog.id 
-        WHERE poslog.id = $Num");
 
+        $Sql = pg_query($Conec, "SELECT nomeusu, nomecompl, codsetor, ramal, poslog_id 
+        FROM ".$xProj.".ramais_int 
+        WHERE codtel = $Num");
         if(!$Sql){
            $Erro = 1;
         }else{
             $row = pg_num_rows($Sql);
             $Proc = pg_fetch_row($Sql);
         }
-        $var = array("coderro"=>$Erro, "idposlog"=>$Proc[0], "usuario"=>$Proc[1], "setor"=>$Proc[2], "ramal"=>$Proc[3]);
+        $var = array("coderro"=>$Erro, "usuario"=>$Proc[0], "nomecompleto"=>$Proc[1], "codsetor"=>$Proc[2], "ramal"=>$Proc[3], "idposlog"=>$Proc[4] );
         $responseText = json_encode($var);
         echo $responseText;
     }
 
+    if($Acao =="buscaDescSetor"){
+        $Num = (int) filter_input(INPUT_GET, 'numero'); // id
+        $Erro = 0;
+        $row = 0;
+        $Sql = pg_query($ConecPes, "SELECT sigla FROM ".$xPes.".setor WHERE id = $Num");
+        if(!$Sql){
+           $Erro = 1;
+        }else{
+            $row = pg_num_rows($Sql);
+            $Proc = pg_fetch_row($Sql);
+        }
+        $var = array("coderro"=>$Erro, "descsetor"=>$Proc[0] );
+        $responseText = json_encode($var);
+        echo $responseText;
+    }
+    
+
     if($Acao =="salvaRamal"){
         $id = (int) filter_input(INPUT_GET, 'numero');
         $Nome = filter_input(INPUT_GET, 'usuario');  //$_REQUEST["nome"];
-        $CodNome = filter_input(INPUT_GET, 'nomecompl');
+        $CodNome = filter_input(INPUT_GET, 'codnomecompl');
+        if(is_null($CodNome)){
+            $CodNome = 0;
+        }
+        $NomeCompl = filter_input(INPUT_GET, 'nomecompleto');
         $Ramal = filter_input(INPUT_GET, 'ramal');
+        $CodSetor = (int) filter_input(INPUT_GET, 'codsetor');
+        $DescSetor = filter_input(INPUT_GET, 'setor');
+
         $UsuLogado = $_SESSION["usuarioID"]; //$_REQUEST["usulogado"];
         $Erro = 0;
         $row = 0;
-        if($id != 0){ // edição
-            $Sql = pg_query($Conec, "UPDATE ".$xProj.".ramais_int SET poslog_id = $CodNome, nomeusu = '$Nome', ramal = '$Ramal', usumodif = $UsuLogado, datamodif = NOW() WHERE poslog_id = $id");
+        if($id != 0){ // já tem em ramais_int - edição
+            $Sql = pg_query($Conec, "UPDATE ".$xProj.".ramais_int SET poslog_id = $CodNome, nomeusu = '$Nome', nomecompl = '$NomeCompl', ramal = '$Ramal', setor = '$DescSetor', usumodif = $UsuLogado, datamodif = NOW() WHERE codtel = $id");
             if(!$Sql){
                 $Erro = 1;
             }
@@ -80,8 +113,8 @@ if($Tipo == 1){
             $Codigo = $tblCod[0];
             $CodigoNovo = ($Codigo+1);
 
-            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".ramais_int (codtel, nomeusu, ramal, datains, usuins, poslog_id) 
-            VALUES($CodigoNovo, '$Nome', '$Ramal', NOW(), $UsuLogado, $CodNome)");
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".ramais_int (codtel, nomeusu, nomecompl, ramal, setor, datains, usuins, poslog_id) 
+            VALUES($CodigoNovo, '$Nome', '$NomeCompl', '$Ramal', '$DescSetor', NOW(), $UsuLogado, $CodNome) ");
             if(!$rs){
                 $Erro = 1;
             }
@@ -90,13 +123,14 @@ if($Tipo == 1){
         $responseText = json_encode($var);
         echo $responseText;
     }
+
     if($Acao =="deletaRamal"){
         $id = (int) filter_input(INPUT_GET, 'numero');
         $Erro = 0;
         $Sql = pg_query($Conec, "UPDATE ".$xProj.".ramais_int SET ativo = 0 WHERE codtel = $id");
         if(!$Sql){
             $Erro = 1;
-        }    
+        }
         $var = array("coderro"=>$Erro, "id"=>$id);
         $responseText = json_encode($var);
         echo $responseText;

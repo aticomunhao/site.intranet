@@ -81,7 +81,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bensachados (
    }
 
 
-if(strtotime('2024/05/18') > strtotime(date('Y/m/d'))){
+if(strtotime('2024/05/30') > strtotime(date('Y/m/d'))){
    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".livroreg ADD COLUMN IF NOT EXISTS enviado smallint NOT NULL DEFAULT 0;"); //  fechar registro no LRO 
 	   
    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS lro smallint NOT NULL DEFAULT 0;"); //  preencher LRO 
@@ -97,12 +97,56 @@ if(strtotime('2024/05/18') > strtotime(date('Y/m/d'))){
    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis DROP COLUMN IF EXISTS inseletricindiv");
    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis DROP COLUMN IF EXISTS editlroindiv");
    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis DROP COLUMN IF EXISTS editbensindiv");
+   pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis DROP COLUMN IF EXISTS edibensindiv");
 
    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS bens smallint NOT NULL DEFAULT 0;"); // 1 - bens Achados e perdidos 
    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog DROP COLUMN IF EXISTS nome_completo");
    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog DROP COLUMN IF EXISTS dt_nascimento");
 
 }
+
+
+pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".paramsis (
+   idpar integer NOT NULL,
+   admvisu smallint DEFAULT 0,
+   admcad smallint DEFAULT 0,
+   admedit smallint DEFAULT 0,
+   insaniver smallint DEFAULT 4,
+   editaniver smallint DEFAULT 4,
+   insevento smallint DEFAULT 4,
+   editevento smallint DEFAULT 4,
+   instarefa smallint DEFAULT 4,
+   edittarefa smallint DEFAULT 4,
+   insocor smallint DEFAULT 2,
+   editocor smallint DEFAULT 2,
+   insramais smallint DEFAULT 7,
+   editramais smallint DEFAULT 7,
+   instelef smallint DEFAULT 4,
+   edittelef smallint DEFAULT 4,
+   instroca smallint DEFAULT 4,
+   edittroca smallint DEFAULT 4,
+   editpagina smallint DEFAULT 4,
+   insarq smallint DEFAULT 4,
+   icustom character varying(255),
+   datainiagua date DEFAULT '2024-03-01'::date,
+   valoriniagua double precision DEFAULT 1696.485,
+   datainieletric date DEFAULT '2024-03-01'::date,
+   valorinieletric double precision DEFAULT 1000.001,
+   insleituraagua smallint DEFAULT 0 NOT NULL,
+   editleituraagua smallint DEFAULT 0 NOT NULL,
+   insleituraeletric smallint DEFAULT 0 NOT NULL,
+   editleituraeletric smallint DEFAULT 0 NOT NULL,
+   dataelim date DEFAULT '2023-10-09'::date,
+   inslro smallint DEFAULT 2 NOT NULL,
+   editlro smallint DEFAULT 4 NOT NULL,
+   insbens smallint DEFAULT 2 NOT NULL,
+   editbens smallint DEFAULT 4 NOT NULL,
+   pico_online integer DEFAULT 0 NOT NULL,
+   data_pico_online timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+   pico_dia integer DEFAULT 0 NOT NULL,
+   data_pico_dia timestamp without time zone DEFAULT CURRENT_TIMESTAMP ) ");
+
+   echo "Tabela ".$xProj.".paramsis checada. <br>";
 
 
 //pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".livroreg");
@@ -123,14 +167,15 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
    enviado smallint NOT NULL DEFAULT 0,  
    relato text ) 
    ");
+   
 
    //pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".livroturnos");
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroturnos (
       id SERIAL PRIMARY KEY, 
       codturno smallint NOT NULL DEFAULT 0,
-      descturno VARCHAR(30) 
-   ) 
+      descturno VARCHAR(30) ) 
       ");
+
       $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".livroturnos ");
       $row1 = pg_num_rows($rs1);
       if($row1 == 0){
@@ -145,31 +190,65 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
 
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".poslog (
       id SERIAL PRIMARY KEY, 
-      pessoas_id bigint NOT NULL DEFAULT 0, 
-      ativo smallint NOT NULL DEFAULT 1, 
-      adm smallint NOT NULL DEFAULT 1, 
-      codsetor smallint NOT NULL DEFAULT 1, 
-      numacessos integer NOT NULL DEFAULT 0, 
-      logini timestamp without time zone DEFAULT CURRENT_TIMESTAMP, 
-      logfim timestamp without time zone DEFAULT CURRENT_TIMESTAMP, 
-      usuins integer NOT NULL DEFAULT 0, 
-      datains timestamp without time zone DEFAULT CURRENT_TIMESTAMP, 
-      usumodif integer NOT NULL DEFAULT 0, 
-      datamodif timestamp without time zone DEFAULT CURRENT_TIMESTAMP, 
-      usuinat integer NOT NULL DEFAULT 0, 
-      datainat timestamp without time zone DEFAULT CURRENT_TIMESTAMP, 
-      motivoinat smallint NOT NULL DEFAULT 0, 
-      avcalend smallint NOT NULL DEFAULT 1, 
-      avhoje date, 
-      lro smallint NOT NULL DEFAULT 0,
-      bens smallint NOT NULL DEFAULT 0,
-      cpf character varying(20), 
-      nomecompl character varying(150), 
-      senha character varying(255), 
-      sexo smallint NOT NULL DEFAULT 1 
+      pessoas_id bigint DEFAULT 0 NOT NULL,
+      ativo smallint DEFAULT 1 NOT NULL,
+      adm smallint DEFAULT 1 NOT NULL,
+      codsetor smallint DEFAULT 1 NOT NULL,
+      numacessos integer DEFAULT 0 NOT NULL,
+      logini timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+      logfim timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+      usuins integer DEFAULT 0 NOT NULL,
+      datains timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+      usumodif integer DEFAULT 0 NOT NULL,
+      datamodif timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+      usuinat integer DEFAULT 0 NOT NULL,
+      datainat timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+      motivoinat smallint DEFAULT 0 NOT NULL,
+      avcalend smallint DEFAULT 1 NOT NULL,
+      avhoje date,
+      cpf character varying(20),
+      nomeusual character varying(50),
+      nomecompl character varying(150),
+      senha character varying(255),
+      sexo smallint DEFAULT 1 NOT NULL,
+      lro smallint DEFAULT 0 NOT NULL,
+      bens smallint DEFAULT 0 NOT NULL,
+      agua smallint DEFAULT 0 NOT NULL,
+      eletric smallint DEFAULT 0 NOT NULL,
+      fisclro smallint DEFAULT 0 NOT NULL 
       ) ");
    
    echo "Tabela ".$xProj.".poslog checada. <br>";
+
+
+
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".leitura_agua (
+      id SERIAL PRIMARY KEY, 
+      dataleitura date,
+      leitura1 double precision,
+      leitura2 double precision,
+      leitura3 double precision,
+      ativo smallint DEFAULT 1 NOT NULL,
+      usuins integer DEFAULT 0 NOT NULL,
+      datains timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+      usumodif integer DEFAULT 0 NOT NULL,
+      datamodif timestamp without time zone DEFAULT CURRENT_TIMESTAMP
+      ) ");
+   
+      echo "Tabela ".$xProj.".poslog leitura_agua. <br>";   
+
+pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".leitura_eletric (
+         id SERIAL PRIMARY KEY, 
+      dataleitura date,
+      leitura1 double precision,
+      ativo smallint DEFAULT 1 NOT NULL,
+      usuins integer DEFAULT 0 NOT NULL,
+      datains timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+      usumodif integer DEFAULT 0 NOT NULL,
+      datamodif timestamp without time zone DEFAULT CURRENT_TIMESTAMP) 
+      ");
+echo "Tabela ".$xProj.".poslog leitura_eletric. <br>";   
+
 
 
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".arqsetor (

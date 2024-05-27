@@ -34,8 +34,8 @@
 			if(!isset($UsuAdm)){
 				$UsuAdm = 0;
 			}
-			if(isset($_SESSION["NomeCompl"])){
-				$Nome = $_SESSION["NomeCompl"];
+			if(isset($_SESSION["NomeUsual"])){
+				$Nome = $_SESSION["NomeUsual"];
 			}else{
 				$Nome = "";
 			}
@@ -139,7 +139,7 @@
 							echo "<a href='#' onclick='openhref(64);'>Bens Encontrados</a>";
 						echo "</li>";
 
-						if($Adm == 4 && $_SESSION['AdmVisu'] == 1 || $Adm == 7){ // administrador pode ver lista de usuários ou superusu
+						if($Adm == 4 && $_SESSION['AdmVisu'] == 1 || $Adm > 6){
 							echo "<li>";
 					   			echo "<a href='#' onclick='openhref(61);'>Cadastro de Usuários</a>";
 							echo "</li>";

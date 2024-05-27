@@ -62,9 +62,7 @@ if($Acao =="loglog"){
                     $_SESSION['usuarioCPF'] = $Sql[1];
                     $_SESSION['sexo'] = $Sql[6];
                     $_SESSION['start_login'] = time();
-                    $_SESSION["UsuLogado"] = "";
                     $_SESSION["usuarioID"] = $id;
-                    $_SESSION["UsuLogado"] =  $NomeCompl;
                     $_SESSION["NomeCompl"] =  $NomeCompl;
                     $_SESSION["msg"] = ""; //para troca de slides e tráfego de arquivos
                     $_SESSION['msgarq'] = ""; //para upload arquivos diretorias/assessorias
@@ -85,8 +83,8 @@ if($Acao =="loglog"){
                     //Verifica se já logou uma vez em poslog
                     $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE cpf = '$Login' "); 
                     $row1 = pg_num_rows($rs1);
-                    if($row1 == 1){ // Já tem - aumenta número de acessos e grava data hora do login 
-                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET numacessos = (numacessos + 1), logini = NOW() WHERE pessoas_id = $id "); 
+                    if($row1 == 1){ // Já tem - aumenta número de acessos e grava data hora do login  - logfim = now() para mostrar on line
+                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET numacessos = (numacessos + 1), logini = NOW(), logfim = NOW() WHERE pessoas_id = $id "); 
                         $rs2 = pg_query($Conec, "SELECT adm, codsetor FROM ".$xProj.".poslog WHERE cpf = '$Login' "); 
                         $tbl2 = pg_fetch_row($rs2);
                         $_SESSION["AdmUsu"] = $tbl2[0];
@@ -115,10 +113,16 @@ if($Acao =="loglog"){
                     }
 
 //Provisório
+                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS nomeusual VARCHAR(50)");
                     pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS agua smallint NOT NULL DEFAULT 0");
                     pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS eletric smallint NOT NULL DEFAULT 0");
-
                     pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS dataelim date DEFAULT '2023-10-09'");
+    //Provisório
+    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS pico_online int NOT NULL DEFAULT 0;");
+    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS data_pico_online timestamp without time zone DEFAULT CURRENT_TIMESTAMP;");
+    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS pico_dia int NOT NULL DEFAULT 0;");
+    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS data_pico_dia timestamp without time zone DEFAULT CURRENT_TIMESTAMP;");
+
                     $rs5 = pg_query($Conec, "SELECT dataelim FROM ".$xProj.".paramsis WHERE idpar = 1 ");
                     $row5 = pg_num_rows($rs5);
                     if($row5 > 0){ 
@@ -136,7 +140,7 @@ if($Acao =="loglog"){
 
                             $rs6 = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog ");
                             $row6 = pg_num_rows($rs6);
-                            if($row6 > 0){
+                            if($row6 > 0){ //atualiza com pessoas
                                 while ($tbl6 = pg_fetch_row($rs6)){
                                     $Cod = $tbl6[0];
                                     $rs7 = pg_query($ConecPes, "SELECT nome_completo, status, dt_nascimento, sexo FROM ".$xPes.".pessoas WHERE id = $Cod ");
@@ -159,6 +163,7 @@ if($Acao =="loglog"){
                     }
                     $_SESSION["acessoLRO"] = parEsc("lro", $Conec, $xProj, $_SESSION["usuarioID"]); // está na escala svc portaria
 
+                    
                     if($_SESSION["AdmUsu"] == 0){
                         $Erro = 4;
                         $Erro_Msg = "Usuário ainda não recebeu permissão administrativa.";
@@ -167,7 +172,16 @@ if($Acao =="loglog"){
                     if($Sen == $Login){
                         $Erro = 5; // inserir nova senha
                     }
-                    $var = array("coderro"=>$Erro, "msg"=>$Erro_Msg, "usuarioid"=>$id, "usuarioNome"=>$_SESSION["NomeCompl"], "usuarioAdm"=>$_SESSION["AdmUsu"], "usuario"=>$_SESSION["UsuLogado"]); 
+
+                    $_SESSION["NomeUsual"] = "";
+                    $rs8 = pg_query($Conec, "SELECT nomeusual FROM ".$xProj.".poslog WHERE cpf = '$Login' "); 
+                    $tbl8 = pg_fetch_row($rs8);
+                    $_SESSION["NomeUsual"] = $tbl8[0];
+                    if($tbl8[0] == ""){
+                        $_SESSION["NomeUsual"] = $_SESSION["NomeCompl"];
+                    }
+
+                    $var = array("coderro"=>$Erro, "msg"=>$Erro_Msg, "usuarioid"=>$id, "usuarioNome"=>$_SESSION["NomeCompl"], "usuarioAdm"=>$_SESSION["AdmUsu"], "usuario"=>$_SESSION["NomeUsual"]); 
                 }else{ // usuário não encontrado 
                     $Erro = 6;
                     $Erro_Msg = "Usuário ou senha não conferem. Erro 2244";
@@ -259,7 +273,7 @@ if($Acao =="buscausu"){
     $Erro = 0;
 
     $rs0 = pg_query($ConecPes, "SELECT ".$xPes.".pessoas.cpf,".$xPes.".pessoas.nome_completo, to_char(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') FROM ".$xPes.".pessoas WHERE cpf = '$GuardaCpf' ");
-    $rs = pg_query($Conec, "SELECT adm, codsetor, ativo, to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, lro, bens, fisclro, agua, eletric FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf' ");  //pessoas_id = $Usu ");
+    $rs = pg_query($Conec, "SELECT adm, codsetor, ativo, to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, lro, bens, fisclro, agua, eletric, nomeusual FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf' ");  //pessoas_id = $Usu ");
     $row = pg_num_rows($rs);
     if($row == 0){
         $Erro = 1;
@@ -272,7 +286,7 @@ if($Acao =="buscausu"){
             $UltLog = "31/12/3000";
         }
         $Proc0 = pg_fetch_row($rs0);    
-        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "usuarioNome"=>$Proc0[1], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$Proc[3], "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "bens"=>$Proc[6], "lroFiscaliza"=>$Proc[7], "leituraAgua"=>$Proc[8], "leituraEletric"=>$Proc[9], "diaAniv"=>$Proc0[2], "mesAniv"=>$Proc0[3], "cpf"=>$GuardaCpf);
+        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$Proc[3], "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "bens"=>$Proc[6], "lroFiscaliza"=>$Proc[7], "leituraAgua"=>$Proc[8], "leituraEletric"=>$Proc[9], "diaAniv"=>$Proc0[2], "mesAniv"=>$Proc0[3], "cpf"=>$GuardaCpf, "usuarioNome"=>$Proc[10]);
     }
     $responseText = json_encode($var);
     echo $responseText;
@@ -360,7 +374,8 @@ if($Acao =="salvaUsu"){
     $Adm = (int) filter_input(INPUT_GET, 'flAdm');
     $Cpf = filter_input(INPUT_GET, 'cpf');
     $Ativo = (int) filter_input(INPUT_GET, 'ativo');
-    $NomeCompl = filter_input(INPUT_GET, 'nomecompl');
+    $NomeUsual = trim(filter_input(INPUT_GET, 'usuarioNome'));
+//    $NomeCompl = trim(filter_input(INPUT_GET, 'nomecompl'));
     $Lro  = (int) filter_input(INPUT_GET, 'lro');
     $FiscLro  = (int) filter_input(INPUT_GET, 'fisclro');
     $Bens  = (int) filter_input(INPUT_GET, 'bens');
@@ -383,7 +398,7 @@ if($Acao =="salvaUsu"){
     }
 
     if($Usu > 0){  // salvar
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET codsetor = $Setor, adm = $Adm, ativo = $Ativo, usumodif = $UsuLogado, datamodif = NOW(), nomecompl = '$NomeCompl', lro = $Lro, fisclro = $FiscLro, bens = $Bens, agua = $Agua, eletric = $Eletric WHERE cpf = '$Cpf'");  // 
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET codsetor = $Setor, adm = $Adm, ativo = $Ativo, usumodif = $UsuLogado, datamodif = NOW(), nomeusual = '$NomeUsual', nomecompl = '$NomeCompl', lro = $Lro, fisclro = $FiscLro, bens = $Bens, agua = $Agua, eletric = $Eletric WHERE cpf = '$Cpf'"); 
         pg_query($Conec, "UPDATE ".$xProj.".pessoas SET pessoas_id = $Usu, nome_completo = '$NomeCompl', sexo = $Sexo, status = $Ativo WHERE cpf = '$Cpf' "); //coleção
 
         if(!is_null($DNasc)){
@@ -400,8 +415,8 @@ if($Acao =="salvaUsu"){
             $Codigo = $tblCod[0];
             $CodigoNovo = ($Codigo+1);
             $Senha = password_hash($Cpf, PASSWORD_DEFAULT);
-            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, codsetor, adm, usuins, datains, cpf, nomecompl, senha, ativo, lro, fisclro, bens, agua, eletric) 
-            VALUES ($CodigoNovo, $GuardaId, $Setor, $Adm, $UsuLogado, NOW(), '$Cpf', '$NomeCompl', '$Senha', 1, $Lro, $FiscLro, $Bens, $Agua, $Eletric )");
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, codsetor, adm, usuins, datains, cpf, nomecompl, senha, ativo, lro, fisclro, bens, agua, eletric, logini, logfim, datamodif, datainat, nomeusual) 
+            VALUES ($CodigoNovo, $GuardaId, $Setor, $Adm, $UsuLogado, NOW(), '$Cpf', '$NomeCompl', '$Senha', 1, $Lro, $FiscLro, $Bens, $Agua, $Eletric, '1500-01-01', '1500-01-01', '1500-01-01', '1500-01-01', '$NomeUsual' )");
             if(!$rs){
                 $Erro = 12;
             }
@@ -427,7 +442,7 @@ if($Acao =="checaLogin"){
     $Cpf = filter_input(INPUT_GET, 'valor');
     $Erro = 0;
     $row = 0;
-    $NomeCompl = "";
+    $NomeUsual = "";
     $NomeCompl = "";
     $DiaNasc = 0;
     $MesNasc = 0;
@@ -453,7 +468,7 @@ if($Acao =="checaLogin"){
             $DiaNasc = $Proc[3];
             $MesNasc = $Proc[4];
 
-            $rs1 = pg_query($Conec, "SELECT to_char(".$xProj.".poslog.logini, 'DD/MM/YYYY HH24:MI'), ".$xProj.".poslog.numacessos, ".$xProj.".poslog.ativo, ".$xProj.".poslog.adm, ".$xProj.".poslog.codsetor, ".$xProj.".poslog.pessoas_id 
+            $rs1 = pg_query($Conec, "SELECT to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, ativo, adm, codsetor, pessoas_id, nomeusual 
             FROM ".$xProj.".poslog WHERE cpf = '$Cpf' ");  //pessoas_id = $Usu ");
             $row1 = pg_num_rows($rs1);
             if($row1 > 0){
@@ -464,13 +479,13 @@ if($Acao =="checaLogin"){
                 $Ativo = $Proc1[2];
                 $Adm = $Proc1[3];
                 $Setor = $Proc1[4];
-//                $Usu = $Proc1[5];
+                $NomeUsual = $Proc1[6];
             }
         }else{
             $Erro = 2; // não encontrado no pessoal
         }
     }
-    $var = array("coderro"=>$Erro, "quantiUsu"=>$row, "idpessoa"=>$Usu, "cpf"=>$Cpf, "nomecompl"=>$NomeCompl, "dianasc"=>$DiaNasc, "mesnasc"=>$MesNasc, "jatem"=>$JaTem, "ultlog"=>$UltLog, "acessos"=>$Acessos, "ativo"=>$Ativo, "adm"=>$Adm, "setor"=>$Setor);
+    $var = array("coderro"=>$Erro, "quantiUsu"=>$row, "idpessoa"=>$Usu, "cpf"=>$Cpf, "nomeusual"=>$NomeUsual, "nomecompl"=>$NomeCompl, "dianasc"=>$DiaNasc, "mesnasc"=>$MesNasc, "jatem"=>$JaTem, "ultlog"=>$UltLog, "acessos"=>$Acessos, "ativo"=>$Ativo, "adm"=>$Adm, "setor"=>$Setor);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -639,7 +654,7 @@ if($Acao =="dataleituraEletric"){
 }
 if($Acao =="apagaAgua"){
     $Erro = 0;
-//    $rs = pg_query($Conec, "TRUNCATE TABLE ".$xProj.".leitura_agua");
+    $rs = pg_query($Conec, "TRUNCATE TABLE ".$xProj.".leitura_agua");
     if(!$rs){
         $Erro = 1;
     }
@@ -702,6 +717,7 @@ if($Acao =="salvadir"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
 if($Acao =="salvaAtivDir"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Valor = filter_input(INPUT_GET, 'valor');
@@ -711,6 +727,51 @@ if($Acao =="salvaAtivDir"){
         $Erro = 1;
     }
     $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="checaLogFim"){
+    $Erro = 0;
+    //atualiza a cada minuto para veriricar usuário on line
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET logfim = NOW() WHERE pessoas_id = ".$_SESSION["usuarioID"]."");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $rs1 = pg_query($Conec, "SELECT EXTRACT(HOURS FROM (NOW()-logini)) as horas FROM  ".$xProj.".poslog WHERE pessoas_id = ".$_SESSION["usuarioID"]."");
+    $tbl1 = pg_fetch_row($rs1);
+    if($tbl1[0] > 15){ // 15 horas logado - reiniciar
+        session_start();
+        $_SESSION = array();
+        session_destroy();
+        header("Location: ../../index.php");
+    }
+
+    //Provisório
+    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS pico_online int NOT NULL DEFAULT 0;");
+    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS data_pico_online timestamp without time zone DEFAULT CURRENT_TIMESTAMP;");
+    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS pico_dia int NOT NULL DEFAULT 0;");
+    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS data_pico_dia timestamp without time zone DEFAULT CURRENT_TIMESTAMP;");
+
+    $rs2 = pg_query($Conec, "SELECT pico_online, pico_dia FROM ".$xProj.".paramsis WHERE idpar = 1 ");
+    $tbl2 = pg_fetch_row($rs2);
+    $QuantOn = $tbl2[0];
+    $QuantDia = $tbl2[1];
+    //Usuários on line
+    $rs3 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE ativo = 1 And EXTRACT(EPOCH FROM (NOW() - logfim)) <= 60");
+    $row3 = pg_num_rows($rs3);
+    //registra pico de usuários on line
+    if($row3 > $QuantOn){
+        pg_query($Conec, "UPDATE ".$xProj.".paramsis SET pico_online = $row3, data_pico_online = NOW() WHERE idpar = 1 ");
+    }
+    //registra pico de usuários no dia
+    $rs4 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE ativo = 1 And TO_CHAR(logini, 'YYYY/MM/DD') = TO_CHAR(CURRENT_DATE, 'YYYY/MM/DD')");
+    $row4 = pg_num_rows($rs4);
+    if($row4 > $QuantDia){
+        pg_query($Conec, "UPDATE ".$xProj.".paramsis SET pico_dia = $row4, data_pico_dia = NOW() WHERE idpar = 1 ");
+    }
+
+    $var = array("coderro"=>$Erro, "interv"=>$tbl1[0]);
     $responseText = json_encode($var);
     echo $responseText;
 }

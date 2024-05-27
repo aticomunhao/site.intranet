@@ -49,37 +49,33 @@ if(!isset($_SESSION["usuarioID"])){
             }
             $(document).ready(function(){
                 if(parseInt(document.getElementById("guardaerro").value) === 0){
-                    document.getElementById("botImprimir").disabled = true;
+                    document.getElementById("botInserir").style.visibility = "hidden"; 
+                    document.getElementById("botImprimir").style.visibility = "hidden"; 
                     if(parseInt(document.getElementById("InsLeitura").value) === 1){ // se estiver marcado em cadusu para fazer a leitura
-                        document.getElementById("botInserir").disabled = false;
-                        $("#container5").load("modulos/leituras/carAgua.php");
-                        $("#container6").load("modulos/leituras/carEstatAgua.php");
-                    }else{
                         if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
-                            document.getElementById("botInserir").disabled = false;
+                            document.getElementById("botInserir").style.visibility = "visible"; 
                             $("#container5").load("modulos/leituras/carAgua.php");
                             $("#container6").load("modulos/leituras/carEstatAgua.php");
+                            //para inserir tem que estar marcado no cadastro de usuários e ter o nível adm estabelecido nos parâmetros do sistema
                         }else{
-                            document.getElementById("botInserir").disabled = true;
-                            document.getElementById("botImprimir").disabled = true;
-                            document.getElementById("botInserir").style.backgroundColor = "#808080";
-                            document.getElementById("botInserir").style.color = "#A9A9A9";
-                            document.getElementById("botImprimir").style.backgroundColor = "#808080";
-                            document.getElementById("botImprimir").style.color = "#A9A9A9";
-
-                            $("#container5").load("modulos/leituras/carMsg.php");
-                            $("#container6").load("modulos/leituras/carMsg.php");
+                            $("#container5").load("modulos/leituras/carMsg.php?msgtipo=2");
+                            $("#container6").load("modulos/leituras/carMsg.php?msgtipo=2");
                         }
-                    }
-                    if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value)){
-                        document.getElementById("botImprimir").disabled = false;
                     }else{
-                        document.getElementById("botImprimir").style.backgroundColor = "#808080";
-                        document.getElementById("botImprimir").style.color = "#A9A9A9";
+                        $("#container5").load("modulos/leituras/carMsg.php?msgtipo=1");
+                        $("#container6").load("modulos/leituras/carMsg.php?msgtipo=1");
+                    }
+                    //para editar obedece ao nivel administrativo
+                    if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value)){
+                        document.getElementById("botImprimir").style.visibility = "visible"; 
+                    }else{
+//                        document.getElementById("botImprimir").style.backgroundColor = "#808080";
+//                        document.getElementById("botImprimir").style.color = "#A9A9A9";
+                        document.getElementById("botImprimir").style.visibility = "hidden"; 
                     }
                     if(parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
-                        document.getElementById("botInserir").disabled = false;
-                        document.getElementById("botImprimir").disabled = false;
+                        document.getElementById("botInserir").style.visibility = "visible"; 
+                        document.getElementById("botImprimir").style.visibility = "visible"; 
                         $("#container5").load("modulos/leituras/carAgua.php");
                         $("#container6").load("modulos/leituras/carEstatAgua.php");
                     }
@@ -116,7 +112,6 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.")
                                 }else{
-//                                    document.getElementById("insdata").disabled = true;
                                     document.getElementById("insdata").value = Resp.data;
                                     document.getElementById("insdiasemana").innerHTML = Resp.sem;
                                     document.getElementById("insleitura1").value = Resp.leitura1;
@@ -144,20 +139,20 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.")
                                 }else{
-                                        document.getElementById("insdata").value = Resp.data;
-                                        document.getElementById("insdiasemana").innerHTML = Resp.sem;
-                                        document.getElementById("guardacod").value = 0;
-                                        document.getElementById("insdata").disabled = false;
-                                        document.getElementById("insdata").value = Resp.proximo;  // document.getElementById("guardahoje").value;
-                                        document.getElementById("insdiasemana").innerHTML = Resp.sem;
-                                        document.getElementById("insleitura1").value = "";
-                                        document.getElementById("insleitura2").value = "";
-                                        document.getElementById("insleitura3").value = "";
-                                        document.getElementById("relacmodalLeitura").style.display = "block";
-                                        $('#mensagemLeitura').fadeIn("slow");
-                                        document.getElementById("mensagemLeitura").innerHTML = "Próxima data para lançamento.";
-                                        $('#mensagemLeitura').fadeOut(2000);
-                                        document.getElementById("insleitura1").focus();
+                                    document.getElementById("insdata").value = Resp.data;
+                                    document.getElementById("insdiasemana").innerHTML = Resp.sem;
+                                    document.getElementById("guardacod").value = 0;
+                                    document.getElementById("insdata").disabled = false;
+                                    document.getElementById("insdata").value = Resp.proximo;  // document.getElementById("guardahoje").value;
+                                    document.getElementById("insdiasemana").innerHTML = Resp.sem;
+                                    document.getElementById("insleitura1").value = "";
+                                    document.getElementById("insleitura2").value = "";
+                                    document.getElementById("insleitura3").value = "";
+                                    document.getElementById("relacmodalLeitura").style.display = "block";
+                                    $('#mensagemLeitura').fadeIn("slow");
+                                    document.getElementById("mensagemLeitura").innerHTML = "Próxima data para lançamento.";
+                                    $('#mensagemLeitura').fadeOut(2000);
+                                    document.getElementById("insleitura1").focus();
                                 }
                             }
                         }
@@ -195,8 +190,6 @@ if(!isset($_SESSION["usuarioID"])){
                                         $('#mensagemLeitura').fadeIn("slow");
                                         document.getElementById("mensagemLeitura").innerHTML = "Essa data já foi lançada.";
                                         $('#mensagemLeitura').fadeOut(3000);
-
-
                                     }
                                 }
                             }

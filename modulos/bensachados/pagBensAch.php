@@ -50,7 +50,7 @@ session_start();
                 document.getElementById("botimprReg").style.visibility = "hidden"; 
                 document.getElementById("botInsReg").style.visibility = "hidden"; 
                 if(parseInt(document.getElementById("guardaescEdit").value) === 1){ // tem que estar autorizado no cadastro de usuários
-                    if(parseInt(document.getElementById("admIns").value) >= parseInt(document.getElementById("UsuAdm").value)){
+                    if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
                         document.getElementById("botInsReg").style.visibility = "visible"; 
                     }
                     if(parseInt(document.getElementById("UsuAdm").value) > 6){
@@ -681,7 +681,7 @@ session_start();
         }
         $admIns = parAdm("insbens", $Conec, $xProj);   // nível para inserir 
         $admEdit = parAdm("editbens", $Conec, $xProj); // nível para editar -> foi para relBens.php
-        $escEdit = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // está na escala
+        $escEdit = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // está marcado no cadastro de usuários
         $OpDestBens = pg_query($Conec, "SELECT numdest, descdest FROM ".$xProj.".bensdestinos ORDER BY descdest");
 
         ?>
