@@ -284,23 +284,11 @@ session_start();
         $Tipo = (int) filter_input(INPUT_GET, 'tipo');
         $admIns = parAdm("insramais", $Conec, $xProj);   // nível para inserir 
         $admEdit = parAdm("editramais", $Conec, $xProj); // nível para editar
-
-        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".ramais_int ADD COLUMN IF NOT EXISTS poslog_id bigint NOT NULL DEFAULT 0");
-        $rs = pg_query($Conec, "SELECT nomeusu FROM ".$xProj.".ramais_int WHERE codtel = 2 And nomeusu = 'Fulano'");
-        $row = pg_num_rows($rs);
-        if($row > 0){
-            pg_query($Conec, "TRUNCATE TABLE ".$xProj.".ramais_int");
-        }
-
         $OpNomes = pg_query($Conec, "SELECT id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
         $OpSetor = pg_query($ConecPes, "SELECT id, sigla FROM ".$xPes.".setor WHERE dt_fim IS NULL ORDER BY sigla");
 
-        $rs0 = pg_query($Conec, "SELECT codtel, nomeusu, nomecompl, ramal, setor 
-        FROM ".$xProj.".ramais_int 
-        WHERE ativo = 1 ORDER BY nomecompl");
-
+        $rs0 = pg_query($Conec, "SELECT codtel, nomeusu, nomecompl, ramal, setor FROM ".$xProj.".ramais_int WHERE ativo = 1 ORDER BY nomecompl");
         $row0 = pg_num_rows($rs0);
-
         ?>
         <input type="hidden" id="tipo_acesso" value="<?php echo $Tipo; ?>" />
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>" />
@@ -376,8 +364,7 @@ session_start();
                                 ?>
                             </select>
                             <input type="text" id="nomecompleto" style="width: 90%;" placeholder="Nome completo ou nome do setor" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('ramal');return false;}">
-                    </td>
-
+                        </td>
                     </tr>
                     <tr>
                         <td id="etiqSetor" class="etiq">Setor</td>

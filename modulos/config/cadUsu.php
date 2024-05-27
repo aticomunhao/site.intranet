@@ -580,7 +580,7 @@ if(!isset($_SESSION["usuarioID"])){
                     </tr>
                     <tr>
                         <td id="etiqNome" class="etiq80">Nome Usual</td>
-                        <td><input type="text" id="usuarioNome" placeholder="Nome usual" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('nomecompl');return false;}"></td>
+                        <td><input type="text" disabled id="usuarioNome" placeholder="Nome usual" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('nomecompl');return false;}"></td>
                         <td></td>
                         <td></td>
                         <td colspan="2" style="text-align: right;">
