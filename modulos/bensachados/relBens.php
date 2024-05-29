@@ -61,6 +61,12 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     <body> 
         <?php
             $Cod = (int) filter_input(INPUT_GET, 'codigo');
+            $rs = pg_query($Conec, "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'bensachados'");
+            $row = pg_num_rows($rs);
+            if($row == 0){
+                die("Faltam tabelas. Informe à ATI");
+                return false;
+            }
         ?>
          <!-- Apresenta os usuários do setor com o nível administrativo -->
         <div style="padding: 10px;">

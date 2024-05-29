@@ -688,7 +688,7 @@ session_start();
         <!-- div três colunas -->
         <div class="container" style="margin: 0 auto;">
             <div class="row">
-                <div class="col quadro"><button class="botpadrGr fundoAmarelo" id="botInsReg" onclick="abreRegistro();" >Registro de Recebimento</button></div>
+                <div class="col quadro"><button class="botpadrGr fundoAmarelo" id="botInsReg" onclick="abreRegistro();" >Novo Registro</button></div>
                 <div class="col quadro"><h5>Registro de Bens Encontrados</h5></div> <!-- Central - espaçamento entre colunas  -->
                 <div class="col quadro"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpBens();" title="Guia rápido"></div> 
             </div>

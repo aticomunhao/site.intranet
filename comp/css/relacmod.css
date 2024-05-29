@@ -354,8 +354,16 @@
     text-decoration: none;
     cursor: pointer;
 }
-/*
-tr td{
-    border: 1px solid;
+.closeB{
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: right;
 }
-*/
+.closeB:hover,
+.closeB:focus {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}

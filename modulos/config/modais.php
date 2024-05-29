@@ -23,7 +23,7 @@
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 35%; /* acertar de acordo com a tela */
+                width: 45%; /* acertar de acordo com a tela */
             }
             /* Botão fechar */
             .close{
@@ -66,7 +66,7 @@
             <div class="modal-content-Msg">
                 <span class="close" onclick="fechaMensagem(2);">&times;</span>
                 <br />
-                <h4><img src="imagens/LogoComunhao.png" height="30px;">Informação</h4>
+                <h5><img src="imagens/LogoComunhao.png" height="30px;"><label id="textoTitulo" style="padding-left: 5px;">Informação</label></h5>
                 <div id="textoInfo" style="text-align: center; font-weight: bold; padding: 10px;"></div>
             </div>
         </div>

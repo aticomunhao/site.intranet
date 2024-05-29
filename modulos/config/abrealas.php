@@ -6,20 +6,20 @@ if(strtolower($url) == $urlIni."modulos/config/abrealas.php"){
    header("Location: $urlIni");
 }
 
-$Conec = conecPost(); // habilitar a extensão: extension = pgsql no phpini
-if($Conec != "sConec" && $Conec != "sFunc"){
-   $xProj =  "cesb"; 
-   $xPes = "public";
-}else{
-   die("<br>Não foi possível conectar-se ao banco de dados.");
-}
-
 $ConecPes = conecPes();
 if($ConecPes != "sConec" && $Conec != "sFunc"){
    $xProj =  "cesb";
    $xPes = "public";
 }else{
-   die("<br>Não foi possível conectar-se ao banco de dados de pessoal.");
+   die("<br>Não foi possível conectar-se ao banco de dados Pessoal.");
+}
+
+$Conec = conecPost(); // habilitar a extensão: extension = pgsql no phpini
+if($Conec != "sConec" && $Conec != "sFunc"){
+   $xProj =  "cesb"; 
+   $xPes = "public";
+}else{
+   die("<br>Não foi possível conectar-se ao banco de dados Cesb.");
 }
 
 function parAdm($Campo, $Conec, $xProj){

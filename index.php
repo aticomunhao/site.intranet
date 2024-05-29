@@ -66,7 +66,7 @@
                 </div>
             </section>
             <!-- Rodapé -->
-            <div class="footer">
+            <div>
                 <div id="container4" class="container-fluid corFundoMenu-dia<?php echo $diaSemana; ?>"></div>
             </div>
         </div>

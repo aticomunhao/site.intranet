@@ -2,12 +2,11 @@
     date_default_timezone_set('America/Sao_Paulo');
     $date = date('Y-m-d H:i:s');
 
-    $d = strtotime("+1 Months");
-    $ProxMes = date("m", $d);
+    $m = strtotime("+1 Months");
+    $ProxMes = date("m", $m);
 
     $mdate = date('m');
     $ddate = date('d');
-    $dias = 5; // total de dias a mostrar
     $xProj = "cesb";
     require_once("config/abrealas.php");
     if(!$Conec){
@@ -50,7 +49,7 @@
                             echo $tbl[2]."/". $tbl[3];
                             echo "</td>";
                             echo "<td style='color: red; text-align: left; padding-left: 5px; font-size: 80%;'>";
-                                echo "<b>" . $tbl[1] . "</b>";
+                                echo "<div style='border: 1px solid #FF5580; border-radius: 5px; padding-left: 3px;'>"."<b>" . $tbl[1] . "</b>"."</div>";
                             echo "</td>";
                             echo "</tr>";
                         }
@@ -59,11 +58,10 @@
                         echo "<tr>";
                         echo "<td colspan='2' style='color: red; text-align: center; font-weight: normal; font-size: 80%;'>Nenhum aniversariante hoje</td>";
                         echo "</tr>";
-                        
                     }
                 }
-                        
-            //aniversariantes dos $dias seguintes:
+
+            //aniversariantes do mês seguinte:
             $aniver = pegaAniver('>', $mdate, $ddate, $ConecPes, $xPes, $ProxMes);
                 if($aniver){
                     $row = pg_num_rows($aniver);
@@ -74,7 +72,7 @@
                                 echo $tbl[2]."/". $tbl[3];
                             echo "</td>";
                             echo "<td style='color: blue; text-align: left; padding-left: 5px; font-size: 80%;'>";
-                                echo "<b>" . $tbl[1] . "</b>";
+                                echo "<div style='border: 1px solid #5C88C4; border-radius: 5px; padding-left: 3px;'>"."<b>" . $tbl[1] . "</b>"."</div>";
                             echo "</td>";
                         }
                     }else{

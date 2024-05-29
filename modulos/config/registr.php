@@ -6,13 +6,14 @@ if(isset($_REQUEST["acao"])){
     $Conec = conecPost(); // habilitar a extensão: extension=pgsql no phpini
     $ConecPes = conecPes();
     date_default_timezone_set('America/Sao_Paulo');
-//    $ConecPes = "sConec";
+
     if($ConecPes == "sConec" || $ConecPes == "sFunc"){
         $ConecPes = $Conec;
         $xPes = $xProj;
     }
 }
 
+require_once("gUtils.php"); // Classe para Normatizar nomes próprios
 if($Acao =="loglog"){
     $Cpf = filter_input(INPUT_GET, 'usuario'); 
     $Cpf1 = addslashes($Cpf);
@@ -50,12 +51,22 @@ if($Acao =="loglog"){
                 if(password_verify($Sen, $tbl1[0])){
                     $tbl0 = pg_fetch_row($rs0);
                     $rs = pg_query($ConecPes, "SELECT id, cpf, nome_completo, TO_CHAR(dt_nascimento, 'DD/MM/YYYY'), TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM'), sexo, nome_resumido 
-                    FROM ".$xPes.".pessoas  
-                    WHERE cpf = '$Login' ");  //And status = 1");
+                    FROM ".$xPes.".pessoas WHERE cpf = '$Login' ");  //And status = 1");
                     $Sql = pg_fetch_row($rs);
                     $id = $Sql[0];
-                    $NomeCompl = $Sql[2];
-                    $NomeUsual = $Sql[7];
+                    $NomeC = GUtils::normalizarNome($Sql[2]);  // Normatizar nomes próprios
+                    $NomeComp = addslashes($NomeC);
+                    $NomeCompl = str_replace('"', "'", $NomeComp); // substitui aspas duplas por simples
+
+                    if(!is_null($Sql[7])){
+                        $NomeU = $Sql[7];
+                        $NomeUs = GUtils::normalizarNome($NomeU);  // Normatizar nomes próprios
+                        $NomeUsu = addslashes($NomeUs);
+                        $NomeUsual = str_replace('"', "'", $NomeUsu); // substitui aspas duplas por simples
+                    }else{
+                        $NomeUsual = "";
+                    }
+
                     $DNasc = $Sql[3];
                     $DiaAniv = $Sql[4];
                     $MesAniv = $Sql[5];
@@ -63,8 +74,11 @@ if($Acao =="loglog"){
                     $_SESSION['sexo'] = $Sql[6];
                     $_SESSION['start_login'] = time();
                     $_SESSION["usuarioID"] = $id;
-                    $_SESSION["NomeUsual"] = $Sql[7];
+                    $_SESSION["NomeUsual"] = $NomeUsual;
                     $_SESSION["NomeCompl"] = $NomeCompl;
+                    if($NomeUsual == ""){
+                        $_SESSION["NomeUsual"] = $_SESSION["NomeCompl"];
+                    }
                     $_SESSION["msg"] = ""; //para troca de slides e tráfego de arquivos
                     $_SESSION['msgarq'] = ""; //para upload arquivos diretorias/assessorias
                     $_SESSION['geremsg'] = 0;
@@ -86,10 +100,14 @@ if($Acao =="loglog"){
                     $row1 = pg_num_rows($rs1);
                     if($row1 == 1){ // Já tem - aumenta número de acessos e grava data hora do login  - logfim = now() para mostrar on line
                         pg_query($Conec, "UPDATE ".$xProj.".poslog SET numacessos = (numacessos + 1), logini = NOW(), logfim = NOW() WHERE pessoas_id = $id "); 
-                        $rs2 = pg_query($Conec, "SELECT adm, codsetor FROM ".$xProj.".poslog WHERE cpf = '$Login' "); 
+                        $rs2 = pg_query($Conec, "SELECT adm, codsetor, nomeusual FROM ".$xProj.".poslog WHERE cpf = '$Login' "); 
                         $tbl2 = pg_fetch_row($rs2);
                         $_SESSION["AdmUsu"] = $tbl2[0];
                         $_SESSION["CodSetorUsu"] = $tbl2[1];
+                        if(!is_null($tbl2[2]) && $tbl2[2] != ""){
+                            $_SESSION["NomeUsual"] = $tbl2[2];
+                        }
+
                         $rs3 = pg_query($Conec, "SELECT siglasetor, descsetor FROM ".$xProj.".setores WHERE codset = $tbl2[1] "); 
                         $row3 = pg_num_rows($rs3);
                         if($row3 > 0){
@@ -110,29 +128,26 @@ if($Acao =="loglog"){
                         $tblCod = pg_fetch_row($rsCod);
                         $Codigo = $tblCod[0];
                         $CodigoNovo = ($Codigo+1); 
-                        pg_query($Conec, "INSERT INTO ".$xProj.".pessoas (id, pessoas_id, cpf, nome_completo, dt_nascimento, sexo, status, datains) VALUES ($CodigoNovo, $id, '$Login', '$NomeCompl', '$DNasc', ".$_SESSION['sexo'].", 1, NOW() ) "); 
+                        pg_query($Conec, "INSERT INTO ".$xProj.".pessoas (id, pessoas_id, cpf, nome_completo, dt_nascimento, sexo, status, datains, nome_resumido) VALUES ($CodigoNovo, $id, '$Login', '$NomeCompl', '$DNasc', ".$_SESSION['sexo'].", 1, NOW(), '$NomeUsual') "); 
                     }
 
-//Provisório
-                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS nomeusual VARCHAR(50)");
-                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".pessoas ADD COLUMN IF NOT EXISTS nome_resumido VARCHAR(50)");
-                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS agua smallint NOT NULL DEFAULT 0");
-                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS eletric smallint NOT NULL DEFAULT 0");
-                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS dataelim date DEFAULT '2023-10-09'");
-                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisclro smallint NOT NULL DEFAULT 0;"); // 1 - fiscalizar o LRO 
     //Provisório
-                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS pico_online int NOT NULL DEFAULT 0;");
-                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS data_pico_online timestamp without time zone DEFAULT CURRENT_TIMESTAMP;");
-                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS pico_dia int NOT NULL DEFAULT 0;");
-                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS data_pico_dia timestamp without time zone DEFAULT CURRENT_TIMESTAMP;");
-                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS usuguarda bigint NOT NULL DEFAULT 0;");
-                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS usurestit bigint NOT NULL DEFAULT 0;");
-                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS usucsg bigint NOT NULL DEFAULT 0;");
-                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS dataguarda timestamp without time zone DEFAULT '3000-12-31';");
-                    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS nomepropriet VARCHAR(200);");
-
-
-                    
+                    if(strtotime('2024/07/30') > strtotime(date('Y/m/d'))){
+                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS nomeusual VARCHAR(50)");
+                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".pessoas ADD COLUMN IF NOT EXISTS nome_resumido VARCHAR(50)");
+                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS agua smallint NOT NULL DEFAULT 0");
+                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS eletric smallint NOT NULL DEFAULT 0");
+                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS dataelim date DEFAULT '2023-10-09'");
+                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisclro smallint NOT NULL DEFAULT 0;"); // 1 - fiscalizar o LRO 
+    //Provisório
+                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS pico_online int NOT NULL DEFAULT 0;");
+                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS data_pico_online timestamp without time zone DEFAULT CURRENT_TIMESTAMP;");
+                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS pico_dia int NOT NULL DEFAULT 0;");
+                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS data_pico_dia timestamp without time zone DEFAULT CURRENT_TIMESTAMP;");    
+                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET datainat = '3000-12-31' ");
+                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET datamodif = '3000-12-31' WHERE datamodif IS NULL Or datamodif = '1500-01-01'");
+                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET logini = '3000-12-31' WHERE logini IS NULL Or logini = '1500-01-01'");
+                    }
 
                     $rs5 = pg_query($Conec, "SELECT dataelim FROM ".$xProj.".paramsis WHERE idpar = 1 ");
                     $row5 = pg_num_rows($rs5);
@@ -148,6 +163,7 @@ if($Acao =="loglog"){
                             pg_query($Conec, "DELETE FROM ".$xProj.".tarefas_msg WHERE datamsg < CURRENT_DATE - interval '5 years' "); //Apaga mensagens trocadas nas tarefas há mais de 5 anos
                             pg_query($Conec, "DELETE FROM ".$xProj.".livroreg WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga registros do livro de ocorrências há mais de 5 anos
                             pg_query($Conec, "DELETE FROM ".$xProj.".bensachados WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga registros do achados e perdidos há mais de 5 anos
+                            pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE logfim < CURRENT_DATE - interval '5 years' "); //Apaga registros de usuários com último log há mais de 5 anos
 
                             $rs6 = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog ");
                             $row6 = pg_num_rows($rs6);
@@ -158,12 +174,36 @@ if($Acao =="loglog"){
                                     $row7 = pg_num_rows($rs7);
                                     if($row7 == 1){
                                         $tbl7 = pg_fetch_row($rs7);
-                                        $NomeCompl = $tbl7[0]; // acerta nome e status
-                                        $Ativo = $tbl7[1];
-                                        $DNasc = $tbl7[2];
-                                        $Sexo = $tbl7[3];
-                                        $NomeUsual = $tbl7[4];
-                                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET nomecompl = '$NomeCompl', nomeusual = '$NomeUsual', ativo = $Ativo, sexo = $Sexo WHERE pessoas_id = $Cod");
+                                        $NomeC = GUtils::normalizarNome($tbl7[0]);  // Normatizar nomes próprios
+                                        $NomeComp = addslashes($NomeC);
+                                        $NomeCompl = str_replace('"', "'", $NomeComp); // substitui aspas duplas por simples
+
+                                        if(!is_null($tbl7[1])){
+                                            $Ativo = $tbl7[1];
+                                        }else{
+                                            $Ativo = 0;
+                                        }
+                                        if(!is_null($tbl7[2])){
+                                            $DNasc = $tbl7[2];
+                                        }else{
+                                            $DNasc = "1500-01-01";
+                                        }
+                                        if(!is_null($tbl7[3])){
+                                            $Sexo = $tbl7[3];
+                                        }else{
+                                            $Sexo = 1;
+                                        }
+
+                                        if(!is_null($tbl7[4])){
+                                            $NomeU = $tbl7[4];
+                                            $NomeUs = GUtils::normalizarNome($NomeU);  // Normatizar nomes próprios
+                                            $NomeUsu = addslashes($NomeUs);
+                                            $NomeUsual = str_replace('"', "'", $NomeUsu); // substitui aspas duplas por simples
+                                            pg_query($Conec, "UPDATE ".$xProj.".poslog SET nomeusual = '$NomeUsual' WHERE pessoas_id = $Cod");
+                                        }else{
+                                            $NomeUsual = "";
+                                        }
+                                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET nomecompl = '$NomeCompl', ativo = $Ativo, sexo = $Sexo WHERE pessoas_id = $Cod");
                                         pg_query($Conec, "UPDATE ".$xProj.".pessoas SET nome_completo = '$NomeCompl', nome_resumido = '$NomeUsual', status = $Ativo, dt_nascimento = '$DNasc', sexo = $Sexo WHERE pessoas_id = $Cod");
                                     }else{ // se não estiver mais em pessoas
                                         pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 0 WHERE pessoas_id = $Cod ");
@@ -183,15 +223,6 @@ if($Acao =="loglog"){
                     if($Sen == $Login){
                         $Erro = 5; // inserir nova senha
                     }
-
-//                    $_SESSION["NomeUsual"] = "";
-//                    $rs8 = pg_query($Conec, "SELECT nomeusual FROM ".$xProj.".poslog WHERE cpf = '$Login' "); 
-//                    $tbl8 = pg_fetch_row($rs8);
-//                    $_SESSION["NomeUsual"] = $tbl8[0];
-//                    if($tbl8[0] == ""){
-//                        $_SESSION["NomeUsual"] = $_SESSION["NomeCompl"];
-//                    }
-
                     $var = array("coderro"=>$Erro, "msg"=>$Erro_Msg, "usuarioid"=>$id, "usuarioNome"=>$_SESSION["NomeCompl"], "usuarioAdm"=>$_SESSION["AdmUsu"], "usuario"=>$_SESSION["NomeUsual"]); 
                 }else{ // usuário não encontrado 
                     $Erro = 6;
@@ -303,9 +334,155 @@ if($Acao =="buscausu"){
         }else{
             $UltLog = "31/12/3000";
         }
-        
-        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$Proc[3], "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "bens"=>$Proc[6], "lroFiscaliza"=>$Proc[7], "leituraAgua"=>$Proc[8], "leituraEletric"=>$Proc[9], "diaAniv"=>$Proc0[2], "mesAniv"=>$Proc0[3], "cpf"=>$GuardaCpf, "usuarioNome"=>$Proc0[4]);
+        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$Proc[3], "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "bens"=>$Proc[6], "lroFiscaliza"=>$Proc[7], "leituraAgua"=>$Proc[8], "leituraEletric"=>$Proc[9], "diaAniv"=>$Proc0[2], "mesAniv"=>$Proc0[3], "cpf"=>$GuardaCpf, "usuarioNome"=>$Proc[10]);
     }
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="salvaUsu"){
+    $Usu = (int) filter_input(INPUT_GET, 'numero');
+    $GuardaId = (int) filter_input(INPUT_GET, 'guardaidpessoa');
+    $UsuLogado = (int) filter_input(INPUT_GET, 'usulogado');
+    $Setor = (int) filter_input(INPUT_GET, 'setor');
+    $Adm = (int) filter_input(INPUT_GET, 'flAdm');
+    $Cpf = filter_input(INPUT_GET, 'cpf');
+    $Ativo = (int) filter_input(INPUT_GET, 'ativo');
+
+    $NomeU = trim(filter_input(INPUT_GET, 'usuarioNome')); // vem de pessoas mas pode ser modificado aqui
+    $NomeUs = GUtils::normalizarNome($NomeU);  // Normatizar nomes próprios
+    $NomeUsu = addslashes($NomeUs);
+    $NomeUsual = str_replace('"', "'", $NomeUsu); // substitui aspas duplas por simples
+//    $NomeCompl = trim(filter_input(INPUT_GET, 'nomecompl')); // vem de pessoas
+    $Lro  = (int) filter_input(INPUT_GET, 'lro');
+    $FiscLro  = (int) filter_input(INPUT_GET, 'fisclro');
+    $Bens  = (int) filter_input(INPUT_GET, 'bens');
+    $Agua  = (int) filter_input(INPUT_GET, 'agua');
+    $Eletric = (int) filter_input(INPUT_GET, 'eletric');
+
+    $Cpf1 = addslashes($Cpf);
+    $Cpf2 = str_replace(".", "", $Cpf1);
+    $Cpf = str_replace("-", "", $Cpf2);
+
+    $Erro = 0;
+    $id = 0;
+    $rs0 = pg_query($ConecPes, "SELECT nome_completo, dt_nascimento, sexo FROM ".$xPes.".pessoas WHERE cpf = '$Cpf'");
+    $tbl0 = pg_fetch_row($rs0);
+
+    $NomeC = GUtils::normalizarNome($tbl0[0]);  // Normatizar nomes próprios
+    $NomeComp = addslashes($NomeC);
+    $NomeCompl = str_replace('"', "'", $NomeComp); // substitui aspas duplas por simples
+
+    $DNasc = $tbl0[1];
+    $Sexo = $tbl0[2];
+    if(is_null($Sexo)){
+        $Sexo = 1;
+    }
+
+    if($Usu > 0){  // salvar não atualiza logfim - logfim conta tempo para deleção (5 anos)
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET codsetor = $Setor, adm = $Adm, ativo = $Ativo, usumodif = $UsuLogado, datamodif = NOW(), nomeusual = '$NomeUsual', nomecompl = '$NomeCompl', lro = $Lro, fisclro = $FiscLro, bens = $Bens, agua = $Agua, eletric = $Eletric WHERE cpf = '$Cpf'"); 
+        pg_query($Conec, "UPDATE ".$xProj.".pessoas SET pessoas_id = $Usu, nome_completo = '$NomeCompl', sexo = $Sexo, status = $Ativo WHERE cpf = '$Cpf' "); //coleção
+
+        if(!is_null($DNasc)){
+            pg_query($Conec, "UPDATE ".$xProj.".pessoas SET dt_nascimento = '$DNasc' WHERE cpf = '$Cpf' "); 
+        }
+        if($Ativo == 0){ // bloqueado
+            pg_query($Conec, "UPDATE ".$xProj.".poslog SET datainat = NOW() WHERE cpf = '$Cpf'"); // só marca a data da inatividade
+        }else{
+            pg_query($Conec, "UPDATE ".$xProj.".poslog SET datainat = '3000-12-31' WHERE cpf = '$Cpf'");
+        }
+
+        if(!$rs){
+            $Erro = 1;
+        }
+    }
+    if($Usu == 0){ // cadastrar
+        if($GuardaId > 0){
+            $m = strtotime("-1 Hour");
+            $HoraAnt = date("Y-m-d H:i:s", $m); // para o recem cadastrado não aprecer on line
+
+            $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".poslog");
+            $tblCod = pg_fetch_row($rsCod);
+            $Codigo = $tblCod[0];
+            $CodigoNovo = ($Codigo+1);
+            $Senha = password_hash($Cpf, PASSWORD_DEFAULT);
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, codsetor, adm, usuins, datains, cpf, nomecompl, senha, ativo, lro, fisclro, bens, agua, eletric, logini, logfim, datamodif, datainat, nomeusual) 
+            VALUES ($CodigoNovo, $GuardaId, $Setor, $Adm, $UsuLogado, NOW(), '$Cpf', '$NomeCompl', '$Senha', 1, $Lro, $FiscLro, $Bens, $Agua, $Eletric, '3000-12-31', '$HoraAnt', '3000-12-31', '3000-12-31', '$NomeUsual' )"); // logfim conta tempo para apagar usuário (5 anos)
+            if(!$rs){
+                $Erro = 12;
+            }
+        }else{
+            $Erro = 13;
+        }
+        $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".pessoas WHERE cpf = '$Cpf'");
+        $row1 = pg_num_rows($rs1);
+        if($row1 == 0){
+            $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".pessoas");
+            $tblCod = pg_fetch_row($rsCod);
+            $Codigo = $tblCod[0];
+            $CodigoNovo = ($Codigo+1); 
+            pg_query($Conec, "INSERT INTO ".$xProj.".pessoas (id, pessoas_id, cpf, nome_completo, dt_nascimento, sexo, status, datains) VALUES ($CodigoNovo, $GuardaId, '$Cpf', '$NomeCompl', '$DNasc', $Sexo, $Ativo, NOW() ) "); 
+        }
+    }
+    $var = array("coderro"=>$Erro, "usuario"=>$Usu, "guardausu"=>$GuardaId);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="checaLogin"){
+    $Cpf0 = filter_input(INPUT_GET, 'valor');
+    $Cpf1 = addslashes($Cpf0);
+    $Cpf2 = str_replace(".", "", $Cpf1);
+    $Cpf = str_replace("-", "", $Cpf2);
+    
+    $Erro = 0;
+    $row = 0;
+    $NomeUsual = "";
+    $NomeCompl = "";
+    $DiaNasc = 0;
+    $MesNasc = 0;
+    $UltLog = "";
+    $Acessos = 0;
+    $Ativo = 0;
+    $Adm = 1;
+    $Setor = 0;
+    $JaTem = 0;
+    $Usu = 0;
+
+    $rs = pg_query($ConecPes, "SELECT id, nome_completo, TO_CHAR(dt_nascimento, 'DD/MM/YYYY'), TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM'), nome_resumido 
+    FROM ".$xPes.".pessoas 
+    WHERE ".$xPes.".pessoas.cpf = '$Cpf' ");
+    if(!$rs){
+        $Erro = 1;
+    }else{
+        $row = pg_num_rows($rs);
+        if($row > 0){
+            $Proc= pg_fetch_row($rs);
+            $Usu = $Proc[0];
+            $NomeCompl = $Proc[1];
+            $DiaNasc = $Proc[3];
+            $MesNasc = $Proc[4];
+            $NomeCompl = $Proc[1];
+            $NomeUsual = $Proc[5];
+
+            $rs1 = pg_query($Conec, "SELECT to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, ativo, adm, codsetor, pessoas_id, nomeusual 
+            FROM ".$xProj.".poslog WHERE cpf = '$Cpf' ");  //pessoas_id = $Usu ");
+            $row1 = pg_num_rows($rs1);
+            if($row1 > 0){
+                $JaTem = 1;
+                $Proc1= pg_fetch_row($rs1);
+                $UltLog = $Proc1[0];
+                $Acessos = $Proc1[1];
+                $Ativo = $Proc1[2];
+                $Adm = $Proc1[3];
+                $Setor = $Proc1[4];
+//                $NomeUsual = $Proc1[6];
+            }
+        }else{
+            $Erro = 2; // não encontrado no pessoal
+        }
+    }
+    $var = array("coderro"=>$Erro, "quantiUsu"=>$row, "idpessoa"=>$Usu, "cpf"=>$Cpf, "nomeusual"=>$NomeUsual, "nomecompl"=>$NomeCompl, "dianasc"=>$DiaNasc, "mesnasc"=>$MesNasc, "jatem"=>$JaTem, "ultlog"=>$UltLog, "acessos"=>$Acessos, "ativo"=>$Ativo, "adm"=>$Adm, "setor"=>$Setor);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -384,131 +561,6 @@ if($Acao =="deletausu"){
     echo $responseText;
 }
 
-if($Acao =="salvaUsu"){
-    $Usu = (int) filter_input(INPUT_GET, 'numero');
-    $GuardaId = (int) filter_input(INPUT_GET, 'guardaidpessoa');
-    $UsuLogado = (int) filter_input(INPUT_GET, 'usulogado');
-    $Setor = (int) filter_input(INPUT_GET, 'setor');
-    $Adm = (int) filter_input(INPUT_GET, 'flAdm');
-    $Cpf = filter_input(INPUT_GET, 'cpf');
-    $Ativo = (int) filter_input(INPUT_GET, 'ativo');
-    $NomeUsual = trim(filter_input(INPUT_GET, 'usuarioNome'));
-//    $NomeCompl = trim(filter_input(INPUT_GET, 'nomecompl'));
-    $Lro  = (int) filter_input(INPUT_GET, 'lro');
-    $FiscLro  = (int) filter_input(INPUT_GET, 'fisclro');
-    $Bens  = (int) filter_input(INPUT_GET, 'bens');
-    $Agua  = (int) filter_input(INPUT_GET, 'agua');
-    $Eletric = (int) filter_input(INPUT_GET, 'eletric');
-
-    $Cpf1 = addslashes($Cpf);
-    $Cpf2 = str_replace(".", "", $Cpf1);
-    $Cpf = str_replace("-", "", $Cpf2);
-
-    $Erro = 0;
-    $id = 0;
-    $rs0 = pg_query($ConecPes, "SELECT nome_completo, dt_nascimento, sexo FROM ".$xPes.".pessoas WHERE cpf = '$Cpf'");
-    $tbl0 = pg_fetch_row($rs0);
-    $NomeCompl = $tbl0[0];
-    $DNasc = $tbl0[1];
-    $Sexo = $tbl0[2];
-    if(is_null($Sexo)){
-        $Sexo = 1;
-    }
-
-    if($Usu > 0){  // salvar
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET codsetor = $Setor, adm = $Adm, ativo = $Ativo, usumodif = $UsuLogado, datamodif = NOW(), nomeusual = '$NomeUsual', nomecompl = '$NomeCompl', lro = $Lro, fisclro = $FiscLro, bens = $Bens, agua = $Agua, eletric = $Eletric WHERE cpf = '$Cpf'"); 
-        pg_query($Conec, "UPDATE ".$xProj.".pessoas SET pessoas_id = $Usu, nome_completo = '$NomeCompl', sexo = $Sexo, status = $Ativo WHERE cpf = '$Cpf' "); //coleção
-
-        if(!is_null($DNasc)){
-            pg_query($Conec, "UPDATE ".$xProj.".pessoas SET dt_nascimento = '$DNasc' WHERE cpf = '$Cpf' "); 
-        }
-        if(!$rs){
-            $Erro = 1;
-        }
-    }
-    if($Usu == 0){ // cadastrar
-        if($GuardaId > 0){
-            $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".poslog");
-            $tblCod = pg_fetch_row($rsCod);
-            $Codigo = $tblCod[0];
-            $CodigoNovo = ($Codigo+1);
-            $Senha = password_hash($Cpf, PASSWORD_DEFAULT);
-            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, codsetor, adm, usuins, datains, cpf, nomecompl, senha, ativo, lro, fisclro, bens, agua, eletric, logini, logfim, datamodif, datainat, nomeusual) 
-            VALUES ($CodigoNovo, $GuardaId, $Setor, $Adm, $UsuLogado, NOW(), '$Cpf', '$NomeCompl', '$Senha', 1, $Lro, $FiscLro, $Bens, $Agua, $Eletric, '1500-01-01', '1500-01-01', '1500-01-01', '1500-01-01', '$NomeUsual' )");
-            if(!$rs){
-                $Erro = 12;
-            }
-        }else{
-            $Erro = 13;
-        }
-        $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".pessoas WHERE cpf = '$Cpf'");
-        $row1 = pg_num_rows($rs1);
-        if($row1 == 0){
-            $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".pessoas");
-            $tblCod = pg_fetch_row($rsCod);
-            $Codigo = $tblCod[0];
-            $CodigoNovo = ($Codigo+1); 
-            pg_query($Conec, "INSERT INTO ".$xProj.".pessoas (id, pessoas_id, cpf, nome_completo, dt_nascimento, sexo, status, datains) VALUES ($CodigoNovo, $GuardaId, '$Cpf', '$NomeCompl', '$DNasc', $Sexo, $Ativo, NOW() ) "); 
-        }
-    }
-    $var = array("coderro"=>$Erro, "usuario"=>$Usu, "guardausu"=>$GuardaId);
-    $responseText = json_encode($var);
-    echo $responseText;
-}
-
-if($Acao =="checaLogin"){
-    $Cpf = filter_input(INPUT_GET, 'valor');
-    $Erro = 0;
-    $row = 0;
-    $NomeUsual = "";
-    $NomeCompl = "";
-    $DiaNasc = 0;
-    $MesNasc = 0;
-    $UltLog = "";
-    $Acessos = 0;
-    $Ativo = 0;
-    $Adm = 1;
-    $Setor = 0;
-    $JaTem = 0;
-    $Usu = 0;
-
-    $rs = pg_query($ConecPes, "SELECT id, nome_completo, TO_CHAR(dt_nascimento, 'DD/MM/YYYY'), TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM'), nome_resumido 
-    FROM ".$xPes.".pessoas 
-    WHERE ".$xPes.".pessoas.cpf = '$Cpf' ");
-    if(!$rs){
-        $Erro = 1;
-    }else{
-        $row = pg_num_rows($rs);
-        if($row > 0){
-            $Proc= pg_fetch_row($rs);
-            $Usu = $Proc[0];
-            $NomeCompl = $Proc[1];
-            $DiaNasc = $Proc[3];
-            $MesNasc = $Proc[4];
-            $NomeCompl = $Proc[1];
-            $NomeUsual = $Proc[5];
-
-            $rs1 = pg_query($Conec, "SELECT to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, ativo, adm, codsetor, pessoas_id, nomeusual 
-            FROM ".$xProj.".poslog WHERE cpf = '$Cpf' ");  //pessoas_id = $Usu ");
-            $row1 = pg_num_rows($rs1);
-            if($row1 > 0){
-                $JaTem = 1;
-                $Proc1= pg_fetch_row($rs1);
-                $UltLog = $Proc1[0];
-                $Acessos = $Proc1[1];
-                $Ativo = $Proc1[2];
-                $Adm = $Proc1[3];
-                $Setor = $Proc1[4];
-//                $NomeUsual = $Proc1[6];
-            }
-        }else{
-            $Erro = 2; // não encontrado no pessoal
-        }
-    }
-    $var = array("coderro"=>$Erro, "quantiUsu"=>$row, "idpessoa"=>$Usu, "cpf"=>$Cpf, "nomeusual"=>$NomeUsual, "nomecompl"=>$NomeCompl, "dianasc"=>$DiaNasc, "mesnasc"=>$MesNasc, "jatem"=>$JaTem, "ultlog"=>$UltLog, "acessos"=>$Acessos, "ativo"=>$Ativo, "adm"=>$Adm, "setor"=>$Setor);
-    $responseText = json_encode($var);
-    echo $responseText;
-}
 if($Acao =="confsenhaant"){
     $Cpf = $_SESSION["usuarioCPF"];
     $Valor = filter_input(INPUT_GET, 'valor');

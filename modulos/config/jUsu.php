@@ -63,7 +63,7 @@ require_once("abrealas.php");
                 } 
                 return preg_replace("/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/", "\$1.\$2.\$3/\$4-\$5", $cnpj_cpf);
             }
-    
+
             if(isset($_REQUEST["acao"])){
                 $Acao = $_REQUEST["acao"];
             }else{
@@ -83,7 +83,6 @@ require_once("abrealas.php");
             $rs0 = pg_query($Conec, "SELECT pessoas_id, cpf, nomeusual, nomecompl FROM ".$xProj.".poslog WHERE $Condic ORDER BY nomecompl"); 
             $row0 = pg_num_rows($rs0);
 //            $rs0 = pg_query($ConecPes, "SELECT ".$xPes.".pessoas.id, ".$xPes.".pessoas.cpf, ".$xPes.".pessoas.nome_completo FROM ".$xPes.".pessoas WHERE pessoas.id != 0 And nome_completo IS NOT NULL ORDER BY nome_completo");
-
             $rs1 = pg_query($Conec, "SELECT pico_dia, to_char(data_pico_dia, 'DD/MM/YYYY'), pico_online, to_char(data_pico_online, 'DD/MM/YYYY HH24:MI') FROM ".$xProj.".paramsis WHERE idpar = 1 ");
             $row1 = pg_num_rows($rs1);
             if($row1 > 0){
@@ -157,7 +156,7 @@ require_once("abrealas.php");
                             $tbl1 = pg_fetch_row($rs1);
                             $Ativ = $tbl1[0]; // ativo
                             $DataLog = $tbl1[1];
-                            if($tbl1[4] == "1500/01/01"){
+                            if($tbl1[4] == "1500/01/01" || $tbl1[4] == "3000/12/31"){
                                 $DataLog = "";
                             }
                             $CodSetor = $tbl1[2];
@@ -178,22 +177,21 @@ require_once("abrealas.php");
                         ?>
                         <tr>
                             <td style="display: none;"></td>
-                            <td><?php echo formatCnpjCpf($tbl0[1]); ?></td> <!-- cpf -->
+                            <td style="text-align: center; font-size: 85%;"><?php echo formatCnpjCpf($tbl0[1]); ?></td> <!-- cpf -->
                             <td style="display: none;"><?php echo $Cod; ?></td>
                             <td><?php echo $tbl0[2]; ?></td> <!-- nome usual -->
                             <td><?php echo $tbl0[3]; ?></td> <!-- nome completo -->
                             <td style="text-align: center;"><?php echo $DescSetor; ?></td> <!-- siglasetor -->
-                            <td style="text-align: center;"><?php echo $DataLog; ?></td>  <!-- ultimologin formatado -->
-                            <td style="text-align: center;"><?php echo $DescAtiv; ?></td>
+                            <td style="text-align: center; font-size: 85%;"><?php echo $DataLog; ?></td>  <!-- ultimologin formatado -->
+                            <td style="text-align: center; font-size: 85%;"><?php echo $DescAtiv; ?></td>
                             <td style="text-align: center;">
-                            <?php 
-                             if($Tempo <= 60){
-                                echo "<img src='imagens/ok.png' title='On Line'>";
-                             }else{
-                                echo "<img src='imagens/oknao.png' title='Off Line'>";
-                             }
-                            ?>
-
+                                <?php 
+                                 if($Tempo <= 60){
+                                    echo "<img src='imagens/ok.png' title='On Line'>";
+                                 }else{
+                                    echo "<img src='imagens/oknao.png' title='Off Line'>";
+                                 }
+                                ?>
                             </td>
                         </tr>
                         <?php
@@ -204,6 +202,5 @@ require_once("abrealas.php");
             </tbody>
         </table>
         <br><br>
-
     </body>
 </html>

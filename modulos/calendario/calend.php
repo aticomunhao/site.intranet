@@ -90,7 +90,7 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#dataini").change(function(){
                     document.getElementById("datafim").value = document.getElementById("dataini").value;
                 });
-                
+
                 $('#dataini').datepicker();
                 $('#datafim').datepicker();
                 $("#dataini").mask("99/99/9999");
@@ -173,7 +173,6 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("etiqevfixo").style.visibility = "visible";
                                         document.getElementById("evfixo").style.visibility = "visible";
                                         document.getElementById("apagar").disabled = false;
-
                                     }else{
                                         document.getElementById("etiqevfixo").style.visibility = "hidden";
                                         document.getElementById("evfixo").style.visibility = "hidden";
@@ -335,6 +334,7 @@ if(!isset($_SESSION["usuarioID"])){
                 $.confirm({
                     title: 'Apagar evento.',
                     content: 'Confirma apagar este lançamento?',
+                    autoClose: 'Não|10000',
                     draggable: true,
                     buttons: {
                         Sim: function () {
@@ -496,7 +496,7 @@ if(!isset($_SESSION["usuarioID"])){
         <div id="relacmodalCalend" class="modalCalend">
             <div class="modalCalend-content">
                 <span class="close" onclick="fechaModalCalend();">&times;</span>
-                <h4 id="titulomodalCalend" style="text-align: center; color: #666;">Inserção de Eventos no Calendário</h4>
+                <h5 id="titulomodalCalend" style="text-align: center; color: #666;">Inserção de Eventos no Calendário</h5>
                 <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px; text-align: left;">
                     <div>
                         <label class="etiq" style="padding: 5px;">Data do Início: </label>

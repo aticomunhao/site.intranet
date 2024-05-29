@@ -485,20 +485,26 @@ if(!isset($_SESSION["usuarioID"])){
                             return false
                 return true
             }
+
             function carregaHelpUsu(Cod){
                 if(parseInt(Cod) === 1){
-                    Texto = "Basta esta marca para acessar e inserir registros no LRO. Essa atividade é bem específica e não é controlável através de nível administrativo.";
+                    Titulo = "Preencher o Livro de Registro de Ocorrências";
+                    Texto = "Basta esta marca para acessar e inserir registros no LRO. Essa atividade é bem específica e não é adequado controlar com níveis administrativos.";
                 }
                 if(parseInt(Cod) === 2){
-                    Texto = "Além desta marca é necessário que o usuário tenha o nível administrativo mínimo previsto em Parâmetros do Sistema.";
+                    Titulo = "Registrar leitura diária dos Medidores";
+                    Texto = "Além desta marca é necessário que o usuário tenha o nível administrativo mínimo para iserir as leituras, previsto em Parâmetros do Sistema.";
                 }
                 if(parseInt(Cod) === 3){
-                    Texto = "Com esta marca o usuário tem acesso a todos os registros do LRO. <br>Se tiver o nível administrativo para editar, escolhido em Parâmetros do Sistema, poderá gerar PDF dos registros. <br>Nenhum registro pode ser editado.";
+                    Titulo = "Fiscalizar o Livro de Registro de Ocorrências";
+                    Texto = "Com esta marca o usuário tem acesso a todos os registros do LRO. Não precisa ter a marca para preencher o LRO. <br>Se o usuário tiver o nível administrativo para editar, apontado em Parâmetros do Sistema, poderá gerar PDF dos registros. <br>Nenhum registro pode ser editado.";
                 }
                 if(parseInt(Cod) === 4){
-                    Texto = "Além desta marca é necessário que o usuário tenha o nível administrativo mínimo previsto em Parâmetros do Sistema. <br>Em geral, são funcionários e voluntários da DAF. <br>Nos parâmetros para inserção pode ser nível mínimo associado a esta marca. <br>Se tiver o nível administrativo para editar, poderá gerar PDF do processo completo.";
+                    Titulo = "Acesso ao registro de Bens Encontrados";
+                    Texto = "Além desta marca é necessário que o usuário tenha o nível administrativo mínimo previsto em Parâmetros do Sistema.<br>Esta marca se aplica aos funcionários e voluntários da DAF, responsáveis pela guarda dos objetos encontrados. <br>Nos parâmetros do sistema pode ficar apontado o nível mínimo para inserção associado a esta marca. <br>Se o usuário estiver no nível administrativo para editar, poderá gerar PDF do processo completo.";
                 }
                 document.getElementById("textoInfo").innerHTML = Texto;
+                document.getElementById("textoTitulo").innerHTML = Titulo;
                 document.getElementById("infomensagem").style.display = "block"; // está em modais.php
             }
 
@@ -580,7 +586,7 @@ if(!isset($_SESSION["usuarioID"])){
                     </tr>
                     <tr>
                         <td id="etiqNome" class="etiq80">Nome Usual</td>
-                        <td><input type="text" disabled id="usuarioNome" placeholder="Nome usual" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('nomecompl');return false;}"></td>
+                        <td><input type="text" id="usuarioNome" placeholder="Nome usual" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('nomecompl');return false;}"></td>
                         <td></td>
                         <td></td>
                         <td colspan="2" style="text-align: right;">
@@ -644,6 +650,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td colspan="6"><hr style="margin: 3px; padding: 2px;"></td>
                     </tr>
                 </table>
+
                 <table style="margin: 0 auto; width: 90%">
                     <tr>
                         <td class="etiq80" title="Pode registrar ocorrências no LRO">Preenchar o LRO:</td>

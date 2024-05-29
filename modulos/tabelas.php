@@ -7,12 +7,18 @@ pg_query($Conec, "DELETE FROM ".$xProj.".leitura_agua WHERE ((CURRENT_DATE - dat
 pg_query($Conec, "DELETE FROM ".$xProj.".tarefas WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga da tabela lançamentos de tarefas há mais de 5 anos
 pg_query($Conec, "DELETE FROM ".$xProj.".tarefas_msg WHERE datamsg < CURRENT_DATE - interval '5 years' "); //Apaga mensagens trocadas nas tarefas há mais de 5 anos
 pg_query($Conec, "DELETE FROM ".$xProj.".livroreg WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga registros do livro de ocorrências há mais de 5 anos
+pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE datainat < CURRENT_DATE - interval '5 years' "); //Apaga registros de usuários inativados há mais de 5 anos
+pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE numacessos = 0 And datains < CURRENT_DATE - interval '5 years' "); //Apaga registros de usuários inseridos há mais de 5 anos sem nenhum login 
 
 echo "<br>";
 
-if(strtotime('2024/05/15') > strtotime(date('Y/m/d'))){
+
+$rs = pg_query($Conec, "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'bensachados' AND COLUMN_NAME = 'cpfpropriet'");
+$row = pg_num_rows($rs);
+if($row == 0){
    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".bensachados");
 }
+
 pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bensachados (
    id SERIAL PRIMARY KEY, 
    datareceb date, 
@@ -51,15 +57,15 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bensachados (
    dataarquivou date,
    usuarquivou bigint NOT NULL DEFAULT 0
    )
-   ");
+");
 
    $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".bensachados LIMIT 5");
    $row = pg_num_rows($rs);
    if($row == 0){
       pg_query($Conec, "INSERT INTO ".$xProj.".bensachados (datareceb, dataachou, codusuins, datains, descdobem, localachou, nomeachou, telefachou, numprocesso) 
-      VALUES (NOW(), NOW(), 6, NOW(), 'Carteira marrom contendo duzentos e quarenta e dois reais e cinquenta centavos, e vários documentos de identidade, cartão de crédito número 0000 000 000 000 000 e um santinho....Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.', 'Na calçada em frente ao prédio', 'Fulano de Tal', 'Não informou', '0001/2024'                      )  ");
+      VALUES (NOW(), NOW(), 6, NOW(), 'Carteira marrom contendo duzentos e quarenta e dois reais e cinquenta centavos, e vários documentos de identidade, cartão de crédito número 0000 000 000 000 000 e um santinho...', 'Na calçada em frente ao prédio', 'Fulano de Tal', 'Não informou', '0001/2024'                      )  ");
       pg_query($Conec, "INSERT INTO ".$xProj.".bensachados (datareceb, dataachou, codusuins, datains, descdobem, localachou, nomeachou, telefachou, numprocesso) 
-      VALUES ('2024-03-10', NOW(), 153, NOW(), 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', 'No salao', 'Sicrano de Tal', '(61) 9 999-9999', '0002/2024' )  ");
+      VALUES ('2024-03-10', NOW(), 153, NOW(), 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident.', 'No salao', 'Sicrano de Tal', '(61) 9 999-9999', '0002/2024' )  ");
    }
 
    echo "Tabela ".$xProj.".bensachados checada. <br>";
