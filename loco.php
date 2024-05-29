@@ -2,7 +2,7 @@
 <?php
 
  
-	$con_string = "host = localhost port=5432 dbname=cesb user=postgres password=postgres";
+	$con_string = "host = 192.168.1.143 port=5432 dbname=cesb user=postgres password=scga2298";
             if(@pg_connect($con_string)){
                 $Con = @pg_connect($con_string) or die("Não foi possível conectar-se ao banco de dados.");
 				echo "Conexão Cesb OK <br>";
