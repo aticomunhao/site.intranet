@@ -11,9 +11,11 @@ if(!isset($_SESSION["usuarioID"])){
         <meta charset="UTF-8">
         <title></title>
         <link rel="stylesheet" type="text/css" media="screen" href="class/dataTable/datatables.min.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/relacmod.css" />
         <script src="class/superfish/js/jquery.js"></script><!-- versão 1.12.1 veio com o superfish - tem que usar esta, a versão 3.6 não recarrega a página-->
         <script src="class/dataTable/datatables.min.js"></script>
+        <script src="comp/js/jquery-confirm.min.js"></script> 
         <style>
             .modal-content-Usu{
                 background: linear-gradient(180deg, white, #86c1eb);
@@ -21,51 +23,12 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 60%; /* acertar de acordo com a tela */
+                width: 65%; /* acertar de acordo com a tela */
                 max-width: 900px;
             }
         </style>
         <script>
-            new DataTable('#idTabelaUsu', {
-                lengthMenu: [
-                    [50, 100, 200, 500],
-                    [50, 100, 200, 500]
-                ],
-                language: {
-                    info: 'Mostrando Página _PAGE_ of _PAGES_',
-                    infoEmpty: 'Nenhum registro encontrado',
-                    infoFiltered: '(filtrado de _MAX_ registros)',
-                    lengthMenu: 'Mostrando _MENU_ registros por página',
-                    zeroRecords: 'Nada foi encontrado'
-                }
-            });
 
-            tableUsu = new DataTable('#idTabelaUsu');
-            tableUsu.on('click', 'tbody tr', function () {
-                let data = tableUsu.row(this).data();
-                $id = data[2];//
-                document.getElementById("guardaid_click").value = $id;
-                $Cpf = data[1];//
-                document.getElementById("guardaid_cpf").value = $Cpf;
-                if($id !== ""){
-                    if(parseInt(document.getElementById("UsuAdm").value) < 7){  // superusuário
-                        if(parseInt(document.getElementById("UsuAdm").value) > 3 && parseInt(document.getElementById("admEditUsu").value) === 1){ // adminisetrador 
-                            if(document.getElementById("guardaSiglaSetor").value === data[4]){ // sigla do usuário = sigla do administrador logado
-                                document.getElementById("setor").disabled = true; // congela a escolha do setor
-                                carregaModal($id);
-                            }else{
-                                document.getElementById("textoMsg").innerHTML = "Não pertence ao setor.";
-                                document.getElementById("relacmensagem").style.display = "block"; // está em modais.php
-                                setTimeout(function(){
-                                    document.getElementById("relacmensagem").style.display = "none";
-                                }, 2000);
-                            }
-                        }
-                    }else{
-                        carregaModal($id);
-                    }
-                }
-            });
             function ajaxIni(){
                 try{
                 ajax = new ActiveXObject("Microsoft.XMLHTTP");}
@@ -87,11 +50,13 @@ if(!isset($_SESSION["usuarioID"])){
                 if(parseInt(document.getElementById("UsuAdm").value) === 7){ // superusuário 
                     document.getElementById("botinserir").style.visibility = "visible";
                 }
-                if(parseInt(document.getElementById("UsuAdm").value) === 4){ // administador
-                    if(parseInt(document.getElementById("admCadUsu").value) === 1){ // administardor cadastra usuário do seu setor 
-                        document.getElementById("botinserir").style.visibility = "visible";
-                    }
-                }
+                $("#faixacentral").load("modulos/config/jUsu.php?acao=todos");
+
+//                if(parseInt(document.getElementById("UsuAdm").value) === 4){ // administador
+//                    if(parseInt(document.getElementById("admCadUsu").value) === 1){ // administardor cadastra usuário do seu setor 
+//                        document.getElementById("botinserir").style.visibility = "visible";
+//                    }
+//                }
 
                 modalEdit = document.getElementById('relacmodalUsu'); //span[0]
                 spanEdit = document.getElementsByClassName("close")[0];
@@ -164,13 +129,11 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("leituraEletric").checked = false;
                                     }
-                                    
                                     document.getElementById("titulomodal").innerHTML = "Edição de Usuários";
                                     document.getElementById("ressetsenha").disabled = false;
                                     document.getElementById("mudou").value = "0";
                                     document.getElementById("relacmodalUsu").style.display = "block";
                                     document.getElementById("usulogin").disabled = true;
-//                                    document.getElementById("usulogin").focus();
                                 }else{
                                     alert("Houve um erro no servidor.")
                                 }
@@ -186,7 +149,7 @@ if(!isset($_SESSION["usuarioID"])){
                     return false;
                 }
                 if(document.getElementById("usuarioNome").value === ""){
-                    return false;
+//                    return false;
                 }
                 if(document.getElementById("setor").value === ""){
                     $('#mensagem').fadeIn("slow");
@@ -229,6 +192,7 @@ if(!isset($_SESSION["usuarioID"])){
                         +"&cpf="+encodeURIComponent(document.getElementById("usulogin").value)
                         +"&guardaidpessoa="+document.getElementById("guardaidpessoa").value
                         +"&usulogado="+document.getElementById("guarda_usulogado_id").value
+                        +"&usuarioNome="+encodeURIComponent(document.getElementById("usuarioNome").value)
                         +"&ativo="+document.getElementById("guardaAtiv").value
                         +"&setor="+document.getElementById("setor").value
                         +"&flAdm="+document.getElementById("flAdm").value
@@ -251,7 +215,8 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("guardaid_click").value = 0;
                                         document.getElementById("relacmodalUsu").style.display = "none";
                                     }
-                                    $('#container3').load('modulos/config/cadUsu.php');
+//                                    $('#container3').load('modulos/config/cadUsu.php');
+                                    $("#faixacentral").load("modulos/config/jUsu.php?acao=todos");
                                 }
                             }
                         };
@@ -295,7 +260,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById("usulogin").value = "";
                                         }else{
                                             document.getElementById("usulogin").value = format_CnpjCpf(Resp.cpf);
-                                            document.getElementById("usuarioNome").value = Resp.nomecompl;
+                                            document.getElementById("usuarioNome").value = Resp.nomeusual;
                                             document.getElementById("nomecompl").value = Resp.nomecompl;
                                             document.getElementById("diaAniv").value = Resp.dianasc;
                                             document.getElementById("mesAniv").value = Resp.mesnasc;
@@ -410,7 +375,8 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("mudou").value = "0";
                                         document.getElementById("relacmodalUsu").style.display = "none";
-                                        $('#container3').load('modulos/config/cadUsu.php');
+//                                        $('#container3').load('modulos/config/cadUsu.php');
+                                        $("#faixacentral").load("modulos/config/jUsu.php?acao=todos");
                                     }
                                 }
                             }
@@ -481,8 +447,6 @@ if(!isset($_SESSION["usuarioID"])){
                     };
                     ajax.send(null);
                 } 
-
-
             }
 
             function validaCPF(cpf) {
@@ -521,49 +485,51 @@ if(!isset($_SESSION["usuarioID"])){
                             return false
                 return true
             }
+            function carregaHelpUsu(Cod){
+                if(parseInt(Cod) === 1){
+                    Texto = "Basta esta marca para acessar e inserir registros no LRO. Essa atividade é bem específica e não é controlável através de nível administrativo.";
+                }
+                if(parseInt(Cod) === 2){
+                    Texto = "Além desta marca é necessário que o usuário tenha o nível administrativo mínimo previsto em Parâmetros do Sistema.";
+                }
+                if(parseInt(Cod) === 3){
+                    Texto = "Com esta marca o usuário tem acesso a todos os registros do LRO. <br>Se tiver o nível administrativo para editar, escolhido em Parâmetros do Sistema, poderá gerar PDF dos registros. <br>Nenhum registro pode ser editado.";
+                }
+                if(parseInt(Cod) === 4){
+                    Texto = "Além desta marca é necessário que o usuário tenha o nível administrativo mínimo previsto em Parâmetros do Sistema. <br>Em geral, são funcionários e voluntários da DAF. <br>Nos parâmetros para inserção pode ser nível mínimo associado a esta marca. <br>Se tiver o nível administrativo para editar, poderá gerar PDF do processo completo.";
+                }
+                document.getElementById("textoInfo").innerHTML = Texto;
+                document.getElementById("infomensagem").style.display = "block"; // está em modais.php
+            }
+
+            function mostraUsu(Valor){
+                $("#faixacentral").load("modulos/config/jUsu.php?acao="+Valor);
+            }
+
         </script>
     </head>
     <body>
         <?php
-            function formatCnpjCpf($value){
-                //https://gist.github.com/davidalves1/3c98ef866bad4aba3987e7671e404c1e
-                $CPF_LENGTH = 11;
-                $cnpj_cpf = preg_replace("/\D/", '', $value);
-                    if (strlen($cnpj_cpf) === $CPF_LENGTH) {
-                        return preg_replace("/(\d{3})(\d{3})(\d{3})(\d{2})/", "\$1.\$2.\$3-\$4", $cnpj_cpf);
-                } 
-                return preg_replace("/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/", "\$1.\$2.\$3/\$4-\$5", $cnpj_cpf);
+            if(isset($_REQUEST["tipo"])){
+                $Tipo = $_REQUEST["tipo"];
+            }else{
+                $Tipo = 1;
             }
-        if(isset($_REQUEST["tipo"])){
-            $Tipo = $_REQUEST["tipo"];
-        }else{
-            $Tipo = 1;
-        }
-        require_once("modais.php");
-//dblink
-//        $rs0 = pg_query($Conec, "SELECT * FROM dblink('host=127.0.0.1  user=postgres  password=postgres   dbname=pessoal ', 
-//                'SELECT pessoas.id, cpf, nome_completo, ".$xProj.".poslog.ativo, ".$xProj.".poslog.logini, ".$xProj.".poslog.codsetor 
-//                FROM pessoas INNER JOIN cesb.poslog ON pessoas.id = cesb.poslog.pessoas_id  ') 
-//                t (id int, cpf text, nome_completo text, ativo text, logini text, codsetor int);" );
+            require_once("modais.php");
 
 //Provisório
-        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisclro smallint NOT NULL DEFAULT 0;"); // 1 - fiscalizar o LRO 
+            pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisclro smallint NOT NULL DEFAULT 0;"); // 1 - fiscalizar o LRO 
 
-        $rs0 = pg_query($ConecPes, "SELECT ".$xPes.".pessoas.id, ".$xPes.".pessoas.cpf, ".$xPes.".pessoas.nome_completo 
-        FROM ".$xPes.".pessoas  
-        WHERE pessoas.id != 0 And nome_completo IS NOT NULL ORDER BY nome_completo");
-        $row0 = pg_num_rows($rs0);  // , ".$xPes.".pessoas.usuario 
+            //Para carregar os select de dia e mês
+            $OpcoesMes = pg_query($Conec, "SELECT Esc1 FROM ".$xProj.".escolhas WHERE CodEsc < 14 ORDER BY Esc1");
+            $OpcoesDia = pg_query($Conec, "SELECT Esc1 FROM ".$xProj.".escolhas ORDER BY Esc1");
 
-        //Para carregar os select de dia e mês
-        $OpcoesMes = pg_query($Conec, "SELECT Esc1 FROM ".$xProj.".escolhas WHERE CodEsc < 14 ORDER BY Esc1");
-        $OpcoesDia = pg_query($Conec, "SELECT Esc1 FROM ".$xProj.".escolhas ORDER BY Esc1");
-
-        if($_SESSION["AdmUsu"] == 7){
-            $OpcoesAdm = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 Or adm_fl = 7 ORDER BY adm_fl");
-        }else{
-            $OpcoesAdm = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
-        }
-        $OpcoesSetor = pg_query($Conec, "SELECT CodSet, SiglaSetor FROM ".$xProj.".setores ORDER BY SiglaSetor");
+            if($_SESSION["AdmUsu"] == 7){
+                $OpcoesAdm = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 Or adm_fl = 7 ORDER BY adm_fl");
+            }else{
+                $OpcoesAdm = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            }
+            $OpcoesSetor = pg_query($Conec, "SELECT CodSet, SiglaSetor FROM ".$xProj.".setores ORDER BY SiglaSetor");
         ?>
 
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
@@ -579,73 +545,21 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardaAtiv" value="1" />
         <input type="hidden" id="guardaLro" value="0" />
         <input type="hidden" id="guardaBens" value="0" />
-        
+
         <div style="margin: 20px; border: 2px solid blue; border-radius: 15px; padding: 20px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
                 <input type="button" id="botinserir" class="resetbot" value="Inserir Novo" onclick="insUsu();">
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <h3>Usuários Cadastrados</h3>
+                <button class="resetbot" style="font-size: .9rem;" onclick="mostraUsu('todos');">Todos</button>
+                <button class="resetbot" style="font-size: .9rem;" onclick="mostraUsu('online');">On Line</button>
+                <button class="resetbot" style="font-size: .9rem;" onclick="mostraUsu('dehoje');">Usuários de Hoje</button>
+                <button class="resetbot" style="font-size: .9rem;" onclick="mostraUsu('inativos');">Inativos</button>
             </div>
-            <table id="idTabelaUsu" class="display" style="width:85%">
-                <thead>
-                    <tr>
-                        <th style="display: none;"></th>
-                        <th>Login</th>
-                        <th style="display: none;"></th>
-                        <th>Nome Usual</th>
-                        <th>Nome Completo</th>
-                        <th style="text-align: center;">Setor</th>
-                        <th style="text-align: center;">Último Login</th>
-                        <th style="text-align: center;">Ativo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                <?php
-                    while ($tbl0 = pg_fetch_row($rs0)){
-                        $Cod = $tbl0[0]; // id
-                        $Cpf = $tbl0[1];
-                        $rs1 = pg_query($Conec, "SELECT ".$xProj.".poslog.ativo, to_char(".$xProj.".poslog.logini, 'DD/MM/YYYY HH24:MI'), codsetor 
-                        FROM ".$xProj.".poslog  
-                        WHERE ".$xProj.".poslog.cpf = '$Cpf' ");   //  WHERE ".$xProj.".poslog.pessoas_id = $Cod");
-                        $row1 = pg_num_rows($rs1);
+            <div class="box" style="position: relative; float: left; width: 33%; text-align: left;"></div>
 
-                        // se constar da tabela poslog
-                        if($row1 > 0){
-                            $tbl1 = pg_fetch_row($rs1);
-                            $Ativ = $tbl1[0]; // ativo
-                            $DataLog = $tbl1[1];
-                            $CodSetor = $tbl1[2];
-                            $rs2 = pg_query($Conec, "SELECT siglasetor FROM ".$xProj.".setores WHERE codset = $CodSetor");
-                            $row2 = pg_num_rows($rs2);
-                            if($row2 > 0){
-                                $tbl2 = pg_fetch_row($rs2);
-                                $DescSetor = $tbl2[0];
-                            }else{
-                                $DescSetor = "n/d";
-                            }
-                            if($Ativ == 1){
-                                $DescAtiv = "Ativo";
-                            }else{
-                                $DescAtiv = "Inativo";
-                            }
-                        ?>
-                        <tr>
-                            <td style="display: none;"></td>
-                            <td><?php echo formatCnpjCpf($tbl0[1]); ?></td> <!-- cpf -->
-                            <td style="display: none;"><?php echo $Cod; ?></td>
-                            <td><?php echo $tbl0[2]; ?></td> <!-- seria 6 - usuario -->
-                            <td><?php echo $tbl0[2]; ?></td> <!-- nome completo -->
-                            <td style="text-align: center;"><?php echo $DescSetor; ?></td> <!-- siglasetor -->
-                            <td style="text-align: center;"><?php echo $DataLog; ?></td>  <!-- ultimologin formatado -->
-                            <td style="text-align: center;"><?php echo $DescAtiv; ?></td>
-                        </tr>
-                        <?php
-                        }
-                    }
-                    ?>
-                </tbody>
-            </table>
+            <div id="faixacentral"></div>
         </div>
 
         <!-- div modal para edição  -->
@@ -729,44 +643,50 @@ if(!isset($_SESSION["usuarioID"])){
                     <tr>
                         <td colspan="6"><hr style="margin: 3px; padding: 2px;"></td>
                     </tr>
-
+                </table>
+                <table style="margin: 0 auto; width: 90%">
                     <tr>
                         <td class="etiq80" title="Pode registrar ocorrências no LRO">Preenchar o LRO:</td>
-                        <td colspan="5">
+                        <td colspan="4">
                             <input type="checkbox" id="preencheLro" title="Registrar ocorrências no LRO" onchange="modif();" >
                             <label for="preencheLro" title="Registrar ocorrências no LRO">preencher o Livro de Registro de Ocorrências</label>
                         </td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(1);" title="Guia rápido"></td>
                     </tr>
 
                     <tr>
                         <td class="etiq80" title="Fiscaliza os registros de ocorrências no LRO">Administrar LRO:</td>
-                        <td colspan="5">
+                        <td colspan="4">
                             <input type="checkbox" id="fiscalizaLro" title="Fiscalizar os registros de ocorrências no LRO" onchange="modif();" >
                             <label for="fiscalizaLro" title="Fiscalizar os registros de ocorrências no LRO">fiscalizar o Livro de Registro de Ocorrências</label>
                         </td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(3);" title="Guia rápido"></td>
                     </tr>
 
                     <tr>
                         <td class="etiq80" title="Pode registrar ocorrências no LRO">Bens Achados:</td>
-                        <td colspan="5">
+                        <td colspan="4">
                             <input type="checkbox" id="preencheBens" title="Registrar recebimento e destino de bens encontrados" onchange="modif();" >
                             <label for="preencheBens" title="Registrar recebimento e destino de bens encontrados">acesso ao registro de Bens Encontrados</label>
                         </td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(4);" title="Guia rápido"></td>
                     </tr>
 
                     <tr>
                         <td class="etiq80" title="Pode registrar as leituras diárias do consumo de água">Leitura Água:</td>
-                        <td colspan="5">
+                        <td colspan="4">
                             <input type="checkbox" id="leituraAgua" title="Pode registrar as leituras diárias do consumo de água" onchange="modif();" >
                             <label for="leituraAgua" title="Pode registrar as leituras diárias do consumo de água">registrar leitura diária do Hidrômetro</label>
                         </td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(2);" title="Guia rápido"></td>
                     </tr>
                     <tr>
                         <td class="etiq80" title="Pode registrar as leituras diárias do consumo de eletricidade">Energia Elétrica:</td>
-                        <td colspan="5">
+                        <td colspan="4">
                             <input type="checkbox" id="leituraEletric" title="Pode registrar as leituras diárias do consumo de energia elétrica" onchange="modif();" >
                             <label for="leituraEletric" title="Pode registrar as leituras diárias do consumo de energia elétrica">registrar leitura diária do Medidor de Energia Elétrica</label>
                         </td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(2);" title="Guia rápido"></td>
                     </tr>
 
                     <tr>

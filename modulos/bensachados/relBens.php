@@ -71,15 +71,15 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             ORDER BY ".$xProj.".bensachados.datareceb DESC");
 
             $Edit = 0;
-            $admEdit = parAdm("editbens", $Conec, $xProj); // nível administrativo
-            $Edit = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // está marcado no cadastro de usu
-            if($Edit == 1){
-                if($admEdit >= $_SESSION["AdmUsu"] || $_SESSION["AdmUsu"] > 6){ // nível administrativo
-                    $Edit = 1;
-                }
-            }
-            if($_SESSION["AdmUsu"] > 6){
+            $Impr = 0;
+            $admIns = parAdm("insbens", $Conec, $xProj);   // nível para inserir 
+            $admEdit = parAdm("editbens", $Conec, $xProj); // nível administrativo para editar
+            $Marca = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // ver se está marcado no cadastro de usu
+            if($Marca == 1 && $_SESSION["AdmUsu"] >= $admIns || $_SESSION["AdmUsu"] > 6){
                 $Edit = 1;
+                if($_SESSION["AdmUsu"] >= $admEdit || $_SESSION["AdmUsu"] > 6){
+                    $Impr = 1;
+                }
             }
             ?>
             <table id="idTabela" class="display" style="width:85%">
@@ -171,9 +171,12 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                 ?>
                             </td>
                             <td title="Gerar PDF do processo">
-                                <?php echo "<button class='botTable fundoAmarelo' onclick='imprProcesso($tbl0[0]);'>PDF</button>"; ?>
+                                <?php 
+                                if($Impr == 1){ // nível adm para editar
+                                    echo "<button class='botTable fundoAmarelo' onclick='imprProcesso($tbl0[0]);'>PDF</button>";
+                                }
+                                ?>
                             </td>
-
                             <?php
                             }
                             ?>

@@ -21,7 +21,7 @@ date_default_timezone_set('America/Sao_Paulo');
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 50%; /* acertar de acordo com a tela */
+                width: 60%; /* acertar de acordo com a tela */
             }
         </style>
         <script>

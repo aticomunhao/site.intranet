@@ -177,21 +177,8 @@ session_start();
             $admEdit = $ProcSis["editAniver"]; // nível para editar - atravessado para relTrocas.php
         ?>
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" />
-
-        <!-- div três colunas -->
-        <div class="container" style="margin: 0 auto;">
-            <div class="row">
-                <div class="col quadro"><button class="botpadrGr fundoAmarelo" id="botinserir" onclick="insTroca();" >Inserir Material</button></div>
-                <div class="col quadro"><h5>Material para Troca ou Descartesss</h5></div> <!-- Central - espaçamento entre colunas  -->
-                <div class="col quadro"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpTrocas();" title="Guia rápido"></div> 
-            </div>
-        </div>
-        <br>
-
-
-
         <div class="container-fluid" style="margin: 10px; text-align: center;">
-            <h3>Material para Troca ou Descarteeee</h3>
+            <h3>Material para Troca ou Descarte</h3>
             <div class="box" style="position: absolute; top: 10px; left: 10px; width: 10%; text-align: left;">
             <?php
             if($_SESSION["AdmUsu"] >= $admIns){ // botão inserir
@@ -201,9 +188,6 @@ session_start();
             </div>
             <div id="contentPag"></div>
         </div>
-
-
-
         <input type="hidden" id="guardaTroca" value="0" />
 
         <!-- div modal para edição da página  -->

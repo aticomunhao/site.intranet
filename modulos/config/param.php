@@ -367,8 +367,7 @@
             require_once("abrealas.php");
             $rsSis = pg_query($Conec, "SELECT admvisu, admedit, admcad, insevento, editevento, instarefa, edittarefa, insramais, editramais, instelef, edittelef, 
             editpagina, insarq, insaniver, editaniver, instroca, edittroca, insocor, editocor, insleituraagua, editleituraagua, 
-            TO_CHAR(datainiagua , 'DD/MM/YYYY'), valoriniagua, insleituraeletric, editleituraeletric, TO_CHAR(datainieletric , 'DD/MM/YYYY'), valorinieletric, inslro, editlro, 
-            insbens, editbens  
+            TO_CHAR(datainiagua, 'DD/MM/YYYY'), valoriniagua, insleituraeletric, editleituraeletric, TO_CHAR(datainieletric, 'DD/MM/YYYY'), valorinieletric, inslro, editlro, insbens, editbens 
             FROM ".$xProj.".paramsis WHERE idPar = 1");
             $ProcSis = pg_fetch_row($rsSis);
             $admVisu = $ProcSis[0]; // admVisu - administrador visualiza usuários
@@ -480,15 +479,25 @@
             $Proc16 = pg_fetch_row($rs16);
             $nomeEditOcor = $Proc16[0];
 
-            $insLro = $ProcSis[29];   // insLro - registro no LRO
+            $insLro = $ProcSis[27];   // insLro - registro no LRO
             $rs17 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $insLro");
             $Proc17 = pg_fetch_row($rs17);
             $nomeInsLro = $Proc17[0];
 
-            $editLro = $ProcSis[30];   // editro - registro no LRO
+            $editLro = $ProcSis[28];   // editro - registro no LRO
             $rs18 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $insLro");
             $Proc18 = pg_fetch_row($rs18);
             $nomeEditLro = $Proc18[0];
+
+            $insBens = $ProcSis[29];   // Bens Achados
+            $rs19 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $insBens");
+            $Proc19 = pg_fetch_row($rs19);
+            $nomeInsBens = $Proc19[0];
+
+            $editBens = $ProcSis[30];
+            $rs20 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $editBens");
+            $Proc20 = pg_fetch_row($rs20);
+            $nomeEditBens = $Proc20[0];
 
 
             $OpAdmInsEv = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
@@ -521,6 +530,8 @@
             $OpAdmInsLro = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             $OpAdmEditLro = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
 
+            $OpAdmInsBens = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            $OpAdmEditBens = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
         ?>
         <input type="hidden" id="guardacod" value="0" /> <!-- id ocorrência -->
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
@@ -528,6 +539,51 @@
         <div style="margin: 0 auto; margin-top: 40px; padding: 20px; border: 2px solid blue; border-radius: 15px; width: 70%; min-height: 200px;">
             <div style="text-align: center;">
                 <h4>Parâmetros do Sistema</h4>
+            </div>
+
+
+
+<!-- Bens Encontrados  -->
+            <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
+                - <b>Bens Encontrados</b>: <label style="color: gray; font-size: .8em;"> Nível mínimo mais a marca no usuário autorizam a inserção.</label><br>
+                <table style="margin: 0 auto;">
+                    <tr>
+                        <td>Nível mínimo para INSERIR bens encontrados:</td>
+                        <td style="padding-left: 5px;">
+                        <select onchange="salvaParam(value, 'insBens');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                            <option value="<?php echo $insBens; ?>"><?php echo $nomeInsBens; ?></option>
+                            <?php 
+                            if($OpAdmInsBens){
+                                while ($Opcoes = pg_fetch_row($OpAdmInsBens)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                <?php 
+                                }
+                            }
+                            ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                    <td>Nível mínimo para EDITAR bens encontrados:</td>
+                        <td style="padding-left: 5px;">
+                        <select onchange="salvaParam(value, 'editBens');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <option value="<?php echo $editBens; ?>"><?php echo $nomeEditBens; ?></option>
+                            <?php 
+                            if($OpAdmEditBens){
+                                while ($Opcoes = pg_fetch_row($OpAdmEditBens)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                <?php 
+                                }
+                            }
+                            ?>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
             </div>
 
 
@@ -577,7 +633,7 @@
 
 <!-- Leitura Hidrômetro  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
-                - <b>Controle do Consumo de Água - Leitura do Hidrômetro</b>:<br>
+                - <b>Controle do Consumo de Água - Leitura do Hidrômetro</b>: <label style="color: gray; font-size: .8em;">Nível mínimo mais a marca no usuário autorizam a inserção.</label><br>
                 <table style="margin: 0 auto;">
                     <tr>
                         <td>Nível mínimo para INSERIR leitura:</td>
@@ -633,7 +689,7 @@
 
 <!-- Leitura Eletricidade  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
-                - <b>Controle do Consumo de Eletricidade - Leitura do Medidor</b>:<br>
+                - <b>Controle do Consumo de Eletricidade - Leitura do Medidor</b>: <label style="color: gray; font-size: .8em;">Nível mínimo mais a marca no usuário autorizam a inserção.</label><br>
                 <table style="margin: 0 auto;">
                     <tr>
                         <td>Nível mínimo para INSERIR leitura:</td>

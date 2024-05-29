@@ -84,7 +84,20 @@
             function fechaModal(){
                 document.getElementById("modalComemorat").style.display = "none";
             }
-
+            function checaLogFim(){
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/config/registr.php?acao=checaLogFim", true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                } 
+            }
             function checaCalend(){
                 ajaxIni();
                 if(ajax){
@@ -134,6 +147,8 @@
                     }
                 });
             }
+            //para veriricar se usuário está on line
+            checaFim = setInterval("checaLogFim()", 60000); // 1 minuto
             //Aviso de eventos do calendário
             AvisoCalend = setInterval("checaCalend()", 3600000);  // 3 600 000 milessegundos- > 1 hora; 1 800 000 1/2 hora; 900000 15 minutos; 300000 5 minutos;
         </script>

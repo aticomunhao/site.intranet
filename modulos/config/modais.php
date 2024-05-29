@@ -4,7 +4,6 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title></title>
-
         <style type="text/css">
             .relacmsg{
                 display: none; /* oculto default */
@@ -20,11 +19,11 @@
             }
             .modal-content-Msg{
                 background: linear-gradient(180deg, white, #86c1eb);
-                margin: 15% auto; /* 10% do topo e centrado */
+                margin: 20% auto; /* 10% do topo e centrado */
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 30%; /* acertar de acordo com a tela */
+                width: 35%; /* acertar de acordo com a tela */
             }
             /* Botão fechar */
             .close{
@@ -40,24 +39,35 @@
                 text-decoration: none;
                 cursor: pointer;
             }
-
         </style>
         <script type="text/javascript">
 //            $(document).ready(function(){
 //            })
-            function fechaMensagem(){
-                document.getElementById("relacmensagem").style.display = "none";
+            function fechaMensagem(Cod){
+                if(parseInt(Cod) === 1){
+                    document.getElementById("relacmensagem").style.display = "none";
+                }
+                if(parseInt(Cod) === 2){
+                    document.getElementById("infomensagem").style.display = "none";
+                }
             }
-
         </script>
     </head>
     <body>
         <div id="relacmensagem" class="relacmsg">
             <div class="modal-content-Msg">
-                <span class="close" onclick="fechaMensagem();">&times;</span>
+                <span class="close" onclick="fechaMensagem(1);">&times;</span>
                 <br />
                 <h2><img src="imagens/LogoComunhao.png" height="40px;">Sucesso</h2>
                 <div id="textoMsg" style="text-align: center; font-weight: bold; padding: 10px;"></div>
+            </div>
+        </div>
+        <div id="infomensagem" class="relacmsg">
+            <div class="modal-content-Msg">
+                <span class="close" onclick="fechaMensagem(2);">&times;</span>
+                <br />
+                <h4><img src="imagens/LogoComunhao.png" height="30px;">Informação</h4>
+                <div id="textoInfo" style="text-align: center; font-weight: bold; padding: 10px;"></div>
             </div>
         </div>
     </body>

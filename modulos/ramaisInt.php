@@ -87,6 +87,7 @@ session_start();
             });
 
             function carregaModal(id){
+                document.getElementById("codnomecompl").disabled = true;
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/salvaRamais.php?acao=buscaRamal&tipo=1&numero="+id, true); // tipo 1 = ramal interno
@@ -97,7 +98,7 @@ session_start();
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 document.getElementById("usuario").value = Resp.usuario;
                                 document.getElementById("codnomecompl").value = Resp.idposlog;
-
+                                document.getElementById("nomecompleto").value = Resp.nomecompleto;
                                 document.getElementById("setor").value = Resp.setor;
                                 document.getElementById("ramal").value = Resp.ramal;
                                 document.getElementById("titulomodal").innerHTML = "Edição de Ramal Telefônico";
@@ -118,7 +119,7 @@ session_start();
                     $('#mensagem').fadeOut(3000);
                     return false;
                 }
-                if(document.getElementById("codnomecompl").value === ""){
+                if(document.getElementById("nomecompleto").value === ""){
                     $('#mensagem').fadeIn("slow");
                     document.getElementById("mensagem").innerHTML = "Preencha o campo Nome Completo";
                     $('#mensagem').fadeOut(3000);
@@ -135,9 +136,12 @@ session_start();
                     ajaxIni();
                     if(ajax){
                         ajax.open("POST", "modulos/salvaRamais.php?acao=salvaRamal&tipo=1&numero="+document.getElementById("guardaid_click").value
-                        +"&usuario="+document.getElementById("usuario").value
-                        +"&nomecompl="+document.getElementById("codnomecompl").value
-                        +"&ramal="+document.getElementById("ramal").value, true);
+                        +"&usuario="+encodeURIComponent(document.getElementById("usuario").value)
+                        +"&codnomecompl="+document.getElementById("codnomecompl").value
+                        +"&codsetor="+document.getElementById("guardaCodSetor").value
+                        +"&setor="+document.getElementById("setor").value
+                        +"&nomecompleto="+encodeURIComponent(document.getElementById("nomecompleto").value)
+                        +"&ramal="+encodeURIComponent(document.getElementById("ramal").value), true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -152,7 +156,6 @@ session_start();
                                         document.getElementById("relacmodal").style.display = "none";
                                         $('#container3').load('modulos/ramaisInt.php');
                                         $('#container3').load('modulos/ramaisInt.php?tipo='+document.getElementById("tipo_acesso").value);
-
                                     }
                                 }
                             }
@@ -169,8 +172,11 @@ session_start();
                 document.getElementById("relacmodal").style.display = "none";
             }
             function InsRamais(){
+                document.getElementById("codnomecompl").disabled = false;
+                document.getElementById("codnomecompl").value = "0";
                 document.getElementById("usuario").value = "";
-                document.getElementById("codnomecompl").value = "";
+                document.getElementById("codnomecompl").value = "0";
+                document.getElementById("nomecompleto").value = "";
                 document.getElementById("setor").value = "";
                 document.getElementById("ramal").value = "";
                 document.getElementById("guardaid_click").value = 0;
@@ -189,11 +195,32 @@ session_start();
                             if(ajax.responseText){
 //alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
-                                document.getElementById("setor").value = Resp.siglasetor;
-                                if(parseInt(Resp.jatem) > 0){
+//                                if(parseInt(Resp.jatem) > 0){
                                     document.getElementById("usuario").value = Resp.nomeusual;
                                     document.getElementById("ramal").value = Resp.ramal;
-                                    document.getElementById("guardaid_click").value = document.getElementById("codnomecompl").value;
+                                    document.getElementById("nomecompleto").value = Resp.nomecompleto;
+                                    document.getElementById("setor").value = Resp.siglasetor;
+                                    document.getElementById("guardaCodSetor").value = Resp.codsetor;
+                                    document.getElementById("guardaid_click").value = Resp.codtel;
+//                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+            function buscaSetor(){
+                document.getElementById("mudou").value = "1";
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/salvaRamais.php?acao=buscaDescSetor&tipo=1&numero="+document.getElementById("codsetor").value, true); // tipo 1 = ramal interno
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    document.getElementById("setor").value = Resp.descsetor;
                                 }
                             }
                         }
@@ -201,7 +228,6 @@ session_start();
                     ajax.send(null);
                 }
             }
-
             function deletaModal(){
                 $.confirm({
                     title: 'Apagar lançamento.',
@@ -258,21 +284,11 @@ session_start();
         $Tipo = (int) filter_input(INPUT_GET, 'tipo');
         $admIns = parAdm("insramais", $Conec, $xProj);   // nível para inserir 
         $admEdit = parAdm("editramais", $Conec, $xProj); // nível para editar
-
-        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".ramais_int ADD COLUMN IF NOT EXISTS poslog_id bigint NOT NULL DEFAULT 0");
-        $rs = pg_query($Conec, "SELECT nomeusu FROM ".$xProj.".ramais_int WHERE codtel = 2 And nomeusu = 'Fulano'");
-        $row = pg_num_rows($rs);
-        if($row > 0){
-            pg_query($Conec, "TRUNCATE TABLE ".$xProj.".ramais_int");
-        }
-
         $OpNomes = pg_query($Conec, "SELECT id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
+        $OpSetor = pg_query($ConecPes, "SELECT id, sigla FROM ".$xPes.".setor WHERE dt_fim IS NULL ORDER BY sigla");
 
-        $rs0 = pg_query($Conec, "SELECT poslog_id, ".$xProj.".ramais_int.nomeusu, ".$xProj.".poslog.nomecompl, ramal, ".$xProj.".poslog.codsetor 
-        FROM ".$xProj.".ramais_int INNER JOIN ".$xProj.".poslog ON ".$xProj.".ramais_int.poslog_id = ".$xProj.".poslog.id 
-        WHERE ".$xProj.".ramais_int.ramal != '' And ".$xProj.".poslog.ativo = 1 ORDER BY ".$xProj.".poslog.nomecompl");
+        $rs0 = pg_query($Conec, "SELECT codtel, nomeusu, nomecompl, ramal, setor FROM ".$xProj.".ramais_int WHERE ativo = 1 ORDER BY nomecompl");
         $row0 = pg_num_rows($rs0);
-
         ?>
         <input type="hidden" id="tipo_acesso" value="<?php echo $Tipo; ?>" />
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>" />
@@ -280,7 +296,7 @@ session_start();
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" /> <!-- nível mínimo para editar -->
         <input type="hidden" id="guardaid_click" value="0" />
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
-
+        <input type="hidden" id="guardaCodSetor" value="0" />
         <div style="margin: 20px; border: 2px solid green; border-radius: 15px; padding: 20px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
                 <input type="button" id="botinserir" class="resetbot" value="Inserir Novo" onclick="InsRamais();">
@@ -291,7 +307,7 @@ session_start();
                 ?>
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
-                <h3>Ramais Telefônicos</h3>
+                <h3>Ramais Telefônicos Internos</h3>
             </div>
 
             <table id="idTabela" class="display" style="width:85%">
@@ -336,22 +352,37 @@ session_start();
                     <tr>
                         <td id="etiqNomeCompl" class="etiq">Nome Completo</td>
                         <td>
-                        <select id="codnomecompl" onchange="buscaNome();" style="font-size: 1rem; width: 99%;" title="Selecione um usuário.">
-                            <option value=""></option>
+                            <select id="codnomecompl" onchange="buscaNome();" style="font-size: 1rem; width: 22px;" title="Selecione um usuário.">
+                                <option value="0"></option>
+                                <?php 
+                                if($OpNomes){
+                                    while ($Opcoes = pg_fetch_row($OpNomes)){ ?>
+                                        <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                    <?php 
+                                    }
+                                }
+                                ?>
+                            </select>
+                            <input type="text" id="nomecompleto" style="width: 90%;" placeholder="Nome completo ou nome do setor" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('ramal');return false;}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td id="etiqSetor" class="etiq">Setor</td>
+                        <td>
+                        <select id="codsetor" onchange="buscaSetor();" style="font-size: 1rem; width: 22px;" title="Selecione um setor.">
+                            <option value="0"></option>
                             <?php 
-                            if($OpNomes){
-                                while ($Opcoes = pg_fetch_row($OpNomes)){ ?>
+                            if($OpSetor){
+                                while ($Opcoes = pg_fetch_row($OpSetor)){ ?>
                                     <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
                                 <?php 
                                 }
                             }
                             ?>
                             </select>
+
+                        <input type="text" id="setor" style="width: 50%;" placeholder="Setor" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('ramal');return false;}">
                     </td>
-                    </tr>
-                    <tr>
-                        <td id="etiqSetor" class="etiq">Setor</td>
-                        <td><input disabled type="text" id="setor" name="setor" style="width: 50%;" placeholder="Setor" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('ramal');return false;}"></td>
                     </tr>
                     <tr>
                         <td id="etiqRamal" class="etiq">Ramal</td>

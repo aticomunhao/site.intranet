@@ -1,6 +1,10 @@
 <?php
     date_default_timezone_set('America/Sao_Paulo');
     $date = date('Y-m-d H:i:s');
+
+    $d = strtotime("+1 Months");
+    $ProxMes = date("m", $d);
+
     $mdate = date('m');
     $ddate = date('d');
     $dias = 5; // total de dias a mostrar
@@ -21,10 +25,10 @@
     }
 
     //usando a data de nascimento na tabela pessoas
-    function pegaAniver($param, $mdate, $ddate, $ConecPes, $xPes) {
+    function pegaAniver($param, $mdate, $ddate, $ConecPes, $xPes, $ProxMes) {
         $rs0 = pg_query($ConecPes, "SELECT nome_completo, nome_completo, TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') 
         FROM ".$xPes.".pessoas 
-        WHERE TO_CHAR(dt_nascimento, 'MM') = '$mdate' And TO_CHAR(dt_nascimento, 'DD') $param '$ddate' 
+        WHERE TO_CHAR(dt_nascimento, 'MM') = '$mdate' And TO_CHAR(dt_nascimento, 'DD') $param '$ddate' Or TO_CHAR(dt_nascimento, 'MM') = '$ProxMes' 
         ORDER BY TO_CHAR(dt_nascimento, 'MM'), TO_CHAR(dt_nascimento, 'DD')");
         return $rs0;
     }
@@ -36,7 +40,7 @@
                 echo "<td><td>";
             echo "</tr>";
             //aniversariantes de hoje
-            $aniver = pegaAniver('=', $mdate, $ddate, $ConecPes, $xPes);
+            $aniver = pegaAniver('=', $mdate, $ddate, $ConecPes, $xPes, 0);
                 if($aniver){
                     $row = pg_num_rows($aniver);
                     if($row >0){
@@ -60,16 +64,16 @@
                 }
                         
             //aniversariantes dos $dias seguintes:
-            $aniver = pegaAniver('>', $mdate, $ddate, $ConecPes, $xPes);
+            $aniver = pegaAniver('>', $mdate, $ddate, $ConecPes, $xPes, $ProxMes);
                 if($aniver){
                     $row = pg_num_rows($aniver);
                     if($row >0){
                         while($tbl = pg_fetch_row($aniver)){
                             echo "<tr>";
-                            echo "<td style='color: blue; text-align: right; padding-right: 10px;'>";
+                            echo "<td style='color: blue; text-align: right; padding-right: 10px; font-size: 80%;'>";
                                 echo $tbl[2]."/". $tbl[3];
                             echo "</td>";
-                            echo "<td style='color: blue; text-align: left; padding-left: 5px;'>";
+                            echo "<td style='color: blue; text-align: left; padding-left: 5px; font-size: 80%;'>";
                                 echo "<b>" . $tbl[1] . "</b>";
                             echo "</td>";
                         }
