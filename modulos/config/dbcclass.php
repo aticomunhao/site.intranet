@@ -1,6 +1,6 @@
 <?php
 $url = $_SERVER["PHP_SELF"];
-$urlIni = "/site-intranet/";
+$urlIni = "/site.intranet/";
 if(strtolower($url) == $urlIni."modulos/config/dbcclass.php"){
     header("Location: $urlIni");
 }else{
