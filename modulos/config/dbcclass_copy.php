@@ -4,6 +4,7 @@ $urlIni = "/site-intranet/";
 if(strtolower($url) == $urlIni."modulos/config/dbcclass.php"){
     header("Location: $urlIni");
 }else{
+
     function conecPost(){
         if($_SERVER['HTTP_HOST'] == "localhost"){
             $con_string = "host = localhost port=5432 dbname=cesb user=postgres password=postgres";
@@ -21,6 +22,7 @@ if(strtolower($url) == $urlIni."modulos/config/dbcclass.php"){
         }
         return $Con;
     }
+
     function conecPes(){
         if($_SERVER['HTTP_HOST'] == "localhost"){
             $con_stringpes = "host = localhost port=5432 dbname=pessoal user=postgres password=postgres";

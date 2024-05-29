@@ -7,7 +7,7 @@ if(strtolower($url) == $urlIni."modulos/config/abrealas.php"){
 }
 
 $ConecPes = conecPes();
-if($ConecPes != "sConec" && $Conec != "sFunc"){
+if($ConecPes != "sConec" && $ConecPes != "sFunc"){
    $xProj =  "cesb";
    $xPes = "public";
 }else{
