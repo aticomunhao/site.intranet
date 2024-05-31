@@ -1,6 +1,3 @@
-<?php
-//session_start();
-?>
 <!DOCTYPE html>
 <html lang="pt-br">
     <head>
@@ -23,7 +20,6 @@
                 $('#container2').load('modulos/menuin.php?diasemana='+document.getElementById('guardadiasemana').value);
                 $('#container4').load('modulos/rodape.php');
                 $('#CorouselPagIni').load('modulos/carousel.php');
-                
             });
         </script>
     </head>

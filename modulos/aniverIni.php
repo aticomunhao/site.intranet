@@ -1,13 +1,14 @@
 <?php
     date_default_timezone_set('America/Sao_Paulo');
-    $date = date('Y-m-d H:i:s');
-
-    $m = strtotime("+1 Months");
-    $ProxMes = date("m", $m);
-
+    $date = date('Y-m-d');
     $mdate = date('m');
     $ddate = date('d');
     $xProj = "cesb";
+    $ProxMes = ($mdate+1);
+    if($ProxMes < 10){
+        $ProxMes = "0".$ProxMes;
+    }
+
     require_once("config/abrealas.php");
     if(!$Conec){
         echo "Sem contato com o PostGresql";
@@ -49,7 +50,7 @@
                             echo $tbl[2]."/". $tbl[3];
                             echo "</td>";
                             echo "<td style='color: red; text-align: left; padding-left: 5px; font-size: 80%;'>";
-                                echo "<div style='border: 1px solid #FF5580; border-radius: 5px; padding-left: 3px;'>"."<b>" . $tbl[1] . "</b>"."</div>";
+                                echo "<div style='border: 1px solid #FF5580; border-radius: 5px; padding-left: 3px; padding-right: 3px;'>"."<b>" . $tbl[1] . "</b>"."</div>";
                             echo "</td>";
                             echo "</tr>";
                         }
@@ -72,7 +73,7 @@
                                 echo $tbl[2]."/". $tbl[3];
                             echo "</td>";
                             echo "<td style='color: blue; text-align: left; padding-left: 5px; font-size: 80%;'>";
-                                echo "<div style='border: 1px solid #5C88C4; border-radius: 5px; padding-left: 3px;'>"."<b>" . $tbl[1] . "</b>"."</div>";
+                                echo "<div style='border: 1px solid #5C88C4; border-radius: 5px; padding-left: 3px; padding-right: 3px;'>"."<b>" . $tbl[1] . "</b>"."</div>";
                             echo "</td>";
                         }
                     }else{

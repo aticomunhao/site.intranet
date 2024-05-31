@@ -522,10 +522,6 @@ if(!isset($_SESSION["usuarioID"])){
                 $Tipo = 1;
             }
             require_once("modais.php");
-
-//Provisório
-            pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisclro smallint NOT NULL DEFAULT 0;"); // 1 - fiscalizar o LRO 
-
             //Para carregar os select de dia e mês
             $OpcoesMes = pg_query($Conec, "SELECT Esc1 FROM ".$xProj.".escolhas WHERE CodEsc < 14 ORDER BY Esc1");
             $OpcoesDia = pg_query($Conec, "SELECT Esc1 FROM ".$xProj.".escolhas ORDER BY Esc1");
@@ -552,7 +548,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardaLro" value="0" />
         <input type="hidden" id="guardaBens" value="0" />
 
-        <div style="margin: 20px; border: 2px solid blue; border-radius: 15px; padding: 20px;">
+        <div style="margin: 20px; border: 2px solid blue; border-radius: 15px; padding: 20px; min-height: 200px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
                 <input type="button" id="botinserir" class="resetbot" value="Inserir Novo" onclick="insUsu();">
             </div>

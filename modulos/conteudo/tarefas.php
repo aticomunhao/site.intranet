@@ -384,17 +384,17 @@ if(!isset($_SESSION["usuarioID"])){
         $admEdit = parAdm("edittarefa", $Conec, $xProj); // nível para editar
 
         //Acerta nomes poslog
-        $rs0 = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog WHERE pessoas_id > 0");
-        while($tbl0 = pg_fetch_row($rs0)){
-            $id = $tbl0[0];
-            $rs1 = pg_query($ConecPes, "SELECT nome_completo FROM ".$xPes.".pessoas WHERE id = $id");
-            $row1 = pg_num_rows($rs1);
-            if($row1 > 0){
-                $tbl1 = pg_fetch_row($rs1);
-                $Nome = $tbl1[0];
-                $rs2 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET nomecompl = '$Nome' WHERE pessoas_id = $id");  // nomecompl provisório para formar escolha
-            }
-        }
+//        $rs0 = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog WHERE pessoas_id > 0");
+//        while($tbl0 = pg_fetch_row($rs0)){
+//            $id = $tbl0[0];
+//            $rs1 = pg_query($ConecPes, "SELECT nome_completo FROM ".$xPes.".pessoas WHERE id = $id");
+//            $row1 = pg_num_rows($rs1);
+//            if($row1 > 0){
+//                $tbl1 = pg_fetch_row($rs1);
+//                $Nome = $tbl1[0];
+//                $rs2 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET nomecompl = '$Nome' WHERE pessoas_id = $id");
+//            }
+//        }
 
         //Relacionar usuários - adm <= $Adm - só paga tarefa para nível adm menor ou igual
         $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE adm <= $Adm ORDER BY nomecompl");
@@ -405,7 +405,6 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardaid" value="0" />
         <input type="hidden" id="guardaidEdit" value="0" />
         <input type="hidden" id="usu_Logado_id" value="<?php echo $_SESSION["usuarioID"]; ?>" />
-        <input type="hidden" id="usu_Logado" value="<?php echo $_SESSION["UsuLogado"]; ?>" />
         <input type="hidden" id="nome_Logado" value="<?php echo $_SESSION["NomeCompl"]; ?>" />
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>" />
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir tarefas -->

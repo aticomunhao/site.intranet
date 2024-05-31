@@ -87,31 +87,6 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bensachados (
    }
 
 
-if(strtotime('2024/05/30') > strtotime(date('Y/m/d'))){
-   pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".livroreg ADD COLUMN IF NOT EXISTS enviado smallint NOT NULL DEFAULT 0;"); //  fechar registro no LRO 
-	   
-   pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS lro smallint NOT NULL DEFAULT 0;"); //  preencher LRO 
-   pg_query($Conec, "UPDATE ".$xProj.".poslog SET pessoas_id = 153 WHERE cpf = '13652176049'"); // acerto bd comunhão
-
-   pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS inslro smallint NOT NULL DEFAULT 2;");  //  preencher LRO 
-   pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS editlro smallint NOT NULL DEFAULT 4;"); //  editar LRO 
-
-   pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS insbens smallint NOT NULL DEFAULT 2;");  //  preencher Bens achados 
-   pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS editbens smallint NOT NULL DEFAULT 4;"); // editar Bens achados
-   
-   pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis DROP COLUMN IF EXISTS insaguaindiv");
-   pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis DROP COLUMN IF EXISTS inseletricindiv");
-   pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis DROP COLUMN IF EXISTS editlroindiv");
-   pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis DROP COLUMN IF EXISTS editbensindiv");
-   pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis DROP COLUMN IF EXISTS edibensindiv");
-
-   pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS bens smallint NOT NULL DEFAULT 0;"); // 1 - bens Achados e perdidos 
-   pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog DROP COLUMN IF EXISTS nome_completo");
-   pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog DROP COLUMN IF EXISTS dt_nascimento");
-
-}
-
-
 pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".paramsis (
    idpar integer NOT NULL,
    admvisu smallint DEFAULT 0,
@@ -241,10 +216,10 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
       datamodif timestamp without time zone DEFAULT CURRENT_TIMESTAMP
       ) ");
    
-      echo "Tabela ".$xProj.".poslog leitura_agua. <br>";   
+      echo "Tabela ".$xProj.".leitura_agua. <br>";   
 
-pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".leitura_eletric (
-         id SERIAL PRIMARY KEY, 
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".leitura_eletric (
+      id SERIAL PRIMARY KEY, 
       dataleitura date,
       leitura1 double precision,
       ativo smallint DEFAULT 1 NOT NULL,
@@ -253,8 +228,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".leitura_eletric (
       usumodif integer DEFAULT 0 NOT NULL,
       datamodif timestamp without time zone DEFAULT CURRENT_TIMESTAMP) 
       ");
-echo "Tabela ".$xProj.".poslog leitura_eletric. <br>";   
-
+   echo "Tabela ".$xProj.".leitura_eletric. <br>";   
 
 
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".arqsetor (
@@ -291,13 +265,109 @@ echo "Tabela ".$xProj.".poslog leitura_eletric. <br>";
          avobrig smallint DEFAULT 0,
          avok smallint DEFAULT 0 ) ");
 
-         echo "Tabela ".$xProj.".calendev checada. <br>";
+      echo "Tabela ".$xProj.".calendev checada. <br>";
 
 
-         pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".carousel (
-            codcar SERIAL PRIMARY KEY,
-            descarq character varying(200), 
-            descarqant character varying(200) ) ");
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".carousel (
+      codcar SERIAL PRIMARY KEY,
+      descarq character varying(200), 
+      descarqant character varying(200) 
+      ) 
+      ");
+      echo "Tabela ".$xProj.".carousel checada. <br>";
 
-            echo "Tabela ".$xProj.".carousel checada. <br>";
+//   pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".controle_ar");
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
+      id SERIAL PRIMARY KEY, 
+      num_ap integer NOT NULL DEFAULT 0,
+      localap VARCHAR(50),
 
+      data01 date,
+      nome01 VARCHAR(100),
+      usuins01 integer DEFAULT 0 NOT NULL,
+      datains01 timestamp without time zone DEFAULT '1500-01-01',
+
+      data02 date,
+      nome02 VARCHAR(100),
+      usuins02 integer DEFAULT 0 NOT NULL,
+      datains02 timestamp without time zone DEFAULT '1500-01-01',
+
+      data03 date,
+      nome03 VARCHAR(100),
+      usuins03 integer DEFAULT 0 NOT NULL,
+      datains03 timestamp without time zone DEFAULT '1500-01-01',
+
+      data04 date,
+      nome04 VARCHAR(100),
+      usuins04 integer DEFAULT 0 NOT NULL,
+      datains04 timestamp without time zone DEFAULT '1500-01-01',
+
+      data05 date,
+      nome05 VARCHAR(100),
+      usuins05 integer DEFAULT 0 NOT NULL,
+      datains05 timestamp without time zone DEFAULT '1500-01-01',
+
+      data06 date,
+      nome06 VARCHAR(100),
+      usuins06 integer DEFAULT 0 NOT NULL,
+      datains06 timestamp without time zone DEFAULT '1500-01-01',
+      
+      data07 date,
+      nome07 VARCHAR(100),
+      usuins07 integer DEFAULT 0 NOT NULL,
+      datains07 timestamp without time zone DEFAULT '1500-01-01',
+
+      data08 date,
+      nome08 VARCHAR(100),
+      usuins08 integer DEFAULT 0 NOT NULL,
+      datains08 timestamp without time zone DEFAULT '1500-01-01',
+
+      data09 date,
+      nome09 VARCHAR(100),
+      usuins09 integer DEFAULT 0 NOT NULL,
+      datains09 timestamp without time zone DEFAULT '1500-01-01',
+
+      data10 date,
+      nome10 VARCHAR(100),
+      usuins10 integer DEFAULT 0 NOT NULL,
+      datains10 timestamp without time zone DEFAULT '1500-01-01',
+
+      data11 date,
+      nome11 VARCHAR(100),
+      usuins11 integer DEFAULT 0 NOT NULL,
+      datains11 timestamp without time zone DEFAULT '1500-01-01',
+
+      data12 date,
+      nome12 VARCHAR(100),
+      usuins12 integer DEFAULT 0 NOT NULL,
+      datains12 timestamp without time zone DEFAULT '1500-01-01',
+
+      empresa_id smallint DEFAULT 0 NOT NULL,
+      ativo smallint DEFAULT 1 NOT NULL
+      ) 
+   ");
+
+   echo "Tabela ".$xProj.".controle_ar checada. <br>";
+
+   $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".controle_ar LIMIT 5");
+   $row = pg_num_rows($rs);
+   if($row == 0){
+      for ($i = 1; $i <= 68; $i++) {
+         pg_query($Conec, "INSERT INTO ".$xProj.".controle_ar (num_ap, empresa_id) VALUES ($i, 1)");
+      }
+   }
+
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".empresas_ar (
+      id SERIAL PRIMARY KEY, 
+      empresa VARCHAR(150),
+      ativo smallint DEFAULT 1 NOT NULL
+      ) 
+   ");
+
+   $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".empresas_ar LIMIT 5");
+   $row = pg_num_rows($rs);
+   if($row == 0){
+      pg_query($Conec, "INSERT INTO ".$xProj.".empresas_ar (empresa, ativo) VALUES ('Empresa Contratada', 1)");
+   }
+
+   echo "<br><br>";

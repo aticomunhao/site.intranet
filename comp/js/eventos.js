@@ -45,7 +45,6 @@ function openhref(Num){
                     $('#container3').load('modulos/tabelas.php');
                 },
                 Não: function () {
-
                 }
             }
         });
@@ -62,6 +61,14 @@ function openhref(Num){
     if(parseInt(Num) === 64){
         $('#container3').load('modulos/bensachados/pagBensAch.php');
     }
+    if(parseInt(Num) === 65){
+        $('#container3').load('modulos/controleAr/controleAr.php');
+    }
+    if(parseInt(Num) === 66){
+//        $('#container3').load('modulos/config/info.php');
+        window.open("modulos/config/info.php", '_blank');
+    }
+
 
     if(parseInt(Num) === 30){
         $('#container3').load('modulos/trafego/PagArq.php');

@@ -45,7 +45,11 @@
 				$Adm = 0;
 			}
 			if(isset($_SESSION["SiglaSetor"])){
-				$Setor = "(".$_SESSION["SiglaSetor"].")";
+				if($_SESSION["SiglaSetor"] != ""){
+					$Setor = "(".$_SESSION["SiglaSetor"].")";
+				}else{
+					$Setor = "";	
+				}
 			}else{
 				$Setor = "";
 			}
@@ -123,11 +127,21 @@
 				echo "<li>";
 					echo "<a href='#'>Ferramentas</a>";
 					echo "<ul>";
-						if($_SESSION["AdmUsu"] > 6){ // superusuário
+						if($_SESSION["AdmUsu"] > 6){ // superusuário para construção
 							echo "<li>";
-								echo "<a href='#' onclick='openhref(60);'>Acertos MySql</a>";
+								echo "<a href='#'>Acertos</a>";
+								echo "<ul>";
+									echo "<li>";
+									echo "<a href='#' onclick='openhref(60);'>Tabelas</a>";
+									echo "</li>";
+
+									echo "<li>";
+									echo "<a href='#' onclick='openhref(66);'>php Info</a>";
+									echo "</li>";
+								echo "</ul>";
 							echo "</li>";
 						}
+
 						echo "<li>";
 							echo "<a href='#' onclick='openhref(59);'>Aniversariantes</a>";
 						echo "</li>";
@@ -148,19 +162,30 @@
 							echo "<a href='#' onclick='openhref(63);'>Calendário</a>";
 						echo "</li>";
 
+						echo "<li>";
+							echo "<a href='#'>Leituras</a>";
+							echo "<ul>";
+								echo "<li>";
+								echo "<a href='#' onclick='openhref(34);'>Água</a>";
+								echo "</li>";
+								echo "<li>";
+								echo "<a href='#' onclick='openhref(35);'>Eletricidade</a>";
+								echo "</li>";
+							echo "</ul>";
+						echo "</li>";	
 
+						if($_SESSION["AdmUsu"] > 6){ // superusuário para construção
 							echo "<li>";
-								echo "<a href='#'>Leituras</a>";
+								echo "<a href='#'>Manutenção</a>";
 								echo "<ul>";
 									echo "<li>";
-									echo "<a href='#' onclick='openhref(34);'>Água</a>";
-									echo "</li>";
-									echo "<li>";
-									echo "<a href='#' onclick='openhref(35);'>Eletricidade</a>";
+									echo "<a href='#' onclick='openhref(65);'>Ar Condicionado</a>";
 									echo "</li>";
 								echo "</ul>";
 							echo "</li>";
-						
+						}
+
+
 						if($_SESSION["AdmUsu"] > 6){ // superusuário
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(31);'>Parâmetros do Sistema</a>";

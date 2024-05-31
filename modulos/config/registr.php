@@ -131,24 +131,6 @@ if($Acao =="loglog"){
                         pg_query($Conec, "INSERT INTO ".$xProj.".pessoas (id, pessoas_id, cpf, nome_completo, dt_nascimento, sexo, status, datains, nome_resumido) VALUES ($CodigoNovo, $id, '$Login', '$NomeCompl', '$DNasc', ".$_SESSION['sexo'].", 1, NOW(), '$NomeUsual') "); 
                     }
 
-    //Provisório
-                    if(strtotime('2024/07/30') > strtotime(date('Y/m/d'))){
-                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS nomeusual VARCHAR(50)");
-                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".pessoas ADD COLUMN IF NOT EXISTS nome_resumido VARCHAR(50)");
-                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS agua smallint NOT NULL DEFAULT 0");
-                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS eletric smallint NOT NULL DEFAULT 0");
-                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS dataelim date DEFAULT '2023-10-09'");
-                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisclro smallint NOT NULL DEFAULT 0;"); // 1 - fiscalizar o LRO 
-    //Provisório
-                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS pico_online int NOT NULL DEFAULT 0;");
-                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS data_pico_online timestamp without time zone DEFAULT CURRENT_TIMESTAMP;");
-                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS pico_dia int NOT NULL DEFAULT 0;");
-                        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS data_pico_dia timestamp without time zone DEFAULT CURRENT_TIMESTAMP;");    
-                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET datainat = '3000-12-31' ");
-                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET datamodif = '3000-12-31' WHERE datamodif IS NULL Or datamodif = '1500-01-01'");
-                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET logini = '3000-12-31' WHERE logini IS NULL Or logini = '1500-01-01'");
-                    }
-
                     $rs5 = pg_query($Conec, "SELECT dataelim FROM ".$xProj.".paramsis WHERE idpar = 1 ");
                     $row5 = pg_num_rows($rs5);
                     if($row5 > 0){ 
@@ -259,7 +241,6 @@ if($Acao =="loglog"){
         }
         $var = array("coderro"=>$Erro, "msg"=>$Erro_Msg);
     }
-
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -329,12 +310,17 @@ if($Acao =="buscausu"){
         $var = array("coderro"=>$Erro);
     }else{
         $Proc = pg_fetch_row($rs);
-        if(!is_null($Proc[3])){
-            $UltLog = $Proc[3];
-        }else{
-            $UltLog = "31/12/3000";
+        $UltLog = $Proc[3];
+        if(is_null($Proc[3])){
+            $UltLog = "";
         }
-        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$Proc[3], "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "bens"=>$Proc[6], "lroFiscaliza"=>$Proc[7], "leituraAgua"=>$Proc[8], "leituraEletric"=>$Proc[9], "diaAniv"=>$Proc0[2], "mesAniv"=>$Proc0[3], "cpf"=>$GuardaCpf, "usuarioNome"=>$Proc[10]);
+        if($Proc[3] == "31/12/3000 00:00"){
+            $UltLog = "";
+        }
+        if($Proc[3] == "01/01/1500 00:00"){
+            $UltLog = "";
+        }
+        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$UltLog, "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "bens"=>$Proc[6], "lroFiscaliza"=>$Proc[7], "leituraAgua"=>$Proc[8], "leituraEletric"=>$Proc[9], "diaAniv"=>$Proc0[2], "mesAniv"=>$Proc0[3], "cpf"=>$GuardaCpf, "usuarioNome"=>$Proc[10]);
     }
     $responseText = json_encode($var);
     echo $responseText;
@@ -565,7 +551,6 @@ if($Acao =="confsenhaant"){
     $Cpf = $_SESSION["usuarioCPF"];
     $Valor = filter_input(INPUT_GET, 'valor');
     $Valor = removeInj($Valor);
-//    $Sen = password_hash($Valor, PASSWORD_DEFAULT);
     $Erro = 0;
     $Achou = 0;
 
@@ -585,7 +570,6 @@ if($Acao =="confsenhaant"){
 }
 
 if($Acao =="trocasenha"){
-//    $Usu = $_SESSION["usuarioID"];
     $Cpf = $_SESSION["usuarioCPF"];
     $Sen = filter_input(INPUT_GET, 'novasenha');
     $Repet = filter_input(INPUT_GET, 'repetsenha');
@@ -818,12 +802,6 @@ if($Acao =="checaLogFim"){
         session_destroy();
         header("Location: ../../index.php");
     }
-
-    //Provisório
-    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS pico_online int NOT NULL DEFAULT 0;");
-    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS data_pico_online timestamp without time zone DEFAULT CURRENT_TIMESTAMP;");
-    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS pico_dia int NOT NULL DEFAULT 0;");
-    pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS data_pico_dia timestamp without time zone DEFAULT CURRENT_TIMESTAMP;");
 
     $rs2 = pg_query($Conec, "SELECT pico_online, pico_dia FROM ".$xProj.".paramsis WHERE idpar = 1 ");
     $tbl2 = pg_fetch_row($rs2);
