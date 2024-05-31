@@ -211,7 +211,6 @@
                         <input type="password" id="novasenha" class="form-control" value="" onkeypress="if(event.keyCode===13){javascript:foco('repetsenha');return false;}">
                         <span class="invalid-feedback"></span>
                     </div>
-
                     <div style="padding-top: 5px;">
                         <label>Senha</label>
                         <input type="password" id="repetsenha" class="form-control" value="" onkeypress="if(event.keyCode===13){salvaTrocaSenha();}">

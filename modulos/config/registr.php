@@ -590,7 +590,7 @@ if($Acao =="trocasenha"){
     if($Erro == 0){
         $Senha = removeInj($Sen);
         $Sen = password_hash($Senha, PASSWORD_DEFAULT);
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET senha = '$Sen', dataModif = NOW() WHERE cpf = '$Cpf'");
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET senha = '$Sen', datamodif = NOW() WHERE cpf = '$Cpf'");
         if(!$rs){
             $Erro = 4;
         }
@@ -624,7 +624,7 @@ if($Acao =="mudasenha"){
     if($Erro == 0){
         $SenhaR = removeInj($Sen);
         $Senha = password_hash($SenhaR, PASSWORD_DEFAULT);
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET senha = '$Senha', usuModif = $Usu, dataModif = NOW() WHERE cpf = '$Cpf'");
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET senha = '$Senha', usumodif = $Usu, datamodif = NOW() WHERE cpf = '$Cpf'");
         if(!$rs){
             $Erro = 4;
         }
