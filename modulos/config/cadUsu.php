@@ -694,7 +694,7 @@ if(!isset($_SESSION["usuarioID"])){
 
                     <tr>
                         <td colspan="6"><hr style="margin: 3px; padding: 2px;"></td>
-                    </tr>  
+                    </tr>
                     <tr>
                         <td colspan="6" style="text-align: center;"><div id="mensagem" style="color: red; font-weight: bold;"></div></td>
                     </tr>   

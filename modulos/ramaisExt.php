@@ -287,6 +287,7 @@ session_start();
                         <th id="jSigla" class="jindice" title="Clique para indexar por esta coluna">Sigla</th>
                         <th id="jNomeCompl" class="jindice" title="Clique para indexar por esta coluna">Nome</th>
                         <th id="jRamal" class="jindice" title="Clique para indexar por esta coluna">Telefone</th>
+                        <th id="jCel" class="jindice" title="Clique para indexar por esta coluna">Celular</th>
                         <th id="jSetor" class="jindice" title="Clique para indexar por esta coluna">Setor</th>
 				        <th id="jContato" class="jindice" title="Clique para indexar por esta coluna">Nome Contato</th>
                     </tr>
@@ -302,6 +303,7 @@ session_start();
                         <td title="Clique aqui para editar"><?php echo $tbl[1]; ?> </td>
                         <td title="Clique aqui para editar"><?php echo $tbl[2]; ?> </td>
                         <td style="text-align: center;" title="Clique aqui para editar"> <?php echo $tbl[6]; ?> </td>
+                        <td style="text-align: center;" title="Clique aqui para editar"> <?php echo $tbl[7]; ?> </td>
                         <td style="text-align: center;" title="Clique aqui para editar"> <?php echo $tbl[5]; ?> </td>
 				        <td style="text-align: center;" title="Clique aqui para editar"> <?php echo $tbl[3]; ?> </td>
                     </tr>

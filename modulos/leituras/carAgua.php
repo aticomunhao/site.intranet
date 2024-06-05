@@ -33,8 +33,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     }
                 }
             });
-
-            $("#insdata").mask("99/99/9999");
+            $(document).ready(function(){
+                $('#insdata').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
+            });
+//            $("#insdata").mask("99/99/9999"); // esse tipo de datepicker não deixa digitar
         </script>
 
     </head>
@@ -196,7 +198,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <td class="etiq" style="width: 120px;">Leitura 3 (24h00)</td>
                     </tr>
                     <tr>
-                        <td style="width: 100px;"><input type="text" style="text-align: center; width: 100%;" id="insdata" onchange="checaData();" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('insleitura1');return false;}"/></td>
+                        <td><input type="text" style="text-align: center; width: 100%;" id="insdata" onchange="checaData();" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('insleitura1');return false;}"/></td>
                         <td style="text-align: center;"><label id="insdiasemana" style="font-size: 80%;"></label></td>
                         <td style="width: 120px;"><input type="text" style="text-align: center; width: 100%;" id="insleitura1" onchange="modif();" placeholder="Leitura 1" onkeypress="if(event.keyCode===13){javascript:foco('insleitura2');return false;}"/></td>
                         <td style="width: 120px;"><input type="text" style="text-align: center; width: 100%;" id="insleitura2" placeholder="Leitura 2" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('insleitura3');return false;}"/></td>

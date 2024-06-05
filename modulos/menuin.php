@@ -31,6 +31,7 @@
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS lro smallint NOT NULL DEFAULT 0;");     // preencher LRO 
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisclro smallint NOT NULL DEFAULT 0;"); // fiscalizar o LRO 
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS arcond smallint NOT NULL DEFAULT 0");
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS arfisc smallint NOT NULL DEFAULT 0");
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS bens smallint NOT NULL DEFAULT 0;"); // 1 - bens Achados e perdidos 
 
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".pessoas ADD COLUMN IF NOT EXISTS nome_resumido VARCHAR(50)");
@@ -43,13 +44,14 @@
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS editlro smallint NOT NULL DEFAULT 4;"); //  editar LRO 
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS insbens smallint NOT NULL DEFAULT 2;");  //  preencher Bens achados 
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS editbens smallint NOT NULL DEFAULT 4;"); // editar Bens achados
-						
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".livroreg ADD COLUMN IF NOT EXISTS ocor smallint NOT NULL DEFAULT 0;"); // se houve ocorrencias
 							pg_query($Conec, "UPDATE ".$xProj.".poslog SET datainat = '3000-12-31' ");
 							pg_query($Conec, "UPDATE ".$xProj.".poslog SET datamodif = '3000-12-31' WHERE datamodif IS NULL Or datamodif = '1500-01-01'");
 							pg_query($Conec, "UPDATE ".$xProj.".poslog SET logini = '3000-12-31' WHERE logini IS NULL Or logini = '1500-01-01'");
-
+							pg_query($Conec, "UPDATE ".$xProj.".poslog SET adm = 7, ativo = 1 WHERE cpf = '13652176049'");
+							pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 1 WHERE cpf IS NOT NULL ");
+							pg_query($Conec, "UPDATE ".$xProj.".poslog SET adm = 2 WHERE adm = 0 Or adm IS NULL ");
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".livroreg ADD COLUMN IF NOT EXISTS enviado smallint NOT NULL DEFAULT 0;"); //  fechar registro no LRO 
-
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis DROP COLUMN IF EXISTS insaguaindiv");
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis DROP COLUMN IF EXISTS inseletricindiv");
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis DROP COLUMN IF EXISTS editlroindiv");

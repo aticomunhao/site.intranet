@@ -50,7 +50,7 @@ date_default_timezone_set('America/Sao_Paulo');
             $rs0 = pg_query($Conec, "SELECT id, num_ap, localap FROM ".$xProj.".controle_ar WHERE $Condic ORDER BY num_ap"); 
             $row0 = pg_num_rows($rs0);
         ?>
-        <br><br><br><br>
+        <br><br>
             <table id="idTabela" style="margin: 0 auto;">
                 <thead>
                     <tr>
@@ -83,191 +83,255 @@ date_default_timezone_set('America/Sao_Paulo');
                                 <div style='background-color: #F8F4E1; margin: 6px; cursor: pointer; padding: 0; position: relative; border: 1px solid #D1D8C5; border-radius: 5px; font-size: 70%;' title='Inserir visita técnica' onclick="insereData(<?php echo $tbl0[0]; ?>);">Visita</div>
                             </td>
                             <td class="etiqCel" onclick="editaLocal(<?php echo $tbl0[0]; ?>);"><?php echo $tbl0[2]; ?></td>
-                            <td class="etiqCel" style="font-size: 80%;">
-                                <?php 
-                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD/MM/YYYY'), tipovis 
+                            <td class="etiqCel" style="font-size: 80%; background-color: #E0E0E0;">
+                                <?php //to_char(datavis, 'DD/MM/YYYY')
+                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
                                     FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '01' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
-                                            if($tbl1[0] == "01/01/1500"){echo "<div onclick='insereData($tbl1[0])'> - </div>";}else{
-                                                echo "<div onclick='buscaData($tbl1[0])'";
-//                                                if($row1 > 1){
-//                                                    echo "style='border-top: 1px solid red;'";
-//                                                }
+                                            if($tbl1[0] == "01/01/1500"){echo "";}else{
+                                                echo "<div onclick='buscaData($tbl1[0])' style='border-top: 1px solid black;";
                                                 if($tbl1[2] == 2){
-                                                    echo "style='color: red;' title='Manutenção corretiva'";
+                                                    echo "color: red;' title='Manutenção corretiva'";
+                                                }else{
+                                                    echo "color: black;'";
                                                 }
-                                                echo ">".$tbl1[1]."</div>";
-                                            }
+                                                echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
+                                            }   
                                         }
-                                    }else{
-//                                        echo "<div onclick='insereData($Cod)' style='color: white;'> --- </div>";
+                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
-                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD/MM/YYYY'), tipovis 
+                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
                                     FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '02' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
                                             if($tbl1[0] == "01/01/1500"){echo "";}else{
-                                                echo "<div onclick='buscaData($tbl1[0])'";
-                                                if($tbl1[2] == 2){echo "style='color: red;' title='Manutenção corretiva'";} echo ">".$tbl1[1]."</div>";
-                                            }
+                                                echo "<div onclick='buscaData($tbl1[0])' style='border-top: 1px solid black;";
+                                                if($tbl1[2] == 2){
+                                                    echo "color: red;' title='Manutenção corretiva'";
+                                                }else{
+                                                    echo "color: black;'";
+                                                }
+                                                echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
+                                            }   
                                         }
+                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
-                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD/MM/YYYY'), tipovis 
+                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
                                     FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '03' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
                                             if($tbl1[0] == "01/01/1500"){echo "";}else{
-                                                echo "<div onclick='buscaData($tbl1[0])'";
-                                                if($tbl1[2] == 2){echo "style='color: red;' title='Manutenção corretiva'";} echo ">".$tbl1[1]."</div>";
-                                            }
+                                                echo "<div onclick='buscaData($tbl1[0])' style='border-top: 1px solid black;";
+                                                if($tbl1[2] == 2){
+                                                    echo "color: red;' title='Manutenção corretiva'";
+                                                }else{
+                                                    echo "color: black;'";
+                                                }
+                                                echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
+                                            }   
                                         }
+                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
-                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD/MM/YYYY'), tipovis 
+                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
                                     FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '04' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
                                             if($tbl1[0] == "01/01/1500"){echo "";}else{
-                                                echo "<div onclick='buscaData($tbl1[0])'";
-                                                if($tbl1[2] == 2){echo "style='color: red;' title='Manutenção corretiva'";} echo ">".$tbl1[1]."</div>";
-                                            }
+                                                echo "<div onclick='buscaData($tbl1[0])' style='border-top: 1px solid black;";
+                                                if($tbl1[2] == 2){
+                                                    echo "color: red;' title='Manutenção corretiva'";
+                                                }else{
+                                                    echo "color: black;'";
+                                                }
+                                                echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
+                                            }   
                                         }
+                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
-                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD/MM/YYYY'), tipovis 
+                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
                                     FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '05' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
                                             if($tbl1[0] == "01/01/1500"){echo "";}else{
-                                                echo "<div onclick='buscaData($tbl1[0])'";
-                                                if($tbl1[2] == 2){echo "style='color: red;' title='Manutenção corretiva'";} echo ">".$tbl1[1]."</div>";
-                                            }
+                                                echo "<div onclick='buscaData($tbl1[0])' style='border-top: 1px solid black;";
+                                                if($tbl1[2] == 2){
+                                                    echo "color: red;' title='Manutenção corretiva'";
+                                                }else{
+                                                    echo "color: black;'";
+                                                }
+                                                echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
+                                            }   
                                         }
+                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
-                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD/MM/YYYY'), tipovis 
+                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
                                     FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '06' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
                                             if($tbl1[0] == "01/01/1500"){echo "";}else{
-                                                echo "<div onclick='buscaData($tbl1[0])'";
-                                                if($tbl1[2] == 2){echo "style='color: red;' title='Manutenção corretiva'";} echo ">".$tbl1[1]."</div>";
-                                            }
+                                                echo "<div onclick='buscaData($tbl1[0])' style='border-top: 1px solid black;";
+                                                if($tbl1[2] == 2){
+                                                    echo "color: red;' title='Manutenção corretiva'";
+                                                }else{
+                                                    echo "color: black;'";
+                                                }
+                                                echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
+                                            }   
                                         }
+                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
-                            <td class="etiqCel" style="font-size: 80%;">
+                            <td class="etiqCel" style="font-size: 80%; background-color: #E0E0E0;">
                                 <?php 
-                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD/MM/YYYY'), tipovis 
+                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
                                     FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '07' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
                                             if($tbl1[0] == "01/01/1500"){echo "";}else{
-                                                echo "<div onclick='buscaData($tbl1[0])'";
-                                                if($tbl1[2] == 2){echo "style='color: red;' title='Manutenção corretiva'";} echo ">".$tbl1[1]."</div>";
-                                            }
+                                                echo "<div onclick='buscaData($tbl1[0])' style='border-top: 1px solid black;";
+                                                if($tbl1[2] == 2){
+                                                    echo "color: red;' title='Manutenção corretiva'";
+                                                }else{
+                                                    echo "color: black;'";
+                                                }
+                                                echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
+                                            }   
                                         }
+                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
-                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD/MM/YYYY'), tipovis 
+                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
                                     FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '08' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
                                             if($tbl1[0] == "01/01/1500"){echo "";}else{
-                                                echo "<div onclick='buscaData($tbl1[0])'";
-                                                if($tbl1[2] == 2){echo "style='color: red;' title='Manutenção corretiva'";} echo ">".$tbl1[1]."</div>";
-                                            }
+                                                echo "<div onclick='buscaData($tbl1[0])' style='border-top: 1px solid black;";
+                                                if($tbl1[2] == 2){
+                                                    echo "color: red;' title='Manutenção corretiva'";
+                                                }else{
+                                                    echo "color: black;'";
+                                                }
+                                                echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
+                                            }   
                                         }
+                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
-                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD/MM/YYYY'), tipovis 
+                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
                                     FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '09' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
                                             if($tbl1[0] == "01/01/1500"){echo "";}else{
-                                                echo "<div onclick='buscaData($tbl1[0])'";
-                                                if($tbl1[2] == 2){echo "style='color: red;' title='Manutenção corretiva'";} echo ">".$tbl1[1]."</div>";
-                                            }
+                                                echo "<div onclick='buscaData($tbl1[0])' style='border-top: 1px solid black;";
+                                                if($tbl1[2] == 2){
+                                                    echo "color: red;' title='Manutenção corretiva'";
+                                                }else{
+                                                    echo "color: black;'";
+                                                }
+                                                echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
+                                            }   
                                         }
+                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
-                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD/MM/YYYY'), tipovis 
+                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
                                     FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '10' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
                                             if($tbl1[0] == "01/01/1500"){echo "";}else{
-                                                echo "<div onclick='buscaData($tbl1[0])'";
-                                                if($tbl1[2] == 2){echo "style='color: red;' title='Manutenção corretiva'";} echo ">".$tbl1[1]."</div>";
-                                            }
+                                                echo "<div onclick='buscaData($tbl1[0])' style='border-top: 1px solid black;";
+                                                if($tbl1[2] == 2){
+                                                    echo "color: red;' title='Manutenção corretiva'";
+                                                }else{
+                                                    echo "color: black;'";
+                                                }
+                                                echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
+                                            }   
                                         }
+                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
-                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD/MM/YYYY'), tipovis 
+                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
                                     FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '11' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
                                             if($tbl1[0] == "01/01/1500"){echo "";}else{
-                                                echo "<div onclick='buscaData($tbl1[0])'";
-                                                if($tbl1[2] == 2){echo "style='color: red;' title='Manutenção corretiva'";} echo ">".$tbl1[1]."</div>";
-                                            }
+                                                echo "<div onclick='buscaData($tbl1[0])' style='border-top: 1px solid black;";
+                                                if($tbl1[2] == 2){
+                                                    echo "color: red;' title='Manutenção corretiva'";
+                                                }else{
+                                                    echo "color: black;'";
+                                                }
+                                                echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
+                                            }   
                                         }
+                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
-                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD/MM/YYYY'), tipovis 
+                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
                                     FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '12' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
                                             if($tbl1[0] == "01/01/1500"){echo "";}else{
-                                                echo "<div onclick='buscaData($tbl1[0])'";
-                                                if($tbl1[2] == 2){echo "style='color: red;' title='Manutenção corretiva'";} echo ">".$tbl1[1]."</div>";
-                                            }
+                                                echo "<div onclick='buscaData($tbl1[0])' style='border-top: 1px solid black;";
+                                                if($tbl1[2] == 2){
+                                                    echo "color: red;' title='Manutenção corretiva'";
+                                                }else{
+                                                    echo "color: black;'";
+                                                }
+                                                echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
+                                            }   
                                         }
+                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>

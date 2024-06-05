@@ -12,10 +12,13 @@ if(!isset($_SESSION["usuarioID"])){
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Leituras</title>
         <link rel="stylesheet" type="text/css" media="screen" href="class/dataTable/datatables.min.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="class/gijgo/css/gijgo.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/relacmod.css" />
         <script src="comp/js/jquery.min.js"></script> <!-- versão 3.6.3 -->
         <script src="class/dataTable/datatables.min.js"></script>
         <script src="comp/js/jquery.mask.js"></script>
+        <script src="class/gijgo/js/gijgo.js"></script>
+        <script src="class/gijgo/js/messages/messages.pt-br.js"></script>
 
         <style type="text/css">
             .quadro{

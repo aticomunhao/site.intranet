@@ -135,6 +135,7 @@ date_default_timezone_set('America/Sao_Paulo');
                                         document.getElementById("nomeusuario").innerHMTL = "";
                                         document.getElementById("selectusuant").value = "";
                                         document.getElementById("relato").value = "";
+                                        document.getElementById("relato").disabled = true;
                                         document.getElementById("relacmodalReg").style.display = "block";
                                         if(parseInt(Resp.jatem) > 0){
                                             document.getElementById("jatem").value = "1";
@@ -168,7 +169,7 @@ date_default_timezone_set('America/Sao_Paulo');
                 }
             }
 
-            function mostraModal(Cod){ // só mostra após o clique, para editar chama carregaModal()
+            function mostraModal(Cod){ // só mostra após o clique. Para editar chama carregaModal()
                 document.getElementById("mostramensagem").innerHTML = "";
                 ajaxIni();
                 if(ajax){
@@ -190,12 +191,19 @@ date_default_timezone_set('America/Sao_Paulo');
                                         document.getElementById("mostrarelato").value = Resp.relato;
                                         document.getElementById("numrelato").value = Resp.numrelato;
                                         document.getElementById("guardausuins").value = Resp.codusuins; // usuário que inseriu o relato
+                                        if(parseInt(Resp.ocor) === 0){
+                                            document.getElementById('mostraocorrencia2').checked = true;  // não houve ocorr
+                                            document.getElementById('relato').disabled = true; 
+                                        }else{
+                                            document.getElementById('mostraocorrencia1').checked = true; // houve ocorr
+                                        }
                                         document.getElementById("guardaenviado").value = Resp.enviado; // encerrou o relato - não edita mais
                                         if(parseInt(Resp.enviado) === 1){
                                             document.getElementById("mostramensagem").innerHTML = "Registro Enviado.";
                                         }
                                         document.getElementById("relacMostramodalReg").style.display = "block";
                                     }
+                                    //permissões
                                     document.getElementById("botedit").style.visibility = "hidden"; // botão de editar
                                     document.getElementById("botimpr").style.visibility = "hidden"; // botão de imprimir
                                     document.getElementById("mostrabotimpr").style.visibility = "hidden"; // botão de imprimir na visualização
@@ -237,6 +245,12 @@ date_default_timezone_set('America/Sao_Paulo');
                                     document.getElementById("dataocor").value = Resp.data;
                                     document.getElementById("selecturno").value = Resp.turno;
                                     document.getElementById("selectusuant").value = Resp.usuant;
+                                    if(parseInt(Resp.ocor) === 0){
+                                            document.getElementById('ocorrencia2').checked = true;  // não houve ocorr
+                                            document.getElementById('relato').disabled = true; 
+                                        }else{
+                                            document.getElementById('ocorrencia1').checked = true; // houve ocorr
+                                        }
                                     document.getElementById("relato").value = Resp.relato;
                                     document.getElementById("relacMostramodalReg").style.display = "none";
                                     document.getElementById("relacmodalReg").style.display = "block";
@@ -278,7 +292,6 @@ date_default_timezone_set('America/Sao_Paulo');
                 if(document.getElementById("dataocor").value === ""){
                     let element = document.getElementById('dataocor');
                     element.classList.add('destacaBorda');
-
                     document.getElementById("dataocor").focus();
                     $('#mensagem').fadeIn("slow");
                     document.getElementById("mensagem").innerHTML = "Insira a data do registro";
@@ -288,7 +301,6 @@ date_default_timezone_set('America/Sao_Paulo');
                 if(document.getElementById("selecturno").value === ""){
                     let element = document.getElementById('selecturno');
                     element.classList.add('destacaBorda');
-
                     document.getElementById("selecturno").focus();
                     $('#mensagem').fadeIn("slow");
                     document.getElementById("mensagem").innerHTML = "Selecione o turno do serviço";
@@ -380,14 +392,19 @@ date_default_timezone_set('America/Sao_Paulo');
                     $('#mensagem').fadeOut(5000);
                     return false;
                 }
-                if(document.getElementById("relato").value === ""){
-                    let element = document.getElementById('relato');
-                    element.classList.add('destacaBorda');
-                    document.getElementById("relato").focus();
-                    $('#mensagem').fadeIn("slow");
-                    document.getElementById("mensagem").innerHTML = "Escreva o relato";
-                    $('#mensagem').fadeOut(5000);
-                    return false;
+                if(document.getElementById('ocorrencia1').checked == true){ // houve ocorrência
+                    Ocor = 1;
+                    if(document.getElementById("relato").value === ""){
+                        let element = document.getElementById('relato');
+                        element.classList.add('destacaBorda');
+                        document.getElementById("relato").focus();
+                        $('#mensagem').fadeIn("slow");
+                        document.getElementById("mensagem").innerHTML = "Escreva o relato";
+                        $('#mensagem').fadeOut(5000);
+                        return false;
+                    }
+                }else{
+                    Ocor = 0;
                 }
                 if(!validaData(document.getElementById("dataocor").value)){
                     let element = document.getElementById('dataocor');
@@ -408,6 +425,7 @@ date_default_timezone_set('America/Sao_Paulo');
                     "&datareg="+encodeURIComponent(document.getElementById("dataocor").value)+
                     "&turno="+document.getElementById("selecturno").value+
                     "&usuant="+document.getElementById("selectusuant").value+
+                    "&ocor="+Ocor+
                     "&envia="+Envia+
                     "&jatem="+document.getElementById("jatem").value+
                     "&numrelato="+encodeURIComponent(document.getElementById("numrelato").value)+
@@ -518,6 +536,30 @@ date_default_timezone_set('America/Sao_Paulo');
                             return false;
                         }
                     window.open("modulos/lro/imprReg.php?acao=impr&codigo="+document.getElementById("guardacod").value, document.getElementById("guardacod").value);
+                }
+            }
+            function abreOcor(Valor){
+                document.getElementById("mudou").value = "1";
+                if(parseInt(Valor) === 0){
+                    if(document.getElementById("relato").value != ""){
+                        $.confirm({
+                            title: 'Confirmação!',
+                            content: 'O que já foi escrito será perdido. <br>Confirma apagar o relato?',
+                            autoClose: 'Não|10000',
+                            draggable: true,
+                            buttons: {
+                                Sim: function () {
+                                    document.getElementById("relato").value = "";
+                                },
+                                Não: function () {
+                                    document.getElementById('ocorrencia1').checked = true; // houve ocorr
+                                }
+                            }
+                        });
+                    }
+                    document.getElementById("relato").disabled = true;
+                }else{
+                    document.getElementById("relato").disabled = false;
                 }
             }
 
@@ -637,9 +679,13 @@ date_default_timezone_set('America/Sao_Paulo');
                             <label class="etiqAzul"> - Recebi o serviço de: </label>
                             <input disabled type="text" id="mostraselectusuant" value="" >
 
-                            <label class="etiqAzul"> com as seguintes alterações: </label>
-                            <br><br>
-                            <textarea disabled id="mostrarelato" style="border: 1px solid blue; border-radius: 10px;" rows="10" cols="85"></textarea>
+                            <label class="etiqAzul"> ciente das alterações dos turnos anteriores. </label>
+                            <br>
+                            <label class="etiqAzul" title="Checar se houve ou não houve ocorrência digna de nota">Ocorrências: </label>
+                            <input disabled type="radio" name="mostraocorrencia" id="mostraocorrencia1" value="1" title="Houve algo que precisa ser relatado"><label for="mostraocorrencia1" class="etiqAzul" style="padding-left: 3px;"> Houve</label>
+                            <input disabled type="radio" name="mostraocorrencia" id="mostraocorrencia2" value="0" CHECKED title="Nada aconteceu que seja digno de nota"><label for="mostraocorrencia2" class="etiqAzul" style="padding-left: 3px;"> Não Houve</label>
+                            <br>
+                            <textarea disabled id="mostrarelato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="10" cols="85"></textarea>
                         </div>
                     </div>
                     <div id="mostramensagem" style="color: red; font-weight: bold;"></div>
@@ -693,9 +739,13 @@ date_default_timezone_set('America/Sao_Paulo');
                                 }
                                 ?>
                             </select>
-                            <label class="etiqAzul"> com as seguintes alterações: </label>
-                            <br><br>
-                            <textarea style="border: 1px solid blue; border-radius: 10px;" rows="8" cols="85" id="relato" onclick="tiraBorda(id);" onchange="modif();"></textarea>
+                            <label class="etiqAzul"> ciente das alterações dos turnos anteriores.</label>
+                            <br>
+                            <label class="etiqAzul" title="Checar se houve ou não houve ocorrência digna de nota">Ocorrências: </label>
+                            <input type="radio" name="ocorrencia" id="ocorrencia1" value="1" title="Houve algo que precisa ser relatado" onclick="abreOcor(value);"><label for="ocorrencia1" class="etiqAzul" style="padding-left: 3px;"> Houve</label>
+                            <input type="radio" name="ocorrencia" id="ocorrencia2" value="0" CHECKED title="Nada aconteceu que seja digno de nota" onclick="abreOcor(value);"><label for="ocorrencia2" class="etiqAzul" style="padding-left: 3px;"> Não Houve</label>
+                            <br>
+                            <textarea style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="8" cols="85" id="relato" onclick="tiraBorda(id);" onchange="modif();"></textarea>
                         </div>
                         <br>
                     </div>

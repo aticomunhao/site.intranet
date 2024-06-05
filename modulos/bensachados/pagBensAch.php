@@ -9,7 +9,9 @@ session_start();
         <link rel="stylesheet" type="text/css" media="screen" href="class/dataTable/datatables.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/relacmod.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-ui.min.css" />
         <script src="comp/js/jquery-confirm.min.js"></script> <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
+        <script src="comp/js/jquery-ui.min.js"></script>
         <script src="class/dataTable/datatables.min.js"></script>
         <script src="comp/js/jquery.mask.js"></script>
         <style>
@@ -660,7 +662,32 @@ session_start();
                             return false
                 return true
             }
-
+            /* jQuery UI date picker plugin em português */
+            /* Autoria: Leonildo Costa Silva (leocsilva@gmail.com). */
+            jQuery(function($){
+                $.datepicker.regional['pt-BR'] = {
+                    closeText: 'Fechar',
+                    prevText: '&#x3c;Anterior',
+                    nextText: 'Pr&oacute;ximo&#x3e;',
+                    currentText: 'Hoje',
+                    monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+                    monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+                    dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+                    dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                    dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                    weekHeader: 'Sm',
+                    dateFormat: 'dd/mm/yy',
+                    firstDay: 1,
+                    isRTL: false,
+                    showMonthAfterYear: false,
+                    yearSuffix: ''
+                };
+                $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+            });
+            $(function(){
+                $("#dataregistro").datepicker();
+                $("#datavisedit").datepicker();
+            });
         </script>
     </head>
     <body>

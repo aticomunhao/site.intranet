@@ -5,8 +5,8 @@ if(isset($_REQUEST["acao"])){
     $Acao = $_REQUEST["acao"];
     $Tipo = (int) $_REQUEST["tipo"];
 }
-
-if($Tipo == 1){
+require_once("config/gUtils.php"); 
+if($Tipo == 1){ // ramais internos
 
     if($Acao =="buscaNome"){
         $Num = (int) filter_input(INPUT_GET, 'numero'); // id
@@ -85,16 +85,28 @@ if($Tipo == 1){
         $responseText = json_encode($var);
         echo $responseText;
     }
-    
 
     if($Acao =="salvaRamal"){
         $id = (int) filter_input(INPUT_GET, 'numero');
-        $Nome = filter_input(INPUT_GET, 'usuario');  //$_REQUEST["nome"];
+        $Nom = trim(filter_input(INPUT_GET, 'usuario'));  // nome usual
+        if(!is_null($Nom)){
+            $NomeU = $Nom;
+            $NomeUs = GUtils::normalizarNome($NomeU);  // Normatizar nomes próprios
+            $NomeUsu = addslashes($NomeUs);
+            $Nome = str_replace('"', "'", $NomeUsu); // substitui aspas duplas por simples
+        }else{
+            $Nome = "";
+        }
+
         $CodNome = filter_input(INPUT_GET, 'codnomecompl');
         if(is_null($CodNome)){
             $CodNome = 0;
         }
-        $NomeCompl = filter_input(INPUT_GET, 'nomecompleto');
+        $NomeC = trim(filter_input(INPUT_GET, 'nomecompleto'));
+        $NomeCo = GUtils::normalizarNome($NomeC);  // Normatizar nomes próprios
+        $NomeComp = addslashes($NomeCo);
+        $NomeCompl = str_replace('"', "'", $NomeComp); // substitui aspas duplas por simples
+
         $Ramal = filter_input(INPUT_GET, 'ramal');
         $CodSetor = (int) filter_input(INPUT_GET, 'codsetor');
         $DescSetor = filter_input(INPUT_GET, 'setor');
@@ -137,7 +149,7 @@ if($Tipo == 1){
     }
 }
 
-if($Tipo == 2){
+if($Tipo == 2){ // ramais externos
     if($Acao=="buscaRamal"){
         $Num = (int) filter_input(INPUT_GET, 'numero'); // id
         $Erro = 0;

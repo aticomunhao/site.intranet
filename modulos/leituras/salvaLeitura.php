@@ -307,7 +307,7 @@ if($Acao =="ultData"){
         if(is_null($tbl[0])){
             $ProxDay = $Hoje;
         }else{
-            $ProxDay = date('d-m-Y', strtotime($tbl[0]. ' + 1 day'));
+            $ProxDay = date('d/m/Y', strtotime($tbl[0]. ' + 1 day'));
         }
         $Sem = date("D", strtotime("$ProxDay"));
         $semana = array(
@@ -345,14 +345,14 @@ if($Acao =="ultDataEletric"){
             if($CodigoNovo == 1){ // primeiro lançamento
                 $rs1 = pg_query($Conec, "SELECT datainieletric, valorinieletric FROM ".$xProj.".paramsis WHERE idpar = 1");
                 $tbl1 = pg_fetch_row($rs1);
-                $ProxDay = date('d-m-Y', strtotime($tbl1[0]));
+                $ProxDay = date('d/m/Y', strtotime($tbl1[0]));
                 $Erro = 2;
                 $ValorIni = $tbl1[1];
             }else{
                 $ProxDay = $Hoje;
             }
         }else{
-            $ProxDay = date('d-m-Y', strtotime($tbl[0]. ' + 1 day'));
+            $ProxDay = date('d/m/Y', strtotime($tbl[0]. ' + 1 day'));
         }
         $Sem = date("D", strtotime("$ProxDay"));
         $semana = array(

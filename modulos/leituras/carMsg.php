@@ -23,7 +23,7 @@
         <table style="margin: 0 auto;">
             <tr>
                 <td style="text-align: center; font-size: 80%;">
-                <div style="margins: 10px; padding: 20px; text-align: center; border: 1px solid blue; border-radius: 15px;"><?php echo $Texto; ?> </div>
+                <div style="margin: 10px; padding: 20px; text-align: center; border: 1px solid blue; border-radius: 15px;"><?php echo $Texto; ?> </div>
                 </td>
             </tr>
         </table>

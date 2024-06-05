@@ -12,7 +12,7 @@ if(isset($_REQUEST["acao"])){
 if($Acao=="buscaReg"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Erro = 0;
-    $rs = pg_query($Conec, "SELECT to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), ".$xProj.".poslog.nomecompl, usuant, turno, numrelato, enviado, relato, codusu 
+    $rs = pg_query($Conec, "SELECT to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), ".$xProj.".poslog.nomecompl, usuant, turno, numrelato, enviado, relato, codusu, ocor 
     FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id 
     WHERE ".$xProj.".livroreg.id = $Cod");
     if(!$rs){
@@ -73,7 +73,7 @@ if($Acao=="buscaReg"){
                 $FiscLro = 0;
             }
 
-            $var = array("coderro"=>$Erro, "data"=>$Data, "codusuins"=>$tbl[7], "nomeusuins"=>$NomeIns, "usuant"=>$tbl[2], "nomeusuant"=>$NomeAnt, "turno"=>$tbl[3], "descturno"=>$DescTurno, "numrelato"=>$tbl[4], "enviado"=>$tbl[5], "relato"=>$tbl[6], "acessoLro"=>$Lro, "fiscalizaLro"=>$FiscLro);
+            $var = array("coderro"=>$Erro, "data"=>$Data, "codusuins"=>$tbl[7], "nomeusuins"=>$NomeIns, "usuant"=>$tbl[2], "nomeusuant"=>$NomeAnt, "turno"=>$tbl[3], "descturno"=>$DescTurno, "numrelato"=>$tbl[4], "enviado"=>$tbl[5], "relato"=>$tbl[6], "ocor"=>$tbl[8], "acessoLro"=>$Lro, "fiscalizaLro"=>$FiscLro);
         }else{
             $var = array("coderro"=>$Erro);
         }
@@ -93,6 +93,7 @@ if($Acao=="salvaReg"){
     $JaTem = (int) filter_input(INPUT_GET, 'jatem');
     $NumRelAnt = addslashes($_REQUEST['numrelato']);
     $NumRelat = $NumRelAnt; // se estiver em branco será redefinido abaixo
+    $Ocor = (int) filter_input(INPUT_GET, 'ocor');
 
     $Erro = 0;
     $CodigoNovo = 0;
@@ -129,8 +130,8 @@ if($Acao=="salvaReg"){
         $Codigo = $tblCod[0];
         $CodigoNovo = $Codigo+1; 
 
-        $Sql = pg_query($Conec, "INSERT INTO ".$xProj.".livroreg (id, codusu, usuant, turno, descturno, dataocor, datains, ativo, numrelato, relato, enviado) 
-        VALUES($CodigoNovo, $UsuIns, $UsuAnt, $Turno, '$DescTurno', '$RevData', NOW(), 1, '$NumRelat', '$Relato', $Envia)");
+        $Sql = pg_query($Conec, "INSERT INTO ".$xProj.".livroreg (id, codusu, usuant, turno, descturno, dataocor, datains, ativo, numrelato, relato, enviado, ocor) 
+        VALUES($CodigoNovo, $UsuIns, $UsuAnt, $Turno, '$DescTurno', '$RevData', NOW(), 1, '$NumRelat', '$Relato', $Envia, $Ocor)");
         if(!$Sql){
             $Erro = 1;
         }else{
@@ -139,10 +140,10 @@ if($Acao=="salvaReg"){
             $CodigoNovo = $tblCod[0];
         }
     }else{
-        pg_query($Conec, "UPDATE ".$xProj.".livroreg SET usuant = $UsuAnt, turno = $Turno, descturno = '$DescTurno', relato = '$Relato', enviado = $Envia, usumodif = ".$_SESSION['usuarioID'].", datamodif = NOW() WHERE id = $Codigo");
+        pg_query($Conec, "UPDATE ".$xProj.".livroreg SET usuant = $UsuAnt, turno = $Turno, descturno = '$DescTurno', relato = '$Relato', enviado = $Envia, usumodif = ".$_SESSION['usuarioID'].", datamodif = NOW(), ocor = $Ocor WHERE id = $Codigo");
     }
 
-    $var = array("coderro"=>$Erro, "codigonovo"=>$CodigoNovo, "num"=>$NumRelat);
+    $var = array("coderro"=>$Erro, "codigonovo"=>$CodigoNovo, "num"=>$NumRelat, "ocor"=>$Ocor);
     $responseText = json_encode($var);
     echo $responseText;
 }
