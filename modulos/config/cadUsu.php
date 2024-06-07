@@ -542,7 +542,6 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
         <input type="hidden" id="guarda_usulogado_id" value="<?php echo $_SESSION["usuarioID"]; ?>" />
         <input type="hidden" id="admCadUsu" value="<?php echo $_SESSION["AdmCad"]; ?>" />
-        <input type="hidden" id="admEditUsu" value="<?php echo $_SESSION["AdmEdit"]; ?>" />
         <input type="hidden" id="guardaidpessoa" value="0" />
         <input type="hidden" id="guardaAtiv" value="1" />
         <input type="hidden" id="guardaLro" value="0" />

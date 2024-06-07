@@ -57,14 +57,19 @@ if($Acao =="loglog"){
                     $NomeC = GUtils::normalizarNome($Sql[2]);  // Normatizar nomes próprios
                     $NomeComp = addslashes($NomeC);
                     $NomeCompl = str_replace('"', "'", $NomeComp); // substitui aspas duplas por simples
+                    $_SESSION["NomeCompl"] = $NomeCompl;
 
-                    if(!is_null($Sql[7])){
+                    if(!is_null($Sql[7])){ // nome_resumido
                         $NomeU = $Sql[7];
                         $NomeUs = GUtils::normalizarNome($NomeU);  // Normatizar nomes próprios
                         $NomeUsu = addslashes($NomeUs);
                         $NomeUsual = str_replace('"', "'", $NomeUsu); // substitui aspas duplas por simples
                     }else{
                         $NomeUsual = "";
+                    }
+                    $_SESSION["NomeUsual"] = $NomeUsual;
+                    if($NomeUsual == ""){
+                        $_SESSION["NomeUsual"] = $_SESSION["NomeCompl"];
                     }
 
                     $DNasc = $Sql[3];
@@ -74,11 +79,6 @@ if($Acao =="loglog"){
                     $_SESSION['sexo'] = $Sql[6];
                     $_SESSION['start_login'] = time();
                     $_SESSION["usuarioID"] = $id;
-                    $_SESSION["NomeUsual"] = $NomeUsual;
-                    $_SESSION["NomeCompl"] = $NomeCompl;
-                    if($NomeUsual == ""){
-                        $_SESSION["NomeUsual"] = $_SESSION["NomeCompl"];
-                    }
                     $_SESSION["msg"] = ""; //para troca de slides e tráfego de arquivos
                     $_SESSION['msgarq'] = ""; //para upload arquivos diretorias/assessorias
                     $_SESSION['geremsg'] = 0;
@@ -88,21 +88,15 @@ if($Acao =="loglog"){
                     $_SESSION["SiglaSetor"] = "n/d";
                     $_SESSION["CodSubSetorUsu"] = 1; // não tem mais subdiretorias - deixar 1
                     $_SESSION["AdmUsu"] = 2;
-                    //Parâmetros do sistema
-                    $rsSis = pg_query($Conec, "SELECT admVisu, admCad, admEdit FROM ".$xProj.".paramsis WHERE idPar = 1");
-                    $ProcSis = pg_fetch_row($rsSis);
-                    $_SESSION["AdmVisu"] = $ProcSis[0];  // administrador visualiza usuários
-                    $_SESSION["AdmCad"] = $ProcSis[1];   // administrador cadastra usuários
-                    $_SESSION["AdmEdit"] = $ProcSis[2];  // administrador edita usuários
 
                     //Verifica se já logou uma vez em poslog
-                    $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE cpf = '$Login' "); 
+                    $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE cpf = '$Login' ");
                     $row1 = pg_num_rows($rs1);
                     if($row1 == 1){ // Já tem - aumenta número de acessos e grava data hora do login  - logfim = now() para mostrar on line
                         pg_query($Conec, "UPDATE ".$xProj.".poslog SET numacessos = (numacessos + 1), logini = NOW(), logfim = NOW() WHERE pessoas_id = $id "); 
-                        $rs2 = pg_query($Conec, "SELECT adm, codsetor, nomeusual FROM ".$xProj.".poslog WHERE cpf = '$Login' "); 
+                        $rs2 = pg_query($Conec, "SELECT adm, codsetor, nomeusual FROM ".$xProj.".poslog WHERE cpf = '$Login' ");
                         $tbl2 = pg_fetch_row($rs2);
-                       if($tbl2[0] == 0){
+                        if($tbl2[0] == 0){
                             $_SESSION["AdmUsu"] = 2;    
                         }else{
                             $_SESSION["AdmUsu"] = $tbl2[0];
@@ -135,72 +129,9 @@ if($Acao =="loglog"){
                         pg_query($Conec, "INSERT INTO ".$xProj.".pessoas (id, pessoas_id, cpf, nome_completo, dt_nascimento, sexo, status, datains, nome_resumido) VALUES ($CodigoNovo, $id, '$Login', '$NomeCompl', '$DNasc', ".$_SESSION['sexo'].", 1, NOW(), '$NomeUsual') "); 
                     }
 
-                    $rs5 = pg_query($Conec, "SELECT dataelim FROM ".$xProj.".paramsis WHERE idpar = 1 ");
-                    $row5 = pg_num_rows($rs5);
-                    if($row5 > 0){ 
-                        $tbl5 = pg_fetch_row($rs5);
-                        $DataElim = $tbl5[0];
-                        $Hoje = date('Y/m/d');
-                        if(strtotime($DataElim) < strtotime($Hoje)){ // o primeiro que logar executa
-                            pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ativo = 0"); //Elimina dados apagados da tabela calendário
-                            pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ((CURRENT_DATE - dataini)/365 > 5)"); //Apaga da tabela calendário eventos passados há mais de 5 anos
-                            pg_query($Conec, "DELETE FROM ".$xProj.".leitura_agua WHERE ((CURRENT_DATE - dataleitura)/365 > 5)"); //Apaga da tabela lançamentos de leitura do hidrômetro passados há mais de 5 anos
-                            pg_query($Conec, "DELETE FROM ".$xProj.".tarefas WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga da tabela lançamentos de tarefas há mais de 5 anos
-                            pg_query($Conec, "DELETE FROM ".$xProj.".tarefas_msg WHERE datamsg < CURRENT_DATE - interval '5 years' "); //Apaga mensagens trocadas nas tarefas há mais de 5 anos
-                            pg_query($Conec, "DELETE FROM ".$xProj.".livroreg WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga registros do livro de ocorrências há mais de 5 anos
-                            pg_query($Conec, "DELETE FROM ".$xProj.".bensachados WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga registros do achados e perdidos há mais de 5 anos
-                            pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE logfim < CURRENT_DATE - interval '5 years' "); //Apaga registros de usuários com último log há mais de 5 anos
+                    $_SESSION["acessoLRO"] = 0;
+                    $_SESSION["AdmCad"] = 0;
 
-                            $rs6 = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog ");
-                            $row6 = pg_num_rows($rs6);
-                            if($row6 > 0){ //atualiza com pessoas
-                                while ($tbl6 = pg_fetch_row($rs6)){
-                                    $Cod = $tbl6[0];
-                                    $rs7 = pg_query($ConecPes, "SELECT nome_completo, status, dt_nascimento, sexo, nome_resumido FROM ".$xPes.".pessoas WHERE id = $Cod ");
-                                    $row7 = pg_num_rows($rs7);
-                                    if($row7 == 1){
-                                        $tbl7 = pg_fetch_row($rs7);
-                                        $NomeC = GUtils::normalizarNome($tbl7[0]);  // Normatizar nomes próprios
-                                        $NomeComp = addslashes($NomeC);
-                                        $NomeCompl = str_replace('"', "'", $NomeComp); // substitui aspas duplas por simples
-
-                                        if(!is_null($tbl7[1])){
-                                            $Ativo = $tbl7[1];
-                                        }else{
-                                            $Ativo = 0;
-                                        }
-                                        if(!is_null($tbl7[2])){
-                                            $DNasc = $tbl7[2];
-                                        }else{
-                                            $DNasc = "1500-01-01";
-                                        }
-                                        if(!is_null($tbl7[3])){
-                                            $Sexo = $tbl7[3];
-                                        }else{
-                                            $Sexo = 1;
-                                        }
-
-                                        if(!is_null($tbl7[4])){
-                                            $NomeU = $tbl7[4];
-                                            $NomeUs = GUtils::normalizarNome($NomeU);  // Normatizar nomes próprios
-                                            $NomeUsu = addslashes($NomeUs);
-                                            $NomeUsual = str_replace('"', "'", $NomeUsu); // substitui aspas duplas por simples
-                                            pg_query($Conec, "UPDATE ".$xProj.".poslog SET nomeusual = '$NomeUsual' WHERE pessoas_id = $Cod");
-                                        }else{
-                                            $NomeUsual = "";
-                                        }
-                                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET nomecompl = '$NomeCompl', ativo = $Ativo, sexo = $Sexo WHERE pessoas_id = $Cod");
-                                        pg_query($Conec, "UPDATE ".$xProj.".pessoas SET nome_completo = '$NomeCompl', nome_resumido = '$NomeUsual', status = $Ativo, dt_nascimento = '$DNasc', sexo = $Sexo WHERE pessoas_id = $Cod");
-                                    }else{ // se não estiver mais em pessoas
-                                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 0 WHERE pessoas_id = $Cod ");
-                                    }
-                                }
-                            }
-                            pg_query($Conec, "UPDATE ".$xProj.".paramsis SET dataelim = NOW() WHERE idpar = 1 "); // para que os próximos não executem
-                        }
-                    }
-                    $_SESSION["acessoLRO"] = parEsc("lro", $Conec, $xProj, $_SESSION["usuarioID"]); // está na escala svc portaria
-                    
                     if($_SESSION["AdmUsu"] == 0){
                         $Erro = 4;
                         $Erro_Msg = "Usuário ainda não recebeu permissão administrativa.";
@@ -209,7 +140,10 @@ if($Acao =="loglog"){
                     if($Sen == $Login){
                         $Erro = 5; // inserir nova senha
                     }
-                    $var = array("coderro"=>$Erro, "msg"=>$Erro_Msg, "usuarioid"=>$id, "usuarioNome"=>$_SESSION["NomeCompl"], "usuarioAdm"=>$_SESSION["AdmUsu"], "usuario"=>$_SESSION["NomeUsual"]); 
+                    $var = array("coderro"=>$Erro, "msg"=>$Erro_Msg, "usuarioid"=>$id, "usuarioNome"=>$NomeCompl, "usuarioAdm"=>$_SESSION["AdmUsu"], "usuario"=>$NomeUsual); 
+                    $responseText = json_encode($var);
+                    echo $responseText;
+                    return;
                 }else{ // usuário não encontrado 
                     $Erro = 6;
                     $Erro_Msg = "Usuário ou senha não conferem. Erro 2244";
