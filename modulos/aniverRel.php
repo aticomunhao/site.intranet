@@ -27,8 +27,8 @@
         <script>
             new DataTable('#idTabela', {
                 lengthMenu: [
-                    [50, 100, 200, 500],
-                    [50, 100, 200, 500]
+                    [100, 200, 500, 1000],
+                    [100, 200, 500, 1000]
                 ],
                 language: {
                     info: 'Mostrando Página _PAGE_ of _PAGES_',
@@ -56,7 +56,8 @@
     <body>
         <?php
         require_once("config/abrealas.php");
-        $rs0 = pg_query($ConecPes, "SELECT id, nome_completo, TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') FROM ".$xPes.".pessoas WHERE nome_completo != '' ORDER BY nome_completo ");
+        require_once("config/gUtils.php");
+        $rs0 = pg_query($ConecPes, "SELECT id, nome_completo, TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM'), nome_resumido FROM ".$xPes.".pessoas WHERE nome_completo != '' ORDER BY nome_completo ");
         $row0 = pg_num_rows($rs0);
         ?>
         <div style="margin: 20px; border: 2px solid blue; border-radius: 15px; padding: 20px;">
@@ -66,6 +67,8 @@
             <table id="idTabela" class="display" style="width:75%;">
                 <thead>
                     <tr>
+                        <th style="display: none;"></th>
+                        <th>Nome</th>
                         <th>Nome Completo</th>
                         <th style="text-align: center;">Aniversário</th>
                     </tr>
@@ -74,11 +77,23 @@
                 <?php 
                     while ($tbl = pg_fetch_row($rs0)) {
                         $Cod = $tbl[0];
-                        $NomeCompl = $tbl[1];
+                        if(!is_null($tbl[1])){
+                            $NomeCompl = GUtils::normalizarNome($tbl[1]); // não suporta null
+                        }else{
+                            $NomeCompl = "";
+                        }
                         $DiaAniv = $tbl[2];
-                        $MesAniv = $tbl[3];                    
+                        $MesAniv = $tbl[3];
+                        if(!is_null($tbl[4])){
+                            $NomeUsual = GUtils::normalizarNome($tbl[4]);
+                        }else{
+                            $NomeUsual = "";
+                        }
+                        
                     ?>
                     <tr>
+                        <td style="display: none;"></td> <!-- para não indexar pela primeira coluna (nome usual). Evita configurações no datatable -->
+                        <td><?php echo $NomeUsual; ?></td>
                         <td><?php echo $NomeCompl; ?></td>
                         <td style="text-align: center;"><?php echo $DiaAniv."/".$MesAniv; ?></td>
                     </tr>

@@ -269,24 +269,35 @@ date_default_timezone_set('America/Sao_Paulo');
 
             function enviaModalReg(Envia){
                 if(parseInt(Envia) === 1){
-                    $.confirm({
-                        title: 'Confirmação!',
-                        content: "O relato será enviado ao setor competente e não poderá ser modificado.<br> Se quiser apenas editar antes de teminar o turno, clique no botão Salvar e deixe para enviar ao final do turno. <br><br>Confirma enviar agora?",
-                        autoClose: 'Não|15000',
-                        draggable: true,
-                        buttons: {
-                            Sim: function () {
-                                if(parseInt(document.getElementById("mudou").value) === 1){
-                                    salvaModalReg(Envia);
-                                }else{
-                                    salvaRegEnv(Envia);
+                    if(document.getElementById("selecturno").value == ""){
+                        let element = document.getElementById('selecturno');
+                        element.classList.add('destacaBorda');
+                    }
+                    if(document.getElementById("selectusuant").value == ""){
+                        let element = document.getElementById('selectusuant');
+                        element.classList.add('destacaBorda');
+                    }
+                    if(document.getElementById("selecturno").value !== "" && document.getElementById("selectusuant").value !== ""){
+                        $.confirm({
+                            title: 'Confirmação!',
+                            content: "O relato será enviado ao setor competente e não poderá ser modificado.<br> Se quiser apenas editar antes de teminar o turno, clique no botão Salvar e deixe para enviar ao final do turno. <br><br>Confirma enviar agora?",
+                            autoClose: 'Não|15000',
+                            draggable: true,
+                            buttons: {
+                                Sim: function () {
+                                    if(parseInt(document.getElementById("mudou").value) === 1){
+                                        salvaModalReg(Envia);
+                                    }else{
+                                        salvaRegEnv(Envia);
+                                    }
+                                },
+                                Não: function () {
                                 }
-                            },
-                            Não: function () {
                             }
-                        }
-                    });
+                        });
+                    }
                 }
+
             }
             function salvaRegEnv(Envia){
                 if(document.getElementById("dataocor").value === ""){
@@ -706,7 +717,7 @@ date_default_timezone_set('America/Sao_Paulo');
                     <div class="row">
                         <div class="col quadro" style="margin: 0 auto;"> <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprReg();">Gerar PDF</button></div>
                         <div class="col quadro"><h5 id="titulomodal" style="text-align: center; color: #666;">Livro de Registro de Ocorrências</h5></div> <!-- Central - espaçamento entre colunas  -->
-                        <div class="col quadro" style="margin: 0 auto; text-align: center;"><button class="botpadrred" onclick="enviaModalReg(1);">Enviar</button></div> 
+                        <div class="col quadro" style="margin: 0 auto; text-align: center;"><button id="botenviar" class="botpadrred" onclick="enviaModalReg(1);">Enviar</button></div> 
                     </div>
                 </div>
                 <div style="border: 2px solid blue; border-radius: 10px; padding: 5px; text-align: center;">
@@ -766,14 +777,15 @@ date_default_timezone_set('America/Sao_Paulo');
                 <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
                     Regras inseridas:
                     <ul>
-                        <li>1 - O Livro de Registro de Ocorrências (LRO) destina-se a registrar os acontecimentos durante os turnos de serviço na portaria.</li>
-                        <li>2 - O funcionário destacado para o serviço deve anotar ao final do turno (botão Inserir Registro) tudo o que ocorreu durante seu serviço.</li>
-                        <li>3 - Se quiser, o funcionário pode iniciar o registro (botão Inserir Registro) já no início do turno, salvar e deixar para enviar o relato ao final do serviço.</li>
+                        <li>1 - O Livro de Registro de Ocorrências (LRO) destina-se a registrar os acontecimentos dignos de registro durante os turnos de serviço na portaria.</li>
+                        <li>2 - O funcionário designado para o inserir o registro deve anotar ao final do turno (botão Inserir Registro) tudo o que ocorreu durante seu serviço.</li>
+                        <li>3 - Se quiser, o funcionário pode iniciar o registro (botão Inserir Registro) já no início do turno, salvar e deixar para enviar o relato ao final do serviço (botão Enviar).</li>
                         <li>4 - Ao salvar o registro, ele aparecerá no topo da relação e pode ser editado até o final do turno. Basta clicar sobre linha do registro e depois em Editar na caixa que aparece.</li>
                         <li>5 - Ao final do turno um clique no botão Enviar encerra o serviço e envia o relato para a administração.</li>
                         <li>6 - Depois de enviado o registro não poderá mais ser alterado.</li>
                         <li>7 - Caso haja necessidade de complementar o registro depois de enviado, é possível inserir outro registro para o mesmo turno no mesmo dia.</li>
                         <li>8 - Esse segundo registro terá o mesmo número e será nomeado como complementar. Não pode ser feito em outro dia.</li>
+                        <li>9 - Evite comentários e opiniões pessoais, isso pode ser feito pessoalmente na administração.</li>
                     </ul>
                 </div>
             </div>

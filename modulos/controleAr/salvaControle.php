@@ -107,6 +107,53 @@ if($Acao=="salvadatains"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
+if($Acao=="salvamanutcorret"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Tipo = (int) filter_input(INPUT_GET, 'tipomanut');
+    $Empresa = (int) filter_input(INPUT_GET, 'empresa');
+
+//    $DataAc = addslashes(filter_input(INPUT_GET, 'dataAcionam'));
+    $DataAc = addslashes(filter_input(INPUT_GET, 'dataAcionam'));
+    if($DataAc == ""){
+        $DataAc = "1500-01-01";
+    }
+    $DataAt = addslashes(filter_input(INPUT_GET, 'dataAtendim'));
+    if($DataAt == ""){
+        $DataAt = "1500-01-01";
+    }
+    $DataConc = addslashes(filter_input(INPUT_GET, 'dataConclus'));
+    if($DataConc == ""){
+        $DataConc = "1500-01-01";
+    }
+    $DataAcionam = date('Y-d-m H:i:s', strtotime($DataAc));
+    $DataAtendim = date('Y-d-m H:i:s', strtotime($DataAt));
+    $DataConclus = date('Y-d-m', strtotime($DataConc));
+
+//$DataVis = $DataAcionam;
+
+    $NomeContactado = filter_input(INPUT_GET, 'nomecontactado');
+    $NomeAcompanhante = filter_input(INPUT_GET, 'nomeAcompanhante');
+    $NomeTecnico = filter_input(INPUT_GET, 'nomeTecnicoEmpresa');
+
+    $Defeito = filter_input(INPUT_GET, 'defeito');
+    $Diagnostico = filter_input(INPUT_GET, 'diagnostico');
+    $SvcRealiz = filter_input(INPUT_GET, 'svcRealizado');
+
+    $Erro = 0;
+    $rs = pg_query($Conec, "INSERT INTO ".$xProj.".visitas_ar (controle_id, datavis, acionam, atendim, conclus, tipovis, empresa_id, contato, acompanh, nometec, defeito, diagtec, svcrealizado, usuins, datains, ativo) 
+    VALUES ($Cod, '$DataAc', TO_DATE('$DataAc', 'DD-MM-YYYY HH24:MI'), '$DataAtendim', '$DataConclus', $Tipo, $Empresa, '$NomeContactado', '$NomeAcompanhante', '$NomeTecnico', '$Defeito', '$Diagnostico', '$SvcRealiz', ".$_SESSION["usuarioID"].", NOW(), 1)");
+
+    if(!$rs){
+        $Erro = 1;
+    }
+    //TO_DATE('$Data', 'DD/MM/YYYY')   HH24:MI      $Usu = str_replace("-", "", $Cpf2); TO_DATE('$DataAcionam', 'DD-MM-YYYY')
+    $var = array("coderro"=>$Erro, "data"=>$DataAcionam);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+
 if($Acao=="salvadataedit"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Dat = addslashes(filter_input(INPUT_GET, 'datavis'));

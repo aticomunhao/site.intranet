@@ -23,7 +23,7 @@
         die("<br>Faltam tabelas. Informe à ATI");
         return false;
     }
-
+    require_once("config/gUtils.php");
     //usando a data de nascimento na tabela pessoas
     function pegaAniver($param, $mdate, $ddate, $ConecPes, $xPes, $ProxMes) {
         $rs0 = pg_query($ConecPes, "SELECT nome_completo, nome_completo, TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') 
@@ -50,7 +50,7 @@
                             echo $tbl[2]."/". $tbl[3];
                             echo "</td>";
                             echo "<td style='color: red; text-align: left; padding-left: 5px; font-size: 80%;'>";
-                                echo "<div style='border: 1px solid #FF5580; border-radius: 5px; padding-left: 3px; padding-right: 3px;'>"."<b>" . $tbl[1] . "</b>"."</div>";
+                                echo "<div style='border: 1px solid #FF5580; border-radius: 5px; padding-left: 3px; padding-right: 3px;'>"."<b>" . GUtils::normalizarNome($tbl[1]) . "</b>"."</div>";
                             echo "</td>";
                             echo "</tr>";
                         }
@@ -73,7 +73,7 @@
                                 echo $tbl[2]."/". $tbl[3];
                             echo "</td>";
                             echo "<td style='color: blue; text-align: left; padding-left: 5px; font-size: 80%;'>";
-                                echo "<div style='border: 1px solid #5C88C4; border-radius: 5px; padding-left: 3px; padding-right: 3px;'>"."<b>" . $tbl[1] . "</b>"."</div>";
+                                echo "<div style='border: 1px solid #5C88C4; border-radius: 5px; padding-left: 3px; padding-right: 3px;'>"."<b>" . GUtils::normalizarNome($tbl[1]) . "</b>"."</div>";
                             echo "</td>";
                         }
                     }else{
