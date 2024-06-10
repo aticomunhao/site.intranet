@@ -11,8 +11,12 @@ if(isset($_REQUEST["acao"])){
 
 if($Acao=="salvaRegBem"){
     $Codigo = (int) filter_input(INPUT_GET, 'codigo');
-    $DataReg = addslashes($_REQUEST['dataregistro']);
-    $DataAchou = addslashes($_REQUEST['dataachado']);
+    $DataR = addslashes($_REQUEST['dataregistro']);
+    $DataAc = addslashes($_REQUEST['dataachado']);
+
+    $DataReg = implode("-", array_reverse(explode("/", $DataR)));
+    $DataAchou = implode("-", array_reverse(explode("/", $DataAc)));
+
     $DescBem = addslashes($_REQUEST['descdobem']);
     $LocalAchou = addslashes($_REQUEST['localachado']);
     $NomeAchou = addslashes($_REQUEST['nomeachou']);
@@ -23,10 +27,10 @@ if($Acao=="salvaRegBem"){
     $Erro = 0;
     $CodigoNovo = 0;
 
-    $ProcAno = explode("/","$DataReg");
-    $d = $ProcAno[0];
+    $ProcAno = explode("-","$DataReg");
+    $d = $ProcAno[2];
     $m = $ProcAno[1];
-    $y = $ProcAno[2];
+    $y = $ProcAno[0];
 
     if($Codigo == 0){ // novo registro
         $CodSetor = $_SESSION['CodSetorUsu'];
@@ -44,8 +48,8 @@ if($Acao=="salvaRegBem"){
         $Codigo = $tblCod[0];
         $CodigoNovo = $Codigo+1; 
 
-        $rs1 = pg_query($Conec, "INSERT INTO ".$xProj.".bensachados (id, datareceb, dataachou, descdobem, localachou, nomeachou, telefachou, codusuins, codsetorusu, datains, ativo, numprocesso) 
-        VALUES($CodigoNovo, '$DataReg', '$DataAchou', '$DescBem', '$LocalAchou', '$NomeAchou', '$TelefAchou', $UsuIns, $CodSetor, NOW(), 1, '$NumRelat')");
+        $rs1 = pg_query($Conec, "INSERT INTO ".$xProj.".bensachados (id, datareceb, dataachou, descdobem, localachou, nomeachou, telefachou, codusuins, datains, ativo, numprocesso) 
+        VALUES($CodigoNovo, '$DataReg', '$DataAchou', '$DescBem', '$LocalAchou', '$NomeAchou', '$TelefAchou', $UsuIns, NOW(), 1, '$NumRelat')");
         if(!$rs1){
             $Erro = 1;
         }

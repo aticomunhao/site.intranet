@@ -328,13 +328,15 @@ date_default_timezone_set('America/Sao_Paulo');
                     return false;
                 }
                 if(document.getElementById("relato").value === ""){
-                    let element = document.getElementById('relato');
-                    element.classList.add('destacaBorda');
-                    document.getElementById("relato").focus();
-                    $('#mensagem').fadeIn("slow");
-                    document.getElementById("mensagem").innerHTML = "Escreva o relato";
-                    $('#mensagem').fadeOut(5000);
-                    return false;
+                    if(document.getElementById('ocorrencia1').checked == true){ // houve ocorrência
+                        let element = document.getElementById('relato');
+                        element.classList.add('destacaBorda');
+                        document.getElementById("relato").focus();
+                        $('#mensagem').fadeIn("slow");
+                        document.getElementById("mensagem").innerHTML = "Escreva o relato";
+                        $('#mensagem').fadeOut(5000);
+                        return false;
+                    }
                 }
                  if(!validaData(document.getElementById("dataocor").value)){
                     let element = document.getElementById('dataocor');

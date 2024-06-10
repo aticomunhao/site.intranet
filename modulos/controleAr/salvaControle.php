@@ -65,7 +65,9 @@ if($Acao=="buscanumero"){
 if($Acao=="buscadata"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Erro = 0;
-    $rs = pg_query($Conec, "SELECT num_ap, localap, to_char(datavis, 'DD/MM/YYYY'), nometec, ".$xProj.".visitas_ar.empresa_id, tipovis 
+    //controle_id, datavis, , , , tipovis, empresa_id,  , nometec, , , usuins, datains, ativo
+    $rs = pg_query($Conec, "SELECT num_ap, localap, to_char(datavis, 'DD/MM/YYYY'), nometec, ".$xProj.".visitas_ar.empresa_id, tipovis, 
+    to_char(acionam, 'DD/MM/YYYY  HH24:MI'), contato, defeito, to_char(atendim, 'DD/MM/YYYY  HH24:MI'), acompanh, diagtec, svcrealizado, to_char(conclus, 'DD-MM-YYYY') 
     FROM ".$xProj.".controle_ar INNER JOIN ".$xProj.".visitas_ar ON ".$xProj.".controle_ar.id = ".$xProj.".visitas_ar.controle_id 
     WHERE ".$xProj.".visitas_ar.id = $Cod");
     $row = pg_num_rows($rs);
@@ -79,18 +81,35 @@ if($Acao=="buscadata"){
         }else{
             $Data = $tbl[2];
         }
-        $var = array("coderro"=>$Erro, "cod"=>$Cod, "apar"=>str_pad($tbl[0], 3, 0, STR_PAD_LEFT), "local"=>$tbl[1], "data"=>$Data, "nome"=>$tbl[3], "empresa"=>$tbl[4], "tipomanut"=>$tbl[5] );
+        //  6 acionam  9 atendim  13 conclus
+        if(substr($tbl[6], 0, 10) == "01/01/1500"){
+            $DataAc = "";
+        }else{
+            $DataAc = $tbl[6];
+        }
+        if(substr($tbl[9], 0, 10) == "01/01/1500"){
+            $DataAt = "";
+        }else{
+            $DataAt = $tbl[9];
+        }
+        if(substr($tbl[13], 0, 10) == "01/01/1500"){
+            $DataConc = "";
+        }else{
+            $DataConc = $tbl[13];
+        }
+        $var = array("coderro"=>$Erro, "cod"=>$Cod, "apar"=>str_pad($tbl[0], 3, 0, STR_PAD_LEFT), "local"=>$tbl[1], "data"=>$Data, "nome"=>$tbl[3], "empresa"=>$tbl[4], "tipomanut"=>$tbl[5], "acionam"=>$DataAc, "nomecontactado"=>$tbl[7], "defeito"=>$tbl[8], "atendim"=>$DataAt, "acompanh"=>$tbl[10], "diagtec"=>$tbl[11], "svcrealizado"=>$tbl[12], "dataConclus"=>$DataConc );
     }
     $responseText = json_encode($var);
     echo $responseText;
 }
 
-if($Acao=="salvadatains"){
+if($Acao=="salvadatainsprevent"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Dat = addslashes(filter_input(INPUT_GET, 'datavis'));
     $Nome = filter_input(INPUT_GET, 'nometec');
     $Empresa = (int) filter_input(INPUT_GET, 'empresa');
     $Tipo = (int) filter_input(INPUT_GET, 'tipomanut');
+    $InsEdit = (int) filter_input(INPUT_GET, 'insedit');
 
     if($Dat == ""){
         $Data = "1500-01-01";
@@ -98,12 +117,16 @@ if($Acao=="salvadatains"){
         $Data = implode("-", array_reverse(explode("/", $Dat))); // inverte o formato da data para y/m/d
     }
     $Erro = 0;
-    $rs = pg_query($Conec, "INSERT INTO ".$xProj.".visitas_ar (controle_id, datavis, nometec, usuins, datains, empresa_id, ativo, tipovis) 
-    VALUES ($Cod, '$Data', '$Nome', ".$_SESSION["usuarioID"].", NOW(), $Empresa, 1, $Tipo)");
+    if($InsEdit == 0){ // inserindo: é o id de controle_ar
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".visitas_ar (controle_id, datavis, nometec, usuins, datains, empresa_id, ativo, tipovis) 
+        VALUES ($Cod, '$Data', '$Nome', ".$_SESSION["usuarioID"].", NOW(), $Empresa, 1, $Tipo)");
+    }else{ // salvando: é o id de visitar_ar
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".visitas_ar SET datavis = '$Data', nometec = '$Nome', dataedit = NOW(), usuedit = ".$_SESSION["usuarioID"]." WHERE id = $Cod ");
+    }
     if(!$rs){
         $Erro = 1;
     }
-    $var = array("coderro"=>$Erro);
+    $var = array("coderro"=>$Erro, "codigo"=>$Cod);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -112,25 +135,33 @@ if($Acao=="salvamanutcorret"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Tipo = (int) filter_input(INPUT_GET, 'tipomanut');
     $Empresa = (int) filter_input(INPUT_GET, 'empresa');
-
 //    $DataAc = addslashes(filter_input(INPUT_GET, 'dataAcionam'));
     $DataAc = addslashes(filter_input(INPUT_GET, 'dataAcionam'));
     if($DataAc == ""){
-        $DataAc = "1500-01-01";
+        $DataAc = "1500-01-01 00:00";
     }
     $DataAt = addslashes(filter_input(INPUT_GET, 'dataAtendim'));
     if($DataAt == ""){
-        $DataAt = "1500-01-01";
+        $DataAt = "1500-01-01 00:00";
     }
     $DataConc = addslashes(filter_input(INPUT_GET, 'dataConclus'));
     if($DataConc == ""){
-        $DataConc = "1500-01-01";
+        $DataConc = "1500-01-01 00:00";
     }
-    $DataAcionam = date('Y-d-m H:i:s', strtotime($DataAc));
-    $DataAtendim = date('Y-d-m H:i:s', strtotime($DataAt));
-    $DataConclus = date('Y-d-m', strtotime($DataConc));
+//    $DataAcionam = date('Y-d-m H:i:s', strtotime($DataAc));
+//    $DataAcionam = date('Y-m-d', strtotime($DataAc));
+//    $HoraAcionam = date('H:i:s', strtotime($DataAc));
 
-//$DataVis = $DataAcionam;
+    $DataAcionam = substr($DataAc, 0, 10);
+    $HoraAcionam = substr($DataAc, 11, 5);
+    $Acionam = $DataAcionam." ".$HoraAcionam;
+
+    $DataAtendim = substr($DataAt, 0, 10);
+    $HoraAtendim = substr($DataAt, 11, 5);
+    $Atendim = $DataAtendim." ".$HoraAtendim;
+    $Conclus = substr($DataConc, 0, 10);
+
+    $DataVis = $Acionam;
 
     $NomeContactado = filter_input(INPUT_GET, 'nomecontactado');
     $NomeAcompanhante = filter_input(INPUT_GET, 'nomeAcompanhante');
@@ -142,13 +173,12 @@ if($Acao=="salvamanutcorret"){
 
     $Erro = 0;
     $rs = pg_query($Conec, "INSERT INTO ".$xProj.".visitas_ar (controle_id, datavis, acionam, atendim, conclus, tipovis, empresa_id, contato, acompanh, nometec, defeito, diagtec, svcrealizado, usuins, datains, ativo) 
-    VALUES ($Cod, '$DataAc', TO_DATE('$DataAc', 'DD-MM-YYYY HH24:MI'), '$DataAtendim', '$DataConclus', $Tipo, $Empresa, '$NomeContactado', '$NomeAcompanhante', '$NomeTecnico', '$Defeito', '$Diagnostico', '$SvcRealiz', ".$_SESSION["usuarioID"].", NOW(), 1)");
-
+    VALUES ($Cod, '$DataVis', '$Acionam', '$Atendim', '$Conclus', $Tipo, $Empresa, '$NomeContactado', '$NomeAcompanhante', '$NomeTecnico', '$Defeito', '$Diagnostico', '$SvcRealiz', ".$_SESSION["usuarioID"].", NOW(), 1)");
     if(!$rs){
         $Erro = 1;
     }
     //TO_DATE('$Data', 'DD/MM/YYYY')   HH24:MI      $Usu = str_replace("-", "", $Cpf2); TO_DATE('$DataAcionam', 'DD-MM-YYYY')
-    $var = array("coderro"=>$Erro, "data"=>$DataAcionam);
+    $var = array("coderro"=>$Erro, "data"=>$DataAcionam, "hora"=>$HoraAcionam);
     $responseText = json_encode($var);
     echo $responseText;
 }

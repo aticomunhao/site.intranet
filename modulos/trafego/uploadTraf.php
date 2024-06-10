@@ -26,6 +26,7 @@ function cleanString($text) {
     return preg_replace(array_keys($utf8), array_values($utf8), $text);
  }
  
+    mkdir(dirname(__FILE__).'/arquivos/', 0777, true);
     $arquivo = $_FILES['arquivo'];  //recebe o arquivo do formulário
 
     //Verificar as extensões outra vez - já foi feito no custom.js - O js não está entendendo o MIME type pptx e ppsx - está sendo filtrado só aqui
@@ -48,7 +49,7 @@ function cleanString($text) {
             $rs = pg_query($Conec, "INSERT INTO ".$xProj.".trafego (codtraf, descarq, nomearq, usuins) VALUES ($CodigoNovo, '$DescArq', '$NomeArq', ".$_SESSION["usuarioID"].")"); // Salva no bd
             $_SESSION['msg'] = "Arquivo carregado com sucesso";
         }else{
-            $_SESSION['msg'] = "O arquivo NÃO foi carregado";
+            $_SESSION['msg'] = "O arquivo NÃO foi carregado".dirname(__FILE__);
         }
     }else{
         $_SESSION["msg"] = "Tipo de arquivo não permitido - Updload suspenso.";

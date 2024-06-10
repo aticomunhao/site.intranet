@@ -89,62 +89,112 @@ if($Acao =="loglog"){
                     $_SESSION["CodSubSetorUsu"] = 1; // não tem mais subdiretorias - deixar 1
                     $_SESSION["AdmUsu"] = 2;
 
-                    //Verifica se já logou uma vez em poslog
-                    $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE cpf = '$Login' ");
-                    $row1 = pg_num_rows($rs1);
-                    if($row1 == 1){ // Já tem - aumenta número de acessos e grava data hora do login  - logfim = now() para mostrar on line
-                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET numacessos = (numacessos + 1), logini = NOW(), logfim = NOW() WHERE pessoas_id = $id "); 
-                        $rs2 = pg_query($Conec, "SELECT adm, codsetor, nomeusual FROM ".$xProj.".poslog WHERE cpf = '$Login' ");
-                        $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[0] == 0){
-                            $_SESSION["AdmUsu"] = 2;    
-                        }else{
-                            $_SESSION["AdmUsu"] = $tbl2[0];
-                        }
-                        $_SESSION["CodSetorUsu"] = $tbl2[1];
-                        if(!is_null($tbl2[2]) && $tbl2[2] != ""){
-                            $_SESSION["NomeUsual"] = $tbl2[2];
-                        }
+                    // Aumenta número de acessos e grava data hora do login  - logfim = now() para mostrar on line
+                    pg_query($Conec, "UPDATE ".$xProj.".poslog SET numacessos = (numacessos + 1), logini = NOW(), logfim = NOW() WHERE pessoas_id = $id "); 
 
-                        $rs3 = pg_query($Conec, "SELECT siglasetor, descsetor FROM ".$xProj.".setores WHERE codset = $tbl2[1] "); 
-                        $row3 = pg_num_rows($rs3);
-                        if($row3 > 0){
-                            $tbl3 = pg_fetch_row($rs3);
-                            $_SESSION["SiglaSetor"] = $tbl3[0];
-                        }
-                    }else{ // se não houver, acrescenta
-                        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".poslog");
-                        $tblCod = pg_fetch_row($rsCod);
-                        $Codigo = $tblCod[0];
-                        $CodigoNovo = ($Codigo+1); 
-                        pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, logini, numacessos, cpf, nomecompl, nomeusual) VALUES ($CodigoNovo, $id, NOW(), 1, '$Login', '$NomeCompl', '$NomeUsual') "); 
+                    $rs2 = pg_query($Conec, "SELECT adm, codsetor, nomeusual FROM ".$xProj.".poslog WHERE cpf = '$Login' ");
+                    $tbl2 = pg_fetch_row($rs2);
+                    if($tbl2[0] == 0){
+                        $_SESSION["AdmUsu"] = 2;    
+                    }else{
+                        $_SESSION["AdmUsu"] = $tbl2[0];
                     }
+                    $_SESSION["CodSetorUsu"] = $tbl2[1];
+                    if(!is_null($tbl2[2]) && $tbl2[2] != ""){
+                        $_SESSION["NomeUsual"] = $tbl2[2];
+                    }
+
+                    $rs3 = pg_query($Conec, "SELECT siglasetor, descsetor FROM ".$xProj.".setores WHERE codset = $tbl2[1] "); 
+                    $row3 = pg_num_rows($rs3);
+                    if($row3 > 0){
+                        $tbl3 = pg_fetch_row($rs3);
+                        $_SESSION["SiglaSetor"] = $tbl3[0];
+                    }
+
                     $rs4 = pg_query($Conec, "SELECT id FROM ".$xProj.".pessoas WHERE cpf = '$Login' "); 
-                    $row4 = pg_num_rows($rs4);
+                    $row4 = pg_num_rows($rs4); 
                     if($row4 == 0){
                         $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".pessoas");
                         $tblCod = pg_fetch_row($rsCod);
                         $Codigo = $tblCod[0];
-                        $CodigoNovo = ($Codigo+1); 
+                        $CodigoNovo = ($Codigo+1); // cópia no esquema cesb
                         pg_query($Conec, "INSERT INTO ".$xProj.".pessoas (id, pessoas_id, cpf, nome_completo, dt_nascimento, sexo, status, datains, nome_resumido) VALUES ($CodigoNovo, $id, '$Login', '$NomeCompl', '$DNasc', ".$_SESSION['sexo'].", 1, NOW(), '$NomeUsual') "); 
                     }
+                    // o primeiro que logar executa a rotina
+                    $rs5 = pg_query($Conec, "SELECT dataelim FROM ".$xProj.".paramsis WHERE idpar = 1 ");
+                    $row5 = pg_num_rows($rs5);
+                    if($row5 > 0){ 
+                        $tbl5 = pg_fetch_row($rs5);
+                        $DataElim = $tbl5[0];
+                        $Hoje = date('Y/m/d');
+                        if(strtotime($DataElim) < strtotime($Hoje)){ // verifica se alguém já logou e inseriu a data de hoje
+                            pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ativo = 0"); //Elimina dados apagados da tabela calendário
+                            pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ((CURRENT_DATE - dataini)/365 > 5)"); //Apaga da tabela calendário eventos passados há mais de 5 anos
+                            pg_query($Conec, "DELETE FROM ".$xProj.".leitura_agua WHERE ((CURRENT_DATE - dataleitura)/365 > 5)"); //Apaga da tabela lançamentos de leitura do hidrômetro passados há mais de 5 anos
+                            pg_query($Conec, "DELETE FROM ".$xProj.".tarefas WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga da tabela lançamentos de tarefas há mais de 5 anos
+                            pg_query($Conec, "DELETE FROM ".$xProj.".tarefas_msg WHERE datamsg < CURRENT_DATE - interval '5 years' "); //Apaga mensagens trocadas nas tarefas há mais de 5 anos
+                            pg_query($Conec, "DELETE FROM ".$xProj.".livroreg WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga registros do livro de ocorrências há mais de 5 anos
+                            pg_query($Conec, "DELETE FROM ".$xProj.".bensachados WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga registros do achados e perdidos há mais de 5 anos
+                            pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE logfim < CURRENT_DATE - interval '5 years' "); //Apaga registros de usuários com último log há mais de 5 anos
 
-                    $_SESSION["acessoLRO"] = 0;
-                    $_SESSION["AdmCad"] = 0;
+                            $rs6 = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog ");
+                            $row6 = pg_num_rows($rs6); // atualiza nomes de poslog com pessoas
+                            if($row6 > 0){
+                                while ($tbl6 = pg_fetch_row($rs6)){
+                                    $Cod = $tbl6[0];
+                                    $rs7 = pg_query($ConecPes, "SELECT nome_completo, status, dt_nascimento, sexo, nome_resumido FROM ".$xPes.".pessoas WHERE id = $Cod ");
+                                    $row7 = pg_num_rows($rs7);
+                                    if($row7 == 1){
+                                        $tbl7 = pg_fetch_row($rs7);
+                                        $NomeC = GUtils::normalizarNome($tbl7[0]);  // Normatizar nomes próprios
+                                        $NomeComp = addslashes($NomeC);
+                                        $NomeCompl = str_replace('"', "'", $NomeComp); // substitui aspas duplas por simples
 
-                    if($_SESSION["AdmUsu"] == 0){
-                        $Erro = 4;
-                        $Erro_Msg = "Usuário ainda não recebeu permissão administrativa.";
+                                        if(!is_null($tbl7[1])){
+                                            $Ativo = $tbl7[1];
+                                        }else{
+                                            $Ativo = 0;
+                                        }
+                                        if(!is_null($tbl7[2])){
+                                            $DNasc = $tbl7[2];
+                                        }else{
+                                            $DNasc = "1500-01-01";
+                                        }
+                                        if(!is_null($tbl7[3])){
+                                            $Sexo = $tbl7[3];
+                                        }else{
+                                            $Sexo = 1;
+                                        }
+
+                                        if(!is_null($tbl7[4])){
+                                            $NomeU = $tbl7[4];
+                                            $NomeUs = GUtils::normalizarNome($NomeU);  // Normatizar nomes próprios
+                                            $NomeUsu = addslashes($NomeUs);
+                                            $NomeUsual = str_replace('"', "'", $NomeUsu); // substitui aspas duplas por simples
+                                            pg_query($Conec, "UPDATE ".$xProj.".poslog SET nomeusual = '$NomeUsual' WHERE pessoas_id = $Cod");
+                                        }else{
+                                            $NomeUsual = "";
+                                        }
+                                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET nomecompl = '$NomeCompl', ativo = $Ativo, sexo = $Sexo WHERE pessoas_id = $Cod");
+                                        pg_query($Conec, "UPDATE ".$xProj.".pessoas SET nome_completo = '$NomeCompl', nome_resumido = '$NomeUsual', status = $Ativo, dt_nascimento = '$DNasc', sexo = $Sexo WHERE pessoas_id = $Cod");
+                                    }else{ // se não estiver mais em pessoas
+                                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 0 WHERE pessoas_id = $Cod ");
+                                    }
+                                }
+                            }
+                            //põe a data de hoje em paramsis para que os próximos a loga não executem esta rotina
+                            pg_query($Conec, "UPDATE ".$xProj.".paramsis SET dataelim = NOW() WHERE idpar = 1 ");
+                        }
                     }
 
                     if($Sen == $Login){
-                        $Erro = 5; // inserir nova senha
+                        $Erro = 5; // primeiro login - inserir nova senha
                     }
                     $var = array("coderro"=>$Erro, "msg"=>$Erro_Msg, "usuarioid"=>$id, "usuarioNome"=>$NomeCompl, "usuarioAdm"=>$_SESSION["AdmUsu"], "usuario"=>$NomeUsual); 
                     $responseText = json_encode($var);
                     echo $responseText;
                     return;
-                }else{ // usuário não encontrado 
+                }else{ // usuário está no poslog mas a senha não confere 
                     $Erro = 6;
                     $Erro_Msg = "Usuário ou senha não conferem. Erro 2244";
                     $var = array("coderro"=>$Erro, "msg"=>$Erro_Msg);
@@ -157,7 +207,7 @@ if($Acao =="loglog"){
                 $Erro_Msg = "Usuário e/ou senha não encontrados. Erro 1673";
                 $rs5 = pg_query($Conec, "SELECT ativo FROM ".$xProj.".poslog WHERE cpf = '$Login'");
                 $row5 = pg_num_rows($rs5);
-                if($row5 > 0){
+                if($row5 > 0){ // para saber se está e é bloqueado
                     $tbl5 = pg_fetch_row($rs5);
                     if($tbl5[0] == 0){
                         $Erro = 4;

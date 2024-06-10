@@ -69,7 +69,7 @@
                     ajax.onreadystatechange = function(){ // loglog = dbname=pessoal
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
-alert(ajax.responseText);
+//alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");
                                 if(parseInt(Resp.coderro) > 0 && parseInt(Resp.coderro) < 5){
                                     $('#mensagem').fadeIn("slow");

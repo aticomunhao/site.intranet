@@ -61,15 +61,11 @@ if(!isset($_SESSION["usuarioID"])){
 //                }
                 $("#faixacentral").load("modulos/controleAr/relAr.php?acao=todos&ano="+document.getElementById("selectAno").value);
 
-
                 $('#datavisins').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
                 $('#datavisedit').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
                 $('#dataAcionam').datetimepicker({ footer: true, modal: true , uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy HH:MM'});
                 $('#dataAtendim').datetimepicker({ footer: true, modal: true , uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy HH:MM'});
-//                $('#dataAcionam').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
-
-
-
+                $('#dataConclus').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
 
 //                $("#datavisins").mask("99/99/9999"); // esse tipo de datepicker não deixa digitar
             });
@@ -161,7 +157,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-            function buscaData(Cod){ // Cod de visitas_ar
+            function buscaData__(Cod){ // Cod de visitas_ar
                 document.getElementById("guardaCodVis").value = Cod;
                 ajaxIni();
                 if(ajax){
@@ -169,7 +165,7 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
-//alert(ajax.responseText);
+alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 if(parseInt(Resp.coderro) === 0){
                                     document.getElementById("aparedit").innerHTML = Resp.apar;
@@ -179,9 +175,13 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("localapedit").disabled = true;
                                     if(parseInt(Resp.tipomanut) === 1){
                                         document.getElementById("manutedit1").checked = true;
+                                        document.getElementById("relacmodalInsCorret").style.display = "none";
+                                        document.getElementById("relacmodalInsPrevent").style.display = "block";
                                     }
                                     if(parseInt(Resp.tipomanut) === 2){
-                                        document.getElementById("manutedit2").checked = true;
+                                        document.getElementById("manutedit2").checked = true;                                       
+                                        document.getElementById("relacmodalInsCorret").style.display = "block";
+                                        document.getElementById("relacmodalInsPrevent").style.display = "none";
                                     }
                                     document.getElementById("mudou").value = "0";
                                     document.getElementById("relacmodalEdit").style.display = "block";
@@ -190,6 +190,62 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("nometecedit").focus();
                                     }
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function buscaData(Cod, InsEdit){ // Cod de visitas_ar para editar
+                document.getElementById("guardaCodVis").value = Cod; // id de visitas_ar para editar
+                document.getElementById("guardaInsEdit").value = InsEdit;
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/controleAr/salvaControle.php?acao=buscadata&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    document.getElementById("aparins").innerHTML = Resp.apar;
+                                    document.getElementById("localapins").value = Resp.local;
+                                    document.getElementById("datavisins").value = Resp.data;
+                                    document.getElementById("empresaCorret").value = Resp.empresa;
+
+                                    document.getElementById("nometecins").value = Resp.nome;
+                                    document.getElementById("nomeTecnicoEmpresa").value = Resp.nome;
+                                    document.getElementById("dataAcionam").value = Resp.acionam;
+                                    document.getElementById("nomecontactado").value = Resp.nomecontactado;
+                                    document.getElementById("defeito").value = Resp.defeito;
+                                    document.getElementById("dataAtendim").value = Resp.atendim;
+                                    document.getElementById("nomeAcompanhante").value = Resp.acompanh;
+                                    document.getElementById("diagnostico").value = Resp.diagtec;
+                                    document.getElementById("svcRealizado").value = Resp.svcrealizado;
+                                    document.getElementById("dataConclus").value = Resp.dataConclus;
+                                    document.getElementById("nometecins").value = Resp.nome;
+                                    document.getElementById("localapins").disabled = true;
+                                    if(parseInt(Resp.tipomanut) === 1){
+                                        document.getElementById("manutins1").checked = true;
+                                        document.getElementById("relacmodalInsCorret").style.display = "none";
+                                        document.getElementById("relacmodalInsPrevent").style.display = "block";
+                                    }
+                                    if(parseInt(Resp.tipomanut) === 2){
+                                        document.getElementById("manutins2").checked = true;                                       
+                                        document.getElementById("relacmodalInsCorret").style.display = "block";
+                                        document.getElementById("relacmodalInsPrevent").style.display = "none";
+                                    }
+                                    document.getElementById("mudou").value = "0";
+                                    document.getElementById("relacmodalIns").style.display = "block";
+//                                    if(document.getElementById("datavisedit").value == ""){
+//                                        document.getElementById("datavisedit").focus();
+//                                    }else{
+//                                        document.getElementById("nometecedit").focus();
+//                                    }
                                 }else{
                                     alert("Houve um erro no servidor.")
                                 }
@@ -242,8 +298,21 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-            function insereData(Cod){
-                document.getElementById("relacmodalInsPrevent").style.display = "block";  
+            function insereData(Cod, InsEdit){ // Cod é o id de controle_ar
+                document.getElementById("guardaInsEdit").value = InsEdit;
+                document.getElementById("relacmodalInsPrevent").style.display = "block";
+                document.getElementById("relacmodalInsCorret").style.display = "none";
+                document.getElementById("empresaCorret").value = "0";
+                document.getElementById("dataAcionam").value = "";
+                document.getElementById("dataAtendim").value = "";
+                document.getElementById("dataConclus").value = "";        
+                document.getElementById("nomecontactado").value = "";
+                document.getElementById("defeito").value = "";
+                document.getElementById("nomeAcompanhante").value = "";
+                document.getElementById("diagnostico").value = "";
+                document.getElementById("svcRealizado").value = "";
+                document.getElementById("nomeTecnicoEmpresa").value = "";
+
                 document.getElementById("guardaid").value = Cod;
                 document.getElementById("datavisins").value = "";
                 ajaxIni();
@@ -276,6 +345,7 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 }     
             }
+
             function salvaDataInsPrevent(){
                 if(document.getElementById("mudou").value != "0"){
                     if(!validaData(document.getElementById("datavisins").value)){
@@ -292,9 +362,10 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/controleAr/salvaControle.php?acao=salvadatains&codigo="+document.getElementById("guardaid").value
+                        ajax.open("POST", "modulos/controleAr/salvaControle.php?acao=salvadatainsprevent&codigo="+document.getElementById("guardaid").value
                         +"&datavis="+encodeURIComponent(document.getElementById("datavisins").value)
                         +"&nometec="+encodeURIComponent(document.getElementById("nometecins").value)
+                        +"&insedit="+document.getElementById("guardaInsEdit").value
                         +"&tipomanut="+document.getElementById("guardaManut").value
                         , true);
                         ajax.onreadystatechange = function(){
@@ -675,7 +746,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
             <div id="faixacentral"></div>
         </div>
         <input type="hidden" id="guardaid" value="0" />
-        <input type="hidden" id="guardaCel" value="0" />
+        <input type="hidden" id="guardaInsEdit" value="0" />
         <input type="hidden" id="guardaCodVis" value="0" />
         <input type="hidden" id="guardaManut" value="1" />
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
@@ -831,7 +902,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
                         </tr>
                         <tr>
                             <td class="etiq aDir" title="Data da conclusão do serviço">Data conclusão: </td>
-                            <td><input type="text" id="dataConclus" style="width: 100%; text-align: center;" valor="" onchange="modif();" title="Data da conclusão do serviço"></td>
+                            <td><input type="text" id="dataConclus" width="160" style="text-align: center; border: 1px solid; border-radius: 5px;" valor="" onchange="modif();" title="Data e hora da conclusão do reparo"></td>
                             <td class="etiq aDir" title="Nome do técnico da empresa contratada">Técnico da Empresa: </td>
                             <td><input type="text" id="nomeTecnicoEmpresa" style="width: 100%;" valor="" onchange="modif();" title="Nome do técnico da empresa contratada"></td>
                         </tr>

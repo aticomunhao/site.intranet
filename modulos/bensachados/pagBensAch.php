@@ -7,13 +7,15 @@ session_start();
         <meta charset="UTF-8">
         <title></title>
         <link rel="stylesheet" type="text/css" media="screen" href="class/dataTable/datatables.min.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="class/gijgo/css/gijgo.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/relacmod.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
-        <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-ui.min.css" />
+        <script src="comp/js/jquery.min.js"></script> <!-- versão 3.6.3 -->
         <script src="comp/js/jquery-confirm.min.js"></script> <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
-        <script src="comp/js/jquery-ui.min.js"></script>
+        <script src="class/gijgo/js/gijgo.js"></script>
         <script src="class/dataTable/datatables.min.js"></script>
         <script src="comp/js/jquery.mask.js"></script>
+        <script src="class/gijgo/js/messages/messages.pt-br.js"></script>
         <style>
             .quadro{
                 position: relative; float: left; text-align: center; margin: 5px; width: 95%; padding: 2px; padding-top: 5px;
@@ -46,8 +48,11 @@ session_start();
             }
             $(document).ready(function(){
                 $("#carregaBens").load("modulos/bensachados/relBens.php");
-                $("#dataregistro").mask("99/99/9999");
-                $("#dataachado").mask("99/99/9999");
+//                $("#dataregistro").mask("99/99/9999");
+//                $("#dataachado").mask("99/99/9999");
+                $('#dataregistro').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
+                $('#dataachado').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
+
                 $("#cpfproprietario").mask("999.999.999-99");
                 document.getElementById("botimprReg").style.visibility = "hidden"; 
                 document.getElementById("botInsReg").style.visibility = "hidden"; 
@@ -662,32 +667,7 @@ session_start();
                             return false
                 return true
             }
-            /* jQuery UI date picker plugin em português */
-            /* Autoria: Leonildo Costa Silva (leocsilva@gmail.com). */
-            jQuery(function($){
-                $.datepicker.regional['pt-BR'] = {
-                    closeText: 'Fechar',
-                    prevText: '&#x3c;Anterior',
-                    nextText: 'Pr&oacute;ximo&#x3e;',
-                    currentText: 'Hoje',
-                    monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
-                    monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
-                    dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
-                    dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
-                    dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
-                    weekHeader: 'Sm',
-                    dateFormat: 'dd/mm/yy',
-                    firstDay: 1,
-                    isRTL: false,
-                    showMonthAfterYear: false,
-                    yearSuffix: ''
-                };
-                $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
-            });
-            $(function(){
-                $("#dataregistro").datepicker();
-                $("#datavisedit").datepicker();
-            });
+   
         </script>
     </head>
     <body>
@@ -757,7 +737,7 @@ session_start();
                         <tr>
                             <td class="etiqAzul">Data do recebimento: </td>
                             <td>
-                                <input type="text" id="dataregistro" onkeydown="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; width: 100px; text-align: center;">
+                                <input type="text" id="dataregistro" width="150" onkeydown="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;">
                                 <label id="numprocesso" class="etiqAzul" style="padding-left: 30px; color: red;"></label>
                             </td>
                         </tr>
@@ -769,7 +749,7 @@ session_start();
                         </tr>
                         <tr>
                             <td class="etiqAzul">Data em que foi encontrado: </td>
-                            <td><input type="text" id="dataachado" onkeydown="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; width: 100px; text-align: center;"></td>
+                            <td><input type="text" id="dataachado" width="150" onkeydown="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;"></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Local em que foi encontrado: </td>

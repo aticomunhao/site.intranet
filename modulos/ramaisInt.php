@@ -324,13 +324,18 @@ session_start();
                 <?php
                     while ($tbl = pg_fetch_row($rs0)){
                         $Cod = $tbl[0]; // CodTel
+                        if(is_null($tbl[4]) or $tbl[4] == "undefined"){
+                            $DescSetor = "";
+                        }else{
+                            $DescSetor = $tbl[4];
+                        }
                     ?>
                         <tr>
                             <td><?php echo $tbl[1]; ?></td> <!-- nomeusu -->
                             <td style="display: none;"><?php echo $Cod; ?></td>
                             <td><?php echo $tbl[2]; ?></td> <!-- nomecompl -->
                             <td style="text-align: center;"><?php echo $tbl[3]; ?></td> <!-- ramal -->
-                            <td style="text-align: center;"><?php echo $tbl[4]; ?></td> <!-- setor -->
+                            <td style="text-align: center;"><?php echo $DescSetor; ?></td> <!-- setor -->
                         </tr>
                     <?php
                     }

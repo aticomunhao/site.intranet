@@ -13,7 +13,7 @@ session_start();
 
         <script type="text/javascript">
             $(document).ready(function(){
-                $('#conteudo').load('modulos/slides/gereSlide.php');
+                $('#conteudo').load('modulos/slides/gereslide.php');
             });
         </script>
     </head>

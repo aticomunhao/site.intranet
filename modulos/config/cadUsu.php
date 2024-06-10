@@ -52,12 +52,6 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 $("#faixacentral").load("modulos/config/jUsu.php?acao=todos");
 
-//                if(parseInt(document.getElementById("UsuAdm").value) === 4){ // administador
-//                    if(parseInt(document.getElementById("admCadUsu").value) === 1){ // administardor cadastra usuário do seu setor 
-//                        document.getElementById("botinserir").style.visibility = "visible";
-//                    }
-//                }
-
                 modalEdit = document.getElementById('relacmodalUsu'); //span[0]
                 spanEdit = document.getElementsByClassName("close")[0];
                 window.onclick = function(event){
@@ -319,11 +313,6 @@ if(!isset($_SESSION["usuarioID"])){
 
             function insUsu(){
                 document.getElementById("guardaid_click").value = 0;
-                if(parseInt(document.getElementById("UsuAdm").value) < 7){ 
-                    if(parseInt(document.getElementById("admCadUsu").value) === 0){ // administrador não cadastra
-                        return false;
-                    }
-                }
                 if(document.getElementById("guardaSiglaSetor").value === "n/d"){
                     document.getElementById("textoMsg").innerHTML = "Administrador sem setor definido.";
                     document.getElementById("relacmensagem").style.display = "block"; // está em modais.php
@@ -521,6 +510,14 @@ if(!isset($_SESSION["usuarioID"])){
             }else{
                 $Tipo = 1;
             }
+            $rs = pg_query($Conec, "SELECT column_name, data_type, character_maximum_length FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'poslog'");
+            $row = pg_num_rows($rs);
+            if($row == 0){
+                $Erro = 1;
+                echo "Faltam tabelas. Informe à ATI.";
+                return false;
+            }
+            
             require_once("modais.php");
             //Para carregar os select de dia e mês
             $OpcoesMes = pg_query($Conec, "SELECT Esc1 FROM ".$xProj.".escolhas WHERE CodEsc < 14 ORDER BY Esc1");
@@ -541,7 +538,6 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardaid_cpf" value="0" />
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
         <input type="hidden" id="guarda_usulogado_id" value="<?php echo $_SESSION["usuarioID"]; ?>" />
-        <input type="hidden" id="admCadUsu" value="<?php echo $_SESSION["AdmCad"]; ?>" />
         <input type="hidden" id="guardaidpessoa" value="0" />
         <input type="hidden" id="guardaAtiv" value="1" />
         <input type="hidden" id="guardaLro" value="0" />

@@ -153,7 +153,7 @@
 							echo "<a href='#' onclick='openhref(64);'>Bens Encontrados</a>";
 						echo "</li>";
 
-						if($Adm == 4 && $_SESSION['AdmVisu'] == 1 || $Adm > 6){
+						if($Adm > 6){
 							echo "<li>";
 					   			echo "<a href='#' onclick='openhref(61);'>Cadastro de Usuários</a>";
 							echo "</li>";
