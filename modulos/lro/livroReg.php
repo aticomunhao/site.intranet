@@ -1,6 +1,10 @@
 <?php
 session_start();
-date_default_timezone_set('America/Sao_Paulo');
+require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
+if(!isset($_SESSION["usuarioID"])){
+    session_destroy();
+    header("Location: ../../index.php");
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -616,8 +620,7 @@ date_default_timezone_set('America/Sao_Paulo');
     </head>
     <body>
         <?php
-        
-        require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
+        date_default_timezone_set('America/Sao_Paulo');
         $Hoje = date('d/m/Y');
         if(!$Conec){
             echo "Sem contato com o PostGresql";

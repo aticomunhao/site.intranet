@@ -1,5 +1,10 @@
 <?php
 session_start();
+require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
+if(!isset($_SESSION["usuarioID"])){
+    session_destroy();
+    header("Location: ../../index.php");
+}
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -28,6 +33,9 @@ session_start();
                 border-radius: 15px;
                 width: 50%; /* acertar de acordo com a tela */
             }
+            .etiqResult{
+                border: 1px solid; border-radius: 5px; padding-left: 3px; padding-right: 3px; font-size: 80%;
+            }
         </style>
         <script>
              function ajaxIni(){
@@ -48,7 +56,7 @@ session_start();
             }
             $(document).ready(function(){
                 $("#carregaBens").load("modulos/bensachados/relBens.php");
-//                $("#dataregistro").mask("99/99/9999");
+//                $("#dataregistro").mask("99/99/9999"); // pluguin usado não aceita digitação nas datas (gijgo)
 //                $("#dataachado").mask("99/99/9999");
                 $('#dataregistro').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
                 $('#dataachado').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
@@ -79,11 +87,37 @@ session_start();
                 document.getElementById("relacmodalRegistro").style.display = "block";
             }
 
+
+            function compareDates (date1, date2) {
+                let parts1 = date1.split('/') // separa a data pelo caracter '/'
+                date1 = new Date(parts1[2], parts1[1] - 1, parts1[0]) // formata 'date'
+
+                let parts2 = date2.split('/') // separa a data pelo caracter '/'
+                date2 = new Date(parts2[2], parts2[1] - 1, parts2[0]) // formata 'date'
+                  // compara se a data informada é maior que a data atual e retorna true ou false
+                return date1 > date2 ? true : false
+            }
+
+
             function salvaModalRegistro(){
                 if(parseInt(document.getElementById("mudou").value) === 0){
                     document.getElementById("relacmodalRegistro").style.display = "none";
                     return false;
                 }
+              if(compareDates(document.getElementById("dataachado").value, document.getElementById("dataregistro").value) == true){
+                    let element = document.getElementById('dataachado');
+                    element.classList.add('destacaBorda');
+                    $.confirm({
+                        title: 'Atenção!',
+                        content: 'A data do registro é de antes do objeto ser encontrado.',
+                        draggable: true,
+                        buttons: {
+                            OK: function(){}
+                        }
+                    });
+                    return false;
+                }
+
                 if(document.getElementById("dataregistro").value === ""){
                     let element = document.getElementById('dataregistro');
                     element.classList.add('destacaBorda');
@@ -278,17 +312,29 @@ session_start();
                                             document.getElementById("relacmodalEncam").style.display = "block";
                                         }
                                     }
-                                    if(parseInt(modal) === 4){
-                                        document.getElementById("numprocessoDest").innerHTML = Resp.numprocesso;
-                                        document.getElementById("etiqprocessoDest").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
-                                        document.getElementById("descdobemDest").innerHTML = Resp.descdobem;
-                                        document.getElementById("selecdestino").value = Resp.destino;
-                                        document.getElementById("setordestino").value = Resp.setordestino;
-                                        document.getElementById("nomefuncionario").value = Resp.nomerecebeu;
-                                        document.getElementById('nomeproprietario').value = Resp.nomepropriet;
-                                        document.getElementById('cpfproprietario').value = Resp.cpfpropriet;
-                                        document.getElementById('telefproprietario').value = Resp.telefpropriet;
-                                        document.getElementById("relacmodalDest").style.display = "block";
+                                    if(parseInt(modal) === 4){ // destinação do bem requer estar no nível adm selecionado em parâmetros do sistema
+                                        if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value)){
+                                            document.getElementById("numprocessoDest").innerHTML = Resp.numprocesso;
+                                            document.getElementById("etiqprocessoDest").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
+                                            document.getElementById("descdobemDest").innerHTML = Resp.descdobem;
+                                            document.getElementById("selecdestino").value = Resp.destino;
+                                            document.getElementById("setordestino").value = Resp.setordestino;
+                                            document.getElementById("nomefuncionario").value = Resp.nomerecebeu;
+                                            document.getElementById('nomeproprietario').value = Resp.nomepropriet;
+                                            document.getElementById('cpfproprietario').value = Resp.cpfpropriet;
+                                            document.getElementById('telefproprietario').value = Resp.telefpropriet;
+                                            document.getElementById("relacmodalDest").style.display = "block";
+                                        }else{
+                                            $.confirm({
+                                                title: 'Informação!',
+                                                content: 'É requerido maior nível administrativo para consolidar a destinação',
+                                                autoClose: 'OK|10000',
+                                                draggable: true,
+                                                buttons: {
+                                                    OK: function(){}
+                                                }
+                                            });
+                                        }
                                     }
 
                                 }
@@ -673,7 +719,6 @@ session_start();
     <body>
         <?php
         date_default_timezone_set('America/Sao_Paulo');
-        require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         $Hoje = date('d/m/Y');
         if(!$Conec){
             echo "Sem contato com o PostGresql";

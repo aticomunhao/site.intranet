@@ -1,6 +1,7 @@
 <?php
 session_start(); 
 if(!isset($_SESSION["usuarioID"])){
+    session_destroy();
     header("Location: ../../index.php");
 }
 require_once(dirname(dirname(__FILE__))."/config/abrealas.php");

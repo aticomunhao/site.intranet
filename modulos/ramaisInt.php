@@ -286,7 +286,9 @@ session_start();
         $admEdit = parAdm("editramais", $Conec, $xProj); // nível para editar
         $OpNomes = pg_query($Conec, "SELECT id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
         $OpSetor = pg_query($ConecPes, "SELECT id, sigla FROM ".$xPes.".setor WHERE dt_fim IS NULL ORDER BY sigla");
-
+        if(!isset($_SESSION["AdmUsu"])){
+            $_SESSION["AdmUsu"] = 0;
+        }
         $rs0 = pg_query($Conec, "SELECT codtel, nomeusu, nomecompl, ramal, setor FROM ".$xProj.".ramais_int WHERE ativo = 1 ORDER BY nomecompl");
         $row0 = pg_num_rows($rs0);
         ?>

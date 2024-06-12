@@ -3,6 +3,7 @@
    if(file_exists("config/abrealas.php")){
     include_once("config/abrealas.php");
     if(!isset($_SESSION["usuarioID"])){
+        session_destroy();
         header("Location: ../index.php");
     }
  }else{

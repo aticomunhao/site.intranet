@@ -71,13 +71,13 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
          <!-- Apresenta os usuários do setor com o nível administrativo -->
         <div style="padding: 10px;">
             <?php
-            $rs0 = pg_query($Conec, "SELECT ".$xProj.".bensachados.id, to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, usuguarda, usurestit, usucsg, usuarquivou, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo 
+            $rs0 = pg_query($Conec, "SELECT ".$xProj.".bensachados.id, to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, usuguarda, usurestit, usucsg, usuarquivou, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, usudestino, CURRENT_DATE-datareceb 
             FROM ".$xProj.".bensachados INNER JOIN ".$xProj.".poslog ON ".$xProj.".bensachados.codusuins = ".$xProj.".poslog.pessoas_id
             WHERE ".$xProj.".bensachados.ativo = 1 And AGE(".$xProj.".bensachados.datareceb, CURRENT_DATE) <= '1 YEAR' 
             ORDER BY ".$xProj.".bensachados.datareceb DESC");
 
             $Edit = 0;
-            $Impr = 0;
+            $Impr = 0; // impressão do relatório
             $admIns = parAdm("insbens", $Conec, $xProj);   // nível para inserir 
             $admEdit = parAdm("editbens", $Conec, $xProj); // nível administrativo para editar
             $Marca = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // ver se está marcado no cadastro de usu
@@ -87,6 +87,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     $Impr = 1;
                 }
             }
+            $Impr = 1; // relatório liberado 
             ?>
             <table id="idTabela" class="display" style="width:85%">
                 <thead>
@@ -105,6 +106,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <th></th>
                             <th></th>
                             <th></th>
+                            <th title="Dias decorridos desde o registro">Dias</th>
+                            <th title="Situação do Bem">Sit</th>
                         <?php
                         }
                         ?>
@@ -117,8 +120,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         $SobGuarda = $tbl0[4];
                         $Restit = $tbl0[5];
                         $GuardaCSG = $tbl0[6];
+                        $Destino = $tbl0[9];
                         $Arquivado = $tbl0[7];
                         $Intervalo = (int) $tbl0[8];
+                        $Dias = str_pad(($tbl0[10]), 2, "0", STR_PAD_LEFT);
                         ?>
                         <tr>
                             <td style="display: none;"></td>
@@ -139,7 +144,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                 }
                                 ?>
                             </td>
-                            <td title="Transferir para a guarda da DAF por 90 dias">
+                            <td title="Transferir para a guarda da DAF">
                                 <?php 
                                 if($Edit == 1 && $SobGuarda == 0 && $Restit == 0 && $Arquivado == 0){
                                     echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 1, $Restit);'>Guarda</button>";
@@ -148,14 +153,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                 }
                                 ?>
                             </td>
+
                             <td title="Registro de restituição do bem">
                                 <?php 
                                     echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);'>Restituição</button>";
-//                                if($Edit == 1 && $Restit == 0 && $GuardaCSG == 0 && $Arquivado == 0){
-//                                        echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);'>Restituição</button>";
-//                                    }else{
-//                                        echo "<button disabled class='botTable fundoCinza corAzulClaro'>Restituição</button>";
-//                                    }
                                 ?>
                             </td>
                             <td title="Encaminhamento para CSG após 90 dias">
@@ -186,6 +187,25 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <?php
                             }
                             ?>
+                            <td style="text-align: center; font-size: 80%;"><?php
+                                if($Arquivado == 0){
+                                    echo "<div title='$Dias dias decorridos desde o registro'> $Dias </div>";
+                                }
+                                ?>
+                            </td>
+                            <td>
+                                <?php
+                                if($SobGuarda > 0){
+                                    echo "<div class='etiqResult' title='Entregue à DAF'>DAF</div>";
+                                }elseif($Restit > 0){
+                                    echo "<div class='etiqResult' title='Bem restituído'>Rest</div>";
+                                }elseif($GuardaCSG > 0){
+                                    echo "<div class='etiqResult' title='Sob guarda da CSG'>CSG/div>";
+                                }elseif($Destino > 0){
+                                    echo "<div class='etiqResult' title='Bem já destinado'>Dest>";
+                                }
+                                ?>
+                            </td>
                         </tr>
                     <?php
                     }

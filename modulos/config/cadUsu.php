@@ -123,6 +123,17 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("leituraEletric").checked = false;
                                     }
+                                    if(parseInt(Resp.regarcond) === 1){
+                                        document.getElementById("registroArCond").checked = true;
+                                    }else{
+                                        document.getElementById("registroArCond").checked = false;
+                                    }
+                                    if(parseInt(Resp.fiscarcond) === 1){
+                                        document.getElementById("fiscalArCond").checked = true;
+                                    }else{
+                                        document.getElementById("fiscalArCond").checked = false;
+                                    }
+                                    
                                     document.getElementById("titulomodal").innerHTML = "Edição de Usuários";
                                     document.getElementById("ressetsenha").disabled = false;
                                     document.getElementById("mudou").value = "0";
@@ -178,7 +189,14 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("leituraEletric").checked === true){
                     Eletric = 1;
                 }
-
+                ArCond = 0;
+                if(document.getElementById("registroArCond").checked === true){
+                    ArCond = 1;
+                }
+                FiscAr = 0;
+                if(document.getElementById("fiscalArCond").checked === true){
+                    FiscAr = 1;
+                }
                 if(parseInt(document.getElementById("mudou").value) === 1){
                     ajaxIni();
                     if(ajax){
@@ -194,7 +212,10 @@ if(!isset($_SESSION["usuarioID"])){
                         +"&fisclro="+FiscLro
                         +"&bens="+Bens
                         +"&agua="+Agua
-                        +"&eletric="+Eletric, true);
+                        +"&eletric="+Eletric
+                        +"&arcond="+ArCond
+                        +"&fiscar="+FiscAr
+                        , true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -492,6 +513,15 @@ if(!isset($_SESSION["usuarioID"])){
                     Titulo = "Acesso ao registro de Bens Encontrados";
                     Texto = "Além desta marca é necessário que o usuário tenha o nível administrativo mínimo previsto em Parâmetros do Sistema.<br>Esta marca se aplica aos funcionários e voluntários da DAF, responsáveis pela guarda dos objetos encontrados. <br>Nos parâmetros do sistema pode ficar apontado o nível mínimo para inserção associado a esta marca. <br>Se o usuário estiver no nível administrativo para editar, poderá gerar PDF do processo completo.";
                 }
+                if(parseInt(Cod) === 5){
+                    Titulo = "Manutenção dos Condicionadores de Ar";
+                    Texto = "Somente esta marca dá acesso ao REGISTRO das visitas técnicas para manutenção preventiva ou corretiva dos aparelhos de Ar Condicionado.<br>Não é controlado por níveis administrativos.";
+                }
+                if(parseInt(Cod) === 6){
+                    Titulo = "Fiscalizar a manutenção dos Condicionadores de Ar";
+                    Texto = "Com esta marca o usuário tem acesso a todos os lançamentos das visitas técnicas para manutenção preventiva ou corretiva dos aparelhos de Ar Condicionado.<br>Não pode editar os lançamentos.<br>Não é controlado por níveis administrativos.";
+                }
+
                 document.getElementById("textoInfo").innerHTML = Texto;
                 document.getElementById("textoTitulo").innerHTML = Titulo;
                 document.getElementById("infomensagem").style.display = "block"; // está em modais.php
@@ -685,6 +715,23 @@ if(!isset($_SESSION["usuarioID"])){
                             <label for="leituraEletric" title="Pode registrar as leituras diárias do consumo de energia elétrica">registrar leitura diária do Medidor de Energia Elétrica</label>
                         </td>
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(2);" title="Guia rápido"></td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq80" title="Registrar as visitas técnicas da empresa contratada para manutenção dos Condicionadores de Ar">Condicionadores de Ar:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="registroArCond" title="Registrar as visitas técnicas da empresa de Ar Condicionado" onchange="modif();" >
+                            <label for="registroArCond" title="Registrar as visitas técnicas da empresa contratada para manutenção dos Condicionadores de Ar">registrar visitas para Manutenção dos Condicionadores de Ar</label>
+                        </td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(5);" title="Guia rápido"></td>
+                    </tr>
+                    <tr>
+                        <td class="etiq80" title="Fiscalizar a manutenção dos Condicionadores de Ar">Condicionadores de Ar:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="fiscalArCond" title="Fiscalizar a manutenção dos Condicionadores de Ar" onchange="modif();" >
+                            <label for="fiscalArCond" title="Fiscalizar a manutenção dos Condicionadores de Ar">fiscalizar a Manutenção dos Condicionadores de Ar</label>
+                        </td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(6);" title="Guia rápido"></td>
                     </tr>
 
                     <tr>

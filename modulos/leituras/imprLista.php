@@ -86,7 +86,8 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->SetFont('Arial','' , 14); 
     $pdf->Cell(150, 5, $Cabec1, 0, 2, 'C');
     $pdf->SetFont('Arial','' , 12); 
-    $pdf->Cell(150, 5, $Cabec2, 0, 2, 'C');
+//    $pdf->Cell(150, 5, $Cabec2, 0, 2, 'C');
+    $pdf->Cell(150, 5, 'Diretoria Administrativa e Financeira', 0, 2, 'C');
     $pdf->SetFont('Arial','' , 10); 
     $pdf->Cell(150, 5, $Cabec3, 0, 2, 'C');
     $pdf->SetFont('Arial', '' , 10);

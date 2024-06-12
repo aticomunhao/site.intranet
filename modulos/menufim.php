@@ -2,6 +2,7 @@
 	session_start();
 	require_once(dirname(__FILE__)."/config/abrealas.php");
 	if(!isset($_SESSION['AdmUsu'])){
+		session_destroy();
         header("Location: ../index.html");
      }
 ?>
@@ -163,7 +164,7 @@
 						echo "</li>";
 
 						echo "<li>";
-							echo "<a href='#'>Leituras</a>";
+							echo "<a href='#'>Controles</a>";
 							echo "<ul>";
 								echo "<li>";
 								echo "<a href='#' onclick='openhref(34);'>Água</a>";
@@ -171,20 +172,11 @@
 								echo "<li>";
 								echo "<a href='#' onclick='openhref(35);'>Eletricidade</a>";
 								echo "</li>";
+								echo "<li>";
+								echo "<a href='#' onclick='openhref(65);'>Manut Ar Condicionado</a>";
+								echo "</li>";
 							echo "</ul>";
-						echo "</li>";	
-
-						if($_SESSION["AdmUsu"] > 6){ // superusuário para construção
-							echo "<li>";
-								echo "<a href='#'>Manutenção</a>";
-								echo "<ul>";
-									echo "<li>";
-									echo "<a href='#' onclick='openhref(65);'>Ar Condicionado</a>";
-									echo "</li>";
-								echo "</ul>";
-							echo "</li>";
-						}
-
+						echo "</li>";
 
 						if($_SESSION["AdmUsu"] > 6){ // superusuário
 							echo "<li>";
