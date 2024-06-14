@@ -58,7 +58,7 @@ if(!isset($_SESSION["usuarioID"])){
                 if(parseInt(document.getElementById("guardaerro").value) === 0){
                     document.getElementById("botInserir").style.visibility = "hidden"; 
                     document.getElementById("botImprimir").style.visibility = "hidden"; 
-                    if(parseInt(document.getElementById("InsLeituraEletric").value) === 1){ // // se estiver marcado em cadusu para fazer a leitura
+                    if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // // se estiver marcado em cadusu para fazer a leitura
                         if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
                             document.getElementById("botInserir").style.visibility = "visible"; 
                             $("#container5").load("modulos/leituras/carEletric.php");
@@ -76,15 +76,11 @@ if(!isset($_SESSION["usuarioID"])){
                     if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value)){
                         document.getElementById("botImprimir").style.visibility = "visible"; 
                     }else{
-//                        document.getElementById("botImprimir").style.backgroundColor = "#808080";
-//                        document.getElementById("botImprimir").style.color = "#A9A9A9";
                         document.getElementById("botImprimir").style.visibility = "hidden"; 
                     }
                     if(parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
                         document.getElementById("botInserir").style.visibility = "visible"; 
                         document.getElementById("botImprimir").style.visibility = "visible"; 
-                        $("#container5").load("modulos/leituras/carEletric.php");
-                        $("#container6").load("modulos/leituras/carEstatEletric.php");
                     }
                 };
 

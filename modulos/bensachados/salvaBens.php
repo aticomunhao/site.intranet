@@ -165,3 +165,15 @@ if($Acao=="destinaBem"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
+if($Acao=="apagaBem"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Erro = 0;
+    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET ativo = 0, dataapagou = NOW(), usuapagou = ".$_SESSION["usuarioID"]." WHERE id = $Cod");
+    if(!$rs1){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}

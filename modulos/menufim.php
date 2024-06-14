@@ -173,7 +173,7 @@
 								echo "<a href='#' onclick='openhref(35);'>Eletricidade</a>";
 								echo "</li>";
 								echo "<li>";
-								echo "<a href='#' onclick='openhref(65);'>Manut Ar Condicionado</a>";
+								echo "<a href='#' onclick='openhref(65);'>Ar Condicionado</a>";
 								echo "</li>";
 							echo "</ul>";
 						echo "</li>";

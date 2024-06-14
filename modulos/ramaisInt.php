@@ -175,7 +175,6 @@ session_start();
                 document.getElementById("codnomecompl").disabled = false;
                 document.getElementById("codnomecompl").value = "0";
                 document.getElementById("usuario").value = "";
-                document.getElementById("codnomecompl").value = "0";
                 document.getElementById("nomecompleto").value = "";
                 document.getElementById("setor").value = "";
                 document.getElementById("ramal").value = "";
@@ -200,6 +199,7 @@ session_start();
                                     document.getElementById("ramal").value = Resp.ramal;
                                     document.getElementById("nomecompleto").value = Resp.nomecompleto;
                                     document.getElementById("setor").value = Resp.siglasetor;
+                                    document.getElementById("ramal").value = Resp.ramal;
                                     document.getElementById("guardaCodSetor").value = Resp.codsetor;
                                     document.getElementById("guardaid_click").value = Resp.codtel;
 //                                }
@@ -284,7 +284,9 @@ session_start();
         $Tipo = (int) filter_input(INPUT_GET, 'tipo');
         $admIns = parAdm("insramais", $Conec, $xProj);   // nível para inserir 
         $admEdit = parAdm("editramais", $Conec, $xProj); // nível para editar
+//        $OpNomes = pg_query($ConecPes, "SELECT id, nome_completo FROM ".$xPes.".pessoas WHERE status = 1 ORDER BY nome_completo"); // supõe-se que haverá milhares de nomes
         $OpNomes = pg_query($Conec, "SELECT id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
+
         $OpSetor = pg_query($ConecPes, "SELECT id, sigla FROM ".$xPes.".setor WHERE dt_fim IS NULL ORDER BY sigla");
         if(!isset($_SESSION["AdmUsu"])){
             $_SESSION["AdmUsu"] = 0;
@@ -393,7 +395,7 @@ session_start();
                     </tr>
                     <tr>
                         <td id="etiqRamal" class="etiq">Ramal</td>
-                        <td><input type="text" id="ramal" name="ramal" style="width: 50%;" placeholder="Ramal" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('usuario');return false;}"></td>
+                        <td><input type="text" id="ramal" style="width: 50%;" placeholder="Ramal" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('usuario');return false;}"></td>
                     </tr>
                     <tr>
                         <td colspan="2" style="text-align: center;"><div id="mensagem" style="color: red; font-weight: bold;"></div></td>

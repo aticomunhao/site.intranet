@@ -48,6 +48,9 @@ if(!isset($_SESSION["usuarioID"])){
                 border-radius: 15px;
                 width: 40%; /* acertar de acordo com a tela */
             }
+            .zeroBorda{
+                border: 0px;
+            }
             /* Botão fechar */
             .close{
                 color: #aaa;

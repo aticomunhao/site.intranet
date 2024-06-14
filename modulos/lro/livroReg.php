@@ -218,10 +218,6 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("mostrabotimpr").style.visibility = "visible";
                                     }
 
-                                    if(parseInt(Resp.codusuins) === parseInt(document.getElementById("guardaUsuId").value)){
-                                    }else{
-                                        document.getElementById("mostrabotimpr").style.visibility = "hidden"; // botão de imprimir na visualização
-                                    }
                                     if(parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
                                         document.getElementById("botimpr").style.visibility = "visible";
                                         document.getElementById("mostrabotimpr").style.visibility = "visible"; // botão de imprimir na visualização
@@ -284,7 +280,7 @@ if(!isset($_SESSION["usuarioID"])){
                     if(document.getElementById("selecturno").value !== "" && document.getElementById("selectusuant").value !== ""){
                         $.confirm({
                             title: 'Confirmação!',
-                            content: "O relato será enviado ao setor competente e não poderá ser modificado.<br> Se quiser apenas editar antes de teminar o turno, clique no botão Salvar e deixe para enviar ao final do turno. <br><br>Confirma enviar agora?",
+                            content: "O relato será enviado ao setor competente e não poderá ser modificado.<br> Se quiser editar antes de teminar o turno, clique no botão Salvar e deixe para enviar ao final do turno. <br><br>Confirma enviar agora?",
                             autoClose: 'Não|15000',
                             draggable: true,
                             buttons: {
@@ -544,14 +540,14 @@ if(!isset($_SESSION["usuarioID"])){
                     if(parseInt(document.getElementById("mudou").value) != 0){
                         $.confirm({
                             title: 'Informação!',
-                                content: 'Houve modificação. É necessario salvar antes de imprimir.',
-                                draggable: true,
-                                buttons: {
-                                    OK: function(){}
-                                }
-                            });
-                            return false;
-                        }
+                            content: 'Houve modificação. É necessario salvar antes de imprimir.',
+                            draggable: true,
+                            buttons: {
+                                OK: function(){}
+                            }
+                        });
+                        return false;
+                    }
                     window.open("modulos/lro/imprReg.php?acao=impr&codigo="+document.getElementById("guardacod").value, document.getElementById("guardacod").value);
                 }
             }

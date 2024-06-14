@@ -1,16 +1,34 @@
 <?php
 //tabelas necessárias
 require_once("config/abrealas.php");
-pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ativo = 0"); //Elimina dados apagados da tabela calendário
-pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ((CURRENT_DATE - dataini)/365 > 5)"); //Apaga da tabela calendário eventos passados há mais de 5 anos
-pg_query($Conec, "DELETE FROM ".$xProj.".leitura_agua WHERE ((CURRENT_DATE - dataleitura)/365 > 5)"); //Apaga da tabela lançamentos de leitura do hidrômetro passados há mais de 5 anos
-pg_query($Conec, "DELETE FROM ".$xProj.".tarefas WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga da tabela lançamentos de tarefas há mais de 5 anos
-pg_query($Conec, "DELETE FROM ".$xProj.".tarefas_msg WHERE datamsg < CURRENT_DATE - interval '5 years' "); //Apaga mensagens trocadas nas tarefas há mais de 5 anos
-pg_query($Conec, "DELETE FROM ".$xProj.".livroreg WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga registros do livro de ocorrências há mais de 5 anos
-pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE datainat < CURRENT_DATE - interval '5 years' "); //Apaga registros de usuários inativados há mais de 5 anos
-pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE numacessos = 0 And datains < CURRENT_DATE - interval '5 years' "); //Apaga registros de usuários inseridos há mais de 5 anos sem nenhum login 
 
 echo "<br>";
+
+$rs = pg_query($Conec, "SELECT prazodel FROM ".$xProj.".paramsis WHERE idpar = 1 ");
+$row = pg_num_rows($rs);
+if($row > 0){ 
+    $tbl = pg_fetch_row($rs);
+    $PrazoDel = $tbl[0];
+}else{
+   $PrazoDel = 10;
+}
+if($PrazoDel < 1000){
+   echo "Prazo para eliminação de registros antigos fixado em $PrazoDel anos. <br>";
+   pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ativo = 0"); //Elimina dados apagados da tabela calendário
+   pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ((CURRENT_DATE - dataini)/365 > $PrazoDel)"); //Apaga da tabela calendário eventos passados há mais de $PrazoDel anos
+   pg_query($Conec, "DELETE FROM ".$xProj.".leitura_agua WHERE ((CURRENT_DATE - dataleitura)/365 > $PrazoDel)"); //Apaga da tabela lançamentos de leitura do hidrômetro passados há mais de $PrazoDel anos
+   pg_query($Conec, "DELETE FROM ".$xProj.".tarefas WHERE datains < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga da tabela lançamentos de tarefas há mais de $PrazoDel anos
+   pg_query($Conec, "DELETE FROM ".$xProj.".tarefas_msg WHERE datamsg < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga mensagens trocadas nas tarefas há mais de $PrazoDel anos
+   pg_query($Conec, "DELETE FROM ".$xProj.".livroreg WHERE datains < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros do livro de ocorrências há mais de $PrazoDel anos
+   pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE datainat < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros de usuários inativados há mais de $PrazoDel anos
+   pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE numacessos = 0 And datains < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros de usuários inseridos há mais de $PrazoDel anos sem nenhum login 
+   pg_query($Conec, "DELETE FROM ".$xProj.".bensachados WHERE datains < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros do achados e perdidos há mais de $PrazoDel anos
+   pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar WHERE datavis < CURRENT_DATE - interval '$PrazoDel years' "); 
+   pg_query($Conec, "DELETE FROM ".$xProj.".ramais_int WHERE ativo = 0 And datains < CURRENT_DATE - interval '$PrazoDel years'"); 
+   pg_query($Conec, "DELETE FROM ".$xProj.".ramais_ext WHERE ativo = 0 And datains < CURRENT_DATE - interval '$PrazoDel years'"); 
+}else{
+   echo "Eliminação de registros antigos desativado. <br>";   
+}
 
 
 $rs = pg_query($Conec, "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'bensachados' AND COLUMN_NAME = 'cpfpropriet'");
@@ -118,6 +136,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".paramsis (
    insleituraeletric smallint DEFAULT 0 NOT NULL,
    editleituraeletric smallint DEFAULT 0 NOT NULL,
    dataelim date DEFAULT '2023-10-09'::date,
+   prazodel smallint NOT NULL DEFAULT 5,
    inslro smallint DEFAULT 2 NOT NULL,
    editlro smallint DEFAULT 4 NOT NULL,
    insbens smallint DEFAULT 2 NOT NULL,
@@ -277,12 +296,12 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
       echo "Tabela ".$xProj.".carousel checada. <br>";
 
 
-
-
-      if(strtotime('2024/06/30') > strtotime(date('Y/m/d'))){
-         pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".controle_ar");
-         pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".visitas_ar");
-      }
+$rs = pg_query($Conec, "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'controle_ar' AND COLUMN_NAME = 'data01'");
+$row = pg_num_rows($rs);
+if($row > 0){
+    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".controle_ar");
+    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".visitas_ar");
+}
 
 pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
    id SERIAL PRIMARY KEY, 

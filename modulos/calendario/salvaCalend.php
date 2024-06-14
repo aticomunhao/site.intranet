@@ -7,6 +7,23 @@ if(!isset($_SESSION["usuarioID"])){
 require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
 date_default_timezone_set('America/Sao_Paulo'); 
+
+function prevMonth($time){
+    //return date('Y-m-d', strtotime('-1 month', $time));
+    return date('F Y', strtotime('-1 month', $time));
+}
+    
+function nextMonth($time){
+    //return date('Y-m-d', strtotime('+1 month', $time));
+    return date('F Y', strtotime('+1 month', $time));
+}
+function prevNumMes($time){
+    return date('m', strtotime('-1 month', $time));
+}
+function nextNumMes($time){
+    return date('m', strtotime('+1 month', $time));
+}
+
 if(isset($_REQUEST["acao"])){
     $Acao = $_REQUEST["acao"];
 
@@ -251,36 +268,19 @@ if($Acao =="semAvisoHoje"){ // pára os avisos da agenda só por hoje - é reati
     echo $responseText;
 }
 
-if($Acao =="semAviso"){ // pára os avisos da agenda 
-    $Valor = (int) filter_input(INPUT_GET, 'param');
-    $Erro = 0;
-    $rs0 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET avcalend = $Valor WHERE pessoas_id = ".$_SESSION["usuarioID"]." ");
-    if(!$rs0){
-        $Erro = 1;
+    if($Acao =="semAviso"){ // pára os avisos da agenda 
+        $Valor = (int) filter_input(INPUT_GET, 'param');
+        $Erro = 0;
+        $rs0 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET avcalend = $Valor WHERE pessoas_id = ".$_SESSION["usuarioID"]." ");
+        if(!$rs0){
+            $Erro = 1;
+        }
+        if($Valor == 1){ // reativa os avisos que foram bloqueados só por hoje
+            pg_query($Conec, "UPDATE ".$xProj.".poslog SET avhoje = (CURRENT_DATE -1) WHERE pessoas_id = ".$_SESSION["usuarioID"]." ");
+        }
+        $var = array("coderro"=>$Erro);
+        $responseText = json_encode($var);
+        echo $responseText;
     }
-    if($Valor == 1){ // reativa os avisos que foram bloqueados só por hoje
-        pg_query($Conec, "UPDATE ".$xProj.".poslog SET avhoje = (CURRENT_DATE -1) WHERE pessoas_id = ".$_SESSION["usuarioID"]." ");
-    }
-    $var = array("coderro"=>$Erro);
-    $responseText = json_encode($var);
-    echo $responseText;
-}
-
-function prevMonth($time){
-//    return date('Y-m-d', strtotime('-1 month', $time));
-    return date('F Y', strtotime('-1 month', $time));
-}
-
-function nextMonth($time){
-//    return date('Y-m-d', strtotime('+1 month', $time));
-    return date('F Y', strtotime('+1 month', $time));
-}
-
-function prevNumMes($time){
-    return date('m', strtotime('-1 month', $time));
-}
-function nextNumMes($time){
-    return date('m', strtotime('+1 month', $time));
-}
 
 } // Fim da Acao

@@ -408,31 +408,39 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function resetSenha(){
-                let Conf = confirm("A senha deste usuário será modificada para o CPF. Prossegue?");
-                if(Conf){
-                    ajaxIni();
-                    if(ajax){
-                        ajax.open("POST", "modulos/config/registr.php?acao=resetsenha&numero="+document.getElementById("guardaid_cpf").value, true);
-                        ajax.onreadystatechange = function(){
-                            if(ajax.readyState === 4 ){
-                                if(ajax.responseText){
-//    alert(ajax.responseText);
-                                    Resp = eval("(" + ajax.responseText + ")");
-                                    if(parseInt(Resp.coderro) === 1){
-                                        alert("Houve um erro no servidor.")
-                                    }else{
-                                        document.getElementById("textoMsg").innerHTML = "Senha modificada para o CPF";
-                                        document.getElementById("relacmensagem").style.display = "block"; // está em modais.php
-                                        setTimeout(function(){
-                                            document.getElementById("relacmensagem").style.display = "none";
-                                        }, 2000);
+                $.confirm({
+                    title: 'Confirmação!',
+                    content: 'A senha deste usuário será modificada para o CPF. Prossegue?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/config/registr.php?acao=resetsenha&numero="+document.getElementById("guardaid_cpf").value, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro no servidor.")
+                                            }else{
+                                                document.getElementById("textoMsg").innerHTML = "Senha modificada para o CPF";
+                                                document.getElementById("relacmensagem").style.display = "block"; // está em modais.php
+                                                setTimeout(function(){
+                                                    document.getElementById("relacmensagem").style.display = "none";
+                                                }, 2000);
+                                            }
+                                        }
                                     }
-                                }
+                                };
+                                ajax.send(null);
                             }
-                        };
-                        ajax.send(null);
+                        },
+                        Não: function () {}
                     }
-                }
+                });
             }
 
             function mudaSetor(){ // Qdo muda de setor desmarca 
@@ -515,11 +523,11 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 if(parseInt(Cod) === 5){
                     Titulo = "Manutenção dos Condicionadores de Ar";
-                    Texto = "Somente esta marca dá acesso ao REGISTRO das visitas técnicas para manutenção preventiva ou corretiva dos aparelhos de Ar Condicionado.<br>Não é controlado por níveis administrativos.";
+                    Texto = "Somente esta marca dá acesso ao REGISTRO das visitas técnicas para manutenção preventiva ou corretiva dos aparelhos de Ar Condicionado.<br>Este módulo não é controlado por níveis administrativos.";
                 }
                 if(parseInt(Cod) === 6){
                     Titulo = "Fiscalizar a manutenção dos Condicionadores de Ar";
-                    Texto = "Com esta marca o usuário tem acesso a todos os lançamentos das visitas técnicas para manutenção preventiva ou corretiva dos aparelhos de Ar Condicionado.<br>Não pode editar os lançamentos.<br>Não é controlado por níveis administrativos.";
+                    Texto = "Com esta marca o usuário tem acesso a todos os lançamentos das visitas técnicas para manutenção preventiva ou corretiva dos aparelhos de Ar Condicionado.<br>Não pode editar os lançamentos.<br>Este módulo não é controlado por níveis administrativos.";
                 }
 
                 document.getElementById("textoInfo").innerHTML = Texto;

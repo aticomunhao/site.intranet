@@ -56,8 +56,45 @@
                             }
                         };
                         ajax.send(null);
-                    } 
+                    }
                 }
+                function salvaPrazoDel(Valor, Param){
+                    if(parseInt(Valor) === 1000){
+                        Texto = "Confirma interromper a deleção de lançamentos antigos?";
+                    }else{
+                        Texto = "Confirma eliminar dos arquivos os lançamentos <br>com mais de "+Valor+" anos? ";
+                    }
+                    $.confirm({
+                        title: 'Apagar',
+                        content: Texto,
+                        autoClose: 'Não|15000',
+                        draggable: true,
+                        buttons: {
+                            Sim: function () {
+                                ajaxIni();
+                                if(ajax){
+                                    ajax.open("POST", "modulos/config/registr.php?acao=salvaParam&param="+Param+"&valor="+Valor, true);
+                                    ajax.onreadystatechange = function(){
+                                        if(ajax.readyState === 4 ){
+                                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                                Resp = eval("(" + ajax.responseText + ")");
+                                                if(parseInt(Resp.coderro) > 0){
+                                                    alert("Houve erro ao salvar");
+                                                }
+                                            }
+                                        }
+                                    };
+                                    ajax.send(null);
+                                }
+                            },
+                            Não: function () {
+                                document.getElementById("valorprazodel").value = document.getElementById("guardaPrazoDel").value;
+                            }
+                        }
+                    })
+                }
+
                 function MarcaAdm(obj){
                     if(obj.checked === true){
                         Valor = 1;
@@ -367,7 +404,8 @@
             require_once("abrealas.php");
             $rsSis = pg_query($Conec, "SELECT admvisu, admedit, admcad, insevento, editevento, instarefa, edittarefa, insramais, editramais, instelef, edittelef, 
             editpagina, insarq, insaniver, editaniver, instroca, edittroca, insocor, editocor, insleituraagua, editleituraagua, 
-            TO_CHAR(datainiagua, 'DD/MM/YYYY'), valoriniagua, insleituraeletric, editleituraeletric, TO_CHAR(datainieletric, 'DD/MM/YYYY'), valorinieletric, inslro, editlro, insbens, editbens 
+            TO_CHAR(datainiagua, 'DD/MM/YYYY'), valoriniagua, insleituraeletric, editleituraeletric, TO_CHAR(datainieletric, 'DD/MM/YYYY'), valorinieletric, inslro, editlro, insbens, editbens, 
+            prazodel
             FROM ".$xProj.".paramsis WHERE idPar = 1");
             $ProcSis = pg_fetch_row($rsSis);
             $admVisu = $ProcSis[0]; // admVisu - administrador visualiza usuários
@@ -499,6 +537,8 @@
             $Proc20 = pg_fetch_row($rs20);
             $nomeEditBens = $Proc20[0];
 
+            $PrazoDel = $ProcSis[31];   // prazo para deleção de registros antigos
+
 
             $OpAdmInsEv = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             $OpAdmEditEv = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
@@ -532,15 +572,16 @@
 
             $OpAdmInsBens = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             $OpAdmEditBens = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+
         ?>
         <input type="hidden" id="guardacod" value="0" /> <!-- id ocorrência -->
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
         <input type="hidden" id="guardaAtiv" value="0" />
+        <input type="hidden" id="guardaPrazoDel" value="<?php echo $PrazoDel; ?>" />
         <div style="margin: 0 auto; margin-top: 40px; padding: 20px; border: 2px solid blue; border-radius: 15px; width: 70%; min-height: 200px;">
             <div style="text-align: center;">
                 <h4>Parâmetros do Sistema</h4>
             </div>
-
 
 
 <!-- Bens Encontrados  -->
@@ -586,7 +627,6 @@
                 </table>
             </div>
 
-
 <!-- Calendário  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
                 - <b>Calendário</b>:<br>
@@ -629,7 +669,6 @@
                     </tr>
                 </table>
             </div>
-
 
 <!-- Leitura Hidrômetro  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
@@ -846,7 +885,7 @@
                         </td>
                     </tr>
                     <tr>
-                        <td>Nível mínimo para EDITAR ocorrência:</td>
+                        <td>Nível mínimo para VERIFICAR ocorrência:</td>
                         <td style="padding-left: 5px;">
                         <select onchange="salvaParam(value, 'editOcor');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                         <option value="<?php echo $editOcor; ?>"><?php echo $nomeEditOcor; ?></option>
@@ -995,7 +1034,56 @@
             <br>
             <hr>
             <br>
-            <div id="cardiretoria"></div> <!-- Mostra as diretores e assessorias mais os seus usuários  -->
+
+            <!-- Mostra as diretores e assessorias mais os seus usuários  -->
+            <div id="cardiretoria"></div>
+
+            <!-- Prazo para apagar registros -->
+            <div style="margin: 50px; border: 3px solid red; border-radius: 20px; padding: 15px;">
+                <div style="margin: 5px; padding: 15px; text-align: center;">
+                    <h4>Apagar Registros Antigos</h4>
+                </div>
+                <table style="margin: 0 auto;">
+                    <tr>
+                        <td style="padding-right: 5px;"><h5>Prazo para apagar registros antigos no banco de dados:</h5> </td>
+                        <td>
+                            <select id="valorprazodel" onchange="salvaPrazoDel(value, 'prazodel');" style="font-size: 1rem; text-align: center;" title="Selecione um valor.">
+                                <option value="<?php echo $PrazoDel; ?>"><?php echo $PrazoDel; ?></option>
+                                <option value="5"> 5</option>
+                                <option value="6"> 6</option>
+                                <option value="7"> 7</option>
+                                <option value="8"> 8</option>
+                                <option value="9"> 9</option>
+                                <option value="10">10</option>
+                                <option value="11">11</option>
+                                <option value="12">12</option>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15">15</option>
+                                <option value="20">20</option>
+                                <option value="25">25</option>
+                                <option value="30">30</option>
+                                <option value="1000">1000</option>
+                            </select>
+                            <label>anos</label>
+                        </td>
+                    </tr>
+                </table>
+
+                <label>Serão eliminados lançamentos dos arquivos de:</label>
+                <div style="margin-left: 70px; padding: 5px; text-align: left;">
+                    <ul>
+                        <li>Registros do Livro de Registros de Ocorrências.</li>
+                        <li>Registros de bens encontrados.</li>
+                        <li>Registros das leituras do consumo de água.</li>
+                        <li>Registros das leituras do consumo de eletricidade.</li>
+                        <li>Registros de manutenção dos Condicionadores de Ar.</li>
+                        <li>Evendos do calendário.</li>
+                        <li>Tarefas atribuidas.</li>
+                    </ul>
+                </div>
+                <div style="text-align: center;">Este módulo é acionado uma vez por dia no primeiro login.</div>
         </div>
+
     </body>
 </html>

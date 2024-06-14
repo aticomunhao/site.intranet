@@ -151,7 +151,6 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("guardaid").value = Cod; //Pega e guarda o código do elemento dragado
                 document.getElementById("guardaAtiv").value = Ativo;
                 document.getElementById("guardaUsuExec").value = UsuExec;
-                
             }
 
             function allowDrop(ev) {
@@ -208,6 +207,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 document.getElementById("selectStatus").value = Resp.sit;
                                 if(parseInt(document.getElementById("usu_Logado_id").value) === parseInt(Resp.usuIns)){ // se for o usuário que inseriu a tarefa
                                     document.getElementById("selectStatus").disabled = false;
+                                    document.getElementById("botapagar").style.visibility = "visible";
                                 }document.getElementById("titulomodal").innerHTML = "Edição de Tarefa";
                                 document.getElementById("labelnomeIns").innerHTML = "Inserida por: "+Resp.NomeUsuIns;
                                 document.getElementById("relacmodalTarefa").style.display = "block";
@@ -227,11 +227,12 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("selecprio").value = 3;                
                 document.getElementById("guardaid").value = 0;
                 document.getElementById("mudou").value = "1"; // vai inserir novo
-                document.getElementById("botapagar").disabled = true;
+                document.getElementById("botapagar").style.visibility = "hidden";
                 document.getElementById("selectStatus").disabled = true;
                 document.getElementById("titulomodal").innerHTML = "Inserção de Tarefa";
                 document.getElementById("relacmodalTarefa").style.display = "block";
             }
+
             function salvaModal(){
                 if(document.getElementById("idExecSelect").value === ""){
                     $('#mensagem').fadeIn("slow");
@@ -382,19 +383,6 @@ if(!isset($_SESSION["usuarioID"])){
 
         $admIns = parAdm("instarefa", $Conec, $xProj);   // nível para inserir
         $admEdit = parAdm("edittarefa", $Conec, $xProj); // nível para editar
-
-        //Acerta nomes poslog
-//        $rs0 = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog WHERE pessoas_id > 0");
-//        while($tbl0 = pg_fetch_row($rs0)){
-//            $id = $tbl0[0];
-//            $rs1 = pg_query($ConecPes, "SELECT nome_completo FROM ".$xPes.".pessoas WHERE id = $id");
-//            $row1 = pg_num_rows($rs1);
-//            if($row1 > 0){
-//                $tbl1 = pg_fetch_row($rs1);
-//                $Nome = $tbl1[0];
-//                $rs2 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET nomecompl = '$Nome' WHERE pessoas_id = $id");
-//            }
-//        }
 
         //Relacionar usuários - adm <= $Adm - só paga tarefa para nível adm menor ou igual
         $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE adm <= $Adm ORDER BY nomecompl");
@@ -719,7 +707,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td></td>
                     </tr>
                     <tr>
-                        <td class="etiq" style="text-align: left;"><input type="button" class="botpadrred" id="botapagar" value="Apagar" onclick="deletaModal();"></td>
+                        <td class="etiq" style="text-align: left;"><input type="button" class="botpadrTijolo" id="botapagar" value="Apagar" onclick="deletaModal();"></td>
                         <td colspan='4' style="text-align: right; padding-right: 50px;"><input type="button" class="botpadrblue" id="salvar" value="Salvar" onclick="salvaModal();"></td>
                         <td></td>
                     </tr>
@@ -756,7 +744,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <li>1 - Um usuário pode emitir tarefa para outros usuários do seu nível administrativo ou inferior, observado o nível administrativo mínimo adequado.</li>
                         <li>2 - Uma tarefa só aparece para o usuário que a inseriu e para o usuário designado para executá-la.</li>
                         <li>3 - Apenas o usuário designado para a execução pode arrastar os quadros.</li>
-                        <li>4 - Uma vez arrastados para a direita, os quadros não voltam. Mas o usuário que inseriu a tarefa pode editá-la e reposicioná-la nos quadros, mesmo se já estiver concluída.</li>
+                        <li>4 - Uma vez arrastados para a direita, os quadros não voltam. Mas o usuário que inseriu a tarefa, se tiver o nível administrativo adequado, pode editá-la e reposicioná-la nos quadros, mesmo se já estiver concluída.</li>
                         <li>5 - Mensagens podem ser trocadas entre os usuários. Elas são relativas a uma tarefa. Um ícone pisca para indicar que há mensagem não lida naquela tarefa.</li>
                         <li>6 - As tarefas classificadas como urgentes se posicionam no topo da relação.</li>
                         <li>7 - As tarefas concluídas vão para o final da relação</li>

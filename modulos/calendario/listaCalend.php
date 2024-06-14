@@ -12,7 +12,7 @@ $rs0 = pg_query($Conec, "SELECT idev, evnum, to_char(dataini, 'DD/MM/YYYY') as D
 WHERE Ativo = 1 And Fixo = 0 And AGE(dataini, CURRENT_DATE) >= '0 day' ORDER BY dataIni, evNum");   //WHERE Ativo = 1 And dataIni >= (DATE_ADD(CURDATE(), INTERVAL 0 DAY)) ORDER BY dataIni, evNum");
 $row0 = pg_num_rows($rs0);
 if($row0 > 0){
-    echo "<table style='margin: 0 auto;'>";
+    echo "<table style='margin: 0 auto; border: 0px;'>";
     while ($tbl0 = pg_fetch_row($rs0)){
         $Cod = $tbl0[0];
         $evNum = $tbl0[1];
@@ -20,12 +20,12 @@ if($row0 > 0){
         $Tit = $tbl0[3];
         $Cor = $tbl0[4];
         echo "<tr>";
-        echo "<td style='font-size: .8em; padding-left: 5px; padding-right: 5px; background-color: $Cor;'>";
+        echo "<td class='zeroBorda'><div style='font-size: .8em; padding-left: 5px; padding-right: 5px; border: 1px solid; border-radius: 3px; background-color: $Cor;'>";
         echo $Data;
-        echo "</td>";
-        echo "<td style='font-size: .8em; padding-left: 5px; padding-right: 5px; background-color: $Cor;'>";
+        echo "</div></td>";
+        echo "<td class='zeroBorda'><div style='font-size: .8em; padding-left: 5px; padding-right: 5px; border: 1px solid; border-radius: 3px; background-color: $Cor;'>";
         echo $Tit;
-        echo "</td>";
+        echo "</div></td>";
         echo "<tr>";
     }
     echo "</table>";

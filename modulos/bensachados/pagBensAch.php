@@ -34,6 +34,9 @@ if(!isset($_SESSION["usuarioID"])){
                 width: 50%; /* acertar de acordo com a tela */
             }
             .etiqResult{
+                position: relative;
+                float: left;
+                margin: 1px;
                 border: 1px solid; border-radius: 5px; padding-left: 3px; padding-right: 3px; font-size: 80%;
             }
         </style>
@@ -56,20 +59,27 @@ if(!isset($_SESSION["usuarioID"])){
             }
             $(document).ready(function(){
                 $("#carregaBens").load("modulos/bensachados/relBens.php");
-//                $("#dataregistro").mask("99/99/9999"); // pluguin usado não aceita digitação nas datas (gijgo)
-//                $("#dataachado").mask("99/99/9999");
-                $('#dataregistro').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
+
+                //Impedir a mudança de data do registro de bem encontrado
+                DataPr = compareDates ("30/06/2024", dataAtualFormatada()); // se o prazo for maior que a data atual
+                if(DataPr == true){ // se for maior que a data atual
+                    $('#dataregistro').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
+                }else{
+                    document.getElementById("dataregistro").disabled = true;
+                }
                 $('#dataachado').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
 
                 $("#cpfproprietario").mask("999.999.999-99");
                 document.getElementById("botimprReg").style.visibility = "hidden"; 
                 document.getElementById("botInsReg").style.visibility = "hidden"; 
+                document.getElementById("botApagaBem").style.visibility = "hidden";
                 if(parseInt(document.getElementById("guardaescEdit").value) === 1){ // tem que estar autorizado no cadastro de usuários
                     if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
                         document.getElementById("botInsReg").style.visibility = "visible"; 
                     }
                     if(parseInt(document.getElementById("UsuAdm").value) > 6){
-                        document.getElementById("botInsReg").style.visibility = "visible"; 
+                        document.getElementById("botInsReg").style.visibility = "visible";
+                        document.getElementById("botApagaBem").style.visibility = "visible";
                     }
                 }
             });
@@ -87,6 +97,17 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("relacmodalRegistro").style.display = "block";
             }
 
+//alert(dataAtualFormatada());
+
+            function dataAtualFormatada(){
+                var data = new Date(),
+                dia  = data.getDate().toString(),
+                diaF = (dia.length == 1) ? '0'+dia : dia,
+                mes  = (data.getMonth()+1).toString(), //+1 pois no getMonth Janeiro começa com zero.
+                mesF = (mes.length == 1) ? '0'+mes : mes,
+                anoF = data.getFullYear();
+                return diaF+"/"+mesF+"/"+anoF;
+            }
 
             function compareDates (date1, date2) {
                 let parts1 = date1.split('/') // separa a data pelo caracter '/'
@@ -98,13 +119,12 @@ if(!isset($_SESSION["usuarioID"])){
                 return date1 > date2 ? true : false
             }
 
-
             function salvaModalRegistro(){
                 if(parseInt(document.getElementById("mudou").value) === 0){
                     document.getElementById("relacmodalRegistro").style.display = "none";
                     return false;
                 }
-              if(compareDates(document.getElementById("dataachado").value, document.getElementById("dataregistro").value) == true){
+                if(compareDates(document.getElementById("dataachado").value, document.getElementById("dataregistro").value) == true){
                     let element = document.getElementById('dataachado');
                     element.classList.add('destacaBorda');
                     $.confirm({
@@ -518,7 +538,7 @@ if(!isset($_SESSION["usuarioID"])){
                     element.classList.add('destacaBorda');
                     document.getElementById("setordestino").focus();
                     $('#mensagemdest').fadeIn("slow");
-                    document.getElementById("mensagemrest").innerHTML = "Insira o nome do setor de destino do objeto";
+                    document.getElementById("mensagemdest").innerHTML = "Insira o nome do setor de destino do objeto";
                     $('#mensagemdest').fadeOut(2000);
                     return false;
                 }
@@ -583,6 +603,41 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
             }
+
+            function ApagarBem(){
+                $.confirm({
+                    title: 'Confirmação',
+                    content: 'Confirma apagar este lançamento?<br>Não haverá possibilidade de recuperação.<br>Continua?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/bensachados/salvaBens.php?acao=apagaBem&codigo="+document.getElementById("guardacod").value, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro no servidor.")
+                                            }else{
+                                                document.getElementById("relacmodalRestit").style.display = "none";
+                                                $("#carregaBens").load("modulos/bensachados/relBens.php");
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                        }
+                    }
+                });
+            }
+
 
             function fechaModalReg(){
                 document.getElementById("relacmodalRegistro").style.display = "none";
@@ -720,7 +775,8 @@ if(!isset($_SESSION["usuarioID"])){
         <?php
         date_default_timezone_set('America/Sao_Paulo');
         $Hoje = date('d/m/Y');
-        if(!$Conec){
+
+         if(!$Conec){
             echo "Sem contato com o PostGresql";
             return false;
         }
@@ -735,7 +791,6 @@ if(!isset($_SESSION["usuarioID"])){
         $admEdit = parAdm("editbens", $Conec, $xProj); // nível para editar -> foi para relBens.php
         $escEdit = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // está marcado no cadastro de usuários
         $OpDestBens = pg_query($Conec, "SELECT numdest, descdest FROM ".$xProj.".bensdestinos ORDER BY descdest");
-
         ?>
         <!-- div três colunas -->
         <div class="container" style="margin: 0 auto;">
@@ -760,7 +815,6 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" /> <!-- nível mínimo para editar -->
 
-        
         <div style="margin: 10px; border: 2px solid blue; border-radius: 15px; padding: 10px;">
             <div id="carregaBens"></div>
         </div>
@@ -782,7 +836,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <tr>
                             <td class="etiqAzul">Data do recebimento: </td>
                             <td>
-                                <input type="text" id="dataregistro" width="150" onkeydown="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;">
+                                <input type="text" id="dataregistro" width="150" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;">
                                 <label id="numprocesso" class="etiqAzul" style="padding-left: 30px; color: red;"></label>
                             </td>
                         </tr>
@@ -794,7 +848,7 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <tr>
                             <td class="etiqAzul">Data em que foi encontrado: </td>
-                            <td><input type="text" id="dataachado" width="150" onkeydown="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;"></td>
+                            <td><input type="text" id="dataachado" width="150" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;"></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Local em que foi encontrado: </td>
@@ -802,11 +856,11 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <tr>
                             <td class="etiqAzul">Nome do Colaborador que encontrou o bem: </td>
-                            <td><input type="text" id="nomeachou" onconkeydownlick="tiraBorda(id);" value="" onchange="modif();" placeholder="Nome do colaborador que encontrou" style="font-size: .9em; width: 90%;"></td>
+                            <td><input type="text" id="nomeachou" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="Nome do colaborador que encontrou" style="font-size: .9em; width: 90%;"></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Telefone: </td>
-                            <td><input type="text" id="telefachou" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="Telefone do colaborador que encontrou" style="font-size: .9em; width: 90%;"></td>
+                            <td><input type="text" id="telefachou" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="Telefone do colaborador que encontrou" style="font-size: .9em; width: 90%;"></td>
                         </tr>
                     </table>
 
@@ -906,26 +960,26 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <tr>
                             <td class="etiqAzul">Proprietário: </td>
-                            <td><input type="text" id="nomeproprietario" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="Nome do proprietário" style="font-size: .9em; width: 90%;" onkeypress="if(event.keyCode===13){javascript:foco('cpfproprietario');return false;}"></td>
+                            <td><input type="text" id="nomeproprietario" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="Nome do proprietário" style="font-size: .9em; width: 90%;" onkeypress="if(event.keyCode===13){javascript:foco('cpfproprietario');return false;}"></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">CPF: </td>
-                            <td><input type="text" id="cpfproprietario" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="CPF do proprietário" style="font-size: .9em; width: 90%;" onkeypress="if(event.keyCode===13){javascript:foco('telefproprietario');return false;}"></td>
+                            <td><input type="text" id="cpfproprietario" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="CPF do proprietário" style="font-size: .9em; width: 90%;" onkeypress="if(event.keyCode===13){javascript:foco('telefproprietario');return false;}"></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Telefone: </td>
-                            <td><input type="text" id="telefproprietario" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="Telefone do proprietário" style="font-size: .9em; width: 90%;" onkeypress="if(event.keyCode===13){javascript:foco('nomeproprietario');return false;}"></td>
+                            <td><input type="text" id="telefproprietario" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="Telefone do proprietário" style="font-size: .9em; width: 90%;" onkeypress="if(event.keyCode===13){javascript:foco('nomeproprietario');return false;}"></td>
                         </tr>
 
                         <tr>
                             <td colspan="2" style="padding-bottom: 20px;"></td>
                         </tr>
                         <tr>
-                            <td class="etiqAzul">Funcionário: </td>
+                            <td class="etiqAzul">Assinatura: </td>
                             <td style="padding-left: 15px; padding-right: 15px;"><div style="border: 1px solid blue; border-radius: 10px; text-align: center;">(a) <label style="font-weight: bold;"> <?php echo $_SESSION["NomeCompl"]; ?> </label></div></td>
                         </tr>
                         <tr>
-                            <td></td>
+                            <td><button class="botpadrTijolo" id="botApagaBem" onclick="ApagarBem();">Apagar</button></td>
                             <td style="text-align: center; padding-top: 25px;"><button class="botpadrblue" id="botsalvaRestit" onclick="modalRestit();">Objeto Restituido</button></td>
                         </tr>
                         <tr>
@@ -937,7 +991,6 @@ if(!isset($_SESSION["usuarioID"])){
                 </div>
            </div>
         </div> <!-- Fim Modal-->
-
 
         <!-- div modal para encaminhar o objeto para CSG  -->
         <div id="relacmodalEncam" class="relacmodal">
@@ -1031,11 +1084,11 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <tr>
                             <td class="etiqAzul">Setor de Destino: </td>
-                            <td><input type="text" id="setordestino" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="Nome do setor de destino" style="font-size: .9em; width: 90%;" onkeypress="if(event.keyCode===13){javascript:foco('nomefuncionario');return false;}"></td>
+                            <td><input type="text" id="setordestino" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="Nome do setor de destino" style="font-size: .9em; width: 90%;" onkeypress="if(event.keyCode===13){javascript:foco('nomefuncionario');return false;}"></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Nome do Funcionário do Setor: </td>
-                            <td><input type="text" id="nomefuncionario" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="Nome de quem recebe" style="font-size: .9em; width: 90%;" onkeypress="if(event.keyCode===13){javascript:foco('setordestino');return false;}"></td>
+                            <td><input type="text" id="nomefuncionario" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="Nome de quem recebe" style="font-size: .9em; width: 90%;" onkeypress="if(event.keyCode===13){javascript:foco('setordestino');return false;}"></td>
                         </tr>
                         <tr>
                             <td colspan="2" style="padding-bottom: 20px;"></td>
@@ -1069,7 +1122,7 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="2" style="text-align: center; padding-bottom: 20px; padding-top: 20px;">Este processo será arquivado nesta data: <?php echo $Hoje; ?></td>
                         </tr>
                         <tr>
-                            <td class="etiqAzul">Funcionário: </td>
+                            <td class="etiqAzul">Assinatura: </td>
                             <td style="padding-left: 15px; padding-right: 15px;"><div style="border: 1px solid blue; border-radius: 10px; text-align: center;">(a) <label style="font-weight: bold;"> <?php echo $_SESSION["NomeCompl"]; ?> </label></div></td>
                         </tr>
                         <tr>

@@ -200,7 +200,7 @@ if(!isset($_SESSION["usuarioID"])){
                     request.addEventListener('load', function(e){
                         $form.find('.progress-bar').addClass('progress-bar-success').html('...');
                         //Atualizar a página após o upload completo
-                        setTimeout("$('#relArquivos').load('modulos/conteudo/carRelArq.php?admins="+document.getElementById('admIns').value+"')", 3000);
+                        setTimeout("$('#relArquivos').load('modulos/conteudo/carRelArq.php?admins="+document.getElementById('admIns').value+"')", 1000);
                         setTimeout("$form.find('.progress-bar').width( 0 + '%').html( 0 + '%')", 1000); //faz voltar a barra de progresso
 
                         $('#msg').fadeIn(2000);

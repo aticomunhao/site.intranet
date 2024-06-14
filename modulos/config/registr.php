@@ -120,23 +120,32 @@ if($Acao =="loglog"){
                         $CodigoNovo = ($Codigo+1); // cópia no esquema cesb
                         pg_query($Conec, "INSERT INTO ".$xProj.".pessoas (id, pessoas_id, cpf, nome_completo, dt_nascimento, sexo, status, datains, nome_resumido) VALUES ($CodigoNovo, $id, '$Login', '$NomeCompl', '$DNasc', ".$_SESSION['sexo'].", 1, NOW(), '$NomeUsual') "); 
                     }
+
                     // o primeiro que logar executa a rotina
-                    $rs5 = pg_query($Conec, "SELECT dataelim FROM ".$xProj.".paramsis WHERE idpar = 1 ");
+                    $rs5 = pg_query($Conec, "SELECT dataelim, prazodel FROM ".$xProj.".paramsis WHERE idpar = 1 ");
                     $row5 = pg_num_rows($rs5);
                     if($row5 > 0){ 
                         $tbl5 = pg_fetch_row($rs5);
                         $DataElim = $tbl5[0];
+                        $PrazoDel = $tbl5[1];
+                        if(is_null($PrazoDel) || $PrazoDel == 0){
+                            $PrazoDel = 5;
+                        }
                         $Hoje = date('Y/m/d');
                         if(strtotime($DataElim) < strtotime($Hoje)){ // verifica se alguém já logou e inseriu a data de hoje
-                            pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ativo = 0"); //Elimina dados apagados da tabela calendário
-                            pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ((CURRENT_DATE - dataini)/365 > 5)"); //Apaga da tabela calendário eventos passados há mais de 5 anos
-                            pg_query($Conec, "DELETE FROM ".$xProj.".leitura_agua WHERE ((CURRENT_DATE - dataleitura)/365 > 5)"); //Apaga da tabela lançamentos de leitura do hidrômetro passados há mais de 5 anos
-                            pg_query($Conec, "DELETE FROM ".$xProj.".tarefas WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga da tabela lançamentos de tarefas há mais de 5 anos
-                            pg_query($Conec, "DELETE FROM ".$xProj.".tarefas_msg WHERE datamsg < CURRENT_DATE - interval '5 years' "); //Apaga mensagens trocadas nas tarefas há mais de 5 anos
-                            pg_query($Conec, "DELETE FROM ".$xProj.".livroreg WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga registros do livro de ocorrências há mais de 5 anos
-                            pg_query($Conec, "DELETE FROM ".$xProj.".bensachados WHERE datains < CURRENT_DATE - interval '5 years' "); //Apaga registros do achados e perdidos há mais de 5 anos
-                            pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE logfim < CURRENT_DATE - interval '5 years' "); //Apaga registros de usuários com último log há mais de 5 anos
-
+                            if($PrazoDel < 1000){
+                                pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ativo = 0"); //Elimina dados apagados da tabela calendário
+                                pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ((CURRENT_DATE - dataini)/365 > $PrazoDel)"); //Apaga da tabela calendário eventos passados há mais de $PrazoDel anos
+                                pg_query($Conec, "DELETE FROM ".$xProj.".leitura_agua WHERE ((CURRENT_DATE - dataleitura)/365 > $PrazoDel)"); //Apaga da tabela lançamentos de leitura do hidrômetro passados há mais de $PrazoDel anos
+                                pg_query($Conec, "DELETE FROM ".$xProj.".tarefas WHERE datains < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga da tabela lançamentos de tarefas há mais de $PrazoDel anos
+                                pg_query($Conec, "DELETE FROM ".$xProj.".tarefas_msg WHERE datamsg < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga mensagens trocadas nas tarefas há mais de $PrazoDel anos
+                                pg_query($Conec, "DELETE FROM ".$xProj.".livroreg WHERE datains < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros do livro de ocorrências há mais de $PrazoDel anos
+                                pg_query($Conec, "DELETE FROM ".$xProj.".bensachados WHERE datains < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros do achados e perdidos há mais de $PrazoDel anos
+                                pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE logfim < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros de usuários com último log há mais de $PrazoDel anos
+                                pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar WHERE datavis < CURRENT_DATE - interval '$PrazoDel years' "); 
+                                pg_query($Conec, "DELETE FROM ".$xProj.".ramais_int WHERE ativo = 0 And datains < CURRENT_DATE - interval '$PrazoDel years'"); 
+                                pg_query($Conec, "DELETE FROM ".$xProj.".ramais_ext WHERE ativo = 0 And datains < CURRENT_DATE - interval '$PrazoDel years'"); 
+                            }
                             $rs6 = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog ");
                             $row6 = pg_num_rows($rs6); // atualiza nomes de poslog com pessoas
                             if($row6 > 0){
@@ -375,7 +384,7 @@ if($Acao =="salvaUsu"){
     if($Usu == 0){ // cadastrar
         if($GuardaId > 0){
             $m = strtotime("-1 Hour");
-            $HoraAnt = date("Y-m-d H:i:s", $m); // para o recem cadastrado não aprecer on line
+            $HoraAnt = date("Y-m-d H:i:s", $m); // para o recem cadastrado não aparecer on line
 
             $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".poslog");
             $tblCod = pg_fetch_row($rsCod);
@@ -779,7 +788,7 @@ if($Acao =="salvaAtivDir"){
 
 if($Acao =="checaLogFim"){
     $Erro = 0;
-    //atualiza a cada minuto para veriricar usuário on line
+    //atualiza a cada minuto para verificar usuário on line
     $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET logfim = NOW() WHERE pessoas_id = ".$_SESSION["usuarioID"]."");
     if(!$rs){
         $Erro = 1;
@@ -798,11 +807,16 @@ if($Acao =="checaLogFim"){
     $QuantOn = $tbl2[0];
     $QuantDia = $tbl2[1];
     //Usuários on line
-    $rs3 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE ativo = 1 And EXTRACT(EPOCH FROM (NOW() - logfim)) <= 60");
-    $row3 = pg_num_rows($rs3);
+    $rs3 = pg_query($Conec, "SELECT COUNT(id) FROM ".$xProj.".poslog WHERE ativo = 1 And EXTRACT(EPOCH FROM (NOW() - logfim)) <= 60");
+    if($rs3){
+        $tbl3 = pg_fetch_row($rs3);
+        $Quant = $tbl3[0];
+    }else{
+        $Quant = 0;
+    }
     //registra pico de usuários on line
-    if($row3 > $QuantOn){
-        pg_query($Conec, "UPDATE ".$xProj.".paramsis SET pico_online = $row3, data_pico_online = NOW() WHERE idpar = 1 ");
+    if($Quant > $QuantOn){
+        pg_query($Conec, "UPDATE ".$xProj.".paramsis SET pico_online = $Quant, data_pico_online = NOW() WHERE idpar = 1 ");
     }
     //registra pico de usuários no dia
     $rs4 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE ativo = 1 And TO_CHAR(logini, 'YYYY/MM/DD') = TO_CHAR(CURRENT_DATE, 'YYYY/MM/DD')");

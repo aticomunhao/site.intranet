@@ -305,7 +305,7 @@ if(isset($_REQUEST["acao"])){
 
             $pdf->ln(10);
             $pdf->SetX(50);
-            $pdf->SetFont('Arial', 'I', 14);
+            $pdf->SetFont('Arial', 'I', 12);
             $pdf->Cell(17, 5, "Ano: ".$Ano, 0, 1, 'C');
 
 

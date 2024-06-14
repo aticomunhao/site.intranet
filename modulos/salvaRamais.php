@@ -6,6 +6,7 @@ if(isset($_REQUEST["acao"])){
     $Tipo = (int) $_REQUEST["tipo"];
 }
 require_once("config/gUtils.php"); 
+
 if($Tipo == 1){ // ramais internos
 
     if($Acao =="buscaNome"){
@@ -20,12 +21,13 @@ if($Tipo == 1){ // ramais internos
         $JaTem = 0;
 
         if($Num > 0){ // veio um número do select usuários de poslog
-            $rs = pg_query($Conec, "SELECT nomecompl, codsetor FROM ".$xProj.".poslog WHERE id = $Num");
+            $rs = pg_query($Conec, "SELECT nomecompl, codsetor, nomeusual FROM ".$xProj.".poslog WHERE id = $Num");
             $row = pg_num_rows($rs);
             if($row > 0){
                 $tbl = pg_fetch_row($rs);
                 $NomeCompl = $tbl[0];
                 $CodSetor = $tbl[1]; 
+                $NomeUsual = $tbl[2];
                 $rs1 = pg_query($Conec, "SELECT siglasetor FROM ".$xProj.".setores WHERE codset = $CodSetor");
                 $row1 = pg_num_rows($rs1);
                 if($row1 > 0){
@@ -56,7 +58,7 @@ if($Tipo == 1){ // ramais internos
         $Erro = 0;
         $row = 0;
 
-        $Sql = pg_query($Conec, "SELECT nomeusu, nomecompl, codsetor, ramal, poslog_id 
+        $Sql = pg_query($Conec, "SELECT nomeusu, nomecompl, codsetor, ramal, poslog_id, setor 
         FROM ".$xProj.".ramais_int 
         WHERE codtel = $Num");
         if(!$Sql){
@@ -65,7 +67,7 @@ if($Tipo == 1){ // ramais internos
             $row = pg_num_rows($Sql);
             $Proc = pg_fetch_row($Sql);
         }
-        $var = array("coderro"=>$Erro, "usuario"=>$Proc[0], "nomecompleto"=>$Proc[1], "codsetor"=>$Proc[2], "ramal"=>$Proc[3], "idposlog"=>$Proc[4] );
+        $var = array("coderro"=>$Erro, "usuario"=>$Proc[0], "nomecompleto"=>$Proc[1], "codsetor"=>$Proc[2], "setor"=>$Proc[5], "ramal"=>$Proc[3], "idposlog"=>$Proc[4] );
         $responseText = json_encode($var);
         echo $responseText;
     }
@@ -98,7 +100,7 @@ if($Tipo == 1){ // ramais internos
             $Nome = "";
         }
 
-        $CodNome = filter_input(INPUT_GET, 'codnomecompl');
+        $CodNome = filter_input(INPUT_GET, 'codnomecompl'); // id de poslog
         if(is_null($CodNome)){
             $CodNome = 0;
         }
@@ -149,6 +151,7 @@ if($Tipo == 1){ // ramais internos
     }
 }
 
+
 if($Tipo == 2){ // ramais externos
     if($Acao=="buscaRamal"){
         $Num = (int) filter_input(INPUT_GET, 'numero'); // id
@@ -168,8 +171,8 @@ if($Tipo == 2){ // ramais externos
     
     if($Acao=="salvaRamal"){
         $id = (int) filter_input(INPUT_GET, 'numero');
-        $SiglaEmpresa = filter_input(INPUT_GET, 'SiglaEmpresa');  //$_REQUEST["nome"];
-        $NomeEmpresa = filter_input(INPUT_GET, 'NomeEmpresa');
+        $SiglaEmpresa = trim(filter_input(INPUT_GET, 'SiglaEmpresa'));  //$_REQUEST["nome"];
+        $NomeEmpresa = trim(filter_input(INPUT_GET, 'NomeEmpresa'));
         $Setor = filter_input(INPUT_GET, 'Setor');
         $TelefoneFixo = filter_input(INPUT_GET, 'TelefoneFixo');
         $TelefoneCel = filter_input(INPUT_GET, 'TelefoneCel');

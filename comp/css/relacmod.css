@@ -291,7 +291,17 @@
     color: white;
     background-color: blue;
  }
- .botpadr:hover, .botpadrred:hover, .botpadrblue:hover {
+ .botpadrTijolo{
+    text-align: center;
+    padding-left: 15px;
+    padding-right: 15px; 
+    border-radius: 5px;
+    font-size: 80%;
+    font-weight: bold;
+    color: white;
+    background-color: #8B2500;
+ }
+ .botpadr:hover, .botpadrred:hover, .botpadrblue:hover, .botpadrTijolo:hover {
     border-radius: 10px;
 }
 
@@ -348,7 +358,6 @@
     border: 2px solid red;
     border-radius: 2px;
 }
-
 /* Botão fechar */
 .close{
     color: #aaa;

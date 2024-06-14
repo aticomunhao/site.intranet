@@ -43,7 +43,8 @@ if(!isset($_SESSION["usuarioID"])){
                 color: black;
             }
         </style>
-        <script>
+
+        <script type="text/javascript">
             function ajaxIni(){
                 try{
                 ajax = new ActiveXObject("Microsoft.XMLHTTP");}
@@ -60,15 +61,17 @@ if(!isset($_SESSION["usuarioID"])){
                    }
                 }
             }
+
             $(document).ready(function(){
-                if(parseInt(document.getElementById("guardaInsArCond").value) === 1 || parseInt(document.getElementById("guardaFiscArCond").value) === 1){
+                if(parseInt(document.getElementById("guardaInsArCond").value) === 1 || parseInt(document.getElementById("guardaFiscArCond").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
                     $("#faixacentral").load("modulos/controleAr/relAr.php?acao=todos&ano="+document.getElementById("selectAno").value);
-                    if(parseInt(document.getElementById("guardaInsArCond").value) === 0){ //Só fiscaliza
+                    if(parseInt(document.getElementById("guardaInsArCond").value) === 0 && parseInt(document.getElementById("UsuAdm").value) < 7){ //Só fiscaliza
                         document.getElementById("botinserir").disabled = true;
                     }
                 }else{
                     document.getElementById("selectAno").disabled = true;
                     document.getElementById("botinserir").disabled = true;
+                    document.getElementById("botimpr").disabled = true;
                     document.getElementById("faixaMensagem").style.display = "block";
                 }
 
@@ -168,7 +171,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function buscaData(Cod, InsEdit){ // Cod é o id de visitas_ar - O guardaid fica com o id de controle_ar pq vem do click na linha DataTable
-                if(parseInt(document.getElementById("guardaInsArCond").value) === 0){
+                if(parseInt(document.getElementById("guardaInsArCond").value) === 0 && parseInt(document.getElementById("UsuAdm").value) < 7){
                     $.confirm({
                         title: 'Informação!',
                         content: 'Usuário não autorizado.',
@@ -485,7 +488,6 @@ if(!isset($_SESSION["usuarioID"])){
                             };
                             ajax.send(null);
                         }
-                    
                 }else{
                     document.getElementById("relacmodalLocal").style.display = "none";
                 }
@@ -736,6 +738,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
         <input type="hidden" id="guardaHoje" value="<?php echo $Hoje; ?>" />
         <input type="hidden" id="guardaInsArCond" value="<?php echo $InsArCond; ?>" />
         <input type="hidden" id="guardaFiscArCond" value="<?php echo $FiscArCond; ?>" />
+        <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
 
         <!-- div para inserção novo aparelho  -->
         <div id="relacmodalControle" class="relacmodal">

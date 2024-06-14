@@ -197,7 +197,7 @@ if(!isset($_SESSION["usuarioID"])){
                         $form.find('.progress-bar').addClass('progress-bar-success').html('...');
                         //Atualizar a página após o upload completo
 //                      setTimeout("window.open(self.location, '_self');", 5000);
-                      setTimeout("$('#relArquivos').load('modulos/trafego/carRelTraf.php')", 3000); // recarrega a div com a relação dos arquivos carregados
+                      setTimeout("$('#relArquivos').load('modulos/trafego/carRelTraf.php')", 1000); // recarrega a div com a relação dos arquivos carregados
                       setTimeout("$form.find('.progress-bar').width( 0 + '%').html( 0 + '%')", 1000); //faz voltar a barra de progresso
 
                         $('#msg').fadeIn(2000);
