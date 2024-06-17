@@ -96,7 +96,16 @@ if(!isset($_SESSION['AdmUsu'])){
         $pdf->MultiCell(150, 3, "Controle do Consumo de Água", 0, 'C', false);
     }
     if($Acao == "listamesEletric" || $Acao == "listaanoEletric"){
-        $pdf->MultiCell(150, 3, "Controle do Consumo de Energia Elétrica", 0, 'C', false);
+        $Colec = (int) filter_input(INPUT_GET, 'colec'); 
+        if($Colec == 1){
+            $pdf->MultiCell(150, 3, "Controle do Consumo de Energia Elétrica - Comunhão", 0, 'C', false);
+        }
+        if($Colec == 2){
+            $pdf->MultiCell(150, 3, "Controle do Consumo de Energia Elétrica - Operadora Claro", 0, 'C', false);
+        }
+        if($Colec == 3){
+            $pdf->MultiCell(150, 3, "Controle do Consumo de Energia Elétrica - Operadora Oi", 0, 'C', false);
+        }
     }
 
     $pdf->SetTextColor(0, 0, 0);
@@ -106,7 +115,7 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->Line(10, $lin, 200, $lin);
 
 
-    $rs = pg_query($Conec, "SELECT valoriniagua, TO_CHAR(datainiagua, 'YYYY/MM/DD'), valorinieletric, TO_CHAR(datainieletric, 'YYYY/MM/DD') FROM ".$xProj.".paramsis WHERE idpar = 1 ");
+    $rs = pg_query($Conec, "SELECT valoriniagua, TO_CHAR(datainiagua, 'YYYY/MM/DD'), valorinieletric, TO_CHAR(datainieletric, 'YYYY/MM/DD'), valorinieletric2, TO_CHAR(datainieletric2, 'YYYY/MM/DD'), valorinieletric3, TO_CHAR(datainieletric3, 'YYYY/MM/DD') FROM ".$xProj.".paramsis WHERE idpar = 1 ");
     $row = pg_num_rows($rs);
     if($row > 0){
         $tbl = pg_fetch_row($rs);
@@ -114,6 +123,10 @@ if(!isset($_SESSION['AdmUsu'])){
         $DataIniAgua = $tbl[1];
         $ValorIniEletric = $tbl[2];
         $DataIniEletric = $tbl[3];
+        $ValorIniEletric2 = $tbl[4];
+        $DataIniEletric2 = $tbl[5];
+        $ValorIniEletric3 = $tbl[6];
+        $DataIniEletric3 = $tbl[7];
     }
 
     if($Acao == "listamesAgua"){
@@ -419,25 +432,16 @@ if(!isset($_SESSION['AdmUsu'])){
                             $pdf->SetX(160); 
                             $pdf->Cell(26, 5, number_format(($Cons1+$Cons2+$Cons3), 3, ",",".")." m3", 0, 1, 'R');
 
-
-
-
                             $lin = $pdf->GetY();
                             $pdf->SetDrawColor(200); // cinza claro                
                             $pdf->Line(10, $lin, 200, $lin);
                         }
-//                        $pdf->ln(20);
                     }
-                
-
-
             }else{
                 $pdf->SetFont('Arial', '', 10);
                 $pdf->ln(10);
                 $pdf->Cell(20, 4, "Ndenhum registro encontrado. Informe à ATI,", 0, 1, 'L');
             }
-
-
         }else{
             $pdf->SetFont('Arial', '', 10);
             $pdf->ln(10);
@@ -448,6 +452,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
     if($Acao == "listamesEletric"){
         $Busca = addslashes(filter_input(INPUT_GET, 'mesano')); 
+        $Colec = (int) filter_input(INPUT_GET, 'colec'); 
 		$pdf->SetTitle('Relação Mensal Eletricidade', $isUTF8=TRUE);
         $Proc = explode("/", $Busca);
         $Mes = $Proc[0];
@@ -455,9 +460,20 @@ if(!isset($_SESSION['AdmUsu'])){
             $Mes = "0".$Mes;
         }
         $Ano = $Proc[1];
+        if($Colec == 2){
+            $ValorIniEletric = $ValorIniEletric2; 
+            $DataIniEletric = $DataIniEletric2;
+        }
+        if($Colec == 3){
+            $ValorIniEletric = $ValorIniEletric3; 
+            $DataIniEletric = $DataIniEletric3;
+        }
 
         if($ValorIniEletric > 0 && !is_null($DataIniEletric)){
-            $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(dataleitura, 'DD/MM/YYYY'), date_part('dow', dataleitura), leitura1, dataleitura FROM ".$xProj.".leitura_eletric WHERE ativo = 1 And DATE_PART('MONTH', dataleitura) = '$Mes' And DATE_PART('YEAR', dataleitura) = '$Ano' ORDER BY dataleitura ");
+            $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(dataleitura".$Colec.", 'DD/MM/YYYY'), date_part('dow', dataleitura".$Colec."), leitura".$Colec.", dataleitura".$Colec." 
+            FROM ".$xProj.".leitura_eletric 
+            WHERE colec = $Colec And ativo = 1 And DATE_PART('MONTH', dataleitura".$Colec.") = '$Mes' And DATE_PART('YEAR', dataleitura".$Colec.") = '$Ano' 
+            ORDER BY dataleitura".$Colec." ");
             $row0 = pg_num_rows($rs0);
             $Cont = 0;
             $Leit24Ant = 0;
@@ -493,7 +509,7 @@ if(!isset($_SESSION['AdmUsu'])){
                     if(strtotime($DataLinha) == strtotime($DataIniEletric)){ // "2024-03-01"
                         $Leit24Ant = $ValorIniEletric;  //1696.485;
                     }else{
-                        $rs1 = pg_query($Conec, "SELECT leitura1 FROM ".$xProj.".leitura_eletric WHERE dataleitura = (date '$DataLinha' - 1) And ativo = 1");
+                        $rs1 = pg_query($Conec, "SELECT leitura".$Colec." FROM ".$xProj.".leitura_eletric WHERE dataleitura".$Colec." = (date '$DataLinha' - 1) And colec = $Colec And ativo = 1");
                         $row1 = pg_num_rows($rs1);
                         if($row1 > 0){
                             $tbl1 = pg_fetch_row($rs1);
@@ -519,10 +535,10 @@ if(!isset($_SESSION['AdmUsu'])){
                 }
 
                 //Estatística
-                $rs1 = pg_query($Conec, "SELECT DATE_PART('MONTH', dataleitura), COUNT(id), SUM(leitura1) 
+                $rs1 = pg_query($Conec, "SELECT DATE_PART('MONTH', dataleitura".$Colec."), COUNT(id), SUM(leitura".$Colec.") 
                 FROM ".$xProj.".leitura_eletric 
-                WHERE dataleitura IS NOT NULL And leitura1 != 0  And DATE_PART('MONTH', dataleitura) = '$Mes' And DATE_PART('YEAR', dataleitura) = '$Ano'
-                GROUP BY DATE_PART('MONTH', dataleitura) ORDER BY DATE_PART('MONTH', dataleitura) DESC ");
+                WHERE dataleitura".$Colec." IS NOT NULL And leitura".$Colec." != 0  And DATE_PART('MONTH', dataleitura".$Colec.") = '$Mes' And DATE_PART('YEAR', dataleitura".$Colec.") = '$Ano'
+                GROUP BY DATE_PART('MONTH', dataleitura".$Colec.") ORDER BY DATE_PART('MONTH', dataleitura".$Colec.") DESC ");
 
                 $row1 = pg_num_rows($rs1);
                 if($row1 > 0){
@@ -531,8 +547,8 @@ if(!isset($_SESSION['AdmUsu'])){
                         $QuantDias = $tbl1[1];
                         $SomaLeitAnt = 0;
                         $SomaLeit1 = 0;
-                        $rs2 = pg_query($Conec, "SELECT dataleitura, leitura1 FROM ".$xProj.".leitura_eletric 
-                        WHERE DATE_PART('MONTH', dataleitura) = $Mes And DATE_PART('YEAR', dataleitura) = '$Ano' And ativo = 1 And leitura1 != 0 ");
+                        $rs2 = pg_query($Conec, "SELECT dataleitura".$Colec.", leitura".$Colec." FROM ".$xProj.".leitura_eletric 
+                        WHERE DATE_PART('MONTH', dataleitura".$Colec.") = $Mes And DATE_PART('YEAR', dataleitura".$Colec.") = '$Ano' And colec = $Colec And ativo = 1 And leitura".$Colec." != 0 ");
                         $row2 = pg_num_rows($rs2);
                         if($row2 > 0){
                             while($tbl2 = pg_fetch_row($rs2) ){
@@ -544,8 +560,7 @@ if(!isset($_SESSION['AdmUsu'])){
                                 }
         
                                 if($DataLinha != $DataIniEletric){
-                                    $rs3 = pg_query($Conec, "SELECT leitura1 FROM ".$xProj.".leitura_eletric 
-                                    WHERE dataleitura = (date '$DataLinha' - 1) And ativo = 1 And leitura1 != 0");
+                                    $rs3 = pg_query($Conec, "SELECT leitura".$Colec." FROM ".$xProj.".leitura_eletric WHERE dataleitura".$Colec." = (date '$DataLinha' - 1) And colec = $Colec And ativo = 1 And leitura".$Colec." != 0");
                                     $tbl3 = pg_fetch_row($rs3);
                                     $row3 = pg_num_rows($rs3);
                                     if($row3 > 0){
@@ -597,7 +612,17 @@ if(!isset($_SESSION['AdmUsu'])){
 
     if($Acao == "listaanoEletric"){
         $Ano = addslashes(filter_input(INPUT_GET, 'ano')); 
+        $Colec = (int) filter_input(INPUT_GET, 'colec'); 
 		$pdf->SetTitle('Relação Anual Eletricidade', $isUTF8=TRUE);
+        if($Colec == 2){
+            $ValorIniEletric = $ValorIniEletric2; 
+            $DataIniEletric = $DataIniEletric2;
+        }
+        if($Colec == 3){
+            $ValorIniEletric = $ValorIniEletric3; 
+            $DataIniEletric = $DataIniEletric3;
+        }
+
         if($ValorIniEletric > 0 && !is_null($DataIniEletric)){
             $pdf->ln(7);
             $pdf->SetFont('Arial', 'I', 14);
@@ -616,10 +641,10 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->SetDrawColor(200); // cinza claro                
             $pdf->Line(10, $lin, 200, $lin);
 
-                $rs1 = pg_query($Conec, "SELECT DATE_PART('MONTH', dataleitura), COUNT(id), SUM(leitura1) 
+                $rs1 = pg_query($Conec, "SELECT DATE_PART('MONTH', dataleitura".$Colec."), COUNT(id), SUM(leitura".$Colec.") 
                 FROM ".$xProj.".leitura_eletric 
-                WHERE dataleitura IS NOT NULL And leitura1 != 0  And DATE_PART('YEAR', dataleitura) = '$Ano'
-                GROUP BY DATE_PART('MONTH', dataleitura) ORDER BY DATE_PART('MONTH', dataleitura) ");
+                WHERE dataleitura".$Colec." IS NOT NULL And leitura".$Colec." != 0  And DATE_PART('YEAR', dataleitura".$Colec.") = '$Ano'
+                GROUP BY DATE_PART('MONTH', dataleitura".$Colec.") ORDER BY DATE_PART('MONTH', dataleitura".$Colec.") ");
 
                 $row1 = pg_num_rows($rs1);
                 $SomaAno = 0;
@@ -630,8 +655,8 @@ if(!isset($_SESSION['AdmUsu'])){
                         $SomaLeit1 = 0;
                         $SomaLeitAnt = 0;
 
-                        $rs2 = pg_query($Conec, "SELECT dataleitura, leitura1 FROM ".$xProj.".leitura_eletric 
-                        WHERE DATE_PART('MONTH', dataleitura) = $Mes And DATE_PART('YEAR', dataleitura) = '$Ano' And ativo = 1 And leitura1 != 0 ");
+                        $rs2 = pg_query($Conec, "SELECT dataleitura".$Colec.", leitura".$Colec." FROM ".$xProj.".leitura_eletric 
+                        WHERE DATE_PART('MONTH', dataleitura".$Colec.") = $Mes And DATE_PART('YEAR', dataleitura".$Colec.") = '$Ano' And colec = $Colec And ativo = 1 And leitura".$Colec." != 0 ");
                         $row2 = pg_num_rows($rs2);
                         if($row2 > 0){
                             while($tbl2 = pg_fetch_row($rs2) ){
@@ -644,7 +669,7 @@ if(!isset($_SESSION['AdmUsu'])){
                                 }
         
                                 if($DataLinha != $DataIniEletric){
-                                    $rs3 = pg_query($Conec, "SELECT leitura1 FROM ".$xProj.".leitura_eletric WHERE dataleitura = (date '$DataLinha' - 1) And ativo = 1 And leitura1 != 0");
+                                    $rs3 = pg_query($Conec, "SELECT leitura".$Colec." FROM ".$xProj.".leitura_eletric WHERE dataleitura".$Colec." = (date '$DataLinha' - 1) And colec = $Colec And ativo = 1 And leitura".$Colec." != 0");
                                     $tbl3 = pg_fetch_row($rs3);
                                     $row3 = pg_num_rows($rs3);
                                     if($row3 > 0){

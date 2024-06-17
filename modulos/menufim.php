@@ -22,6 +22,9 @@
 				});
 //var versaoJquery = $.fn.jquery; 
 //alert(versaoJquery);
+				if(parseInt(document.getElementByid("guardaAdm").value) > 6){
+					document.getElementByid("atualiz").innerHTML = "Atualização0020";
+				}
             });
         </script>
     </head>
@@ -66,6 +69,7 @@
 				return false;
             }
         ?>
+		
 		<input type="hidden" id="guardadiasemana" value="<?php echo $diaSemana; ?>"/>		
 		<input type="hidden" id="guardaAdm" value="<?php echo $Adm; ?>"/>	
 		<!-- menu para as páginas seguintes  -->
@@ -149,11 +153,13 @@
 						echo "<li>";
 							echo "<a href='#' onclick='openhref(62);'>Atualizar Senha</a>";
 						echo "</li>";
-
-						echo "<li>";
-							echo "<a href='#' onclick='openhref(64);'>Bens Encontrados</a>";
-						echo "</li>";
-
+						if(isset($_SESSION["AdmBens"])){
+							if($_SESSION["AdmBens"] == 1 || $_SESSION["FiscBens"] == 1 || $_SESSION["AdmUsu"] > 6){ 
+								echo "<li>";
+									echo "<a href='#' onclick='openhref(64);'>Bens Encontrados</a>";
+								echo "</li>";
+							}
+						}
 						if($Adm > 6){
 							echo "<li>";
 					   			echo "<a href='#' onclick='openhref(61);'>Cadastro de Usuários</a>";
@@ -170,7 +176,18 @@
 								echo "<a href='#' onclick='openhref(34);'>Água</a>";
 								echo "</li>";
 								echo "<li>";
-								echo "<a href='#' onclick='openhref(35);'>Eletricidade</a>";
+								echo "<a href='#'>Eletricidade</a>";
+								echo "<ul>";
+									echo "<li>";
+									echo "<a href='#' onclick='openhref(35);'>Comunhão</a>";
+									echo "</li>";
+									echo "<li>";
+									echo "<a href='#' onclick='openhref(67);'>Operadora Claro</a>";
+									echo "</li>";
+									echo "<li>";
+									echo "<a href='#' onclick='openhref(68);'>Operadora Oi</a>";
+									echo "</li>";
+								echo "</ul>";
 								echo "</li>";
 								echo "<li>";
 								echo "<a href='#' onclick='openhref(65);'>Ar Condicionado</a>";
@@ -198,12 +215,7 @@
 				echo "</li>";
 
 			?>
-            <li style="border-right: 0; border-left: 0px;">
-				<a href="#"><br></a>
-			</li>
-            <li style="border-right: 0; border-left: 0px;">
-				<a href="#"><br></a>
-			</li>
+
             <li style="border-right: 0; border-left: 0px;">
 				<?php
 					if($Adm < 4){

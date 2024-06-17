@@ -13,7 +13,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         </script>
     </head>
     <body>
-        <div style="text-align: center;"><label class="titRelat">Controle do Consumo de Eletricidade da Comunhão<label></div>
+        <div style="text-align: center;"><label class="titRelat">Controle do Consumo de Eletricidade da Operadora Claro<label></div>
         <?php
         $mes_extenso = array(
             '1' => 'Janeiro',
@@ -29,7 +29,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             '11' => 'Outubro',
             '12' => 'Dezembro'
         ); 
-        $rs = pg_query($Conec, "SELECT valorinieletric, TO_CHAR(datainieletric, 'YYYY/MM/DD') FROM ".$xProj.".paramsis WHERE idpar = 1 ");
+        $rs = pg_query($Conec, "SELECT valorinieletric2, TO_CHAR(datainieletric2, 'YYYY/MM/DD') FROM ".$xProj.".paramsis WHERE idpar = 1 ");
         $row = pg_num_rows($rs);
         if($row > 0){
             $tbl = pg_fetch_row($rs);
@@ -42,10 +42,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             return false;
         }
 
-        $rs1 = pg_query($Conec, "SELECT DATE_PART('MONTH', dataleitura1), COUNT(id), SUM(leitura1) 
+        $rs1 = pg_query($Conec, "SELECT DATE_PART('MONTH', dataleitura2), COUNT(id), SUM(leitura2) 
         FROM ".$xProj.".leitura_eletric 
-        WHERE colec = 1 And dataleitura1 IS NOT NULL And leitura1 != 0 
-        GROUP BY DATE_PART('MONTH', dataleitura1) ORDER BY DATE_PART('MONTH', dataleitura1) DESC ");
+        WHERE colec = 2 And dataleitura2 IS NOT NULL And leitura2 != 0 
+        GROUP BY DATE_PART('MONTH', dataleitura2) ORDER BY DATE_PART('MONTH', dataleitura2) DESC ");
 
         $row1 = pg_num_rows($rs1);
         if($row1 > 0){
@@ -57,11 +57,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 $SomaLeit1 = 0;
                 $SomaLeitAnt = 0;
 
-                $rs2 = pg_query($Conec, "SELECT dataleitura1, leitura1 FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura1) = $Mes And colec = 1 And ativo = 1 And leitura1 != 0 ");
+                $rs2 = pg_query($Conec, "SELECT dataleitura2, leitura2 FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura2) = $Mes And colec = 2 And ativo = 1 And leitura2 != 0 ");
                 $row2 = pg_num_rows($rs2);
                 if($row2 > 0){
                     while($tbl2 = pg_fetch_row($rs2) ){
-                        $DataLinha = $tbl2[0]; // dataleitura1
+                        $DataLinha = $tbl2[0]; // dataleitura2
                         $SomaLeit1 = $SomaLeit1+$tbl2[1];
 
                         if(strtotime($DataLinha) == strtotime($DataIni)){ // datainieletric em cesb.paramsis
@@ -69,7 +69,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         }
 
                         if($DataLinha != $DataIni){
-                            $rs3 = pg_query($Conec, "SELECT leitura1 FROM ".$xProj.".leitura_eletric WHERE dataleitura1 = (date '$DataLinha' - 1) And colec = 1 And ativo = 1 And leitura1 != 0");
+                            $rs3 = pg_query($Conec, "SELECT leitura2 FROM ".$xProj.".leitura_eletric WHERE dataleitura2 = (date '$DataLinha' - 1) And colec = 2 And ativo = 1 And leitura2 != 0");
                             $tbl3 = pg_fetch_row($rs3);
                             $row3 = pg_num_rows($rs3);
                             if($row3 > 0){

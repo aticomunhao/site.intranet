@@ -37,7 +37,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             $DataIni = $tbl[1];
         }
         if($ValorIni == 0 || is_null($DataIni)){
-            echo "É necessário inserir os valores iniciais da medição nos parâmetros do sistema. Informe à ATi,";
+            echo "<div style='text-align: center;'>É necessário inserir os valores iniciais da medição nos parâmetros do sistema.</div>";
+            echo "<div style='text-align: center;'>Informe à ATI.</div>";
             return false;
         }
 

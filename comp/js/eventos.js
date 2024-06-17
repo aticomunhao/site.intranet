@@ -69,6 +69,13 @@ function openhref(Num){
         window.open("modulos/config/info.php", '_blank');
     }
 
+    if(parseInt(Num) === 67){
+        $('#container3').load('modulos/leituras/pag_eletric2.php');
+    }
+    if(parseInt(Num) === 68){
+        $('#container3').load('modulos/leituras/pag_eletric3.php');
+    }
+
 
     if(parseInt(Num) === 30){
         $('#container3').load('modulos/trafego/PagArq.php');

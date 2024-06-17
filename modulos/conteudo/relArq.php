@@ -92,6 +92,7 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 }
             }
+            
             function guardaArq(Cod){
                 document.getElementById("guardaCod").value = Cod;
             }

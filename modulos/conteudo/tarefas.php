@@ -85,6 +85,14 @@ if(!isset($_SESSION["usuarioID"])){
                 border-radius: 15px;
                 width: 50%; /* acertar de acordo com a tela */
             }
+            .modalTransf-content{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 7% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 60%;
+            }
             /* Botão fechar */
             .close{
                 color: #aaa;
@@ -265,6 +273,17 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("mudou").value = "0";
                                         document.getElementById("relacmodalTarefa").style.display = "none";
                                         $('#container3').load('modulos/conteudo/tarefas.php');
+                                    }else if(parseInt(Resp.coderro) === 2){
+                                        $.confirm({
+                                            title: 'Atenção!',
+                                            content: 'Esta tarefa já foi dada para o mesmo usuário.',
+                                            draggable: true,
+                                            buttons: {
+                                                OK: function(){}
+                                            }
+                                        });
+                                        return false;
+                                    
                                     }else{
                                         alert("Houve um erro no servidor.");
                                         document.getElementById("relacmodalTarefa").style.display = "none";
@@ -351,7 +370,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-            function fechaModalMsg(){ // marca mensagem como lidas
+            function fechaModalMsg(){ // marca mensagem como lida
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/conteudo/salvaTarefa.php?acao=marcalidas&numtarefa="+document.getElementById("guardaidEdit").value+"&nomeusuario="+document.getElementById("nome_Logado").value, true);
@@ -371,10 +390,97 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 document.getElementById("relacmodalMsg").style.display = "none";
             }
+
+            function carregaTransf(){
+                $("#faixacentralTransf").load("modulos/conteudo/transfTarefa.php");
+                document.getElementById("relacmodalTransf").style.display = "block";
+            }
+
+            function tranfereTarefa(){
+                if(document.getElementById("TransfUsuSelect").value == ""){
+                    $.confirm({
+                        title: 'Atenção!',
+                        content: 'Selecione um usuário para transferir o acompanhamento das tarefas.',
+                        draggable: true,
+                        buttons: {
+                            OK: function(){}
+                        }
+                    });
+                    return false;
+                }
+                //Procura se tem algum marcado
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/conteudo/salvaTarefa.php?acao=procuramarcas&codigo="+document.getElementById("TransfUsuSelect").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.contagem) > 0){
+                                if(parseInt(Resp.marcas) === 0){
+                                    $.confirm({
+                                        title: 'Atenção!',
+                                        content: 'Nenhuma tarefa foi marcada. Clique na caixinha à esquerda da tarefa para selecionar.',
+                                        draggable: true,
+                                        buttons: {
+                                            OK: function(){}
+                                        }
+                                    });
+                                    return false;
+                                }else{
+                                    $.confirm({
+                                        title: 'Transferir Tarefas',
+                                        content: 'Confirma tansferir as tarefas selecionadas para <br>'+Resp.nomecompleto+'?',
+                                        autoClose: 'Não|10000',
+                                        draggable: true,
+                                        buttons: {
+                                            Sim: function () {
+                                                ajaxIni();
+                                                if(ajax){
+                                                        ajax.open("POST", "modulos/conteudo/salvaTarefa.php?acao=transferemarcas&codigo="+document.getElementById("TransfUsuSelect").value, true);
+                                                        ajax.onreadystatechange = function(){
+                                                            if(ajax.readyState === 4 ){
+                                                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                                                    document.getElementById("relacmodalTransf").style.display = "none";
+                                                                    $('#container3').load('modulos/conteudo/tarefas.php');
+                                                                }
+                                                            }
+                                                            };
+                                                            ajax.send(null);
+                                                }
+                                            },
+                                            Não: function () {}
+                                        }
+                                    });
+                                }
+                            }else{
+                                $.confirm({
+                                    title: 'Atenção!',
+                                    content: 'Nenhuma tarefa em andamento.',
+                                    draggable: true,
+                                    buttons: {
+                                        OK: function(){}
+                                    }
+                                });
+                                return false;
+                            }
+                            }
+                        }
+                    
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function fechaModalTransf(){
+                document.getElementById("relacmodalTransf").style.display = "none";
+            }
         </script>
     </head>
     <body>
-    <?php
+        <?php
         require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
         $Adm = $_SESSION["AdmUsu"];
@@ -383,9 +489,11 @@ if(!isset($_SESSION["usuarioID"])){
 
         $admIns = parAdm("instarefa", $Conec, $xProj);   // nível para inserir
         $admEdit = parAdm("edittarefa", $Conec, $xProj); // nível para editar
+        $VerTarefas = parAdm("vertarefa", $Conec, $xProj); // ver tarefas   1: todos - 2: só mandante e executante
 
         //Relacionar usuários - adm <= $Adm - só paga tarefa para nível adm menor ou igual
         $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE adm <= $Adm ORDER BY nomecompl");
+        $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE adm >= $admIns And pessoas_id != $UsuLogadoId ORDER BY nomecompl");
 
         //marca que foi visualizado nesta data - dataSit1
         pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit1 = NOW() WHERE usuexec = ".$_SESSION["usuarioID"]." And datasit1 = '3000/12/31' And ativo = 1");
@@ -405,8 +513,26 @@ if(!isset($_SESSION["usuarioID"])){
         <div class="container" style="margin: 0 auto;">
             <div class="row">
                 <div class="col quadro" style="margin: 0 auto;"> <input type="button" class="botpadr" id="botinserir" value="Inserir" onclick="abreModal();"></div>
-                <div class="col-1"></div> <!-- Central - espaçamento entre colunas  -->
-                <div class="col quadro" style="margin: 0 auto; text-align: right;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpTarefas();" title="Guia rápido"></div> 
+
+                <div class="col" style="text-align: center;">
+                    <?php
+                    if($VerTarefas == 1){
+                        echo "Mostrando todas as Tarefas";
+                    }else{
+                        echo "Visualização Estrita";
+                        if($_SESSION["AdmUsu"] > 6){
+                            echo "<br>Superusuário visualiza todas as tarefas";
+                        }    
+                    }
+                    ?>
+
+                </div> <!-- Central - espaçamento entre colunas  -->
+
+                <div class="col quadro" style="margin: 0 auto; text-align: right;">
+                    <button class="botpadr" id="botTransfIns" onclick="carregaTransf();" title="Transferir tarefas designadas para acompanhamento por outro usuário">Transferir</button>
+                    <label style="padding-left: 20px;"></label>
+                    <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpTarefas();" title="Guia rápido">
+                </div> 
             </div>
         </div>
 
@@ -419,12 +545,20 @@ if(!isset($_SESSION["usuarioID"])){
                 WHERE ".$xProj.".tarefas.ativo > 0  
                 ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
             }else{
-                $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
-                FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
-                WHERE ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.usuexec = $UsuLogadoId Or ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.usuins = $UsuLogadoId
-                ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
+                if($VerTarefas == 1){
+                    //Liberar a visualização das tarefas para todos
+                    $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
+                    FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
+                    WHERE ".$xProj.".tarefas.ativo > 0  
+                    ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
+                }else{ // visualização só mandante e executante
+                    $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
+                    FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
+                    WHERE ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.usuexec = $UsuLogadoId Or ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.usuins = $UsuLogadoId
+                    ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
+                }
             }
-//echo "usulogadoid ".$UsuLogadoId;
+
             $row = pg_num_rows($resultT);
             ?>
             <table style="margin: 0 auto; border: 0; width: 80%;" >
@@ -731,6 +865,39 @@ if(!isset($_SESSION["usuarioID"])){
                 <div id="faixacentral" style='border: 1px solid; border-radius: 10px;'></div> <!-- aqui entra jTarefa.php -->
             </div>
         </div>  <!-- Fim Modal Mensagens-->
+
+
+        <!-- div modal para transferência das tarefas que designei para outro usário acompanhar -->
+        <div id="relacmodalTransf" class="relacmodal">  <!-- ("close")[0] -->
+            <div class="modalTransf-content">
+                <span class="close" onclick="fechaModalTransf();">&times;</span>
+                <h3 id="tituloMsgTransf" style="text-align: center; color: #666;">Transferir Tarefas</h3>
+                <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
+                    <table>
+                        <tr>
+                            <td class="etiq">Transferir o acompanhamento das Tarefas para: </td>
+                            <td>
+                                <select id="TransfUsuSelect" style="font-size: 1rem; min-width: 300px;" title="Selecione um usuário.">
+                                    <option value= ""></option>
+                                    <?php 
+                                    if($OpcoesTransf){
+                                        while ($Opcoes = pg_fetch_row($OpcoesTransf)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                            <td style="padding-left: 20px;"><button class="botpadr" id="botTransfTar" onclick="tranfereTarefa();" title="Transferir tarefas designadas para acompanhamento por outro usuário">Transferir</button></td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="faixacentralTransf" style='border: 1px solid; border-radius: 10px;'></div> <!-- aqui entra jTarefa.php -->
+            </div>
+        </div>  <!-- Fim Modal Mensagens-->
+
+
 
         <!-- div modal para leitura instruções -->
         <div id="relacHelpTarefas" class="relacmodal">

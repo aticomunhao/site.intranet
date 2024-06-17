@@ -184,11 +184,11 @@ session_start();
                 document.getElementById("relacmodal").style.display = "block";
             }
 
-            function buscaNome(){
+            function buscaNome(Arq){
                 document.getElementById("guardaid_click").value = 0;
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/salvaRamais.php?acao=buscaNome&tipo=1&numero="+document.getElementById("codnomecompl").value, true); // tipo 1 = ramal interno
+                    ajax.open("POST", "modulos/salvaRamais.php?acao=buscaNome&tipo=1&arquivo="+Arq+"&numero="+document.getElementById("codnomecompl").value, true); // tipo 1 = ramal interno
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -284,8 +284,14 @@ session_start();
         $Tipo = (int) filter_input(INPUT_GET, 'tipo');
         $admIns = parAdm("insramais", $Conec, $xProj);   // nível para inserir 
         $admEdit = parAdm("editramais", $Conec, $xProj); // nível para editar
-//        $OpNomes = pg_query($ConecPes, "SELECT id, nome_completo FROM ".$xPes.".pessoas WHERE status = 1 ORDER BY nome_completo"); // supõe-se que haverá milhares de nomes
-        $OpNomes = pg_query($Conec, "SELECT id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
+
+        $BuscaNomes = 0;
+        $OpNomes = pg_query($ConecPes, "SELECT id, nome_completo FROM ".$xPes.".pessoas WHERE status = 1 ORDER BY nome_completo"); // supõe-se que haverá milhares de nomes
+        $row = pg_num_rows($OpNomes);
+        if($row > 2000){
+            $OpNomes = pg_query($Conec, "SELECT id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
+            $BuscaNomes = 1;
+        }
 
         $OpSetor = pg_query($ConecPes, "SELECT id, sigla FROM ".$xPes.".setor WHERE dt_fim IS NULL ORDER BY sigla");
         if(!isset($_SESSION["AdmUsu"])){
@@ -361,7 +367,7 @@ session_start();
                     <tr>
                         <td id="etiqNomeCompl" class="etiq">Nome Completo</td>
                         <td>
-                            <select id="codnomecompl" onchange="buscaNome();" style="font-size: 1rem; width: 22px;" title="Selecione um usuário.">
+                            <select id="codnomecompl" onchange="buscaNome(<?php echo $BuscaNomes; ?>);" style="font-size: 1rem; width: 22px;" title="Selecione um usuário.">
                                 <option value="0"></option>
                                 <?php 
                                 if($OpNomes){

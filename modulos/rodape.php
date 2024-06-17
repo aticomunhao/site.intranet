@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
     <title></title>
@@ -9,7 +12,7 @@
         $AnoIni = date("Y"); 
         echo $AnoIni;
         ?>
-        ATI
+        ATI <label style="font-size: 90%;">-a0021 </label>
         </div>
         <div style="padding-right: 20px; position: relative; float: right;">
             Comunhão Espírita de Brasília

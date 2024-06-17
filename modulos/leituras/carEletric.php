@@ -33,15 +33,16 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     }
                 }
             });
+
             $(document).ready(function(){
+                $("#insdata").mask("99/99/9999");
                 $('#insdata').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
             });
 
-//            $("#insdata").mask("99/99/9999");  // esse tipo de datepicker não deixa digitar
         </script>
     </head>
     <body> 
-        <div  style="text-align: center;"><label class="titRelat">Leituras Medidor Eletricidade <label></div>
+        <div  style="text-align: center;"><label class="titRelat">Leituras Medidor Eletricidade da Comunhão <label></div>
             <?php 
                 date_default_timezone_set('America/Sao_Paulo');
                 $admIns = parAdm("insleituraeletric", $Conec, $xProj);   // nível para inserir 
@@ -55,10 +56,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     $DataIni = $tbl[1];
                 }
                 if($ValorIni == 0 || is_null($DataIni)){
-                    echo "É necessário inserir os valores iniciais da medição nos parâmetros do sistema. Informe à ATi,";
+                    echo "<div style='text-align: center;'>É necessário inserir os valores iniciais da medição nos parâmetros do sistema.</div>";
+                    echo "<div style='text-align: center;'>Informe à ATI.</div>";
                     return false;
                 }
-                $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(dataleitura, 'DD/MM/YYYY'), date_part('dow', dataleitura), leitura1, dataleitura FROM ".$xProj.".leitura_eletric WHERE ativo = 1 ORDER BY dataleitura DESC ");
+                $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(dataleitura1, 'DD/MM/YYYY'), date_part('dow', dataleitura1), leitura1, dataleitura1 FROM ".$xProj.".leitura_eletric WHERE colec = 1 And ativo = 1 ORDER BY dataleitura1 DESC ");
                 $row0 = pg_num_rows($rs0);
                 $Cont = 0;
                 $Leit24Ant = 0;
@@ -109,7 +111,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                 if(strtotime($DataLinha) == strtotime($DataIni)){ // "2024-03-01"
                                     $Leit24Ant = $ValorIni;  //1696.485;
                                 }else{
-                                    $rs1 = pg_query($Conec, "SELECT leitura1 FROM ".$xProj.".leitura_eletric WHERE dataleitura = (date '$DataLinha' - 1) And ativo = 1");
+                                    $rs1 = pg_query($Conec, "SELECT leitura1 FROM ".$xProj.".leitura_eletric WHERE dataleitura1 = (date '$DataLinha' - 1) And colec = 1 And ativo = 1");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         $tbl1 = pg_fetch_row($rs1);
@@ -166,9 +168,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <td class="etiq" style="width: 120px;">Leitura</td>
                     </tr>
                     <tr>
-                        <td><input type="text" style="text-align: center; width: 100%;" id="insdata" onchange="checaData();" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('insleitura1');return false;}"/></td>
+                        <td><input type="text" style="text-align: center; border: 1px solid; border-radius: 4px;" id="insdata" width="150" onchange="checaData();" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('insleitura1');return false;}"/></td>
                         <td style="text-align: center;"><label id="insdiasemana" style="font-size: 80%;"></label></td>
-                        <td style="width: 120px;"><input type="text" style="text-align: center; width: 100%;" id="insleitura1" onchange="modif();" placeholder="Leitura 1" onkeypress="if(event.keyCode===13){javascript:foco('insdata');return false;}"/></td>
+                        <td style="width: 120px;"><input type="text" style="text-align: center; width: 100%;" id="insleitura1" onchange="modif();" placeholder="Leitura 1" onkeypress="if(event.keyCode===13){javascript:foco('botsalvar');return false;}"/></td>
                     </tr>
                     <tr>
                         <td colspan="5" style="text-align: center; padding-top: 5px;"><div id="mensagemLeitura" style="color: red; font-weight: bold;"></div></td>
@@ -176,7 +178,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 </table>
 
                     <div style="text-align: center; padding-bottom: 4px;">
-                        <button class="botpadrblue" onclick="salvaModal();">Salvar</button>
+                        <button id="botsalvar" class="botpadrblue" onclick="salvaModal();">Salvar</button>
                     </div>
                 </div>
            </div>

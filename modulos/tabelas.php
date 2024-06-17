@@ -26,6 +26,8 @@ if($PrazoDel < 1000){
    pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar WHERE datavis < CURRENT_DATE - interval '$PrazoDel years' "); 
    pg_query($Conec, "DELETE FROM ".$xProj.".ramais_int WHERE ativo = 0 And datains < CURRENT_DATE - interval '$PrazoDel years'"); 
    pg_query($Conec, "DELETE FROM ".$xProj.".ramais_ext WHERE ativo = 0 And datains < CURRENT_DATE - interval '$PrazoDel years'"); 
+   pg_query($Conec, "DELETE FROM ".$xProj.".arqsetor WHERE dataapag < CURRENT_DATE - interval '$PrazoDel years'"); // apaga nome dos arquivos de upload
+   
 }else{
    echo "Eliminação de registros antigos desativado. <br>";   
 }
@@ -221,7 +223,6 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
    echo "Tabela ".$xProj.".poslog checada. <br>";
 
 
-
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".leitura_agua (
       id SERIAL PRIMARY KEY, 
       dataleitura date,
@@ -239,8 +240,13 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
 
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".leitura_eletric (
       id SERIAL PRIMARY KEY, 
-      dataleitura date,
-      leitura1 double precision,
+      colec smallint NOT NULL DEFAULT 0, 
+      dataleitura1 date DEFAULT CURRENT_TIMESTAMP,
+      leitura1 double precision NOT NULL DEFAULT 0,
+      dataleitura2 date DEFAULT CURRENT_TIMESTAMP,
+      leitura2 double precision NOT NULL DEFAULT 0,
+      dataleitura3 date DEFAULT CURRENT_TIMESTAMP,
+      leitura3 double precision NOT NULL DEFAULT 0,
       ativo smallint DEFAULT 1 NOT NULL,
       usuins integer DEFAULT 0 NOT NULL,
       datains timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
@@ -249,7 +255,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
       ");
    echo "Tabela ".$xProj.".leitura_eletric. <br>";   
 
-
+ 
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".arqsetor (
       codarq SERIAL PRIMARY KEY, 
       codsetor int NOT NULL DEFAULT 0,

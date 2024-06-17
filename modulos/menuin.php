@@ -21,8 +21,8 @@
 			if(!isset($diaSemana)){
 				$diaSemana = 1;
 			}
-
 			            //Provisório
+					if($_SERVER['HTTP_HOST'] != 'www.phpini.com.br'){
 						if(strtotime('2024/07/30') > strtotime(date('Y/m/d'))){
 							require_once(dirname(__FILE__)."/config/abrealas.php");
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS nomeusual VARCHAR(50)");
@@ -44,6 +44,7 @@
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS insbens smallint NOT NULL DEFAULT 2;");  //  preencher Bens achados 
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS editbens smallint NOT NULL DEFAULT 4;"); // editar Bens achados
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".livroreg ADD COLUMN IF NOT EXISTS ocor smallint NOT NULL DEFAULT 0;"); // se houve ocorrencias
+
 							pg_query($Conec, "UPDATE ".$xProj.".poslog SET datainat = '3000-12-31' ");
 							pg_query($Conec, "UPDATE ".$xProj.".poslog SET datamodif = '3000-12-31' WHERE datamodif IS NULL Or datamodif = '1500-01-01'");
 							pg_query($Conec, "UPDATE ".$xProj.".poslog SET logini = '3000-12-31' WHERE logini IS NULL Or logini = '1500-01-01'");
@@ -63,8 +64,27 @@
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS dataapagou timestamp without time zone DEFAULT '3000-12-31'");
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".ramais_int ADD COLUMN IF NOT EXISTS poslog_id bigint NOT NULL DEFAULT 0;");
 
-						}
 
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS usuinsorig bigint NOT NULL DEFAULT 0;");
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS marca smallint NOT NULL DEFAULT 0;");
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS usutransf bigint NOT NULL DEFAULT 0;");
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS datatransf timestamp without time zone DEFAULT '3000-12-31'");
+						
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS vertarefa smallint NOT NULL DEFAULT 1;");
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS verarquivos smallint NOT NULL DEFAULT 1;");
+
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS valorinieletric2 double precision NOT NULL DEFAULT 0");
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS datainieletric2 date  DEFAULT '3000-12-31'");
+
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS valorinieletric3 double precision NOT NULL DEFAULT 0");
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS datainieletric3 date  DEFAULT '3000-12-31'");
+
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS eletric2 smallint NOT NULL DEFAULT 0;");
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS eletric3 smallint NOT NULL DEFAULT 0;");
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisceletric smallint NOT NULL DEFAULT 0;");
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fiscbens smallint NOT NULL DEFAULT 0;");
+						}
+					}
         ?>
 		<!-- menu para a página inicial  -->
         <ul id="example" class="sf-menu sf-js-enabled sf-arrows sf-menu-dia<?php echo $diaSemana; ?> ">

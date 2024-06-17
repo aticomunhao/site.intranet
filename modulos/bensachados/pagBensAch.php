@@ -302,7 +302,6 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById('telefproprietario').disabled = false;
                                             document.getElementById('botsalvaRestit').disabled = false;
                                         }
-                                     
                                         document.getElementById("numprocessoRest").innerHTML = Resp.numprocesso;
                                         document.getElementById("etiqprocessoRest").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
                                         document.getElementById("descdobemRest").innerHTML = Resp.descdobem;
@@ -326,9 +325,6 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById("numprocessoEncam").innerHTML = Resp.numprocesso;
                                             document.getElementById("etiqprocessoEncam").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
                                             document.getElementById("descdobemEncam").innerHTML = Resp.descdobem;
-//                                            document.getElementById('nomeproprietario').value = "";
-//                                            document.getElementById('cpfproprietario').value = "";
-//                                            document.getElementById('telefproprietario').value = "";
                                             document.getElementById("relacmodalEncam").style.display = "block";
                                         }
                                     }
@@ -618,7 +614,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 ajax.onreadystatechange = function(){
                                     if(ajax.readyState === 4 ){
                                         if(ajax.responseText){
-alert(ajax.responseText);
+//alert(ajax.responseText);
                                             Resp = eval("(" + ajax.responseText + ")");
                                             if(parseInt(Resp.coderro) === 1){
                                                 alert("Houve um erro no servidor.")
@@ -637,7 +633,6 @@ alert(ajax.responseText);
                     }
                 });
             }
-
 
             function fechaModalReg(){
                 document.getElementById("relacmodalRegistro").style.display = "none";
@@ -732,6 +727,7 @@ alert(ajax.responseText);
                 }
                 return true // Passou nas validações
             }
+
             function validaCPF(cpf) {
                 var Soma = 0
                 var Resto
@@ -773,13 +769,14 @@ alert(ajax.responseText);
     </head>
     <body>
         <?php
+            if(!$Conec){
+                echo "Sem contato com o PostGresql";
+                return false;
+            }
+
         date_default_timezone_set('America/Sao_Paulo');
         $Hoje = date('d/m/Y');
 
-         if(!$Conec){
-            echo "Sem contato com o PostGresql";
-            return false;
-        }
         $rs = pg_query($Conec, "SELECT column_name, data_type, character_maximum_length FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'livroreg'");
         $row = pg_num_rows($rs);
         if($row == 0){
@@ -790,6 +787,7 @@ alert(ajax.responseText);
         $admIns = parAdm("insbens", $Conec, $xProj);   // nível para inserir 
         $admEdit = parAdm("editbens", $Conec, $xProj); // nível para editar -> foi para relBens.php
         $escEdit = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // está marcado no cadastro de usuários
+
         $OpDestBens = pg_query($Conec, "SELECT numdest, descdest FROM ".$xProj.".bensdestinos ORDER BY descdest");
         ?>
         <!-- div três colunas -->

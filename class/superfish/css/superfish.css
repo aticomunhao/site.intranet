@@ -61,7 +61,7 @@
 /*	white-space: normal;  ...unless you support IE7 (let it wrap) */
 	-webkit-transition: background .2s;
 	transition: background .2s;
-	font-size: .85em; /* modificado tamanho da fonte - modifica a altura do menu*/
+	font-size: .90em; /* modificado tamanho da fonte - modifica a altura do menu*/
 }
 .sf-menu ul li {
 	background: #AABDE6; /* Cor background primeiro submenu */

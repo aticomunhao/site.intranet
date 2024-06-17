@@ -81,7 +81,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             $admEdit = parAdm("editbens", $Conec, $xProj); // nível administrativo para editar
             $Marca = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // ver se está marcado no cadastro de usu
             if($Marca == 1 && $_SESSION["AdmUsu"] >= $admIns || $_SESSION["AdmUsu"] > 6){
-//                if($Marca == 1 && $_SESSION["AdmUsu"] >= $admIns){
                 $Edit = 1;
                 if($_SESSION["AdmUsu"] >= $admEdit || $_SESSION["AdmUsu"] > 6){
                     $Impr = 1;

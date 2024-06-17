@@ -11,6 +11,7 @@ if($Tipo == 1){ // ramais internos
 
     if($Acao =="buscaNome"){
         $Num = (int) filter_input(INPUT_GET, 'numero'); // id
+        $Arq = (int) filter_input(INPUT_GET, 'arquivo'); // arquivo 0 = pessoas   1 - poslog
         $Erro = 0;
         $CodTel = 0;
         $CodSetor = "";
@@ -21,18 +22,28 @@ if($Tipo == 1){ // ramais internos
         $JaTem = 0;
 
         if($Num > 0){ // veio um número do select usuários de poslog
-            $rs = pg_query($Conec, "SELECT nomecompl, codsetor, nomeusual FROM ".$xProj.".poslog WHERE id = $Num");
+            if($Arq == 0){
+                $rs = pg_query($ConecPes, "SELECT nome_completo, sexo, nome_resumido FROM ".$xPes.".pessoas WHERE id = $Num");
+            }else{
+                $rs = pg_query($Conec, "SELECT nomecompl, codsetor, nomeusual FROM ".$xProj.".poslog WHERE id = $Num");
+            }
             $row = pg_num_rows($rs);
             if($row > 0){
                 $tbl = pg_fetch_row($rs);
                 $NomeCompl = $tbl[0];
-                $CodSetor = $tbl[1]; 
+                if($Arq == 0){
+                    $CodSetor = 0;
+                }else{
+                    $CodSetor = $tbl[1]; 
+                }
                 $NomeUsual = $tbl[2];
-                $rs1 = pg_query($Conec, "SELECT siglasetor FROM ".$xProj.".setores WHERE codset = $CodSetor");
-                $row1 = pg_num_rows($rs1);
-                if($row1 > 0){
-                    $tbl1 = pg_fetch_row($rs1);
-                    $SiglaSetor = $tbl1[0];
+                if($CodSetor > 0){
+                    $rs1 = pg_query($Conec, "SELECT siglasetor FROM ".$xProj.".setores WHERE codset = $CodSetor");
+                    $row1 = pg_num_rows($rs1);
+                    if($row1 > 0){
+                        $tbl1 = pg_fetch_row($rs1);
+                        $SiglaSetor = $tbl1[0];
+                    }
                 }
             }
             //Verifica se já foi inserido em ramais_int

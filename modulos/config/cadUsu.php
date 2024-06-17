@@ -106,11 +106,16 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("fiscalizaLro").checked = false;
                                     }
-                                    
+
                                     if(parseInt(Resp.bens) === 1){
                                         document.getElementById("preencheBens").checked = true;
                                     }else{
                                         document.getElementById("preencheBens").checked = false;
+                                    }
+                                    if(parseInt(Resp.fiscbens) === 1){
+                                        document.getElementById("fiscBens").checked = true;
+                                    }else{
+                                        document.getElementById("fiscBens").checked = false;
                                     }
 
                                     if(parseInt(Resp.leituraAgua) === 1){
@@ -122,6 +127,16 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("leituraEletric").checked = true;
                                     }else{
                                         document.getElementById("leituraEletric").checked = false;
+                                    }
+                                    if(parseInt(Resp.leituraEletric2) === 1){
+                                        document.getElementById("leituraEletric2").checked = true;
+                                    }else{
+                                        document.getElementById("leituraEletric2").checked = false;
+                                    }
+                                    if(parseInt(Resp.leituraEletric3) === 1){
+                                        document.getElementById("leituraEletric3").checked = true;
+                                    }else{
+                                        document.getElementById("leituraEletric3").checked = false;
                                     }
                                     if(parseInt(Resp.regarcond) === 1){
                                         document.getElementById("registroArCond").checked = true;
@@ -181,6 +196,11 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("preencheBens").checked === true){
                     Bens = 1;
                 }
+                FiscBens = 0;
+                if(document.getElementById("fiscBens").checked === true){
+                    FiscBens = 1;
+                }
+
                 Agua = 0;
                 if(document.getElementById("leituraAgua").checked === true){
                     Agua = 1;
@@ -189,6 +209,16 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("leituraEletric").checked === true){
                     Eletric = 1;
                 }
+
+                Eletric2 = 0;
+                if(document.getElementById("leituraEletric2").checked === true){
+                    Eletric2 = 1;
+                }
+                Eletric3 = 0;
+                if(document.getElementById("leituraEletric3").checked === true){
+                    Eletric3 = 1;
+                }
+
                 ArCond = 0;
                 if(document.getElementById("registroArCond").checked === true){
                     ArCond = 1;
@@ -211,8 +241,11 @@ if(!isset($_SESSION["usuarioID"])){
                         +"&lro="+Lro
                         +"&fisclro="+FiscLro
                         +"&bens="+Bens
+                        +"&fiscbens="+FiscBens
                         +"&agua="+Agua
                         +"&eletric="+Eletric
+                        +"&eletric2="+Eletric2
+                        +"&eletric3="+Eletric3
                         +"&arcond="+ArCond
                         +"&fiscar="+FiscAr
                         , true);
@@ -692,18 +725,27 @@ if(!isset($_SESSION["usuarioID"])){
 
                     <tr>
                         <td class="etiq80" title="Fiscaliza os registros de ocorrências no LRO">Administrar LRO:</td>
-                        <td colspan="4">
-                            <input type="checkbox" id="fiscalizaLro" title="Fiscalizar os registros de ocorrências no LRO" onchange="modif();" >
-                            <label for="fiscalizaLro" title="Fiscalizar os registros de ocorrências no LRO">fiscalizar o Livro de Registro de Ocorrências</label>
+                        <td colspan="4" style="padding-left: 20px;">
+                            <input type="checkbox" id="fiscalizaLro" title="Fiscalizar os registros de ocorrências no LRO - Só fiscaliza. Não preenche o LRO" onchange="modif();" >
+                            <label for="fiscalizaLro" title="Fiscalizar os registros de ocorrências no LRO - Só fiscaliza. Não preenche o LRO">fiscalizar o Livro de Registro de Ocorrências</label>
                         </td>
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(3);" title="Guia rápido"></td>
                     </tr>
 
                     <tr>
-                        <td class="etiq80" title="Pode registrar ocorrências no LRO">Bens Achados:</td>
+                        <td class="etiq80" title="Registrar recebimento e destino de bens encontrados">Bens Achados:</td>
                         <td colspan="4">
                             <input type="checkbox" id="preencheBens" title="Registrar recebimento e destino de bens encontrados" onchange="modif();" >
                             <label for="preencheBens" title="Registrar recebimento e destino de bens encontrados">acesso ao registro de Bens Encontrados</label>
+                        </td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(4);" title="Guia rápido"></td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq80" title="Fiscalizar os registros de bens encontrados - Só fiscaliza. Não pode registrar os bens encontrados.">Bens Achados:</td>
+                        <td colspan="4" style="padding-left: 20px;">
+                            <input type="checkbox" id="fiscBens" title="Fiscalizar os registros de bens encontrados - Só fiscaliza. Não pode registrar os bens encontrados." onchange="modif();" >
+                            <label for="fiscBens" title="Fiscalizar os registros de bens encontrados">fiscalizar os registros de Bens Encontrados</label>
                         </td>
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(4);" title="Guia rápido"></td>
                     </tr>
@@ -720,7 +762,25 @@ if(!isset($_SESSION["usuarioID"])){
                         <td class="etiq80" title="Pode registrar as leituras diárias do consumo de eletricidade">Energia Elétrica:</td>
                         <td colspan="4">
                             <input type="checkbox" id="leituraEletric" title="Pode registrar as leituras diárias do consumo de energia elétrica" onchange="modif();" >
-                            <label for="leituraEletric" title="Pode registrar as leituras diárias do consumo de energia elétrica">registrar leitura diária do Medidor de Energia Elétrica</label>
+                            <label for="leituraEletric" title="Pode registrar as leituras diárias do consumo de energia elétrica">registrar leitura diária do Medidor de Energia Elétrica - Comunhão</label>
+                        </td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(2);" title="Guia rápido"></td>
+                    </tr>
+
+
+                    <tr>
+                        <td class="etiq80" title="Pode registrar as leituras diárias do consumo de eletricidade">Energia Elétrica:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="leituraEletric2" title="Pode registrar as leituras diárias do consumo de energia elétrica" onchange="modif();" >
+                            <label for="leituraEletric2" title="Pode registrar as leituras diárias do consumo de energia elétrica do medidor da operadora Claro">registrar leitura diária do Medidor de Energia Elétrica - Claro</label>
+                        </td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(2);" title="Guia rápido"></td>
+                    </tr>
+                    <tr>
+                        <td class="etiq80" title="Pode registrar as leituras diárias do consumo de eletricidade">Energia Elétrica:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="leituraEletric3" title="Pode registrar as leituras diárias do consumo de energia elétrica" onchange="modif();" >
+                            <label for="leituraEletric3" title="Pode registrar as leituras diárias do consumo de energia elétrica do medidor da operadora Oi">registrar leitura diária do Medidor de Energia Elétrica - Oi</label>
                         </td>
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(2);" title="Guia rápido"></td>
                     </tr>
@@ -735,7 +795,7 @@ if(!isset($_SESSION["usuarioID"])){
                     </tr>
                     <tr>
                         <td class="etiq80" title="Fiscalizar a manutenção dos Condicionadores de Ar">Condicionadores de Ar:</td>
-                        <td colspan="4">
+                        <td colspan="4" style="padding-left: 20px;">
                             <input type="checkbox" id="fiscalArCond" title="Fiscalizar a manutenção dos Condicionadores de Ar" onchange="modif();" >
                             <label for="fiscalArCond" title="Fiscalizar a manutenção dos Condicionadores de Ar">fiscalizar a Manutenção dos Condicionadores de Ar</label>
                         </td>

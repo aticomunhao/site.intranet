@@ -102,7 +102,6 @@ if($Acao=="salvaTarefa"){
     $row = 0;
 
     if($idTarefa != 0){
-//        $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET usuexec = $usuExec, tittarefa = '$textoEvid', textotarefa = '$textoExt', sit = $Status, prio = $Priorid, ativo = IF($Status = 4, 2, 1), usumodif = $usuLogado, datamodif = NOW() WHERE idtar = $idTarefa"); 
         if($Status == 4){
             $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET usuexec = $usuExec, tittarefa = '$textoEvid', textotarefa = '$textoExt', sit = $Status, prio = $Priorid, ativo = 2, usumodif = $usuLogado, datamodif = NOW() WHERE idtar = $idTarefa"); 
         }else{
@@ -115,7 +114,7 @@ if($Acao=="salvaTarefa"){
             $Erro = 1;
         }
     }else{  //inserçao de nova tarefa
-        $rs0 = pg_query($Conec, "SELECT usuexec FROM ".$xProj.".tarefas WHERE usuexec = $usuExec And tittarefa = '$textoEvid'"); 
+        $rs0 = pg_query($Conec, "SELECT usuexec FROM ".$xProj.".tarefas WHERE usuexec = $usuExec And tittarefa = '$textoEvid' And sit != 4"); 
         $row0 = pg_num_rows($rs0);
         if($row0 > 0){
             $Erro = 2; // tarefa já foi dada para o mesmo usuário
@@ -123,7 +122,7 @@ if($Acao=="salvaTarefa"){
             $rsCod = pg_query($Conec, "SELECT MAX(idtar) FROM ".$xProj.".tarefas");
             $tblCod = pg_fetch_row($rsCod);
             $Codigo = $tblCod[0];
-            $CodigoNovo = ($Codigo+1);
+            $CodigoNovo = ($Codigo+1); //usuinsorig para possib transferir tarefa para outro mandante
             $Sql = pg_query($Conec, "INSERT INTO ".$xProj.".tarefas (idtar, usuins, usuexec, tittarefa, textotarefa, datains, sit, prio) VALUES($CodigoNovo, $usuLogado, $usuExec, '$textoEvid', '$textoExt', NOW(), 1, $Priorid)"); 
             if(!$Sql){
                 $Erro = 1;
@@ -245,3 +244,61 @@ if($Acao=="apagaMensagem"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
+if($Acao=="marcaTransf"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Erro = 0;
+    $Marca = 0;
+    $rs = pg_query($Conec, "SELECT marca FROM ".$xProj.".tarefas WHERE idtar = $Cod ");
+    $row = pg_num_rows($rs);
+    if($row > 0){
+        $tbl = pg_fetch_row($rs);
+        $Marca = $tbl[0];
+    }
+    if($Marca == 0){ //estava desmarcado
+        pg_query($Conec, "UPDATE ".$xProj.".tarefas SET marca = 1 WHERE idtar = $Cod");
+    }else{ // estava marcado
+        pg_query($Conec, "UPDATE ".$xProj.".tarefas SET marca = 0 WHERE idtar = $Cod");
+    }
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao=="procuramarcas"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');  // usuário que vai receber
+    $Erro = 0;
+    $NomeCompleto = "";
+    $rs0 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $Cod ");
+    $tbl0 = pg_fetch_row($rs0);
+    $NomeCompleto = $tbl0[0];
+
+    $rs0 = pg_query($Conec, "SELECT marca FROM ".$xProj.".tarefas WHERE usuins = ".$_SESSION["usuarioID"]." And sit != 4 ");
+    $row0 = pg_num_rows($rs0);
+
+    $rs = pg_query($Conec, "SELECT marca FROM ".$xProj.".tarefas WHERE usuins = ".$_SESSION["usuarioID"]." And marca = 1 ");
+    $row = pg_num_rows($rs);
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro, "contagem"=>$row0, "marcas"=>$row, "nomecompleto"=>$NomeCompleto);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao=="transferemarcas"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');    
+    $Erro = 0;
+    $rs0 = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET usuinsorig = usuins WHERE usuins = ".$_SESSION["usuarioID"]." And marca = 1 ");
+    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET usuins = $Cod, usutransf = ".$_SESSION["usuarioID"].", datatransf = NOW() WHERE usuinsorig = ".$_SESSION["usuarioID"]." And marca = 1 ");
+    if(!$rs1){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro, "codigo"=>$Cod);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+

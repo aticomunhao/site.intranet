@@ -6,11 +6,14 @@
         <title></title>
         <link rel="stylesheet" type="text/css" media="screen" href="class/dataTable/datatables.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="class/gijgo/css/gijgo.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/relacmod.css" />
         <script src="comp/js/jquery.min.js"></script> <!-- versão 3.6.3 -->
         <script src="comp/js/jquery.mask.js"></script>
         <script src="class/dataTable/datatables.min.js"></script>  <!-- https://datatables.net/examples/basic_init/filter_only.html -->
         <script src="comp/js/jquery-confirm.min.js"></script>   <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
+        <script src="class/gijgo/js/gijgo.js"></script>
+        <script src="class/gijgo/js/messages/messages.pt-br.js"></script>
         <style type="text/css">
             .etiq{
                 text-align: right; color: #036; font-size: .9em; font-weight: bold; padding: 3px;
@@ -37,6 +40,14 @@
                 $(document).ready(function(){
                     $("#dataIniAgua").mask("99/99/9999");
                     $("#dataIniEletric").mask("99/99/9999");
+                    $("#dataIniEletric2").mask("99/99/9999");
+                    $("#dataIniEletric3").mask("99/99/9999");
+
+//                    $('#dataIniAgua').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
+//                    $('#dataIniEletric').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
+//                    $('#dataIniEletric2').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
+//                    $('#dataIniEletric3').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
+
                     $("#cardiretoria").load("modulos/config/carDir.php");
                 });
 
@@ -146,6 +157,19 @@
                     if(document.getElementById("dataIniAgua").value === ""){
                         return false;
                     }
+                    if(!validaData(Valor)){
+                        $.confirm({
+                            title: 'Atenção!',
+                            content: 'A data está incorreta: '+Valor,
+                            draggable: true,
+                            buttons: {
+                                OK: function(){
+                                    document.getElementById("dataIniAgua").value = document.getElementById("guardaData").value;
+                                }
+                            }
+                        });
+                        return false;
+                    }
                     ajaxIni();
                     if(ajax){
                         ajax.open("POST", "modulos/config/registr.php?acao=dataleituraAgua&valor="+encodeURIComponent(document.getElementById("dataIniAgua").value), true);
@@ -165,13 +189,13 @@
                         ajax.send(null);
                     }
                 }
-                function salvaLeitIniEletric(Valor){
-                    if(document.getElementById("valoriniagua").value === ""){
+                function salvaLeitIniEletric(Valor, Num){
+                    if(document.getElementById("dataIniAgua").value === ""){
                         return false;
                     }
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/config/registr.php?acao=valorleituraEletric&valor="+document.getElementById("valorIniEletric").value, true);
+                        ajax.open("POST", "modulos/config/registr.php?acao=valorleituraEletric&numero="+Num+"&valor="+encodeURIComponent(Valor), true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -188,13 +212,31 @@
                         ajax.send(null);
                     }
                 }
-                function salvaDataIniEletric(Valor){
-                    if(document.getElementById("dataIniAgua").value === ""){
+                function salvaDataIniEletric(Valor, Num){
+                    if(!validaData(Valor)){
+                        $.confirm({
+                            title: 'Atenção!',
+                            content: 'A data está incorreta: '+Valor,
+                            draggable: true,
+                            buttons: {
+                                OK: function(){
+                                    if(Num = 1){
+                                        document.getElementById("dataIniEletric").value = document.getElementById("guardaData").value;
+                                    }
+                                    if(Num = 2){
+                                        document.getElementById("dataIniEletric2").value = document.getElementById("guardaData").value;
+                                    }
+                                    if(Num = 3){
+                                        document.getElementById("dataIniEletric3").value = document.getElementById("guardaData").value;
+                                    }
+                                }
+                            }
+                        });
                         return false;
                     }
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/config/registr.php?acao=dataleituraEletric&valor="+encodeURIComponent(document.getElementById("dataIniEletric").value), true);
+                        ajax.open("POST", "modulos/config/registr.php?acao=dataleituraEletric&numero="+Num+"&valor="+encodeURIComponent(Valor), true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -259,22 +301,22 @@
                     }
                 });
             }
-            function zeraEletric(){
-                    $.confirm({
-                    title: 'Apagar',
+            function zeraEletric(Num, Opr){
+                $.confirm({
+                    title: 'Apagar Coleção da '+ Opr,
                     content: 'Confirma apagar todos os lançamentos do Controle do Consumo de Energia Elétrica?  Não haverá possibilidade de recuperação. Continua?',
                     autoClose: 'Não|10000',
                     draggable: true,
                     buttons: {
                         Sim: function () {
-                            zeraEletricDef();
+                            zeraEletricDef(Num);
                         },
                         Não: function () {
                         }
                     }
                 });
             }
-            function zeraEletricDef(){
+            function zeraEletricDef(Num){
                 $.confirm({
                     title: 'Tem certeza?',
                     content: 'Tem certeza que quer apagar todos os lançamentos?  Não haverá possibilidade de recuperação. Continua?',
@@ -284,7 +326,7 @@
                         Sim: function () {
                             ajaxIni();
                             if(ajax){
-                                ajax.open("POST", "modulos/config/registr.php?acao=apagaEletric", true);
+                                ajax.open("POST", "modulos/config/registr.php?acao=apagaEletric&numero="+Num, true);
                                 ajax.onreadystatechange = function(){
                                     if(ajax.readyState === 4 ){
                                         if(ajax.responseText){
@@ -386,6 +428,11 @@
                     document.getElementById("relacmodalDir").style.display = "none";
                 }
             }
+
+            function guardaData(Valor){
+                document.getElementById("guardaData").value = Valor;
+            }
+
             function salvaAtivDir(Valor){
                 document.getElementById("guardaAtiv").value = Valor;
                 document.getElementById("mudou").value = "1";
@@ -397,6 +444,41 @@
             function modif(){ // assinala se houve qualquer modificação nos campos do modal durante a edição para evitar salvar desnecessariamente
                 document.getElementById("mudou").value = "1";
             }
+            function validaData (valor) { // tks ao Arthur Ronconi  - https://devarthur.com/blog/funcao-para-validar-data-em-javascript
+                // Verifica se a entrada é uma string
+                if (typeof valor !== 'string') {
+                    return false;
+                }
+                // Verifica formado da data
+                if (!/^\d{2}\/\d{2}\/\d{4}$/.test(valor)) {
+                    return false;
+                }
+                // Divide a data para o objeto "data"
+                const partesData = valor.split('/')
+                const data = { 
+                    dia: partesData[0], 
+                    mes: partesData[1], 
+                    ano: partesData[2] 
+                }
+                // Converte strings em número
+                const dia = parseInt(data.dia);
+                const mes = parseInt(data.mes);
+                const ano = parseInt(data.ano);
+                // Dias de cada mês, incluindo ajuste para ano bissexto
+                const diasNoMes = [ 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
+                // Atualiza os dias do mês de fevereiro para ano bisexto
+                if (ano % 400 === 0 || ano % 4 === 0 && ano % 100 !== 0) {
+                    diasNoMes[2] = 29
+                }
+                // Regras de validação:
+                // Mês deve estar entre 1 e 12, e o dia deve ser maior que zero
+                if (mes < 1 || mes > 12 || dia < 1) {
+                    return false;
+                }else if (dia > diasNoMes[mes]) { // Valida número de dias do mês
+                    return false;
+                }
+                return true // Passou nas validações
+            }
         </script>
     </head>
     <body>
@@ -405,7 +487,7 @@
             $rsSis = pg_query($Conec, "SELECT admvisu, admedit, admcad, insevento, editevento, instarefa, edittarefa, insramais, editramais, instelef, edittelef, 
             editpagina, insarq, insaniver, editaniver, instroca, edittroca, insocor, editocor, insleituraagua, editleituraagua, 
             TO_CHAR(datainiagua, 'DD/MM/YYYY'), valoriniagua, insleituraeletric, editleituraeletric, TO_CHAR(datainieletric, 'DD/MM/YYYY'), valorinieletric, inslro, editlro, insbens, editbens, 
-            prazodel
+            prazodel, vertarefa, verarquivos, TO_CHAR(datainieletric2, 'DD/MM/YYYY'), valorinieletric2, TO_CHAR(datainieletric3, 'DD/MM/YYYY'), valorinieletric3 
             FROM ".$xProj.".paramsis WHERE idPar = 1");
             $ProcSis = pg_fetch_row($rsSis);
             $admVisu = $ProcSis[0]; // admVisu - administrador visualiza usuários
@@ -414,7 +496,21 @@
             $DataIniAgua = $ProcSis[21]; // controle de consumo de água - leitura do hidrômetro
             $ValorIniAgua = $ProcSis[22];  // controle de consumo de água - data inicial
             $DataIniEletric = $ProcSis[25]; // controle de consumo de eletricidade
+            if($ProcSis[25] == "31/12/3000"){
+                $DataIniEletric = "";    
+            }
             $ValorIniEletric = $ProcSis[26]; 
+
+            $DataIniEletric2 = $ProcSis[34]; // controle de consumo de eletricidade - Claro
+            if($ProcSis[34] == "31/12/3000"){
+                $DataIniEletric2 = "";    
+            }
+            $ValorIniEletric2 = $ProcSis[35]; 
+            $DataIniEletric3 = $ProcSis[36]; // controle de consumo de eletricidade - Oi
+            if($ProcSis[36] == "31/12/3000"){
+                $DataIniEletric3 = "";
+            }
+            $ValorIniEletric3 = $ProcSis[37]; 
 
             $insEvento = $ProcSis[3];   // insEvento - inserção de eventos no calendário
             $rs1 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $insEvento");
@@ -538,6 +634,8 @@
             $nomeEditBens = $Proc20[0];
 
             $PrazoDel = $ProcSis[31];   // prazo para deleção de registros antigos
+            $VerTarefa = $ProcSis[32];  // parâmetro para liberar tarefas para todos verem
+            $VerArquivos = $ProcSis[33];  // parâmetro para liberar a visualização dos arquivos carregados em cada diretoria
 
 
             $OpAdmInsEv = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
@@ -577,6 +675,7 @@
         <input type="hidden" id="guardacod" value="0" /> <!-- id ocorrência -->
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
         <input type="hidden" id="guardaAtiv" value="0" />
+        <input type="hidden" id="guardaData" value="0" />
         <input type="hidden" id="guardaPrazoDel" value="<?php echo $PrazoDel; ?>" />
         <div style="margin: 0 auto; margin-top: 40px; padding: 20px; border: 2px solid blue; border-radius: 15px; width: 70%; min-height: 200px;">
             <div style="text-align: center;">
@@ -591,7 +690,7 @@
                     <tr>
                         <td>Nível mínimo para INSERIR bens encontrados:</td>
                         <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'insBens');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <select onchange="salvaParam(value, 'insbens');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                             <option value="<?php echo $insBens; ?>"><?php echo $nomeInsBens; ?></option>
                             <?php 
                             if($OpAdmInsBens){
@@ -715,7 +814,9 @@
 
                     <tr>
                         <td style="text-align: right; font-size: 80%; padding-right: 3px;">Data Inicial:</td>
-                        <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="dataIniAgua" value="<?php echo $DataIniAgua; ?>" onchange="salvaDataIniAgua(value);" style="width: 90px; text-align: center;"></td>
+                        <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="dataIniAgua" value="<?php echo $DataIniAgua; ?>" onchange="salvaDataIniAgua(value);" onclick="guardaData(value);" style="width: 90px; text-align: center;">
+                            <label style="color: gray; font-size: .8em;"><- Este é o dia da primeira leitura</label>
+                        </td>
                     </tr>
                     <tr>
                         <td style="text-align: right; font-size: 80%; padding-right: 3px;">Leitura Inicial:</td>
@@ -747,13 +848,15 @@
                         </td>
                         <td></td>
                         <td></td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td></td>
                         <td></td>
+                        <td></td>
                     </tr>
                     <tr>
-                    <td>Nível mínimo para EDITAR leitura:</td>
+                        <td>Nível mínimo para EDITAR leitura:</td>
                         <td style="padding-left: 5px;">
                         <select onchange="salvaParam(value, 'editleituraeletric');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                         <option value="<?php echo $editEletric; ?>"><?php echo $nomeEditEletric; ?></option>
@@ -767,19 +870,48 @@
                             ?>
                             </select>
                         </td>
+                        <td></td>
                     </tr>
 
                     <tr>
-                        <td style="text-align: right; font-size: 80%; padding-right: 3px;">Data Inicial:</td>
-                        <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="dataIniEletric" value="<?php echo $DataIniEletric; ?>" onchange="salvaDataIniEletric(value);" style="width: 90px; text-align: center;"></td>
+                        <td style="text-align: right; font-size: 80%; padding-right: 3px; padding-top: 10px;">Data Inicial Comunhão:</td>
+                        <td colspan="2" style="text-align: left; font-size: 80%; padding-left: 3px; padding-top: 10px;"><input type="text" id="dataIniEletric" value="<?php echo $DataIniEletric; ?>" onchange="salvaDataIniEletric(value, 1);" onclick="guardaData(value);" style="width: 90px; text-align: center;">
+                            <label style="color: gray; font-size: .8em;"><- Este é o dia da primeira leitura</label>
+                        </td>
+                        
                     </tr>
                     <tr>
-                        <td style="text-align: right; font-size: 80%; padding-right: 3px;">Leitura Inicial:</td>
-                        <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="valorIniEletric" value="<?php echo $ValorIniEletric; ?>" onchange="salvaLeitIniEletric(value);" style="width: 90px; text-align: center;"></td>
+                        <td style="text-align: right; font-size: 80%; padding-right: 3px;">Leitura Inicial Comunhão:</td>
+                        <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="valorIniEletric" value="<?php echo $ValorIniEletric; ?>" onchange="salvaLeitIniEletric(value, 1);" style="width: 90px; text-align: center;"></td>
+                        <td><div style="text-align: left; font-size: 80%;"><button class="botpadr" onclick="zeraEletric(1, 'Comunhão');">Apagar Tudo da Comunhão</button></div></td>
+                    </tr>
+
+
+                    <tr>
+                        <td style="text-align: right; font-size: 80%; padding-right: 3px; padding-top: 10px;">Data Inicial Claro:</td>
+                        <td colspan="2" style="text-align: left; font-size: 80%; padding-left: 3px; padding-top: 10px;"><input type="text" id="dataIniEletric2" value="<?php echo $DataIniEletric2; ?>" onchange="salvaDataIniEletric(value, 2);" onclick="guardaData(value);" style="width: 90px; text-align: center;">
+                            <label style="color: gray; font-size: .8em;"><- Este é o dia da primeira leitura</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; font-size: 80%; padding-right: 3px;">Leitura Inicial Claro:</td>
+                        <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="valorIniEletric2" value="<?php echo $ValorIniEletric2; ?>" onchange="salvaLeitIniEletric(value, 2);" style="width: 90px; text-align: center;"></td>
+                        <td><div style="text-align: left; font-size: 80%;"><button class="botpadr" onclick="zeraEletric(2, 'Operadora Claro');">Apagar Tudo da Claro</button></div></td>
+                    </tr>
+
+
+                    <tr>
+                        <td style="text-align: right; font-size: 80%; padding-right: 3px; padding-top: 10px;">Data Inicial Oi:</td>
+                        <td colspan="2" style="text-align: left; font-size: 80%; padding-left: 3px; padding-top: 10px;"><input type="text" id="dataIniEletric3" value="<?php echo $DataIniEletric3; ?>" onchange="salvaDataIniEletric(value, 3);" onclick="guardaData(value);" style="width: 90px; text-align: center;">
+                            <label style="color: gray; font-size: .8em;"><- Este é o dia da primeira leitura</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: right; font-size: 80%; padding-right: 3px;">Leitura Inicial Oi:</td>
+                        <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="valorIniEletric3" value="<?php echo $ValorIniEletric3; ?>" onchange="salvaLeitIniEletric(value, 3);" style="width: 90px; text-align: center;"></td>
+                        <td><div style="text-align: left; font-size: 80%;"><button class="botpadr" onclick="zeraEletric(3, 'Operadora Oi');">Apagar Tudo da Oi</button></div></td>
                     </tr>
                 </table>
-                <div style="text-align: right;">
-                <button class="botpadr" onclick="zeraEletric();">Apagar Tudo</button></div>
             </div>
 
 <!-- Páginas  -->
@@ -818,6 +950,15 @@
                             </select>
                         </td>
                     </tr>
+
+                    <tr>
+                        <td style="font-size: 80%; padding-top: 5px;">Quem pode ver os arquivos carregados:</td>
+                        <td style="text-align: right; padding-top: 5px;">
+                            <input type="radio" name="verarquivos" id="verarquivos1" value="1" <?php if($VerArquivos == 1){echo "CHECKED";} ?> title="Todos podem ver os arquivos" onclick="salvaParam(value, 'verarquivos');"><label for="verarquivos1" style="font-size: 12px; padding-left: 3px;"> Todos</label>
+                            <input type="radio" name="verarquivos" id="verarquivos2" value="2" <?php if($VerArquivos == 2){echo "CHECKED";} ?> title="Só os usuários do setor" onclick="salvaParam(value, 'verarquivos');"><label for="verarquivos2" style="font-size: 12px; padding-left: 3px;"> Só usuários da Diretoria/Assessoria</label>
+                        </td>
+                    </tr>
+
                 </table>
             </div>
 
@@ -905,7 +1046,7 @@
 
 <!-- Tarefas  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
-                - <b>Tarefas</b>: <label style="color: gray; font-size: .8em;">Cada nível insere tarefa para seu nível administrativo ou nível inferior</label><br>
+                - <b>Tarefas</b>: <label style="color: gray; font-size: .8em;">Cada nível insere tarefa para seu nível administrativo ou nível inferior. Superusuário vê todas.</label><br>
                 <table style="margin: 0 auto;">
                     <tr>
                         <td>Nível mínimo para INSERIR tarefas:</td>
@@ -941,6 +1082,13 @@
                             }
                             ?>
                             </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-size: 80%; padding-top: 5px;">Quem pode ver as tarefas designadas:</td>
+                        <td style="text-align: right; padding-top: 5px;">
+                            <input type="radio" name="vertarefa" id="vertarefa1" value="1" <?php if($VerTarefa == 1){echo "CHECKED";} ?> title="Todos podem ver as tarefas" onclick="salvaParam(value, 'vertarefa');"><label for="vertarefa1" style="font-size: 12px; padding-left: 3px;"> Todos</label>
+                            <input type="radio" name="vertarefa" id="vertarefa2" value="2" <?php if($VerTarefa == 2){echo "CHECKED";} ?> title="Só o mandante e o executante" onclick="salvaParam(value, 'vertarefa');"><label for="vertarefa2" style="font-size: 12px; padding-left: 3px;"> Só Mandante e Executante</label>
                         </td>
                     </tr>
                 </table>

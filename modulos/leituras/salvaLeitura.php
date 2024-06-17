@@ -62,7 +62,7 @@ if($Acao =="buscaData"){
 if($Acao =="buscaDataEletric"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo'); 
     $Erro = 0;
-    $rs = pg_query($Conec, "SELECT TO_CHAR(dataleitura, 'DD/MM/YYYY'), date_part('dow', dataleitura), leitura1 
+    $rs = pg_query($Conec, "SELECT TO_CHAR(dataleitura1, 'DD/MM/YYYY'), date_part('dow', dataleitura1), leitura1 
     FROM ".$xProj.".leitura_eletric WHERE id = $Cod And ativo = 1");
     $row = pg_num_rows($rs);
     if($row == 0){
@@ -158,8 +158,8 @@ if($Acao =="checaDataEletric"){
     $BuscaDia = implode("-", array_reverse(explode("/", $BuscaData))); // date('d/m/Y', strtotime("+ 1 days", strtotime($DataI)));
     $Erro = 0;
     $JaTem = 0;
-    $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataleitura, 'DD/MM/YYYY'), date_part('dow', dataleitura), leitura1 
-    FROM ".$xProj.".leitura_eletric WHERE dataleitura = '$BuscaDia' And ativo = 1");
+    $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataleitura1, 'DD/MM/YYYY'), date_part('dow', dataleitura1), leitura1 
+    FROM ".$xProj.".leitura_eletric WHERE dataleitura1 = '$BuscaDia' And ativo = 1");
     if(!$rs){
         $Erro = 1;
     }
@@ -253,6 +253,7 @@ if($Acao =="salvaData"){
 
 if($Acao =="salvaDataEletric"){
     $Cod = (float) filter_input(INPUT_GET, 'codigo'); 
+    $Colec = (int) filter_input(INPUT_GET, 'colec'); // 1 comunhão - 2 Claro - 3 Oi
     $PegaData = addslashes(filter_input(INPUT_GET, 'insdata')); 
     $PegaDia = implode("-", array_reverse(explode("/", $PegaData))); // date('d/m/Y', strtotime("+ 1 days", strtotime($DataI)));
 
@@ -269,8 +270,8 @@ if($Acao =="salvaDataEletric"){
         $tblCod = pg_fetch_row($rsCod);
         $Codigo = $tblCod[0];
         $CodigoNovo = ($Codigo+1); 
-        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".leitura_eletric (id, dataleitura, leitura1, ativo, usuins, datains) 
-        VALUES($CodigoNovo, '$PegaDia', $Leitura1, 1, ".$_SESSION["usuarioID"].", NOW() )");
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".leitura_eletric (id, colec, dataleitura1, leitura1, ativo, usuins, datains) 
+        VALUES($CodigoNovo, $Colec, '$PegaDia', $Leitura1, 1, ".$_SESSION["usuarioID"].", NOW() )");
         if(!$rs){
             $Erro = 1;
         }
@@ -283,7 +284,7 @@ if($Acao =="salvaDataEletric"){
             }
         }
     }else{
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".leitura_eletric SET dataleitura = '$PegaDia', leitura1 = $Leitura1, usumodif = ".$_SESSION["usuarioID"].", datamodif = NOW() WHERE id = $Cod ");
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".leitura_eletric SET colec = 1, dataleitura1 = '$PegaDia', leitura1 = $Leitura1, usumodif = ".$_SESSION["usuarioID"].", datamodif = NOW() WHERE id = $Cod ");
         if(!$rs){
             $Erro = 1;
         }
@@ -330,7 +331,7 @@ if($Acao =="ultData"){
 if($Acao =="ultDataEletric"){
     $Erro = 0;
     $ValorIni = 0;
-    $rs = pg_query($Conec, "SELECT MAX(dataleitura) FROM ".$xProj.".leitura_eletric WHERE ativo = 1");
+    $rs = pg_query($Conec, "SELECT MAX(dataleitura1) FROM ".$xProj.".leitura_eletric WHERE ativo = 1");
     if(!$rs){
         $Erro = 1;
     }
@@ -338,7 +339,7 @@ if($Acao =="ultDataEletric"){
     if($row > 0){
         $tbl = pg_fetch_row($rs);
         if(is_null($tbl[0])){
-            $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".leitura_eletric");
+            $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".leitura_eletric WHERE colec = 1");
             $tblCod = pg_fetch_row($rsCod);
             $Codigo = $tblCod[0];
             $CodigoNovo = ($Codigo+1); 
