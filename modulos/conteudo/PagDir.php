@@ -69,7 +69,7 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 40%; /* acertar de acordo com a tela */
+                width: 60%; /* acertar de acordo com a tela */
             }
             /* Botão fechar */
             .close{
@@ -129,7 +129,6 @@ if(!isset($_SESSION["usuarioID"])){
             $_SESSION["PagDir"] = $Dir;
             $_SESSION["PagSubDir"] = $SubDir;
             $admEdit = parAdm("editPagina", $Conec, $xProj); // nível para editar
-        
         ?>
         <div id="container5">
             <div class="cContainer corFundo"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer; padding-right: 10px;" onclick="carregaHelpPagDir();" title="Guia rápido"><?php echo $Descr." - ".$Sigla; ?></div>
@@ -160,11 +159,11 @@ if(!isset($_SESSION["usuarioID"])){
                         <li>2 - A primeira parte foi concebida para informar o público interno sobre as atividades do setor.</li>
                         <li>3 - Esta primeira parte pode ser modificada a qualquer tempo por um usuário do setor com nível administrativo adequado.</li>
                         <li>4 - A segunda parte se destina a guardar arquivos de interesse da Diretoria ou Assessoria, que estarão sempre disponíveis para leitura ou download.</li>
-                        <li>5 - Os arquivos de um setor só serão vistos por outros usuários do mesmo setor.</li>
-                        <li>6 - O upload e a deleção dos arquivos só podem ser efetuados por usuários do setor com nível administrativo adequado.</li>
+                        <li>5 - Os arquivos de um setor só serão vistos por outros usuários do mesmo setor ou por todos os usuários, a depender da configuração adotada.</li>
+                        <li>6 - O carregamento e a retirada dos arquivos só podem ser efetuados por usuários do setor com nível administrativo adequado.</li>
                         <li>7 - Se houver necessidade de enviar arquivos para outro setor ou outro usuário, utilize a opção disponível em Ferramentas -> Tráfego de Arquivos.</li>
                         <li>8 - Os arquivos colocados no Tráfego de Arquivos podem ser vistos por todos os usuários.</li>
-                        <li>9 - A primeira parte destas páginas podem ser vistas por todos os usuários da intranet. O conteúdo da segunda parte só pode ser visto pelos usuários cadastrados no setor.</li>
+                        <li>9 - A primeira parte destas páginas podem ser vistas por todos os usuários da intranet. O conteúdo da segunda parte pode ser restrito ao setor ou liberado.</li>
                     </ul>
                 </div>
             </div>

@@ -13,7 +13,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         </script>
     </head>
     <body>
-        <div style="text-align: center;"><label class="titRelat">Controle do Consumo de Eletricidade da Operadora Oi<label></div>
+        <div style="text-align: center;"><label class="titRelat">Controle do Consumo de Eletricidade da Operadora SBA<label></div>
         <?php
         $mes_extenso = array(
             '1' => 'Janeiro',

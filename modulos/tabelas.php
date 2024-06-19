@@ -138,7 +138,6 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".paramsis (
    insleituraeletric smallint DEFAULT 0 NOT NULL,
    editleituraeletric smallint DEFAULT 0 NOT NULL,
    dataelim date DEFAULT '2023-10-09'::date,
-   prazodel smallint NOT NULL DEFAULT 5,
    inslro smallint DEFAULT 2 NOT NULL,
    editlro smallint DEFAULT 4 NOT NULL,
    insbens smallint DEFAULT 2 NOT NULL,
@@ -146,7 +145,16 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".paramsis (
    pico_online integer DEFAULT 0 NOT NULL,
    data_pico_online timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
    pico_dia integer DEFAULT 0 NOT NULL,
-   data_pico_dia timestamp without time zone DEFAULT CURRENT_TIMESTAMP ) ");
+   data_pico_dia timestamp without time zone DEFAULT CURRENT_TIMESTAMP, 
+   prazodel smallint NOT NULL DEFAULT 5,
+   vertarefa smallint NOT NULL DEFAULT 1,
+   verarquivos smallint NOT NULL DEFAULT 1,
+   datainieletric2 date DEFAULT '3000-12-31'::date,
+   datainieletric3 date DEFAULT '3000-12-31'::date,
+   valorinieletric2 double precision NOT NULL DEFAULT 0,
+   valorinieletric3 double precision NOT NULL DEFAULT 0,
+   editpagini smallint NOT NULL DEFAULT 2
+   ) ");
 
    echo "Tabela ".$xProj.".paramsis checada. <br>";
 
@@ -217,7 +225,14 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
       bens smallint DEFAULT 0 NOT NULL,
       agua smallint DEFAULT 0 NOT NULL,
       eletric smallint DEFAULT 0 NOT NULL,
-      fisclro smallint DEFAULT 0 NOT NULL 
+      fisclro smallint DEFAULT 0 NOT NULL, 
+      arcond smallint NOT NULL DEFAULT 0,
+      arfisc smallint NOT NULL DEFAULT 0,
+      eletric2 smallint NOT NULL DEFAULT 0,
+      eletric3 smallint NOT NULL DEFAULT 0,
+      fisceletric smallint NOT NULL DEFAULT 0,
+      fiscbens smallint NOT NULL DEFAULT 0,
+      soinsbens smallint NOT NULL DEFAULT 0
       ) ");
    
    echo "Tabela ".$xProj.".poslog checada. <br>";

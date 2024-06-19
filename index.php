@@ -20,6 +20,7 @@
                 $('#container2').load('modulos/menuin.php?diasemana='+document.getElementById('guardadiasemana').value);
                 $('#container4').load('modulos/rodape.php');
                 $('#CorouselPagIni').load('modulos/carousel.php');
+                $('#container7').load('modulos/conteudo/carPagIni.php');
             });
         </script>
     </head>
@@ -48,16 +49,7 @@
                         </div>
                     </div>
                     <div id="container6" style="width: 70%; padding-left: 80px; padding-right: 100px;">
-                        <div style="padding-left: 20px;">
-                            <h3>Comunhão Espírita de Brasília</h3>
-                        </div>
-                        <br>
-                        <div style="text-align: justify;">
-                            <p>&nbsp; &nbsp; &nbsp; Casa Espírita de excelência na sua organização, na geração de conhecimento, na educação, na difusão doutrinária, na assistência espiritual e social, com estímulo à vivência cristã.</p>
-                        </div>
-                        <div style="text-align: center;">
-                            <h5>Fora da caridade não há salvação.</h5>
-                        </div>
+                        <div id="container7" style="width: 95%; padding-left: 20px; padding-right: 20px;"></div>
                     </div>
                 </div>
             </section>

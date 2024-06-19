@@ -71,7 +71,7 @@
                 }
                 function salvaPrazoDel(Valor, Param){
                     if(parseInt(Valor) === 1000){
-                        Texto = "Confirma interromper a deleção de lançamentos antigos?";
+                        Texto = "Confirma interromper a rotina de apagar lançamentos antigos?";
                     }else{
                         Texto = "Confirma eliminar dos arquivos os lançamentos <br>com mais de "+Valor+" anos? ";
                     }
@@ -487,7 +487,7 @@
             $rsSis = pg_query($Conec, "SELECT admvisu, admedit, admcad, insevento, editevento, instarefa, edittarefa, insramais, editramais, instelef, edittelef, 
             editpagina, insarq, insaniver, editaniver, instroca, edittroca, insocor, editocor, insleituraagua, editleituraagua, 
             TO_CHAR(datainiagua, 'DD/MM/YYYY'), valoriniagua, insleituraeletric, editleituraeletric, TO_CHAR(datainieletric, 'DD/MM/YYYY'), valorinieletric, inslro, editlro, insbens, editbens, 
-            prazodel, vertarefa, verarquivos, TO_CHAR(datainieletric2, 'DD/MM/YYYY'), valorinieletric2, TO_CHAR(datainieletric3, 'DD/MM/YYYY'), valorinieletric3 
+            prazodel, vertarefa, verarquivos, TO_CHAR(datainieletric2, 'DD/MM/YYYY'), valorinieletric2, TO_CHAR(datainieletric3, 'DD/MM/YYYY'), valorinieletric3, editpagini 
             FROM ".$xProj.".paramsis WHERE idPar = 1");
             $ProcSis = pg_fetch_row($rsSis);
             $admVisu = $ProcSis[0]; // admVisu - administrador visualiza usuários
@@ -633,7 +633,13 @@
             $Proc20 = pg_fetch_row($rs20);
             $nomeEditBens = $Proc20[0];
 
-            $PrazoDel = $ProcSis[31];   // prazo para deleção de registros antigos
+            $editPagIni = $ProcSis[38];
+            $rs21 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $editPagIni");
+            $Proc21 = pg_fetch_row($rs21);
+            $nomeEditPagIni = $Proc21[0];
+
+
+            $PrazoDel = $ProcSis[31];   // prazo para apagar registros antigos
             $VerTarefa = $ProcSis[32];  // parâmetro para liberar tarefas para todos verem
             $VerArquivos = $ProcSis[33];  // parâmetro para liberar a visualização dos arquivos carregados em cada diretoria
 
@@ -658,6 +664,8 @@
 
             $OpAdmEditPag = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             $OpAdmInsArq = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+
+            $OpAdmEditPagIni = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
 
             $OpAdmInsTroca = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             $OpAdmEditTroca = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
@@ -885,8 +893,6 @@
                         <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="valorIniEletric" value="<?php echo $ValorIniEletric; ?>" onchange="salvaLeitIniEletric(value, 1);" style="width: 90px; text-align: center;"></td>
                         <td><div style="text-align: left; font-size: 80%;"><button class="botpadr" onclick="zeraEletric(1, 'Comunhão');">Apagar Tudo da Comunhão</button></div></td>
                     </tr>
-
-
                     <tr>
                         <td style="text-align: right; font-size: 80%; padding-right: 3px; padding-top: 10px;">Data Inicial Claro:</td>
                         <td colspan="2" style="text-align: left; font-size: 80%; padding-left: 3px; padding-top: 10px;"><input type="text" id="dataIniEletric2" value="<?php echo $DataIniEletric2; ?>" onchange="salvaDataIniEletric(value, 2);" onclick="guardaData(value);" style="width: 90px; text-align: center;">
@@ -898,8 +904,6 @@
                         <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="valorIniEletric2" value="<?php echo $ValorIniEletric2; ?>" onchange="salvaLeitIniEletric(value, 2);" style="width: 90px; text-align: center;"></td>
                         <td><div style="text-align: left; font-size: 80%;"><button class="botpadr" onclick="zeraEletric(2, 'Operadora Claro');">Apagar Tudo da Claro</button></div></td>
                     </tr>
-
-
                     <tr>
                         <td style="text-align: right; font-size: 80%; padding-right: 3px; padding-top: 10px;">Data Inicial Oi:</td>
                         <td colspan="2" style="text-align: left; font-size: 80%; padding-left: 3px; padding-top: 10px;"><input type="text" id="dataIniEletric3" value="<?php echo $DataIniEletric3; ?>" onchange="salvaDataIniEletric(value, 3);" onclick="guardaData(value);" style="width: 90px; text-align: center;">
@@ -909,19 +913,19 @@
                     <tr>
                         <td style="text-align: right; font-size: 80%; padding-right: 3px;">Leitura Inicial Oi:</td>
                         <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="valorIniEletric3" value="<?php echo $ValorIniEletric3; ?>" onchange="salvaLeitIniEletric(value, 3);" style="width: 90px; text-align: center;"></td>
-                        <td><div style="text-align: left; font-size: 80%;"><button class="botpadr" onclick="zeraEletric(3, 'Operadora Oi');">Apagar Tudo da Oi</button></div></td>
+                        <td><div style="text-align: left; font-size: 80%;"><button class="botpadr" onclick="zeraEletric(3, 'Operadora SBA');">Apagar Tudo da SBA</button></div></td>
                     </tr>
                 </table>
             </div>
 
-<!-- Páginas  -->
+<!-- Páginas Diretorias/Assessorias -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
                 - <b>Páginas das Diretorias/Assessorias</b>:<br>
                 <table style="margin: 0 auto;">
                     <tr>
                         <td>Nível mínimo para INSERIR arquivos:</td>
                         <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'insArq');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <select onchange="salvaParam(value, 'insarq');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                         <option value="<?php echo $insArq; ?>"><?php echo $nomeInsArq; ?></option>
                             <?php 
                             if($OpAdmInsArq){
@@ -937,7 +941,7 @@
                     <tr>
                         <td>Nível mínimo para EDITAR página:</td>
                         <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'editPagina');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <select onchange="salvaParam(value, 'editpagina');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                         <option value="<?php echo $editPagina; ?>"><?php echo $nomeEditPagina; ?></option>
                             <?php 
                             if($OpAdmEditPag){
@@ -962,6 +966,29 @@
                 </table>
             </div>
 
+<!-- Página Inicial -->
+            <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
+                - <b>Página Inicial</b>:<br>
+                <table style="margin: 0 auto;">
+                    <tr>
+                        <td>Nível mínimo para EDITAR página:</td>
+                        <td style="padding-left: 5px;">
+                        <select onchange="salvaParam(value, 'editpagini');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <option value="<?php echo $editPagIni; ?>"><?php echo $nomeEditPagIni; ?></option>
+                            <?php 
+                            if($OpAdmEditPagIni){
+                                while ($Opcoes = pg_fetch_row($OpAdmEditPagIni)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                <?php 
+                                }
+                            }
+                            ?>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
 <!-- Ramais  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
                 - <b>Ramais Internos</b>:<br>
@@ -969,7 +996,7 @@
                     <tr>
                         <td>Nível mínimo para INSERIR ramais:</td>
                         <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'insRamais');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <select onchange="salvaParam(value, 'insramais');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                             <option value="<?php echo $insRamais; ?>"><?php echo $nomeInsRamais; ?></option>
                             <?php 
                             if($OpAdmInsRamais){
@@ -989,7 +1016,7 @@
                     <tr>
                     <td>Nível mínimo para EDITAR ramais:</td>
                         <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'editRamais');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <select onchange="salvaParam(value, 'editramais');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                         <option value="<?php echo $editRamais; ?>"><?php echo $nomeEditRamais; ?></option>
                             <?php 
                             if($OpAdmEditRamais){
@@ -1012,7 +1039,7 @@
                     <tr>
                         <td>Nível mínimo para INSERIR ocorrência:</td>
                         <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'insOcor');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <select onchange="salvaParam(value, 'insocor');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                         <option value="<?php echo $insOcor; ?>"><?php echo $nomeInsOcor; ?></option>
                             <?php 
                             if($OpAdmInsOcor){
@@ -1028,7 +1055,7 @@
                     <tr>
                         <td>Nível mínimo para VERIFICAR ocorrência:</td>
                         <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'editOcor');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <select onchange="salvaParam(value, 'editocor');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                         <option value="<?php echo $editOcor; ?>"><?php echo $nomeEditOcor; ?></option>
                             <?php 
                             if($OpAdmEditOcor){
@@ -1051,7 +1078,7 @@
                     <tr>
                         <td>Nível mínimo para INSERIR tarefas:</td>
                         <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'insTarefa');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <select onchange="salvaParam(value, 'instarefa');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                             <option value="<?php echo $insTarefa; ?>"><?php echo $nomeInsTarefa; ?></option>
                             <?php 
                             if($OpAdmInsTar){
@@ -1071,7 +1098,7 @@
                     <tr>
                     <td>Nível mínimo para EDITAR tarefas:</td>
                         <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'editTarefa');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <select onchange="salvaParam(value, 'edittarefa');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                         <option value="<?php echo $editTarefa; ?>"><?php echo $nomeEditTarefa; ?></option>
                             <?php 
                             if($OpAdmEditTar){
@@ -1101,7 +1128,7 @@
                     <tr>
                         <td>Nível mínimo para INSERIR telefones:</td>
                         <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'insTelef');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <select onchange="salvaParam(value, 'instelef');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                             <option value="<?php echo $insTelef; ?>"><?php echo $nomeInsTelef; ?></option>
                             <?php 
                             if($OpAdmInsTelef){
@@ -1121,7 +1148,7 @@
                     <tr>
                     <td>Nível mínimo para EDITAR telefones:</td>
                         <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'editTelef');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <select onchange="salvaParam(value, 'edittelef');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                         <option value="<?php echo $editTelef; ?>"><?php echo $nomeEditTelef; ?></option>
                             <?php 
                             if($OpAdmEditTelef){
@@ -1144,7 +1171,7 @@
                     <tr>
                         <td>Nível mínimo para INSERIR trocas:</td>
                         <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'insTroca');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <select onchange="salvaParam(value, 'instroca');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                             <option value="<?php echo $insTroca; ?>"><?php echo $nomeInsTroca; ?></option>
                             <?php 
                             if($OpAdmInsTroca){
@@ -1164,7 +1191,7 @@
                     <tr>
                     <td>Nível mínimo para EDITAR trocas:</td>
                         <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'editTroca');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <select onchange="salvaParam(value, 'edittroca');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                         <option value="<?php echo $editTroca; ?>"><?php echo $nomeEditTroca; ?></option>
                             <?php 
                             if($OpAdmEditTroca){

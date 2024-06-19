@@ -41,7 +41,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         </script>
     </head>
     <body> 
-        <div  style="text-align: center;"><label class="titRelat">Leituras Medidor Eletricidade da Operadora Oi<label></div>
+        <div  style="text-align: center;"><label class="titRelat">Leituras Medidor Eletricidade da Operadora SBA<label></div>
             <?php 
                 date_default_timezone_set('America/Sao_Paulo');
                 $admIns = parAdm("insleituraeletric", $Conec, $xProj);   // nível para inserir 

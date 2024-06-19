@@ -58,7 +58,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
             $(document).ready(function(){
-                $("#carregaBens").load("modulos/bensachados/relBens.php");
+                $("#carregaBens").load("modulos/bensEncont/relBens.php");
 
                 //Impedir a mudança de data do registro de bem encontrado
                 DataPr = compareDates ("30/06/2024", dataAtualFormatada()); // se o prazo for maior que a data atual
@@ -140,6 +140,7 @@ if(!isset($_SESSION["usuarioID"])){
                     });
                     return false;
                 }
+
                 if(document.getElementById("dataregistro").value === ""){
                     let element = document.getElementById('dataregistro');
                     element.classList.add('destacaBorda');
@@ -210,7 +211,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("botsalvareg").disabled = true; // para evitar de salvar duas vezes em sistemas lentos
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/bensachados/salvaBens.php?acao=salvaRegBem&codigo="+document.getElementById("guardacod").value+
+                    ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=salvaRegBem&codigo="+document.getElementById("guardacod").value+
                     "&dataregistro="+encodeURIComponent(document.getElementById("dataregistro").value)+
                     "&dataachado="+encodeURIComponent(document.getElementById("dataachado").value)+
                     "&descdobem="+encodeURIComponent(document.getElementById("descdobem").value)+
@@ -230,7 +231,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("guardacod").value = Resp.codigonovo;
                                     document.getElementById("guardaNumRelat").value = Resp.numrelat;
                                     document.getElementById("mudou").value = "0";
-                                    $("#carregaBens").load("modulos/bensachados/relBens.php");
+                                    $("#carregaBens").load("modulos/bensEncont/relBens.php");
                                     document.getElementById("relacmodalRegistro").style.display = "none";
                                 }
                             }
@@ -244,7 +245,7 @@ if(!isset($_SESSION["usuarioID"])){
             function verRegistroRcb(Cod){
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/bensachados/salvaBens.php?acao=buscaBem&codigo="+Cod, true);
+                    ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=buscaBem&codigo="+Cod, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -276,7 +277,7 @@ if(!isset($_SESSION["usuarioID"])){
             function mostraBem(Cod, modal, Restit){
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/bensachados/salvaBens.php?acao=buscaBem&codigo="+Cod, true);
+                    ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=buscaBem&codigo="+Cod, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -380,7 +381,7 @@ if(!isset($_SESSION["usuarioID"])){
                         Sim: function () {
                             ajaxIni();
                             if(ajax){
-                                ajax.open("POST", "modulos/bensachados/salvaBens.php?acao=RcbGuardaBem&codigo="+document.getElementById("guardacod").value, true);
+                                ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=RcbGuardaBem&codigo="+document.getElementById("guardacod").value, true);
                                 ajax.onreadystatechange = function(){
                                     if(ajax.readyState === 4 ){
                                         if(ajax.responseText){
@@ -398,7 +399,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                     }
                                                 });
                                                 document.getElementById("relacmodalTransfGuarda").style.display = "none";
-                                                $("#carregaBens").load("modulos/bensachados/relBens.php");
+                                                $("#carregaBens").load("modulos/bensEncont/relBens.php");
                                             }
                                         }
                                     }
@@ -450,7 +451,7 @@ if(!isset($_SESSION["usuarioID"])){
                         Sim: function () {
                             ajaxIni();
                             if(ajax){
-                                ajax.open("POST", "modulos/bensachados/salvaBens.php?acao=restituiBem&codigo="+document.getElementById("guardacod").value
+                                ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=restituiBem&codigo="+document.getElementById("guardacod").value
                                 +"&nomeproprietario="+encodeURIComponent(document.getElementById("nomeproprietario").value)
                                 +"&cpfproprietario="+encodeURIComponent(document.getElementById("cpfproprietario").value)
                                 +"&telefproprietario="+encodeURIComponent(document.getElementById("telefproprietario").value), true);
@@ -471,7 +472,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                     }
                                                 });
                                                 document.getElementById("relacmodalRestit").style.display = "none";
-                                                $("#carregaBens").load("modulos/bensachados/relBens.php");
+                                                $("#carregaBens").load("modulos/bensEncont/relBens.php");
                                             }
                                         }
                                     }
@@ -499,7 +500,7 @@ if(!isset($_SESSION["usuarioID"])){
                         Sim: function () {
                             ajaxIni();
                             if(ajax){
-                                ajax.open("POST", "modulos/bensachados/salvaBens.php?acao=encamBemCsg&codigo="+document.getElementById("guardacod").value, true);
+                                ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=encamBemCsg&codigo="+document.getElementById("guardacod").value, true);
                                 ajax.onreadystatechange = function(){
                                     if(ajax.readyState === 4 ){
                                         if(ajax.responseText){
@@ -517,7 +518,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                     }
                                                 });
                                                 document.getElementById("relacmodalEncam").style.display = "none";
-                                                $("#carregaBens").load("modulos/bensachados/relBens.php");
+                                                $("#carregaBens").load("modulos/bensEncont/relBens.php");
                                             }
                                         }
                                     }
@@ -569,7 +570,7 @@ if(!isset($_SESSION["usuarioID"])){
                         Sim: function () {
                             ajaxIni();
                             if(ajax){
-                                ajax.open("POST", "modulos/bensachados/salvaBens.php?acao=destinaBem&codigo="+document.getElementById("guardacod").value
+                                ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=destinaBem&codigo="+document.getElementById("guardacod").value
                                 +"&setordestino="+encodeURIComponent(document.getElementById("setordestino").value)
                                 +"&nomefuncionario="+encodeURIComponent(document.getElementById("nomefuncionario").value)
                                 +"&selecdestino="+document.getElementById("selecdestino").value, true);
@@ -590,7 +591,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                     }
                                                 });
                                                 document.getElementById("relacmodalDest").style.display = "none";
-                                                $("#carregaBens").load("modulos/bensachados/relBens.php");
+                                                $("#carregaBens").load("modulos/bensEncont/relBens.php");
                                             }
                                         }
                                     }
@@ -614,7 +615,7 @@ if(!isset($_SESSION["usuarioID"])){
                         Sim: function () {
                             ajaxIni();
                             if(ajax){
-                                ajax.open("POST", "modulos/bensachados/salvaBens.php?acao=apagaBem&codigo="+document.getElementById("guardacod").value, true);
+                                ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=apagaBem&codigo="+document.getElementById("guardacod").value, true);
                                 ajax.onreadystatechange = function(){
                                     if(ajax.readyState === 4 ){
                                         if(ajax.responseText){
@@ -624,7 +625,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                 alert("Houve um erro no servidor.")
                                             }else{
                                                 document.getElementById("relacmodalRestit").style.display = "none";
-                                                $("#carregaBens").load("modulos/bensachados/relBens.php");
+                                                $("#carregaBens").load("modulos/bensEncont/relBens.php");
                                             }
                                         }
                                     }
@@ -649,7 +650,7 @@ if(!isset($_SESSION["usuarioID"])){
                 element.classList.remove('destacaBorda');
             }
             function imprProcesso(Cod){
-                window.open("modulos/bensachados/imprReg.php?acao=imprProcesso&codigo="+Cod, Cod);
+                window.open("modulos/bensEncont/imprReg.php?acao=imprProcesso&codigo="+Cod, Cod);
             }
             function imprRestit(){
                 if(document.getElementById("nomeproprietario").value === ""){
@@ -660,7 +661,7 @@ if(!isset($_SESSION["usuarioID"])){
                         draggable: true,
                         buttons: {
                             Sim: function () {
-                                window.open("modulos/bensachados/imprReg.php?acao=imprReciboRest&codigo="+document.getElementById("guardacod").value+"&nomeproprietario="+document.getElementById("nomeproprietario").value+"&cpfproprietario="+document.getElementById("cpfproprietario").value+"&telefproprietario="+document.getElementById("telefproprietario").value, document.getElementById("guardacod").value);
+                                window.open("modulos/bensEncont/imprReg.php?acao=imprReciboRest&codigo="+document.getElementById("guardacod").value+"&nomeproprietario="+document.getElementById("nomeproprietario").value+"&cpfproprietario="+document.getElementById("cpfproprietario").value+"&telefproprietario="+document.getElementById("telefproprietario").value, document.getElementById("guardacod").value);
                             },
                             Não: function () {
                                 document.getElementById("nomeproprietario").focus();
@@ -668,7 +669,7 @@ if(!isset($_SESSION["usuarioID"])){
                         }
                     });
                 }else{
-                    window.open("modulos/bensachados/imprReg.php?acao=imprReciboRest&codigo="+document.getElementById("guardacod").value+"&nomeproprietario="+document.getElementById("nomeproprietario").value+"&cpfproprietario="+document.getElementById("cpfproprietario").value+"&telefproprietario="+document.getElementById("telefproprietario").value, document.getElementById("guardacod").value);
+                    window.open("modulos/bensEncont/imprReg.php?acao=imprReciboRest&codigo="+document.getElementById("guardacod").value+"&nomeproprietario="+document.getElementById("nomeproprietario").value+"&cpfproprietario="+document.getElementById("cpfproprietario").value+"&telefproprietario="+document.getElementById("telefproprietario").value, document.getElementById("guardacod").value);
                 }
             }
 

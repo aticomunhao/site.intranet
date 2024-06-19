@@ -341,7 +341,7 @@ if(!isset($_SESSION["usuarioID"])){
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->
                 <div class="col" style="margin: 0 auto; text-align: center;" title="Inserir leitura do medidor de energia elétrica"><button id="botInserir" class="botpadrblue" onclick="insereModal();">Inserir</button></div> <!-- quadro -->
-                <div class="col" style="text-align: center;">Controle do Consumo de Energia Elétrica da Operadora Oi</div> <!-- espaçamento entre colunas  -->
+                <div class="col" style="text-align: center;">Controle do Consumo de Energia Elétrica da Operadora SBA</div> <!-- espaçamento entre colunas - SBA Communications Corporation -->
                 <div class="col" style="margin: 0 auto; text-align: center;"><button id="botImprimir" class="botpadrred" onclick="abreImprLeitura();">PDF</button></div> <!-- quadro -->
             </div>
 

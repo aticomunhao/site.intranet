@@ -114,7 +114,7 @@
 						<a href="#" onclick="openhref(57);">Ramais Internos</a>
 					</li>
 					<li>
-						<a href="#" onclick="openhref(58);">Ramais Externos</a>
+						<a href="#" onclick="openhref(58);">Telefones Úteis</a>
 					</li>
 				</ul>
 			</li>
@@ -154,7 +154,7 @@
 							echo "<a href='#' onclick='openhref(62);'>Atualizar Senha</a>";
 						echo "</li>";
 						if(isset($_SESSION["AdmBens"])){
-							if($_SESSION["AdmBens"] == 1 || $_SESSION["FiscBens"] == 1 || $_SESSION["AdmUsu"] > 6){ 
+							if($_SESSION["AdmBens"] == 1 || $_SESSION["FiscBens"] == 1 || $_SESSION["SoInsBens"] == 1 || $_SESSION["AdmUsu"] > 6){ 
 								echo "<li>";
 									echo "<a href='#' onclick='openhref(64);'>Bens Encontrados</a>";
 								echo "</li>";
@@ -185,12 +185,21 @@
 									echo "<a href='#' onclick='openhref(67);'>Operadora Claro</a>";
 									echo "</li>";
 									echo "<li>";
-									echo "<a href='#' onclick='openhref(68);'>Operadora Oi</a>";
+									echo "<a href='#' onclick='openhref(68);'>Operadora SBA</a>";
 									echo "</li>";
 								echo "</ul>";
 								echo "</li>";
 								echo "<li>";
-								echo "<a href='#' onclick='openhref(65);'>Ar Condicionado</a>";
+								echo "<a href='#'>Ar Condicionado</a>";
+									echo "<ul>";
+										echo "<li>";
+										echo "<a href='#' onclick='openhref(65);'>Controle 1</a>";
+										echo "</li>";
+										echo "<li>";
+										echo "<a href='#' onclick='openhref(69);'>Controle 2</a>";
+										echo "</li>";
+
+									echo "</ul>";
 								echo "</li>";
 							echo "</ul>";
 						echo "</li>";

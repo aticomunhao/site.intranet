@@ -288,7 +288,7 @@ session_start();
         $BuscaNomes = 0;
         $OpNomes = pg_query($ConecPes, "SELECT id, nome_completo FROM ".$xPes.".pessoas WHERE status = 1 ORDER BY nome_completo"); // supõe-se que haverá milhares de nomes
         $row = pg_num_rows($OpNomes);
-        if($row > 2000){
+        if($row > 1000){
             $OpNomes = pg_query($Conec, "SELECT id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
             $BuscaNomes = 1;
         }

@@ -59,7 +59,7 @@ function openhref(Num){
         $('#container3').load('modulos/calendario/calend.php');
     }
     if(parseInt(Num) === 64){
-        $('#container3').load('modulos/bensachados/pagBensAch.php');
+        $('#container3').load('modulos/bensEncont/pagBens.php');
     }
     if(parseInt(Num) === 65){
         $('#container3').load('modulos/controleAr/controleAr.php');
@@ -74,6 +74,9 @@ function openhref(Num){
     }
     if(parseInt(Num) === 68){
         $('#container3').load('modulos/leituras/pag_eletric3.php');
+    }
+    if(parseInt(Num) === 69){
+        $('#container3').load('modulos/controleAr/controleAr2.php');
     }
 
 

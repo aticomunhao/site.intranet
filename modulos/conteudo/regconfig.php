@@ -76,3 +76,15 @@ if($Acao == "buscaTextoPag"){  //vem de relPag.php
      $responseText = json_encode($var);
      echo $responseText;
 }
+if($Acao == "salvaTextoIni"){  //vem de indexb.php
+    $Text = str_replace("'","\"",$_REQUEST["textopaginaini"]); // substituir aspas simples por duplas
+    $Texto = htmlentities($Text);
+    $Erro = 0;
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '$Texto' WHERE codset = 1");
+    if(!$rs){
+        $Erro = 1;
+    }
+     $var = array("coderro"=>$Erro);
+     $responseText = json_encode($var);
+     echo $responseText;
+}

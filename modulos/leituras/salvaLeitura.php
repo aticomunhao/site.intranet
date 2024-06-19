@@ -331,7 +331,7 @@ if($Acao =="ultData"){
 if($Acao =="ultDataEletric"){
     $Erro = 0;
     $ValorIni = 0;
-    $rs = pg_query($Conec, "SELECT MAX(dataleitura1) FROM ".$xProj.".leitura_eletric WHERE ativo = 1");
+    $rs = pg_query($Conec, "SELECT MAX(dataleitura1) FROM ".$xProj.".leitura_eletric WHERE colec = 1 And ativo = 1");
     if(!$rs){
         $Erro = 1;
     }

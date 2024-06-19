@@ -104,7 +104,7 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->MultiCell(150, 3, "Controle do Consumo de Energia Elétrica - Operadora Claro", 0, 'C', false);
         }
         if($Colec == 3){
-            $pdf->MultiCell(150, 3, "Controle do Consumo de Energia Elétrica - Operadora Oi", 0, 'C', false);
+            $pdf->MultiCell(150, 3, "Controle do Consumo de Energia Elétrica - Operadora SBA", 0, 'C', false);
         }
     }
 

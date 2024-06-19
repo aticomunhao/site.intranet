@@ -15,31 +15,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         target: 2,
                         orderable: false
                     }
-//                    {
-//                        target: 6,
-//                        searchable: false,
-//                        orderable: false
-//                    },
-//                    {
-//                        target: 7,
-//                        searchable: false,
-//                        orderable: false
-//                    },
-//                    {
-//                        target: 8,
-//                        searchable: false,
-//                        orderable: false
-//                    },
-//                    {
-//                        target: 9,
-//                        searchable: false,
-//                        orderable: false
-//                    },
-//                    {
-//                        target: 10,
-//                        searchable: false,
-//                        orderable: false
-//                    }
                 ],
                 lengthMenu: [
                     [50, 100, 200, 500],
@@ -93,7 +68,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             if($Marca == 0 && $SoInsBens == 1){ // só para registrar (portaria nos fins de semana) - Só mostra os do dia
                 $rs0 = pg_query($Conec, "SELECT ".$xProj.".bensachados.id, to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, usuguarda, usurestit, usucsg, usuarquivou, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, usudestino, CURRENT_DATE-datareceb, codusuins 
                 FROM ".$xProj.".bensachados INNER JOIN ".$xProj.".poslog ON ".$xProj.".bensachados.codusuins = ".$xProj.".poslog.pessoas_id
-                WHERE ".$xProj.".bensachados.ativo = 1 And ".$xProj.".bensachados.datareceb = CURRENT_DATE 
+                WHERE ".$xProj.".bensachados.ativo = 1 And usucsg = 0 And ".$xProj.".bensachados.datareceb = CURRENT_DATE 
                 ORDER BY ".$xProj.".bensachados.datareceb DESC");
             }
 
@@ -130,24 +105,23 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <hr style="margin: 0; padding: 0px;">
                             <?php
                             if($Edit == 1){
-                                if($Edit == 1 && $SobGuarda == 0 && $Restit == 0 && $Arquivado == 0){
-                                    echo "<button class='botTable fundoAmarelo' onclick='verRegistroRcb($tbl0[0]);' title='Editar o registro de recebimento'>Editar</button>";
-                                }else{
-                                    echo "<button disabled class='botTable fundoCinza corAzulClaro'>Editar</button>";
-                                }
-                                if($Edit == 1 && $SobGuarda == 0 && $Restit == 0 && $Arquivado == 0){
-                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 1, $Restit);'  title='Transferir para a guarda da DAF'>Guarda</button>";
-                                } else{
-                                    echo "<button disabled class='botTable fundoCinza corAzulClaro'>Guarda</button>";
-                                }
-
-                                echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);'>Restituição</button>";
-
-                                if($Edit == 1 && $Restit == 0 && $GuardaCSG == 0 && $Arquivado == 0 && $Intervalo > 2){
-                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 3, $Restit);' title='Encaminhamento para CSG após 90 dias'>CSG</button>";
+//                                if($Edit == 1 && $SobGuarda == 0 && $Restit == 0 && $Arquivado == 0){
+//                                    echo "<button class='botTable fundoAmarelo' onclick='verRegistroRcb($tbl0[0]);' title='Editar o registro de recebimento'>Editar</button>";
+//                                }else{
+//                                    echo "<button disabled class='botTable fundoCinza corAzulClaro'>Editar</button>";
+//                                }
+                                if($Edit == 1 && $Restit == 0 && $GuardaCSG == 0 && $Arquivado == 0 ){
+                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 3, $Restit);' title='Encaminhamento para guarda da CSG'>CSG</button>";
                                 }else{
                                     echo "<button disabled class='botTable fundoCinza corAzulClaro'>CSG</button>";
                                 }
+//                                if($Edit == 1 && $SobGuarda == 0 && $Restit == 0 && $Arquivado == 0){
+//                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 1, $Restit);'  title='Transferir para a guarda da DAF'>Guarda</button>";
+//                                } else{
+//                                    echo "<button disabled class='botTable fundoCinza corAzulClaro'>Guarda</button>";
+//                                }
+                                echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);' title='Formuário de restituição ao proprietário'>Restituição</button>";
+
                                 if($Edit == 1 && $Arquivado == 0 && $Intervalo > 2){
                                     echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 4, $Restit);' title='Destinação após 90 dias'>Destinação</button>";
                                 }else{
@@ -159,21 +133,22 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                 echo "<br>";
                             }
                             ?>
-                            
+
                             <?php
 //                            echo "<div class='etiqResult' style='border: 0px;' title='Situação do processo'>Situação: </div>";
                             if($UsuIns > 0){
                                 echo "<div class='etiqResult' title='Registro inicial'>Reg</div>";
                             }
-                            if($SobGuarda > 0){
-                                echo "<div class='etiqResult' title='Entregue à DAF'>DAF</div>";
-                            }
-                            if($Restit > 0){
-                                echo "<div class='etiqResult'style='border-color: red;' title='Bem restituído'>Rest</div>";
-                            }
                             if($GuardaCSG > 0){
                                 echo "<div class='etiqResult' title='Sob guarda da CSG'>CSG</div>";
                             }
+//                            if($SobGuarda > 0){
+//                                echo "<div class='etiqResult' title='Entregue à DAF'>DAF</div>";
+//                            }
+                            if($Restit > 0){
+                                echo "<div class='etiqResult'style='border-color: red;' title='Bem restituído'>Rest</div>";
+                            }
+
                             if($Destino > 0){
                                 echo "<div class='etiqResult' title='Bem já destinado'>Dest</div>";
                             }

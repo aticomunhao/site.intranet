@@ -156,6 +156,14 @@
     border-radius: 15px;
     width: 60%;
 }
+.modal-content-EditPagIni{
+    background: linear-gradient(180deg, white, #86c1eb);
+    margin: 10% auto; /* 10% do topo e centrado */
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 55%; /* acertar de acordo com a tela */
+}
 
 .modal-content-matrix{
     background-color: #fefefe;

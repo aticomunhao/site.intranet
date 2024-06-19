@@ -17,6 +17,7 @@
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/relacmod.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/indlog.css" /> <!-- depois do css do superfish porque a mudança de cores está aqui -->
+        <script src="class/tinymce5/tinymce.min.js"></script>
         <script src="comp/js/jquery.min.js"></script> <!-- versão 3.6.3 -->
         <script src="class/superfish/js/hoverIntent.js"></script>
         <script src="class/superfish/js/superfish.js"></script>
@@ -24,6 +25,32 @@
         <script src="comp/js/jquery-confirm.min.js"></script>   <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
         <script src="comp/js/eventos.js"></script>
 <!--        <script src="modulos/config/icustomb.js"></script> -->
+        <style>
+            .bContainer{ /* botão upload */
+                position: absolute; 
+                right: 30px;
+                margin-top: -20px; 
+                border: 1px solid blue;
+                background-color: blue;
+                color: white;
+                cursor: pointer;
+                border-radius: 10px; 
+                padding-left: 10px; 
+                padding-right: 10px; 
+            }
+            .blink{
+                animation: blink 1.2s infinite;
+            }
+            @keyframes blink {
+                0% {
+                    opacity: 1;
+                }
+                100% {
+                    opacity: 0;
+                    color: blue;
+                }
+            }
+            </style>
         <script>
             function ajaxIni(){
                 try{
@@ -47,9 +74,13 @@
                     location.replace('modulos/cansei.php');
                 }
                 document.getElementById("temTarefa").style.display = "none";
+                document.getElementById("tarefa").style.display = "none";
+                document.getElementById("temBens").style.display = "none";
+                document.getElementById("temBensPrazo").style.display = "none";
                 $('#container1').load('modulos/cabec.php');
                 $('#container2').load('modulos/menufim.php?diasemana='+document.getElementById('guardadiasemana').value);
                 $('#container4').load('modulos/rodape.php');
+                $('#container7').load('modulos/conteudo/carPagIni.php');
 
                 ajaxIni();
                 if(ajax){
@@ -67,8 +98,19 @@
                                     if(parseInt(Resp.temTarefa) > 0){
                                         document.getElementById("temTarefa").innerHTML = Resp.msgTar;
                                         document.getElementById("temTarefa").style.display = "block";
-                                    }else{
-                                        document.getElementById("temTarefa").style.display = "none";
+                                        document.getElementById("tarefa").style.display = "block";
+                                    }
+                                    if(parseInt(Resp.bens) > 0){
+                                        if(parseInt(Resp.bens) === 1){
+                                            document.getElementById("temBens").innerHTML = "1 registro em Bens Encontrados para processar.";
+                                        }else{
+                                            document.getElementById("temBens").innerHTML = Resp.bens+" registros em Bens Encontrados para processar.";
+                                        }
+                                        document.getElementById("temBens").style.display = "block";
+                                    }
+                                    if(parseInt(Resp.bensdestinar) > 0){
+                                        document.getElementById("temBensPrazo").innerHTML = "Há registro em Bens Encontrados superando o prazo de 90 dias.";
+                                        document.getElementById("temBensPrazo").style.display = "block";
                                     }
                                 }else{
                                     alert("Houve erro ao salvar");
@@ -79,8 +121,59 @@
                     ajax.send(null);
                 } 
             });
+
+            tinymce.init({
+                selector : "textarea",
+                language: 'pt_BR',
+                height: 420,
+                branding: false,
+                menubar: false,
+                plugins: ['image imagetools'],
+                images_upload_handler: image_upload_handler,
+//                menubar: 'edit format table tools',
+                fontsize_formats: '8pt 9pt 10pt 11pt 12pt 13pt 14pt 15pt 16pt 17pt 18pt 19pt 20pt 21pt 22pt 23pt 24pt 26pt 28pt 30pt 36pt 48pt',
+                toolbar1: 'undo redo | styleselect | fontselect| fontsizeselect | outdent indent | link image',
+                toolbar2: 'bold italic underline forecolor backcolor | alignleft aligncenter alignright alignjustify |',
+                content_style: 'body { font-family:Arial,Helvetica,sans-serif; font-size:14px }'
+            });
+            function image_upload_handler (blobInfo, success, failure, progress){
+                var xhr, formData;
+                xhr = new XMLHttpRequest();
+                xhr.withCredentials = false;
+                xhr.open('POST', 'postAcceptor.php');
+                xhr.upload.onprogress = function (e){
+                   progress(e.loaded / e.total * 100);
+                };
+                xhr.onload = function(){
+                    var json;
+                    if(xhr.status === 403){
+                      failure('HTTP Error: ' + xhr.status, { remove: true });
+                      return;
+                    }
+                    if(xhr.status < 200 || xhr.status >= 300){
+                        failure('HTTP Error: ' + xhr.status);
+                        return;
+                    }
+                    json = JSON.parse(xhr.responseText);
+                    if(!json || typeof json.location !== 'string'){
+                        failure('Invalid JSON: ' + xhr.responseText);
+                        return;
+                    }
+                    success(json.location);
+                };
+                xhr.onerror = function () {
+                    failure('O carregamento da imagem falhou. Código: ' + xhr.status);
+                };
+                formData = new FormData();
+                formData.append('file', blobInfo.blob(), blobInfo.filename());
+                xhr.send(formData);
+            };
+
             function carregaPag(){ // atalho no aviso da página inicial
                 $('#container3').load('modulos/conteudo/tarefas.php');
+            }
+            function carregaBens(){
+                $('#container3').load('modulos/bensEncont/pagBens.php');
             }
             function fechaModal(){
                 document.getElementById("modalComemorat").style.display = "none";
@@ -148,6 +241,36 @@
                     }
                 });
             }
+
+            function salvaModalIni(){
+                tinyMCE.triggerSave(true,true); // importante
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/conteudo/regconfig.php?acao=salvaTextoIni&textopaginaini="+encodeURIComponent(document.getElementById("textopaginaini").value), true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 0){
+                                    $('#container7').load('modulos/conteudo/carPagIni.php');
+                                    document.getElementById("modalEditPagIni").style.display = "none";
+                                }else{
+                                    alert("Houve um erro no servidor");
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function abreEdit(){
+                document.getElementById("modalEditPagIni").style.display = "block";
+            }
+            function fechaModal(){
+                document.getElementById("modalEditPagIni").style.display = "none";
+            }
             //para veriricar se usuário está on line
             checaFim = setInterval("checaLogFim()", 60000); // 1 minuto
             //Aviso de eventos do calendário
@@ -160,6 +283,18 @@
             $data = date('Y-m-d');
             $diaSemana = date('w', strtotime($data)); // date('w', time()); // também funciona
             $diaSemana = 1;
+
+            require_once("modulos/config/abrealas.php");
+            $rs0 = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores WHERE codset = 1");
+            $row0 = pg_num_rows($rs0);
+            if($row0 > 0){
+                $Proc0 = pg_fetch_row($rs0);
+                $TextoPag = html_entity_decode($Proc0[0]);
+            }else{
+                $TextoPag = "";
+            }
+            $admEdit = parAdm("editpagini", $Conec, $xProj); // nível para editar
+
         ?>
         <input type="hidden" id="guardadiasemana" value="<?php echo $diaSemana; ?>"/>
         <input type="hidden" id="guardaAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>"/> <!-- nível administrativo do usuário logado -->
@@ -182,23 +317,45 @@
                     </div>
                 </div>
 
-                <div id="container6" style="width: 70%; padding-left: 80px; padding-right: 100px;">
-                    <div id="temTarefa" onclick="carregaPag();" style="display: none; margin-bottom: 20px; color: white; font-weight: bold; background-color: red; text-align: center; padding: 10px; border-radius: 10px; width: 400px;"></div>
-                    <div style="padding-left: 20px;">
-                        <h3>Comunhão Espírita de Brasília</h3>
-                    </div>
-                    <br>
-                    <div style="text-align: justify;">
-                        <p>&nbsp; &nbsp; &nbsp; A Casa Espírita de excelência na sua organização, na geração de conhecimento, na educação, na difusão doutrinária, na assistência espiritual e social, com estímulo à vivência cristã.</p>
-                    </div>
-                    <div style="text-align: center;">
-                        <h5>Fora da caridade não há salvação.</h5>
-                    </div>
+                <div id="container6" style="width: 70%; padding-left: 80px; padding-right: 100px; text-align: center;">
+                    <?php
+                        if($_SESSION["AdmUsu"] >= $admEdit){ // botão editar página
+                            echo "<div class='bContainer corFundo' onclick='abreEdit()'> Editar </div>";
+                        }
+                    ?>
+                    <!-- tarja vermelha aviso de tarefa  -->
+                    <div id="tarefa" class="blink" onclick="carregaPag();" style="display: none; font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 10px; color: red; font-size: 1.5em; font-weigth: bold; text-align: center; padding: 10px; border-radius: 10px;">TAREFA</div>
+                    <div id="temTarefa" onclick="carregaPag();" style="display: none; margin-bottom: 20px; color: white; font-weight: bold; background-color: red; text-align: center; padding: 10px; border-radius: 10px;"></div>
+                    <div id="temBens" onclick="carregaBens();" style="display: none; margin-bottom: 0px; color: white; font-weight: bold; background-color: blue; text-align: center; padding: 10px; border-radius: 10px;"></div>
+                    <div id="temBensPrazo" onclick="carregaBens();" style="display: none; margin-bottom: 20px; color: white; font-weight: bold; background-color: blue; text-align: center; padding: 10px; border-radius: 10px;"></div>
+
+                    <!-- texto da página inicial  -->
+                    <div id="container7" style="padding-left: 10px; padding-right: 10px;"></div>
                 </div>
             </div>
             </section>
             <!-- Rodapé -->
             <div id="container4" class="container-fluid corFundoMenu-dia<?php echo $diaSemana; ?>"></div>
+
+            <!-- div modal para edição da página inicial -->
+            <div id="modalEditPagIni" class="relacmodal">
+                <div class="modal-content-EditPagIni">
+                    <span class="close" onclick="fechaModal();">&times;</span>
+                    <h3 id="titulomodal" style="text-align: center; color: #666;">Edição da Página Inicial</h3>
+                    <div style="border: 2px solid blue; border-radius: 10px;">
+                        <table style="margin: 0 auto;">
+                            <tr>
+                                <td style="width: 1500px;"><textarea id="textopaginaini"><?php echo $TextoPag; ?></textarea></td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center;"><div id="mensagem" style="color: red; font-weight: bold;"></div></td>
+                            <tr>
+                                <td style="text-align: center; padding-right: 30px;"><button class="resetbot" onclick="salvaModalIni();">Salvar</button></td>
+                            </tr>
+                        </table>
+                    </div>
+               </div>
+            </div> <!-- Fim Modal-->
 
             <!-- div modal comemorat  -->
             <div id="modalComemorat" class="relacmodal">

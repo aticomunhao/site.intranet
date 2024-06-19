@@ -55,7 +55,7 @@ if($Acao =="apagaTroca"){
     $CodTroca = (int) filter_input(INPUT_GET, 'numero'); 
     $Erro = 0;
     $Texto = "";
-    $rs = mysqli_query($xVai, "DELETE FROM cesb_trocas WHERE idTr = $CodTroca") or die ("Deleção: " . mysqli_error($xVai));
+    $rs = mysqli_query($xVai, "DELETE FROM cesb_trocas WHERE idTr = $CodTroca") or die ("Apagar: " . mysqli_error($xVai));
     if(!$rs){
         $Erro = 1;
     }

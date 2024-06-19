@@ -34,7 +34,7 @@ if(!isset($_SESSION["usuarioID"])){
         </style>
         <script type="text/javascript">
             $(document).ready(function(){
-                $("#contentPag").load("modulos/conteudo/carRelPag.php");   
+                $("#contentPag").load("modulos/conteudo/carRelPag.php");
             });
 //            tinymce.init({selector:'textarea'});
             tinymce.init({
@@ -51,7 +51,7 @@ if(!isset($_SESSION["usuarioID"])){
                 toolbar2: 'bold italic underline forecolor backcolor | alignleft aligncenter alignright alignjustify |',
                 content_style: 'body { font-family:Arial,Helvetica,sans-serif; font-size:14px }'
             });
-            function image_upload_handler (blobInfo, success, failure, progress){
+            function image_upload_handler (blobInfo, success, failure, progress){ //tinymce
                 var xhr, formData;
                 xhr = new XMLHttpRequest();
                 xhr.withCredentials = false;

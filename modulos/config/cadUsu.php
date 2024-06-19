@@ -118,6 +118,12 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("fiscBens").checked = false;
                                     }
 
+                                    if(parseInt(Resp.soinsbens) === 1){
+                                        document.getElementById("soPreencheBens").checked = true;
+                                    }else{
+                                        document.getElementById("soPreencheBens").checked = false;
+                                    }
+
                                     if(parseInt(Resp.leituraAgua) === 1){
                                         document.getElementById("leituraAgua").checked = true;
                                     }else{
@@ -148,7 +154,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("fiscalArCond").checked = false;
                                     }
-                                    
+
                                     document.getElementById("titulomodal").innerHTML = "Edição de Usuários";
                                     document.getElementById("ressetsenha").disabled = false;
                                     document.getElementById("mudou").value = "0";
@@ -200,6 +206,10 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("fiscBens").checked === true){
                     FiscBens = 1;
                 }
+                SoInsBens = 0;
+                if(document.getElementById("soPreencheBens").checked === true){
+                    SoInsBens = 1;
+                }
 
                 Agua = 0;
                 if(document.getElementById("leituraAgua").checked === true){
@@ -241,6 +251,7 @@ if(!isset($_SESSION["usuarioID"])){
                         +"&lro="+Lro
                         +"&fisclro="+FiscLro
                         +"&bens="+Bens
+                        +"&soinsbens="+SoInsBens
                         +"&fiscbens="+FiscBens
                         +"&agua="+Agua
                         +"&eletric="+Eletric
@@ -683,7 +694,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td style="text-align: right;"><button disabled id="ressetsenha" class="resetbot" style="font-size: .9rem;" onclick="resetSenha();">Ressetar Senha</button></td> <!-- https://www.dicionarioinformal.com.br/ressetar/ -->
+                        <td style="text-align: right;"><button disabled id="ressetsenha" class="resetbot" style="font-size: .9rem;" onclick="resetSenha();">Reiniciar Senha</button></td> <!-- https://www.dicionarioinformal.com.br/ressetar/ -->
                     </tr>
                     <tr>
                         <td class="etiq80">Nível Administrativo</td>
@@ -736,7 +747,16 @@ if(!isset($_SESSION["usuarioID"])){
                         <td class="etiq80" title="Registrar recebimento e destino de bens encontrados">Bens Achados:</td>
                         <td colspan="4">
                             <input type="checkbox" id="preencheBens" title="Registrar recebimento e destino de bens encontrados" onchange="modif();" >
-                            <label for="preencheBens" title="Registrar recebimento e destino de bens encontrados">acesso ao registro de Bens Encontrados</label>
+                            <label for="preencheBens" title="Registrar recebimento e destino de bens encontrados">acesso ao Registro e Destino de Bens Encontrados</label>
+                        </td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(4);" title="Guia rápido"></td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq80" title="Apenas registrar o recebimento de bens encontrados">Bens Achados:</td>
+                        <td colspan="4" style="padding-left: 20px;">
+                            <input type="checkbox" id="soPreencheBens" title="Apenas registrar recebimento de bens encontrados" onchange="modif();" >
+                            <label for="soPreencheBens" title="Apenas registrar recebimento de bens encontrados">apenas registrar Bens Encontrados</label>
                         </td>
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(4);" title="Guia rápido"></td>
                     </tr>
@@ -780,7 +800,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td class="etiq80" title="Pode registrar as leituras diárias do consumo de eletricidade">Energia Elétrica:</td>
                         <td colspan="4">
                             <input type="checkbox" id="leituraEletric3" title="Pode registrar as leituras diárias do consumo de energia elétrica" onchange="modif();" >
-                            <label for="leituraEletric3" title="Pode registrar as leituras diárias do consumo de energia elétrica do medidor da operadora Oi">registrar leitura diária do Medidor de Energia Elétrica - Oi</label>
+                            <label for="leituraEletric3" title="Pode registrar as leituras diárias do consumo de energia elétrica do medidor da operadora SBA">registrar leitura diária do Medidor de Energia Elétrica - Oi</label>
                         </td>
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(2);" title="Guia rápido"></td>
                     </tr>

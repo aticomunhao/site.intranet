@@ -99,6 +99,13 @@ if(!isset($_SESSION["usuarioID"])){
                     };
                     ajax.send(null);
                 }
+                document.getElementById("botimprLRO").style.visibility = "hidden"; // botão de imprimir todo o LRO
+                if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) && parseInt(Resp.fiscalizaLro) === 1){
+                    document.getElementById("botimprLRO").style.visibility = "visible";
+                }
+                if(parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
+                    document.getElementById("botimprLRO").style.visibility = "visible";
+                }
 
                 $("#dataocor").mask("99/99/9999");
                 document.getElementById("dataocor").disabled = true; // não deixar mudar a data do registro no LRO
@@ -117,7 +124,7 @@ if(!isset($_SESSION["usuarioID"])){
                 };
 
             });
-            
+
             function InsRegistro(){ // inserir novo registro 
                 document.getElementById("jatem").value = "0";
                 document.getElementById("numrelato").value = "";
@@ -211,13 +218,13 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("botedit").style.visibility = "hidden"; // botão de editar
                                     document.getElementById("botimpr").style.visibility = "hidden"; // botão de imprimir
                                     document.getElementById("mostrabotimpr").style.visibility = "hidden"; // botão de imprimir na visualização
+                                    
                                     if(parseInt(Resp.enviado) === 0 && parseInt(Resp.codusuins) === parseInt(document.getElementById("guardaUsuId").value)){ // ainda não fechou e foi o usu logado que inseriu
                                         document.getElementById("botedit").style.visibility = "visible"; // botão de editar
                                     }
                                     if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) && parseInt(Resp.fiscalizaLro) === 1){
                                         document.getElementById("mostrabotimpr").style.visibility = "visible";
                                     }
-
                                     if(parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
                                         document.getElementById("botimpr").style.visibility = "visible";
                                         document.getElementById("mostrabotimpr").style.visibility = "visible"; // botão de imprimir na visualização
@@ -551,6 +558,9 @@ if(!isset($_SESSION["usuarioID"])){
                     window.open("modulos/lro/imprReg.php?acao=impr&codigo="+document.getElementById("guardacod").value, document.getElementById("guardacod").value);
                 }
             }
+            function imprLRO(){
+                window.open("modulos/lro/imprLRO.php?acao=impr", "imprLRO");
+            }
             function abreOcor(Valor){
                 document.getElementById("mudou").value = "1";
                 if(parseInt(Valor) === 0){
@@ -632,7 +642,7 @@ if(!isset($_SESSION["usuarioID"])){
         $rs = pg_query($Conec, "UPDATE ".$xProj.".livroreg SET enviado = 1 WHERE datains < (NOW() - interval '13 hour') "); // marca enviado após 13 horas de inserido - o turno 3 tem 12 horas
 
         $admIns = parAdm("insocor", $Conec, $xProj);   // nível para inserir 
-        $admEdit = parAdm("editocor", $Conec, $xProj); // nível para edita
+        $admEdit = parAdm("editocor", $Conec, $xProj); // nível para editar
 
         $Lro = parEsc("lro", $Conec, $xProj, $_SESSION["usuarioID"]);
         $FiscLro = parEsc("fisclro", $Conec, $xProj, $_SESSION["usuarioID"]);
@@ -662,6 +672,8 @@ if(!isset($_SESSION["usuarioID"])){
                 <h5>Livro de Registro de Ocorrências</h5>
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: right;">
+                <button class="botpadrred" style="font-size: 80%;" id="botimprLRO" onclick="imprLRO();">Gerar PDF</button>
+                <label style="padding-left: 20px;"></label>
                 <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpLRO();" title="Guia rápido">
             </div>
 

@@ -64,7 +64,6 @@
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS dataapagou timestamp without time zone DEFAULT '3000-12-31'");
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".ramais_int ADD COLUMN IF NOT EXISTS poslog_id bigint NOT NULL DEFAULT 0;");
 
-
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS usuinsorig bigint NOT NULL DEFAULT 0;");
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS marca smallint NOT NULL DEFAULT 0;");
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS usutransf bigint NOT NULL DEFAULT 0;");
@@ -78,11 +77,23 @@
 
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS valorinieletric3 double precision NOT NULL DEFAULT 0");
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS datainieletric3 date  DEFAULT '3000-12-31'");
+//							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS textopagini text");
 
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS eletric2 smallint NOT NULL DEFAULT 0;");
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS eletric3 smallint NOT NULL DEFAULT 0;");
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisceletric smallint NOT NULL DEFAULT 0;");
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fiscbens smallint NOT NULL DEFAULT 0;");
+
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS editpagini smallint NOT NULL DEFAULT 2;");
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS soinsbens smallint NOT NULL DEFAULT 0;");
+							pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '&lt;h3 style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 20pt;&quot;&gt;Co&lt;/span&gt;&lt;span style=&quot;font-size: 20pt;&quot;&gt;munh&amp;atilde;o Esp&amp;iacute;rita de Bras&amp;iacute;lia&lt;/span&gt;&lt;/h3&gt;
+&lt;h3&gt;&lt;span style=&quot;font-size: 16pt;&quot;&gt;&lt;img style=&quot;float: left;&quot; src=&quot;itr/VPR-6672ddd854c70-Buckley_rose20.png&quot; alt=&quot;&quot; width=&quot;140&quot; height=&quot;235&quot; /&gt;&lt;/span&gt;&lt;/h3&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&amp;nbsp;&lt;/p&gt;
+&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 16pt;&quot;&gt;A Casa Esp&amp;iacute;rita de excel&amp;ecirc;ncia na sua organiza&amp;ccedil;&amp;atilde;o, na gera&amp;ccedil;&amp;atilde;o de conhecimento, na educa&amp;ccedil;&amp;atilde;o, na difus&amp;atilde;o doutrin&amp;aacute;ria, na assist&amp;ecirc;ncia espiritual e social, com est&amp;iacute;mulo &amp;agrave; viv&amp;ecirc;ncia crist&amp;atilde;.&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+&lt;h5 style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 20pt;&quot;&gt;Fora da caridade n&amp;atilde;o h&amp;aacute; salva&amp;ccedil;&amp;atilde;o.&lt;/span&gt;&lt;/h5&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;' WHERE codset = 1 And textopag = ''");
 						}
 					}
         ?>
@@ -101,7 +112,7 @@
 						<a href="#" onclick="openhref(55);">Ramais Internos</a>
 					</li>
 					<li class="MenuEstend">
-						<a href="#" onclick="openhref(56);">Ramais Externos</a>
+						<a href="#" onclick="openhref(56);">Telefones Úteis</a>
 					</li>
 				</ul>
 			</li>
