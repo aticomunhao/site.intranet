@@ -23,7 +23,7 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 65%; /* acertar de acordo com a tela */
+                width: 70%; /* acertar de acordo com a tela */
                 max-width: 900px;
             }
         </style>
@@ -149,6 +149,18 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("registroArCond").checked = false;
                                     }
+
+                                    if(parseInt(Resp.regarcond2) === 1){
+                                        document.getElementById("registroArCond2").checked = true;
+                                    }else{
+                                        document.getElementById("registroArCond2").checked = false;
+                                    }
+                                    if(parseInt(Resp.regarcond3) === 1){
+                                        document.getElementById("registroArCond3").checked = true;
+                                    }else{
+                                        document.getElementById("registroArCond3").checked = false;
+                                    }
+
                                     if(parseInt(Resp.fiscarcond) === 1){
                                         document.getElementById("fiscalArCond").checked = true;
                                     }else{
@@ -233,6 +245,15 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("registroArCond").checked === true){
                     ArCond = 1;
                 }
+                ArCond2 = 0;
+                if(document.getElementById("registroArCond2").checked === true){
+                    ArCond2 = 1;
+                }
+                ArCond3 = 0;
+                if(document.getElementById("registroArCond3").checked === true){
+                    ArCond3 = 1;
+                }
+
                 FiscAr = 0;
                 if(document.getElementById("fiscalArCond").checked === true){
                     FiscAr = 1;
@@ -258,6 +279,8 @@ if(!isset($_SESSION["usuarioID"])){
                         +"&eletric2="+Eletric2
                         +"&eletric3="+Eletric3
                         +"&arcond="+ArCond
+                        +"&arcond2="+ArCond2
+                        +"&arcond3="+ArCond3
                         +"&fiscar="+FiscAr
                         , true);
                         ajax.onreadystatechange = function(){
@@ -605,6 +628,12 @@ if(!isset($_SESSION["usuarioID"])){
             $OpcoesMes = pg_query($Conec, "SELECT Esc1 FROM ".$xProj.".escolhas WHERE CodEsc < 14 ORDER BY Esc1");
             $OpcoesDia = pg_query($Conec, "SELECT Esc1 FROM ".$xProj.".escolhas ORDER BY Esc1");
 
+            $Menu1 = escMenu($Conec, $xProj, 1); //abre alas
+            $Menu2 = escMenu($Conec, $xProj, 2); 
+            $Menu3 = escMenu($Conec, $xProj, 3);
+            $Menu4 = escMenu($Conec, $xProj, 4);
+            $Menu5 = escMenu($Conec, $xProj, 5);
+            $Menu6 = escMenu($Conec, $xProj, 6); 
             if($_SESSION["AdmUsu"] == 7){
                 $OpcoesAdm = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 Or adm_fl = 7 ORDER BY adm_fl");
             }else{
@@ -735,12 +764,12 @@ if(!isset($_SESSION["usuarioID"])){
                     </tr>
 
                     <tr>
-                        <td class="etiq80" title="Fiscaliza os registros de ocorrências no LRO">Administrar LRO:</td>
-                        <td colspan="4" style="padding-left: 20px;">
+                        <td class="etiq80" style="border-bottom: 1px solid;" title="Fiscaliza os registros de ocorrências no LRO">Administrar LRO:</td>
+                        <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
                             <input type="checkbox" id="fiscalizaLro" title="Fiscalizar os registros de ocorrências no LRO - Só fiscaliza. Não preenche o LRO" onchange="modif();" >
                             <label for="fiscalizaLro" title="Fiscalizar os registros de ocorrências no LRO - Só fiscaliza. Não preenche o LRO">fiscalizar o Livro de Registro de Ocorrências</label>
                         </td>
-                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(3);" title="Guia rápido"></td>
+                        <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(3);" title="Guia rápido"></td>
                     </tr>
 
                     <tr>
@@ -762,12 +791,12 @@ if(!isset($_SESSION["usuarioID"])){
                     </tr>
 
                     <tr>
-                        <td class="etiq80" title="Fiscalizar os registros de bens encontrados - Só fiscaliza. Não pode registrar os bens encontrados.">Bens Achados:</td>
-                        <td colspan="4" style="padding-left: 20px;">
+                        <td class="etiq80" style="border-bottom: 1px solid;" title="Fiscalizar os registros de bens encontrados - Só fiscaliza. Não pode registrar os bens encontrados.">Bens Achados:</td>
+                        <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
                             <input type="checkbox" id="fiscBens" title="Fiscalizar os registros de bens encontrados - Só fiscaliza. Não pode registrar os bens encontrados." onchange="modif();" >
                             <label for="fiscBens" title="Fiscalizar os registros de bens encontrados">fiscalizar os registros de Bens Encontrados</label>
                         </td>
-                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(4);" title="Guia rápido"></td>
+                        <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(4);" title="Guia rápido"></td>
                     </tr>
 
                     <tr>
@@ -782,44 +811,62 @@ if(!isset($_SESSION["usuarioID"])){
                         <td class="etiq80" title="Pode registrar as leituras diárias do consumo de eletricidade">Energia Elétrica:</td>
                         <td colspan="4">
                             <input type="checkbox" id="leituraEletric" title="Pode registrar as leituras diárias do consumo de energia elétrica" onchange="modif();" >
-                            <label for="leituraEletric" title="Pode registrar as leituras diárias do consumo de energia elétrica">registrar leitura diária do Medidor de Energia Elétrica - Comunhão</label>
+                            <label for="leituraEletric" title="Pode registrar as leituras diárias do consumo de energia elétrica">registrar leitura do Medidor de Energia Elétrica - <?php echo $Menu1; ?></label>
                         </td>
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(2);" title="Guia rápido"></td>
                     </tr>
-
 
                     <tr>
                         <td class="etiq80" title="Pode registrar as leituras diárias do consumo de eletricidade">Energia Elétrica:</td>
                         <td colspan="4">
                             <input type="checkbox" id="leituraEletric2" title="Pode registrar as leituras diárias do consumo de energia elétrica" onchange="modif();" >
-                            <label for="leituraEletric2" title="Pode registrar as leituras diárias do consumo de energia elétrica do medidor da operadora Claro">registrar leitura diária do Medidor de Energia Elétrica - Claro</label>
+                            <label for="leituraEletric2" title="Pode registrar as leituras diárias do consumo de energia elétrica do medidor da operadora ">registrar leitura do Medidor de Energia Elétrica - <?php echo $Menu2; ?></label>
                         </td>
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(2);" title="Guia rápido"></td>
                     </tr>
                     <tr>
-                        <td class="etiq80" title="Pode registrar as leituras diárias do consumo de eletricidade">Energia Elétrica:</td>
-                        <td colspan="4">
+                        <td class="etiq80" style="border-bottom: 1px solid;" title="Pode registrar as leituras diárias do consumo de eletricidade">Energia Elétrica:</td>
+                        <td colspan="4" style="border-bottom: 1px solid;">
                             <input type="checkbox" id="leituraEletric3" title="Pode registrar as leituras diárias do consumo de energia elétrica" onchange="modif();" >
-                            <label for="leituraEletric3" title="Pode registrar as leituras diárias do consumo de energia elétrica do medidor da operadora SBA">registrar leitura diária do Medidor de Energia Elétrica - Oi</label>
+                            <label for="leituraEletric3" title="Pode registrar as leituras diárias do consumo de energia elétrica do medidor da operadora">registrar leitura do Medidor de Energia Elétrica - <?php echo $Menu3; ?></label>
                         </td>
-                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(2);" title="Guia rápido"></td>
+                        <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(2);" title="Guia rápido"></td>
                     </tr>
 
                     <tr>
                         <td class="etiq80" title="Registrar as visitas técnicas da empresa contratada para manutenção dos Condicionadores de Ar">Condicionadores de Ar:</td>
                         <td colspan="4">
                             <input type="checkbox" id="registroArCond" title="Registrar as visitas técnicas da empresa de Ar Condicionado" onchange="modif();" >
-                            <label for="registroArCond" title="Registrar as visitas técnicas da empresa contratada para manutenção dos Condicionadores de Ar">registrar visitas para Manutenção dos Condicionadores de Ar</label>
+                            <label for="registroArCond" title="Registrar as visitas técnicas da empresa contratada para manutenção dos Condicionadores de Ar">registrar Manutenção dos Condicionadores de Ar - <?php echo $Menu4; ?></label>
                         </td>
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(5);" title="Guia rápido"></td>
                     </tr>
+
                     <tr>
-                        <td class="etiq80" title="Fiscalizar a manutenção dos Condicionadores de Ar">Condicionadores de Ar:</td>
-                        <td colspan="4" style="padding-left: 20px;">
+                        <td class="etiq80" title="Registrar as visitas técnicas da empresa contratada para manutenção dos Condicionadores de Ar">Condicionadores de Ar:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="registroArCond2" title="Registrar as visitas técnicas da empresa de Ar Condicionado" onchange="modif();" >
+                            <label for="registroArCond2" title="Registrar as visitas técnicas da empresa contratada para manutenção dos Condicionadores de Ar">registrar Manutenção dos Condicionadores de Ar - <?php echo $Menu5; ?></label>
+                        </td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(5);" title="Guia rápido"></td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq80" title="Registrar as visitas técnicas da empresa contratada para manutenção dos Condicionadores de Ar">Condicionadores de Ar:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="registroArCond3" title="Registrar as visitas técnicas da empresa de Ar Condicionado" onchange="modif();" >
+                            <label for="registroArCond3" title="Registrar as visitas técnicas da empresa contratada para manutenção dos Condicionadores de Ar">registrar Manutenção dos Condicionadores de Ar - <?php echo $Menu6; ?></label>
+                        </td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(5);" title="Guia rápido"></td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq80" style="border-bottom: 1px solid;" title="Fiscalizar a manutenção dos Condicionadores de Ar">Condicionadores de Ar:</td>
+                        <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
                             <input type="checkbox" id="fiscalArCond" title="Fiscalizar a manutenção dos Condicionadores de Ar" onchange="modif();" >
                             <label for="fiscalArCond" title="Fiscalizar a manutenção dos Condicionadores de Ar">fiscalizar a Manutenção dos Condicionadores de Ar</label>
                         </td>
-                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(6);" title="Guia rápido"></td>
+                        <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(6);" title="Guia rápido"></td>
                     </tr>
 
                     <tr>

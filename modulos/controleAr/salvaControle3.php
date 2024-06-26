@@ -12,7 +12,7 @@ if(isset($_REQUEST["acao"])){
 if($Acao=="buscadados"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Erro = 0;
-    $rs = pg_query($Conec, "SELECT num_ap, localap FROM ".$xProj.".controle_ar2 WHERE id = $Cod");
+    $rs = pg_query($Conec, "SELECT num_ap, localap FROM ".$xProj.".controle_ar3 WHERE id = $Cod");
     $row = pg_num_rows($rs);
     if(!$rs){
         $Erro = 1;
@@ -37,10 +37,10 @@ if($Acao=="salvadados"){
     $Empresa = (int) filter_input(INPUT_GET, 'empresa');
 
     $Erro = 0;
-    $rs0 = pg_query($Conec, "SELECT MAX(num_ap) FROM ".$xProj.".controle_ar2");
+    $rs0 = pg_query($Conec, "SELECT MAX(num_ap) FROM ".$xProj.".controle_ar3");
     $tbl0 = pg_fetch_row($rs0);
     $Prox = ($tbl0[0]+1);
-    $rs = pg_query($Conec, "INSERT INTO ".$xProj.".controle_ar2 (num_ap, localap, empresa_id) VALUES ($Prox, '$Local', $Empresa)");
+    $rs = pg_query($Conec, "INSERT INTO ".$xProj.".controle_ar3 (num_ap, localap, empresa_id) VALUES ($Prox, '$Local', $Empresa)");
     
     if(!$rs){
         $Erro = 1;
@@ -53,7 +53,7 @@ if($Acao=="salvadados"){
 if($Acao=="buscanumero"){
     $Erro = 0;
     $Prox = 1;
-    $rs = pg_query($Conec, "SELECT MAX(num_ap) FROM ".$xProj.".controle_ar2");
+    $rs = pg_query($Conec, "SELECT MAX(num_ap) FROM ".$xProj.".controle_ar3");
     $tbl = pg_fetch_row($rs);
     $Prox = ($tbl[0]+1);
 
@@ -63,13 +63,13 @@ if($Acao=="buscanumero"){
 }
 
 if($Acao=="buscadata"){
-    $Cod = (int) filter_input(INPUT_GET, 'codigo'); // id de visitas_ar2
+    $Cod = (int) filter_input(INPUT_GET, 'codigo'); // id de visitas_ar3
     $Erro = 0;
     //controle_id, datavis, , , , tipovis, empresa_id,  , nometec, , , usuins, datains, ativo
-    $rs = pg_query($Conec, "SELECT num_ap, localap, to_char(datavis, 'DD/MM/YYYY'), nometec, ".$xProj.".visitas_ar2.empresa_id, tipovis, 
+    $rs = pg_query($Conec, "SELECT num_ap, localap, to_char(datavis, 'DD/MM/YYYY'), nometec, ".$xProj.".visitas_ar3.empresa_id, tipovis, 
     to_char(acionam, 'DD/MM/YYYY  HH24:MI'), contato, defeito, to_char(atendim, 'DD/MM/YYYY  HH24:MI'), acompanh, diagtec, svcrealizado, to_char(conclus, 'DD/MM/YYYY') 
-    FROM ".$xProj.".controle_ar2 INNER JOIN ".$xProj.".visitas_ar2 ON ".$xProj.".controle_ar2.id = ".$xProj.".visitas_ar2.controle_id 
-    WHERE ".$xProj.".visitas_ar2.id = $Cod");
+    FROM ".$xProj.".controle_ar3 INNER JOIN ".$xProj.".visitas_ar3 ON ".$xProj.".controle_ar3.id = ".$xProj.".visitas_ar3.controle_id 
+    WHERE ".$xProj.".visitas_ar3.id = $Cod");
     $row = pg_num_rows($rs);
     if(!$rs){
         $Erro = 1;
@@ -118,15 +118,15 @@ if($Acao=="salvadatainsprevent"){
         $Data = implode("-", array_reverse(explode("/", $Dat))); // inverte o formato da data para y/m/d
     }
     $Erro = 0;
-    if($InsEdit == 0){ // inserindo: é o id de controle_ar2
-        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".visitas_ar2");
+    if($InsEdit == 0){ // inserindo: é o id de controle_ar3
+        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".visitas_ar3");
         $tblCod = pg_fetch_row($rsCod);
         $Codigo = $tblCod[0];
         $CodigoNovo = ($Codigo+1);
-        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".visitas_ar2 (id, controle_id, datavis, nometec, usuins, datains, empresa_id, ativo, tipovis, acompanh) 
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".visitas_ar3 (id, controle_id, datavis, nometec, usuins, datains, empresa_id, ativo, tipovis, acompanh) 
         VALUES ($CodigoNovo, $Cod, '$Data', '$Nome', ".$_SESSION["usuarioID"].", NOW(), $Empresa, 1, $Tipo, '$AcompPrev')");
     }else{ // salvando: é o id de visitar_ar
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".visitas_ar2 SET datavis = '$Data', nometec = '$Nome', dataedit = NOW(), usuedit = ".$_SESSION["usuarioID"].", acompanh = '$AcompPrev' WHERE id = $Cod ");
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".visitas_ar3 SET datavis = '$Data', nometec = '$Nome', dataedit = NOW(), usuedit = ".$_SESSION["usuarioID"].", acompanh = '$AcompPrev' WHERE id = $Cod ");
     }
     if(!$rs){
         $Erro = 1;
@@ -137,7 +137,7 @@ if($Acao=="salvadatainsprevent"){
 }
 
 if($Acao=="salvamanutcorret"){
-    $Cod = (int) filter_input(INPUT_GET, 'codigo'); // id de visitas_ar2
+    $Cod = (int) filter_input(INPUT_GET, 'codigo'); // id de visitas_ar3
     $InsEdit = (int) filter_input(INPUT_GET, 'insedit');
     $Tipo = (int) filter_input(INPUT_GET, 'tipomanut');
     $Empresa = (int) filter_input(INPUT_GET, 'empresa');
@@ -179,15 +179,15 @@ if($Acao=="salvamanutcorret"){
     $SvcRealiz = filter_input(INPUT_GET, 'svcRealizado');
 
     $Erro = 0;
-    if($InsEdit == 0){ // inserindo: é o id de controle_ar2
-        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".visitas_ar2");
+    if($InsEdit == 0){ // inserindo: é o id de controle_ar3
+        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".visitas_ar3");
         $tblCod = pg_fetch_row($rsCod);
         $Codigo = $tblCod[0];
         $CodigoNovo = ($Codigo+1);
-        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".visitas_ar2 (id, controle_id, datavis, acionam, atendim, conclus, tipovis, empresa_id, contato, acompanh, nometec, defeito, diagtec, svcrealizado, usuins, datains, ativo) 
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".visitas_ar3 (id, controle_id, datavis, acionam, atendim, conclus, tipovis, empresa_id, contato, acompanh, nometec, defeito, diagtec, svcrealizado, usuins, datains, ativo) 
        VALUES ($CodigoNovo, $Cod, '$DataVis', '$Acionam', '$Atendim', '$Conclus', $Tipo, $Empresa, '$NomeContactado', '$NomeAcompanhante', '$NomeTecnico', '$Defeito', '$Diagnostico', '$SvcRealiz', ".$_SESSION["usuarioID"].", NOW(), 1)");
     }else{ // salvando: é o id de visitar_ar
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".visitas_ar2 SET datavis = '$DataVis', acionam = '$Acionam', atendim = '$Atendim', conclus = '$Conclus', 
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".visitas_ar3 SET datavis = '$DataVis', acionam = '$Acionam', atendim = '$Atendim', conclus = '$Conclus', 
         tipovis = $Tipo, empresa_id = $Empresa, contato =  '$NomeContactado', acompanh = '$NomeAcompanhante', 
         nometec = '$NomeTecnico', defeito = '$Defeito', diagtec = '$Diagnostico', svcrealizado = '$SvcRealiz', usuins = ".$_SESSION["usuarioID"].", datains = NOW(), ativo = 1 
         WHERE id = $Cod");
@@ -213,7 +213,7 @@ if($Acao=="salvadataedit"){
         $Data = implode("-", array_reverse(explode("/", $Dat))); // inverte o formato da data para y/m/d
     }
     $Erro = 0;
-    $rs = pg_query($Conec, "UPDATE ".$xProj.".visitas_ar2 SET datavis = '$Data', nometec = '$Nome', empresa_id = $Empresa, tipovis = $Tipo, ativo = 1, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE id = $Cod");
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".visitas_ar3 SET datavis = '$Data', nometec = '$Nome', empresa_id = $Empresa, tipovis = $Tipo, ativo = 1, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE id = $Cod");
     
     if(!$rs){
         $Erro = 1;
@@ -226,7 +226,7 @@ if($Acao=="salvadataedit"){
 if($Acao=="buscalocal"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Erro = 0;
-    $rs = pg_query($Conec, "SELECT num_ap, localap, empresa_id FROM ".$xProj.".controle_ar2 WHERE id = $Cod");
+    $rs = pg_query($Conec, "SELECT num_ap, localap, empresa_id FROM ".$xProj.".controle_ar3 WHERE id = $Cod");
     $row = pg_num_rows($rs);
     if(!$rs){
         $Erro = 1;
@@ -243,7 +243,7 @@ if($Acao=="salvalocal"){
     $Local = filter_input(INPUT_GET, 'local');
     $Empresa = (int) filter_input(INPUT_GET, 'empresa');
     $Erro = 0;
-    $rs = pg_query($Conec, "UPDATE ".$xProj.".controle_ar2 SET localap = '$Local', empresa_id = $Empresa, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE id = $Cod");
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".controle_ar3 SET localap = '$Local', empresa_id = $Empresa, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE id = $Cod");
     if(!$rs){
         $Erro = 1;
     }
@@ -254,7 +254,7 @@ if($Acao=="salvalocal"){
 if($Acao=="apagadata"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Erro = 0;
-    $rs = pg_query($Conec, "UPDATE ".$xProj.".visitas_ar2 SET ativo = 0, usudel = ".$_SESSION["usuarioID"].", datadel = NOW() WHERE id = $Cod");
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".visitas_ar3 SET ativo = 0, usudel = ".$_SESSION["usuarioID"].", datadel = NOW() WHERE id = $Cod");
     if(!$rs){
         $Erro = 1;
     }

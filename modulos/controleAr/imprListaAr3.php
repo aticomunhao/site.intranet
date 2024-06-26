@@ -11,7 +11,7 @@ if(isset($_REQUEST["acao"])){
     require_once('../../class/fpdf/fpdf.php'); // adaptado ao PHP 7.2 - 8.2
     define('FPDF_FONTPATH', '../../class/fpdf/font/');  
     $Dom = "logo_comunhao_completa_cor_pos_150px.png";
-    $Menu4 = escMenu($Conec, $xProj, 4);
+    $Menu6 = escMenu($Conec, $xProj, 6);
 
     $rsCabec = pg_query($Conec, "SELECT cabec1, cabec2, cabec3 FROM ".$xProj.".setores WHERE codset = ".$_SESSION["CodSetorUsu"]." ");
     $rowCabec = pg_num_rows($rsCabec);
@@ -93,7 +93,7 @@ if(isset($_REQUEST["acao"])){
     $pdf->SetFont('Arial', '' , 10);
     $pdf->SetTextColor(25, 25, 112);
     if($Acao == "listamesManut"){
-        $pdf->MultiCell(0, 3, "Controle de Manutenção nos Aparelhos de Ar Condicionado - ".$Menu4, 0, 'C', false);
+        $pdf->MultiCell(0, 3, "Controle de Manutenção nos Aparelhos de Ar Condicionado - ".$Menu6, 0, 'C', false);
     }
 
     $pdf->SetTextColor(0, 0, 0);
@@ -106,7 +106,7 @@ if(isset($_REQUEST["acao"])){
     if($Acao == "listamesManut"){
         $Ano = addslashes(filter_input(INPUT_GET, 'ano')); 
 		$pdf->SetTitle('Relação Anual Manutenção', $isUTF8=TRUE);
-        $rs0 = pg_query($Conec, "SELECT id, num_ap, localap, empresa_id FROM ".$xProj.".controle_ar WHERE num_ap IS NOT NULL And ativo = 1 ORDER BY num_ap");
+        $rs0 = pg_query($Conec, "SELECT id, num_ap, localap, empresa_id FROM ".$xProj.".controle_ar3 WHERE num_ap IS NOT NULL And ativo = 1 ORDER BY num_ap");
         $row0 = pg_num_rows($rs0);
 
         if($row0 > 0){
@@ -146,7 +146,7 @@ if(isset($_REQUEST["acao"])){
                 $pdf->Cell(55, 5, $tbl0[2], 0, 0, 'L');
                 $pdf->SetFont('Arial', '', 10);
 
-                $rs1 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '01' ORDER BY datavis DESC");
+                $rs1 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar3 WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '01' ORDER BY datavis DESC");
                 $row1 = pg_num_rows($rs1);
                 if($row1 > $MaiorRow){$MaiorRow = $row1;}
                 $lin = $pdf->GetY();
@@ -180,7 +180,7 @@ if(isset($_REQUEST["acao"])){
                     $pdf->SetY($lin);
                 }
 
-                $rs2 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '02' ORDER BY datavis DESC");
+                $rs2 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar3 WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '02' ORDER BY datavis DESC");
                 $row2 = pg_num_rows($rs2);
                 if($row2 > $MaiorRow){$MaiorRow = $row2;}
                 $lin = $pdf->GetY();
@@ -214,7 +214,7 @@ if(isset($_REQUEST["acao"])){
                     $pdf->SetY($lin);
                 }
                 
-                $rs3 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '03' ORDER BY datavis DESC");
+                $rs3 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar3 WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '03' ORDER BY datavis DESC");
                 $row3 = pg_num_rows($rs3);
                 if($row3 > $MaiorRow){$MaiorRow = $row3;}
                 $lin = $pdf->GetY();
@@ -248,7 +248,7 @@ if(isset($_REQUEST["acao"])){
                     $pdf->SetY($lin);
                 }
 
-                $rs4 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '04' ORDER BY datavis DESC");
+                $rs4 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar3 WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '04' ORDER BY datavis DESC");
                 $row4 = pg_num_rows($rs4);
                 if($row4 > $MaiorRow){$MaiorRow = $row4;}
                 $lin = $pdf->GetY();
@@ -282,7 +282,7 @@ if(isset($_REQUEST["acao"])){
                     $pdf->SetY($lin);
                 }
 
-                $rs5 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '05' ORDER BY datavis DESC");
+                $rs5 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar3 WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '05' ORDER BY datavis DESC");
                 $row5 = pg_num_rows($rs5);
                 if($row5 > $MaiorRow){$MaiorRow = $row5;}
                 $lin = $pdf->GetY();
@@ -316,7 +316,7 @@ if(isset($_REQUEST["acao"])){
                     $pdf->SetY($lin);
                 }
 
-                $rs6 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '06' ORDER BY datavis DESC");
+                $rs6 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar3 WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '06' ORDER BY datavis DESC");
                 $row6 = pg_num_rows($rs6);
                 if($row6 > $MaiorRow){$MaiorRow = $row6;}
                 $lin = $pdf->GetY();
@@ -351,7 +351,7 @@ if(isset($_REQUEST["acao"])){
                     $pdf->SetY($lin);
                 }
 
-                $rs7 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '07' ORDER BY datavis DESC");
+                $rs7 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar3 WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '07' ORDER BY datavis DESC");
                 $row7 = pg_num_rows($rs7);
                 if($row7 > $MaiorRow){$MaiorRow = $row7;}
                 $lin = $pdf->GetY();
@@ -385,7 +385,7 @@ if(isset($_REQUEST["acao"])){
                     $pdf->SetY($lin);
                 }
 
-                $rs8 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '08' ORDER BY datavis DESC");
+                $rs8 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar3 WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '08' ORDER BY datavis DESC");
                 $row8 = pg_num_rows($rs8);
                 if($row8 > $MaiorRow){$MaiorRow = $row8;}
                 $lin = $pdf->GetY();
@@ -419,7 +419,7 @@ if(isset($_REQUEST["acao"])){
                     $pdf->SetY($lin);
                 }
 
-                $rs9 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '09' ORDER BY datavis DESC");
+                $rs9 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar3 WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '09' ORDER BY datavis DESC");
                 $row9 = pg_num_rows($rs9);
                 if($row9 > $MaiorRow){$MaiorRow = $row9;}
                 $lin = $pdf->GetY();
@@ -453,7 +453,7 @@ if(isset($_REQUEST["acao"])){
                     $pdf->SetY($lin);
                 }
 
-                $rs10 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '10' ORDER BY datavis DESC");
+                $rs10 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar3 WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '10' ORDER BY datavis DESC");
                 $row10 = pg_num_rows($rs10);
                 if($row10 > $MaiorRow){$MaiorRow = $row10;}
                 $lin = $pdf->GetY();
@@ -487,7 +487,7 @@ if(isset($_REQUEST["acao"])){
                     $pdf->SetY($lin);
                 }
 
-                $rs11 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '11' ORDER BY datavis DESC");
+                $rs11 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar3 WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '11' ORDER BY datavis DESC");
                 $row11 = pg_num_rows($rs11);
                 if($row11 > $MaiorRow){$MaiorRow = $row11;}
                 $lin = $pdf->GetY();
@@ -521,7 +521,7 @@ if(isset($_REQUEST["acao"])){
                     $pdf->SetY($lin);
                 }
 
-                $rs12 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '12' ORDER BY datavis DESC");
+                $rs12 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar3 WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '12' ORDER BY datavis DESC");
                 $row12 = pg_num_rows($rs12);
                 if($row12 > $MaiorRow){$MaiorRow = $row12;}
                 $lin = $pdf->GetY();
@@ -573,13 +573,13 @@ if(isset($_REQUEST["acao"])){
             $pdf->SetFont('Arial', 'I', 12);
             $pdf->Cell(17, 5, "Ano: ".$Ano, 0, 1, 'C');
 
-            $rs0 = pg_query($Conec, "SELECT id FROM ".$xProj.".visitas_ar WHERE ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And tipovis = 1");
+            $rs0 = pg_query($Conec, "SELECT id FROM ".$xProj.".visitas_ar3 WHERE ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And tipovis = 1");
             $row0 = pg_num_rows($rs0);
             $pdf->SetX(50);
             $pdf->Cell(60, 5, "Manutenção Preventiva: ", 0, 0, 'L');
             $pdf->Cell(10, 5, $row0, 0, 1, 'R');
 
-            $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".visitas_ar WHERE ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And tipovis = 2");
+            $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".visitas_ar3 WHERE ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And tipovis = 2");
             $row1 = pg_num_rows($rs1);
             $pdf->SetX(50);
             $pdf->Cell(60, 5, "Manutenção Corretiva: ", 0, 0, 'L');

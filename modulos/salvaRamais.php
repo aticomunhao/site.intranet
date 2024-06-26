@@ -112,6 +112,9 @@ if($Tipo == 1){ // ramais internos
         }
 
         $CodNome = filter_input(INPUT_GET, 'codnomecompl'); // id de poslog
+        if($CodNome == ""){
+            $CodNome = 0;
+        }
         if(is_null($CodNome)){
             $CodNome = 0;
         }
@@ -123,6 +126,7 @@ if($Tipo == 1){ // ramais internos
         $Ramal = filter_input(INPUT_GET, 'ramal');
         $CodSetor = (int) filter_input(INPUT_GET, 'codsetor');
         $DescSetor = filter_input(INPUT_GET, 'setor');
+
 
         $UsuLogado = $_SESSION["usuarioID"]; //$_REQUEST["usulogado"];
         $Erro = 0;

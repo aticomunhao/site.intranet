@@ -98,13 +98,16 @@ if(!isset($_SESSION['AdmUsu'])){
     if($Acao == "listamesEletric" || $Acao == "listaanoEletric"){
         $Colec = (int) filter_input(INPUT_GET, 'colec'); 
         if($Colec == 1){
-            $pdf->MultiCell(150, 3, "Controle do Consumo de Energia Elétrica - Comunhão", 0, 'C', false);
+            $Menu = escMenu($Conec, $xProj, 1); //abre alas
+            $pdf->MultiCell(150, 3, "Controle do Consumo de Energia Elétrica - ".$Menu, 0, 'C', false);
         }
         if($Colec == 2){
-            $pdf->MultiCell(150, 3, "Controle do Consumo de Energia Elétrica - Operadora Claro", 0, 'C', false);
+            $Menu = escMenu($Conec, $xProj, 2);
+            $pdf->MultiCell(150, 3, "Controle do Consumo de Energia Elétrica - ".$Menu, 0, 'C', false);
         }
         if($Colec == 3){
-            $pdf->MultiCell(150, 3, "Controle do Consumo de Energia Elétrica - Operadora SBA", 0, 'C', false);
+            $Menu = escMenu($Conec, $xProj, 3);
+            $pdf->MultiCell(150, 3, "Controle do Consumo de Energia Elétrica - ".$Menu, 0, 'C', false);
         }
     }
 
@@ -335,7 +338,7 @@ if(!isset($_SESSION['AdmUsu'])){
             }else{
                 $pdf->SetFont('Arial', '', 10);
                 $pdf->ln(10);
-                $pdf->Cell(20, 4, "Ndenhum registro encontrado. Informe à ATI,", 0, 1, 'L');
+                $pdf->Cell(20, 4, "Nenhum registro encontrado. Informe à ATI,", 0, 1, 'L');
             }
         }else{
             $pdf->SetFont('Arial', '', 10);
@@ -440,7 +443,7 @@ if(!isset($_SESSION['AdmUsu'])){
             }else{
                 $pdf->SetFont('Arial', '', 10);
                 $pdf->ln(10);
-                $pdf->Cell(20, 4, "Ndenhum registro encontrado. Informe à ATI,", 0, 1, 'L');
+                $pdf->Cell(20, 4, "Nenhum registro encontrado. Informe à ATI,", 0, 1, 'L');
             }
         }else{
             $pdf->SetFont('Arial', '', 10);
@@ -601,7 +604,7 @@ if(!isset($_SESSION['AdmUsu'])){
             }else{
                 $pdf->SetFont('Arial', '', 10);
                 $pdf->ln(10);
-                $pdf->Cell(20, 4, "Ndenhum registro encontrado. Informe à ATI,", 0, 1, 'L');
+                $pdf->Cell(20, 4, "Nenhum registro encontrado. Informe à ATI,", 0, 1, 'L');
             }
         }else{
             $pdf->SetFont('Arial', '', 10);

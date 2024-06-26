@@ -46,8 +46,8 @@ date_default_timezone_set('America/Sao_Paulo');
                 $Ano = date("Y");
             }
 //            $Ano = "2024";
-            $Condic = "".$xProj.".controle_ar.id != 0 And num_ap IS NOT NULL And ativo = 1";
-            $rs0 = pg_query($Conec, "SELECT id, num_ap, localap FROM ".$xProj.".controle_ar WHERE $Condic ORDER BY num_ap"); 
+            $Condic = "".$xProj.".controle_ar3.id != 0 And num_ap IS NOT NULL And ativo = 1";
+            $rs0 = pg_query($Conec, "SELECT id, num_ap, localap FROM ".$xProj.".controle_ar3 WHERE $Condic ORDER BY num_ap"); 
             $row0 = pg_num_rows($rs0);
         ?>
         <br><br>
@@ -75,7 +75,7 @@ date_default_timezone_set('America/Sao_Paulo');
                 <?php
                 if($row0 > 0){
                     while ($tbl0 = pg_fetch_row($rs0)){
-                        $Cod = $tbl0[0]; // id controle_ar
+                        $Cod = $tbl0[0]; // id controle_ar3
                         ?>
                         <tr>
                             <td style="display: none;"><?php echo $Cod; ?></td>
@@ -87,10 +87,10 @@ date_default_timezone_set('America/Sao_Paulo');
                             <td class="etiqCel" style="font-size: 80%; background-color: #E0E0E0;">
                                 <?php //to_char(datavis, 'DD/MM/YYYY')
                                     $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
-                                    FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '01' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
+                                    FROM ".$xProj.".visitas_ar2 WHERE controle_id = $Cod And to_char(datavis, 'MM') = '01' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
-                                        while ($tbl1 = pg_fetch_row($rs1)){ // $tbl1[0] -> id de visitas_ar
+                                        while ($tbl1 = pg_fetch_row($rs1)){ // $tbl1[0] -> id de visitas_ar2
                                             echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid black;";
                                             if($tbl1[2] == 2){
                                                 echo "color: red;' title='Manutenção corretiva - clique para editar'";
@@ -106,26 +106,7 @@ date_default_timezone_set('America/Sao_Paulo');
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
                                     $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
-                                    FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '02' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
-                                    $row1 = pg_num_rows($rs1);
-                                    if($row1 > 0){
-                                        while ($tbl1 = pg_fetch_row($rs1)){
-                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid black;";
-                                            if($tbl1[2] == 2){
-                                                echo "color: red;' title='Manutenção corretiva - clique para editar'";
-                                            }else{
-                                                echo "color: black;' title='Manutenção preventiva - clique para editar'";
-                                            }
-                                            echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
-                                        }
-                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
-                                    }
-                                ?>
-                            </td>
-                            <td class="etiqCel" style="font-size: 80%;">
-                                <?php 
-                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
-                                    FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '03' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
+                                    FROM ".$xProj.".visitas_ar2 WHERE controle_id = $Cod And to_char(datavis, 'MM') = '02' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
@@ -144,7 +125,7 @@ date_default_timezone_set('America/Sao_Paulo');
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
                                     $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
-                                    FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '04' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
+                                    FROM ".$xProj.".visitas_ar2 WHERE controle_id = $Cod And to_char(datavis, 'MM') = '03' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
@@ -163,7 +144,7 @@ date_default_timezone_set('America/Sao_Paulo');
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
                                     $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
-                                    FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '05' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
+                                    FROM ".$xProj.".visitas_ar2 WHERE controle_id = $Cod And to_char(datavis, 'MM') = '04' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
@@ -182,7 +163,26 @@ date_default_timezone_set('America/Sao_Paulo');
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
                                     $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
-                                    FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '06' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
+                                    FROM ".$xProj.".visitas_ar2 WHERE controle_id = $Cod And to_char(datavis, 'MM') = '05' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
+                                    $row1 = pg_num_rows($rs1);
+                                    if($row1 > 0){
+                                        while ($tbl1 = pg_fetch_row($rs1)){
+                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid black;";
+                                            if($tbl1[2] == 2){
+                                                echo "color: red;' title='Manutenção corretiva - clique para editar'";
+                                            }else{
+                                                echo "color: black;' title='Manutenção preventiva - clique para editar'";
+                                            }
+                                            echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
+                                        }
+                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
+                                    }
+                                ?>
+                            </td>
+                            <td class="etiqCel" style="font-size: 80%;">
+                                <?php 
+                                    $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
+                                    FROM ".$xProj.".visitas_ar2 WHERE controle_id = $Cod And to_char(datavis, 'MM') = '06' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
@@ -201,7 +201,7 @@ date_default_timezone_set('America/Sao_Paulo');
                             <td class="etiqCel" style="font-size: 80%; background-color: #E0E0E0;">
                                 <?php 
                                     $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
-                                    FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '07' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
+                                    FROM ".$xProj.".visitas_ar2 WHERE controle_id = $Cod And to_char(datavis, 'MM') = '07' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
@@ -220,7 +220,7 @@ date_default_timezone_set('America/Sao_Paulo');
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
                                     $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
-                                    FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '08' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
+                                    FROM ".$xProj.".visitas_ar2 WHERE controle_id = $Cod And to_char(datavis, 'MM') = '08' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
@@ -239,7 +239,7 @@ date_default_timezone_set('America/Sao_Paulo');
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
                                     $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
-                                    FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '09' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
+                                    FROM ".$xProj.".visitas_ar2 WHERE controle_id = $Cod And to_char(datavis, 'MM') = '09' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
@@ -258,7 +258,7 @@ date_default_timezone_set('America/Sao_Paulo');
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
                                     $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
-                                    FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '10' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
+                                    FROM ".$xProj.".visitas_ar2 WHERE controle_id = $Cod And to_char(datavis, 'MM') = '10' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
@@ -277,7 +277,7 @@ date_default_timezone_set('America/Sao_Paulo');
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
                                     $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
-                                    FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '11' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
+                                    FROM ".$xProj.".visitas_ar2 WHERE controle_id = $Cod And to_char(datavis, 'MM') = '11' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
@@ -296,7 +296,7 @@ date_default_timezone_set('America/Sao_Paulo');
                             <td class="etiqCel" style="font-size: 80%;">
                                 <?php 
                                     $rs1 = pg_query($Conec, "SELECT id, to_char(datavis, 'DD'), tipovis, nometec 
-                                    FROM ".$xProj.".visitas_ar WHERE controle_id = $Cod And to_char(datavis, 'MM') = '12' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
+                                    FROM ".$xProj.".visitas_ar2 WHERE controle_id = $Cod And to_char(datavis, 'MM') = '12' And to_char(datavis, 'YYYY') = '$Ano' And ativo = 1 ORDER BY datavis DESC");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){

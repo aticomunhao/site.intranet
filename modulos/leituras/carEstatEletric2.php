@@ -13,7 +13,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         </script>
     </head>
     <body>
-        <div style="text-align: center;"><label class="titRelat">Controle do Consumo de Eletricidade da Operadora Claro<label></div>
+        <?php
+            $Menu2 = escMenu($Conec, $xProj, 2);
+        ?>
+        <div style="text-align: center;"><label class="titRelat">Controle do Consumo de Eletricidade<?php echo " - ".$Menu2; ?><label></div>
         <?php
         $mes_extenso = array(
             '1' => 'Janeiro',

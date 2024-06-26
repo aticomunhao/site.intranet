@@ -49,7 +49,7 @@
     width: 40%; 
 }
 .modal-content-Ramais{
-    background: linear-gradient(135deg, white, #9bc9bf);
+    background: linear-gradient(135deg, white, #86c1eb);
     margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
@@ -157,6 +157,14 @@
     width: 60%;
 }
 .modal-content-EditPagIni{
+    background: linear-gradient(180deg, white, #86c1eb);
+    margin: 10% auto; /* 10% do topo e centrado */
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 55%; /* acertar de acordo com a tela */
+}
+.modal-content-EditMenu{
     background: linear-gradient(180deg, white, #86c1eb);
     margin: 10% auto; /* 10% do topo e centrado */
     padding: 20px;
@@ -286,7 +294,7 @@
     font-size: 80%;
     font-weight: bold;
     color: white;
-    background-color: red;
+    background-color: #FF6600;
  }
  .botpadrblue{
     text-align: center;

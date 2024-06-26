@@ -86,7 +86,7 @@ if(!isset($_SESSION["usuarioID"])){
 
             $(document).ready(function(){
                 if(parseInt(document.getElementById("guardaInsArCond").value) === 1 || parseInt(document.getElementById("guardaFiscArCond").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
-                    $("#faixacentral").load("modulos/controleAr/relAr2.php?acao=todos&ano="+document.getElementById("selectAno").value);
+                    $("#faixacentral").load("modulos/controleAr/relAr3.php?acao=todos&ano="+document.getElementById("selectAno").value);
                     if(parseInt(document.getElementById("guardaInsArCond").value) === 0 && parseInt(document.getElementById("UsuAdm").value) < 7){ //Só fiscaliza
                         document.getElementById("botinserir").disabled = true;
                     }
@@ -115,7 +115,7 @@ if(!isset($_SESSION["usuarioID"])){
             function carregaEmpresas(){
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/controleAr/salvaControle2.php?acao=buscarelempresas", true);
+                    ajax.open("POST", "modulos/controleAr/salvaControle3.php?acao=buscarelempresas", true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -139,7 +139,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("guardaid").value = 0;
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/controleAr/salvaControle2.php?acao=buscanumero", true);
+                    ajax.open("POST", "modulos/controleAr/salvaControle3.php?acao=buscanumero", true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -166,7 +166,7 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("mudou").value != "0"){
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/controleAr/salvaControle2.php?acao=salvadados&codigo="+document.getElementById("guardaid").value
+                        ajax.open("POST", "modulos/controleAr/salvaControle3.php?acao=salvadados&codigo="+document.getElementById("guardaid").value
                         +"&localap="+encodeURIComponent(document.getElementById("localap").value)
                         +"&empresa="+document.getElementById("empresa").value
                         , true);
@@ -179,7 +179,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         alert("Houve um erro no servidor.")
                                     }else{
                                         document.getElementById("relacmodalControle").style.display = "none";
-                                        $("#faixacentral").load("modulos/controleAr/relAr2.php?acao=todos&ano="+document.getElementById("selectAno").value);
+                                        $("#faixacentral").load("modulos/controleAr/relAr3.php?acao=todos&ano="+document.getElementById("selectAno").value);
                                     }
                                 }
                             }
@@ -191,7 +191,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-            function buscaData(Cod, InsEdit){ // Cod é o id de visitas_ar2 - O guardaid fica com o id de controle_ar2 pq vem do click na linha DataTable
+            function buscaData(Cod, InsEdit){ // Cod é o id de visitas_ar2 - O guardaid fica com o id de controle_ar3 pq vem do click na linha DataTable
                 if(parseInt(document.getElementById("guardaInsArCond").value) === 0 && parseInt(document.getElementById("UsuAdm").value) < 7){
                     document.getElementById("empresaCorret").disabled = true;
                     document.getElementById("datavisins").disabled = true;
@@ -217,7 +217,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("apagaregistro").style.visibility = "visible";
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/controleAr/salvaControle2.php?acao=buscadata&codigo="+Cod, true);
+                    ajax.open("POST", "modulos/controleAr/salvaControle3.php?acao=buscadata&codigo="+Cod, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -274,8 +274,8 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-            //Vem de relAr2.php - insere visita preventiva ou corretiva
-            function insereData(Cod, InsEdit){ // Cod é o id de controle_ar2 - busca dados do aparelho
+            //Vem de relAr3.php - insere visita preventiva ou corretiva
+            function insereData(Cod, InsEdit){ // Cod é o id de controle_ar3 - busca dados do aparelho
                 if(parseInt(document.getElementById("guardaInsArCond").value) === 0){
                     $.confirm({
                         title: 'Informação!',
@@ -310,7 +310,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("nomeTecnicoEmpresa").value = "";
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/controleAr/salvaControle2.php?acao=buscadados&codigo="+Cod, true);
+                    ajax.open("POST", "modulos/controleAr/salvaControle3.php?acao=buscadados&codigo="+Cod, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -355,7 +355,7 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/controleAr/salvaControle2.php?acao=salvadatainsprevent&codigo="+document.getElementById("guardaid").value
+                        ajax.open("POST", "modulos/controleAr/salvaControle3.php?acao=salvadatainsprevent&codigo="+document.getElementById("guardaid").value
                         +"&datavis="+encodeURIComponent(document.getElementById("datavisins").value)
                         +"&nometec="+encodeURIComponent(document.getElementById("nometecins").value)
                         +"&insedit="+document.getElementById("guardaInsEdit").value
@@ -371,7 +371,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         alert("Houve um erro no servidor.")
                                     }else{
                                         document.getElementById("relacmodalIns").style.display = "none";
-                                        $("#faixacentral").load("modulos/controleAr/relAr2.php?acao=todos&ano="+document.getElementById("selectAno").value);
+                                        $("#faixacentral").load("modulos/controleAr/relAr3.php?acao=todos&ano="+document.getElementById("selectAno").value);
                                     }
                                 }
                             }
@@ -411,7 +411,7 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/controleAr/salvaControle2.php?acao=salvamanutcorret&codigo="+document.getElementById("guardaid").value
+                        ajax.open("POST", "modulos/controleAr/salvaControle3.php?acao=salvamanutcorret&codigo="+document.getElementById("guardaid").value
                         +"&empresa="+encodeURIComponent(document.getElementById("empresaCorret").value)
                         +"&dataAcionam="+encodeURIComponent(document.getElementById("dataAcionam").value)
                         +"&dataAtendim="+encodeURIComponent(document.getElementById("dataAtendim").value)
@@ -434,7 +434,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         alert("Houve um erro no servidor.")
                                     }else{
                                         document.getElementById("relacmodalIns").style.display = "none";
-                                        $("#faixacentral").load("modulos/controleAr/relAr2.php?acao=todos&ano="+document.getElementById("selectAno").value);
+                                        $("#faixacentral").load("modulos/controleAr/relAr3.php?acao=todos&ano="+document.getElementById("selectAno").value);
                                     }
                                 }
                             }
@@ -462,7 +462,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("guardaid").value = Cod;
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/controleAr/salvaControle2.php?acao=buscalocal&codigo="+Cod, true);
+                    ajax.open("POST", "modulos/controleAr/salvaControle3.php?acao=buscalocal&codigo="+Cod, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -488,7 +488,7 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("mudou").value != "0"){
                         ajaxIni();
                         if(ajax){
-                            ajax.open("POST", "modulos/controleAr/salvaControle2.php?acao=salvalocal&codigo="+document.getElementById("guardaid").value
+                            ajax.open("POST", "modulos/controleAr/salvaControle3.php?acao=salvalocal&codigo="+document.getElementById("guardaid").value
                             +"&local="+encodeURIComponent(document.getElementById("localaplocal").value)
                             +"&empresa="+encodeURIComponent(document.getElementById("empresalocal").value)
                             , true);
@@ -501,7 +501,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             alert("Houve um erro no servidor.")
                                         }else{
                                             document.getElementById("relacmodalLocal").style.display = "none";
-                                            $("#faixacentral").load("modulos/controleAr/relAr2.php?acao=todos&ano="+document.getElementById("selectAno").value);
+                                            $("#faixacentral").load("modulos/controleAr/relAr3.php?acao=todos&ano="+document.getElementById("selectAno").value);
                                         }
                                     }
                                 }
@@ -522,7 +522,7 @@ if(!isset($_SESSION["usuarioID"])){
                         Sim: function () {
                             ajaxIni();
                             if(ajax){
-                                ajax.open("POST", "modulos/controleAr/salvaControle2.php?acao=apagadata&codigo="+document.getElementById("guardaid").value, true);
+                                ajax.open("POST", "modulos/controleAr/salvaControle3.php?acao=apagadata&codigo="+document.getElementById("guardaid").value, true);
                                 ajax.onreadystatechange = function(){
                                     if(ajax.readyState === 4 ){
                                         if(ajax.responseText){
@@ -530,7 +530,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                             if(parseInt(Resp.coderro) === 0){
                                                 document.getElementById("relacmodalIns").style.display = "none";
-                                                $("#faixacentral").load("modulos/controleAr/relAr2.php?acao=todos&ano="+document.getElementById("selectAno").value);
+                                                $("#faixacentral").load("modulos/controleAr/relAr3.php?acao=todos&ano="+document.getElementById("selectAno").value);
                                             }else{
                                                 alert("Houve um erro no servidor.")
                                             }
@@ -567,7 +567,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("guardaCodEmpr").value = Cod;
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/controleAr/salvaControle2.php?acao=buscaempresa&codigo="+Cod, true);
+                    ajax.open("POST", "modulos/controleAr/salvaControle3.php?acao=buscaempresa&codigo="+Cod, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -599,7 +599,7 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("mudou").value != "0"){
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/controleAr/salvaControle2.php?acao=salvanomeempresa&codigo="+document.getElementById("guardaCodEmpr").value 
+                        ajax.open("POST", "modulos/controleAr/salvaControle3.php?acao=salvanomeempresa&codigo="+document.getElementById("guardaCodEmpr").value 
                         +"&nomeempresa="+encodeURIComponent(document.getElementById("editNomeEmpr").value)
                         +"&valorvisita="+encodeURIComponent(document.getElementById("valorvisita").value), true);
                         ajax.onreadystatechange = function(){
@@ -655,11 +655,11 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("mudou").value = "1";
             }
             function modifAno(){
-                $("#faixacentral").load("modulos/controleAr/relAr2.php?acao=todos&ano="+document.getElementById("selectAno").value);
+                $("#faixacentral").load("modulos/controleAr/relAr3.php?acao=todos&ano="+document.getElementById("selectAno").value);
             }
             function imprAr(){
                 if(parseInt(document.getElementById("selectAno").value) != ""){
-                    window.open("modulos/controleAr/imprListaAr2.php?acao=listamesManut&colec=2&ano="+document.getElementById("selectAno").value, "colec2");
+                    window.open("modulos/controleAr/imprListaAr3.php?acao=listamesManut&colec=3&ano="+document.getElementById("selectAno").value, "colec3");
                 }
             }
 
@@ -708,14 +708,14 @@ if(!isset($_SESSION["usuarioID"])){
         <?php
 
 //Provisório
-$rs = pg_query($Conec, "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'controle_ar2' AND COLUMN_NAME = 'data01'");
+$rs = pg_query($Conec, "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'controle_ar3' AND COLUMN_NAME = 'data01'");
 $row = pg_num_rows($rs);
 if($row > 0){
-    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".controle_ar2");
-    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".visitas_ar2");
+    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".controle_ar3");
+    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".visitas_ar3");
 }
 
-pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar2 (
+pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar3 (
     id SERIAL PRIMARY KEY, 
     num_ap integer NOT NULL DEFAULT 0,
     localap VARCHAR(50),
@@ -728,7 +728,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar2 (
     ) 
  ");
 
- pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar2 (
+ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar3 (
     id SERIAL PRIMARY KEY, 
     controle_id integer NOT NULL DEFAULT 0,
     datavis date,
@@ -780,7 +780,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar2 (
 
         $InsArCond = parEsc("arcond", $Conec, $xProj, $_SESSION["usuarioID"]); // procura marca arcond em poslog
         $FiscArCond = parEsc("arfisc", $Conec, $xProj, $_SESSION["usuarioID"]); // procura marca arfisc em poslog
-        $Menu5 = escMenu($Conec, $xProj, 5);
+        $Menu6 = escMenu($Conec, $xProj, 6);
 
         ?>
         <div style="margin: 20px; border: 2px solid blue; border-radius: 15px; padding: 20px; min-height: 200px;">
@@ -790,7 +790,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar2 (
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <h5>Controle da Manutenção dos Condicionadores de Ar</h5>
-                <div style="text-align: center;"><?php echo $Menu5; ?></div>
+                <div style="text-align: center;"><?php echo $Menu6; ?></div>
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: left;">
                 <label style="font-size: .9rem;">Selecione o Ano: </label>

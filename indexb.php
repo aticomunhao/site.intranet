@@ -102,9 +102,9 @@
                                     }
                                     if(parseInt(Resp.bens) > 0){
                                         if(parseInt(Resp.bens) === 1){
-                                            document.getElementById("temBens").innerHTML = "1 registro em Bens Encontrados para processar.";
+                                            document.getElementById("temBens").innerHTML = "1 registro a processar em Bens Encontrados .";
                                         }else{
-                                            document.getElementById("temBens").innerHTML = Resp.bens+" registros em Bens Encontrados para processar.";
+                                            document.getElementById("temBens").innerHTML = Resp.bens+" registros a processar em Bens Encontrados.";
                                         }
                                         document.getElementById("temBens").style.display = "block";
                                     }

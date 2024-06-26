@@ -47,6 +47,11 @@ if($Acao=="mudaStatus"){
                 if($DataSit3 == '3000/12/31'){ // passou direto para Terminada
                     $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit3 = NOW() WHERE idtar = $Num");
                 }
+                //Salva na coluna tempototal: anos;meses;dias;horas;minutos
+                $rs = pg_query($Conec, "SELECT EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)) FROM ".$xProj.".tarefas WHERE idtar = $Num");
+                $tbl = pg_fetch_row($rs);
+                $ValorFinal = $tbl[0].";".$tbl[1].";".$tbl[2].";".$tbl[3].";".$tbl[4]; //anos;meses;dias;horas;minutos
+                pg_query($Conec, "UPDATE ".$xProj.".tarefas SET tempototal = '$ValorFinal' WHERE idtar = $Num");                
             }else{
                 $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET sit = $Sit, datasit".$Sit." = NOW(), usumodifsit = $UsuModif, ativo = $Ativo WHERE idtar = $Num");
                 if($Sit == 3 && $DataSit2 == '3000/12/31'){ // passou direto para Em andamento
@@ -147,6 +152,7 @@ if($Acao=="deletaTarefa"){
         if(!$Sql){
             $Erro = 1;
         }
+        pg_query($Conec, "UPDATE ".$xProj.".tarefas_msg SET elim = 1, dataelim = NOW() WHERE idtarefa = $idTarefa"); 
     }
     $var = array("coderro"=>$Erro, "idtarefa"=>$idTarefa);
     $responseText = json_encode($var);

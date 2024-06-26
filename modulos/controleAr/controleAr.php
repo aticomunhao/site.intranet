@@ -31,6 +31,28 @@ if(!isset($_SESSION["usuarioID"])){
                 width: 55%; /* acertar de acordo com a tela */
                 max-width: 900px;
             }
+            .modal-content-InsControle{
+                background: linear-gradient(180deg, white, #0099FF);
+                margin: 10% auto; /* 10% do topo e centrado */
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 55%; /* acertar de acordo com a tela */
+                max-width: 900px;
+            }
+            .divbot{ /* botão upload */
+                position: relative; 
+                float: left;
+                margin-top: -20px; 
+                border: 1px solid blue;
+                background-color: blue;
+                color: white;
+                cursor: pointer;
+                border-radius: 10px; 
+                padding-left: 10px; 
+                padding-right: 10px;
+                font-size: 80%;
+            }
             .etiqCel{
                 text-align: center; 
                 border: 1px solid;
@@ -75,13 +97,43 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("faixaMensagem").style.display = "block";
                 }
 
-                $('#datavisins').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
-                $('#dataAcionam').datetimepicker({ footer: true, modal: true , uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy HH:MM'});
-                $('#dataAtendim').datetimepicker({ footer: true, modal: true , uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy HH:MM'});
-                $('#dataConclus').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
-
-                $("#datavisins").mask("99/99/9999"); // esse tipo de datepicker não deixa digitar
+                //Autorizado a editar ou superusuário - se bloquear só o campo, o datepicker continua tentando carregar
+                if(parseInt(document.getElementById("guardaInsArCond").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+                    $('#datavisins').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
+                    $('#dataAcionam').datetimepicker({ footer: true, modal: true , uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy HH:MM'});
+                    $('#dataAtendim').datetimepicker({ footer: true, modal: true , uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy HH:MM'});
+                    $('#dataConclus').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });                
+                    $("#datavisins").mask("99/99/9999");
+                    carregaEmpresas();
+                }else{
+                    document.getElementById("editNomeEmpr").disabled = true;
+                    document.getElementById("valorvisita").disabled = true;
+                    document.getElementById("botSalvarEditEmpr").disabled = true;
+                }
             });
+
+            function carregaEmpresas(){
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/controleAr/salvaControle.php?acao=buscarelempresas", true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                var options = "";  //Cria array
+                                $.each(Resp, function(key, Resp){
+                                    options += '<option value="' + Resp.Cod + '">'+Resp.Nome + '</option>';
+                                });
+                                $("#empresa").html(options);
+                                $("#empresaCorret").html(options);
+                                $("#empresalocal").html(options);
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
 
             function insAparelho(){
                 document.getElementById("guardaid").value = 0;
@@ -112,37 +164,6 @@ if(!isset($_SESSION["usuarioID"])){
 
             function salvaModal(){
                 if(document.getElementById("mudou").value != "0"){
-//                    if(document.getElementById("datavis").value !== ""){ // deixa salvar em branco
-//                        valor = document.getElementById("datavis").value;
-//                        const partesData = valor.split('/');
-//                        const data = { 
-//                            dia: partesData[0], 
-//                            mes: partesData[1], 
-//                            ano: partesData[2] 
-//                        }
-//                        if(partesData[1] != document.getElementById("guardaCel").value){
-//                            $.confirm({
-//                                title: 'Informação!',
-//                                content: 'O mês nesta data não correponde ao mês da célula editada.',
-//                                draggable: true,
-//                                buttons: {
-//                                    OK: function(){}
-//                                }
-//                            });
-//                            return false;
-//                        }
-//                        if(partesData[2] < 2024){
-//                            $.confirm({
-//                                title: 'Informação!',
-//                                content: 'Verifique o ano nesta data.',
-//                                draggable: true,
-//                                buttons: {
-//                                    OK: function(){}
-//                                }
-//                            });
-//                            return false;
-//                        }
-//                    }
                     ajaxIni();
                     if(ajax){
                         ajax.open("POST", "modulos/controleAr/salvaControle.php?acao=salvadados&codigo="+document.getElementById("guardaid").value
@@ -172,18 +193,28 @@ if(!isset($_SESSION["usuarioID"])){
 
             function buscaData(Cod, InsEdit){ // Cod é o id de visitas_ar - O guardaid fica com o id de controle_ar pq vem do click na linha DataTable
                 if(parseInt(document.getElementById("guardaInsArCond").value) === 0 && parseInt(document.getElementById("UsuAdm").value) < 7){
-                    $.confirm({
-                        title: 'Informação!',
-                        content: 'Usuário não autorizado.',
-                        autoClose: 'OK|5000',
-                        draggable: true,
-                        buttons: {
-                            OK: function(){}
-                        }
-                    });
-                    return false;
+                    document.getElementById("empresaCorret").disabled = true;
+                    document.getElementById("datavisins").disabled = true;
+                    document.getElementById("nometecins").disabled = true;
+                    document.getElementById("nomeTecnicoEmpresa").disabled = true;
+                    document.getElementById("dataAcionam").disabled = true;
+                    document.getElementById("dataAtendim").disabled = true;
+                    document.getElementById("dataConclus").disabled = true;
+                    document.getElementById("nomecontactado").disabled = true;
+                    document.getElementById("defeito").disabled = true;
+                    document.getElementById("nomeAcompanhante").disabled = true;
+                    document.getElementById("nomeAcompPrevent").disabled = true;
+                    document.getElementById("diagnostico").disabled = true;
+                    document.getElementById("svcRealizado").disabled = true;
+                    document.getElementById("dataConclus").disabled = true;
+                    document.getElementById("nometecins").disabled = true;
+                    document.getElementById("guardaManut").disabled = true;
+                    document.getElementById("apagaregistro").disabled = true;
+                    document.getElementById("botSalvaDataCorret").disabled = true;
+                    document.getElementById("salvaDataPrev").disabled = true;
                 }
                 document.getElementById("guardaInsEdit").value = InsEdit;
+                document.getElementById("apagaregistro").style.visibility = "visible";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/controleAr/salvaControle.php?acao=buscadata&codigo="+Cod, true);
@@ -231,7 +262,6 @@ if(!isset($_SESSION["usuarioID"])){
                                     }
                                     //Não mudar de tipo de manutenção depois de inserido
                                     document.getElementById("itensmanut").style.visibility = "hidden";
-                                    
                                     document.getElementById("mudou").value = "0";
                                     document.getElementById("relacmodalIns").style.display = "block";
                                 }else{
@@ -261,6 +291,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("guardaManut").value = 1;
                 document.getElementById("subtitulomodalins").innerHTML = "";
                 document.getElementById("itensmanut").style.visibility = "visible";
+                document.getElementById("apagaregistro").style.visibility = "hidden";
                 document.getElementById("guardaid").value = Cod;
                 document.getElementById("guardaInsEdit").value = InsEdit;
                 document.getElementById("relacmodalInsPrevent").style.display = "block"; // abre manut preventiva
@@ -378,19 +409,6 @@ if(!isset($_SESSION["usuarioID"])){
                         return false;
                         document.getElementById("dataAcionam").focus();
                     }
-//                    if(document.getElementById("dataAtendim").value == ""){
-//                        $.confirm({
-//                            title: 'Informação!',
-//                            content: 'Confira a data do atendimento.',
-//                            draggable: true,
-//                            buttons: {
-//                                OK: function(){}
-//                            }
-//                        });
-//                        return false;
-//                        document.getElementById("dataAtendim").focus();
-//                    }
-
                     ajaxIni();
                     if(ajax){
                         ajax.open("POST", "modulos/controleAr/salvaControle.php?acao=salvamanutcorret&codigo="+document.getElementById("guardaid").value
@@ -527,6 +545,87 @@ if(!isset($_SESSION["usuarioID"])){
                 });
             }
 
+            function carregaConfig(){
+                if(parseInt(document.getElementById("guardaInsArCond").value) === 1 || parseInt(document.getElementById("guardaFiscArCond").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+                    $("#configAr").load("modulos/controleAr/relEmpr.php");
+                    document.getElementById("relacmodalConfig").style.display = "block";
+                }else{
+                    $.confirm({
+                        title: 'Informação!',
+                        content: 'Usuário não autorizado.',
+                        autoClose: 'OK|5000',
+                        draggable: true,
+                        buttons: {
+                            OK: function(){}
+                        }
+                    });
+                    return false;
+                }
+            }
+
+            function editaEmpresa(Cod){
+                document.getElementById("guardaCodEmpr").value = Cod;
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/controleAr/salvaControle.php?acao=buscaempresa&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    document.getElementById("editNomeEmpr").value = Resp.nome;
+                                    document.getElementById("valorvisita").value = Resp.valor;
+                                    document.getElementById("relacEditEmpresa").style.display = "block";
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function insEmpresa(){
+                if(parseInt(document.getElementById("guardaInsArCond").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+                    document.getElementById("guardaCodEmpr").value = "0";
+                    document.getElementById("editNomeEmpr").value = "";
+                    document.getElementById("relacEditEmpresa").style.display = "block";
+                }
+            }
+
+            function salvaEditEmpr(){
+                if(document.getElementById("mudou").value != "0"){
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/controleAr/salvaControle.php?acao=salvanomeempresa&codigo="+document.getElementById("guardaCodEmpr").value 
+                        +"&nomeempresa="+encodeURIComponent(document.getElementById("editNomeEmpr").value)
+                        +"&valorvisita="+encodeURIComponent(document.getElementById("valorvisita").value), true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 0){
+                                        document.getElementById("relacEditEmpresa").style.display = "none";
+                                        $("#configAr").load("modulos/controleAr/relEmpr.php");
+
+                                        carregaEmpresas();
+
+                                    }else{
+                                        alert("Houve um erro no servidor.")
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                }else{
+                    document.getElementById("relacEditEmpresa").style.display = "none";
+                }
+            }
+
             function fechaModal(){
                 document.getElementById("guardaid").value = 0;
                 document.getElementById("guardaCodVis").value = 0;
@@ -534,7 +633,13 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("relacmodalIns").style.display = "none";
                 document.getElementById("relacmodalLocal").style.display = "none";
                 document.getElementById("relacmodalInsCorret").style.display = "none";
+                document.getElementById("relacmodalConfig").style.display = "none";
+                document.getElementById("relacEditEmpresa").style.display = "none";
             }
+            function fechaEditEmpr(){
+                document.getElementById("relacEditEmpresa").style.display = "none";
+            }
+
             function salvaManut(Valor){
                 document.getElementById("guardaManut").value = Valor;
                 document.getElementById("mudou").value = "1";
@@ -554,7 +659,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
             function imprAr(){
                 if(parseInt(document.getElementById("selectAno").value) != ""){
-                    window.open("modulos/controleAr/imprListaAr.php?acao=listamesManut&ano="+document.getElementById("selectAno").value, document.getElementById("selectAno").value);
+                    window.open("modulos/controleAr/imprListaAr.php?acao=listamesManut&colec=1&ano="+document.getElementById("selectAno").value, "colec1");
                 }
             }
 
@@ -623,18 +728,6 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
     ) 
  ");
 
- $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".controle_ar LIMIT 3");
- $row = pg_num_rows($rs);
- if($row == 0){
-    for ($i = 1; $i <= 54; $i++) {
-       pg_query($Conec, "INSERT INTO ".$xProj.".controle_ar (num_ap, empresa_id, datains) VALUES ($i, 1, NOW() )");
-    }
-    pg_query($Conec, "UPDATE ".$xProj.".controle_ar SET localap = 'Sala de Reuniões' WHERE id = 1");
-    pg_query($Conec, "UPDATE ".$xProj.".controle_ar SET localap = 'Sala DAF' WHERE id = 2");
-    pg_query($Conec, "UPDATE ".$xProj.".controle_ar SET localap = 'Salão Principal' WHERE id = 3");
-    pg_query($Conec, "UPDATE ".$xProj.".controle_ar SET localap = 'Servidores ATI' WHERE id = 4"); 
-}
-
  pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
     id SERIAL PRIMARY KEY, 
     controle_id integer NOT NULL DEFAULT 0,
@@ -660,27 +753,11 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
     ) 
  ");
 
- //$rs = pg_query($Conec, "SELECT id FROM ".$xProj.".visitas_ar LIMIT 3");
- //$row = pg_num_rows($rs);
- //if($row == 0){
- //   pg_query($Conec, "INSERT INTO ".$xProj.".visitas_ar (controle_id, datavis, nometec, datains, empresa_id, ativo, tipovis) VALUES (3, '2024-02-02', 'Fulano de Tal', NOW(), 1, 1, 1 )");
- //   pg_query($Conec, "INSERT INTO ".$xProj.".visitas_ar (controle_id, datavis, nometec, datains, empresa_id, ativo, tipovis) VALUES (4, '2024-04-04', 'Sicrano de Tal', NOW(), 1, 1, 1 )");
- //   pg_query($Conec, "INSERT INTO ".$xProj.".visitas_ar (controle_id, datavis, nometec, datains, empresa_id, ativo, tipovis) VALUES (6, '2024-06-02', 'Fulano de Tal', NOW(), 1, 1, 1 )");
- //   pg_query($Conec, "INSERT INTO ".$xProj.".visitas_ar (controle_id, datavis, nometec, datains, empresa_id, ativo, tipovis) VALUES (3, '2024-03-02', 'Fulanildo de Tal', NOW(), 1, 1, 1 )");
- //   pg_query($Conec, "INSERT INTO ".$xProj.".visitas_ar (controle_id, datavis, nometec, datains, empresa_id, ativo, tipovis) VALUES (3, '2024-05-02', 'Fulano de Tal', NOW(), 1, 1, 1 )");
- //   pg_query($Conec, "INSERT INTO ".$xProj.".visitas_ar (controle_id, datavis, nometec, datains, empresa_id, ativo, tipovis) VALUES (3, '2024-07-02', 'Fulano de Tal', NOW(), 1, 1, 1 )");
-
- //   pg_query($Conec, "INSERT INTO ".$xProj.".visitas_ar (controle_id, datavis, nometec, datains, empresa_id, ativo, tipovis) VALUES (1, '2024-03-02', 'Fulano de Tal', NOW(), 1, 1, 1 )");
- //   pg_query($Conec, "INSERT INTO ".$xProj.".visitas_ar (controle_id, datavis, nometec, datains, empresa_id, ativo, tipovis) VALUES (2, '2024-01-02', 'Fulano de Tal', NOW(), 1, 1, 1 )");
- //   pg_query($Conec, "INSERT INTO ".$xProj.".visitas_ar (controle_id, datavis, nometec, datains, empresa_id, ativo, tipovis) VALUES (2, '2024-01-10', 'Fulano de Tal', NOW(), 1, 1, 2 )");
- //   pg_query($Conec, "INSERT INTO ".$xProj.".visitas_ar (controle_id, datavis, nometec, datains, empresa_id, ativo, tipovis) VALUES (2, '2024-01-20', 'Fulano de Tal', NOW(), 1, 1, 1 )");
- //}
-
-
  pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".empresas_ar (
     id SERIAL PRIMARY KEY, 
     empresa VARCHAR(150),
-    ativo smallint DEFAULT 1 NOT NULL
+    ativo smallint DEFAULT 1 NOT NULL,
+    valorvisita double precision NOT NULL DEFAULT 0
     ) 
  ");
 
@@ -695,19 +772,24 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
         $rsEmpr = pg_query($Conec, "SELECT id, empresa FROM ".$xProj.".empresas_ar WHERE ativo = 1");
         $rsEmprLocal = pg_query($Conec, "SELECT id, empresa FROM ".$xProj.".empresas_ar WHERE ativo = 1");
         $rsEmprCorret = pg_query($Conec, "SELECT id, empresa FROM ".$xProj.".empresas_ar WHERE ativo = 1");
+
         $rsAno = pg_query($Conec, "SELECT DISTINCT to_char(datavis, 'YYYY') FROM ".$xProj.".visitas_ar WHERE ativo = 1");
         $AnoIni = date("Y");
         $Hoje = date("d/m/Y");
         $Data = date("d/m/Y H:i");
+
         $InsArCond = parEsc("arcond", $Conec, $xProj, $_SESSION["usuarioID"]); // procura marca arcond em poslog
         $FiscArCond = parEsc("arfisc", $Conec, $xProj, $_SESSION["usuarioID"]); // procura marca arfisc em poslog
+        $Menu4 = escMenu($Conec, $xProj, 4);
         ?>
         <div style="margin: 20px; border: 2px solid blue; border-radius: 15px; padding: 20px; min-height: 200px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
                 <input type="button" id="botinserir" class="resetbot" style="font-size: 80%;" value="Inserir Novo Aparelho" onclick="insAparelho();">
+                <img src="imagens/settings.png" height="20px;" style="cursor: pointer; padding-left: 30px;" onclick="carregaConfig();" title="Configurar empresas de manutenção">
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <h5>Controle da Manutenção dos Condicionadores de Ar</h5>
+                <div style="text-align: center;"><?php echo $Menu4; ?></div>
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: left;">
                 <label style="font-size: .9rem;">Selecione o Ano: </label>
@@ -741,6 +823,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
         <input type="hidden" id="guardaInsArCond" value="<?php echo $InsArCond; ?>" />
         <input type="hidden" id="guardaFiscArCond" value="<?php echo $FiscArCond; ?>" />
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
+        <input type="hidden" id="guardaCodEmpr" value="0" />
 
         <!-- div para inserção novo aparelho  -->
         <div id="relacmodalControle" class="relacmodal">
@@ -764,17 +847,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
                     <tr>
                         <td class="etiq aDir">Empresa: </td>
                         <td>
-                        <select id="empresa" onchange="modif();" style="font-size: 1rem; width: 100%;" title="Selecione uma empresa.">
-                            <option value="0"></option>
-                            <?php 
-                            if($rsEmpr){
-                                while ($Opcoes = pg_fetch_row($rsEmpr)){ ?>
-                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
-                                <?php 
-                                }
-                            }
-                            ?>
-                            </select>
+                            <select id="empresa" onchange="modif();" style="font-size: 1rem; width: 100%;" title="Selecione uma empresa."></select>
                         </td>
                         <td></td>
                         <td></td>
@@ -839,7 +912,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
                             <td colspan="2" style="padding-bottom: 10px;"></td>
                         </tr>
                         <tr>
-                            <td colspan="4" style="text-align: center;"><button class="resetbot" style="font-size: .9rem;" onclick="salvaDataInsPrevent();">Salvar</button></td>
+                            <td colspan="4" style="text-align: center;"><button id="salvaDataPrev" class="resetbot" style="font-size: .9rem;" onclick="salvaDataInsPrevent();">Salvar</button></td>
                         </tr>
                     </table>
                 </div>
@@ -851,15 +924,6 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
                             <td class="etiq aDir" title="Nome da empresa contratada">Empresa: </td>
                             <td colspan="3">
                                 <select id="empresaCorret" onchange="modif();" style="font-size: 1rem; width: 100%;" title="Selecione uma empresa.">
-                                    <option value="0"></option>
-                                    <?php 
-                                    if($rsEmprCorret){
-                                        while ($Opcoes = pg_fetch_row($rsEmprCorret)){ ?>
-                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
-                                        <?php 
-                                        }
-                                    }
-                                    ?>
                                 </select>
                             </td>
                         </tr>
@@ -903,11 +967,11 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
                             <td colspan="4" style="padding-bottom: 10px;"></td>
                         </tr>
                         <tr>
-                            <td colspan="4" style="text-align: center;"><button class="resetbot" style="font-size: .9rem;" onclick="salvaDataInsCorret();">Salvar</button></td>
+                            <td colspan="4" style="text-align: center;"><button id="botSalvaDataCorret" class="resetbot" style="font-size: .9rem;" onclick="salvaDataInsCorret();">Salvar</button></td>
                         </tr>
                     </table>
                 </div>
-                <div style="padding-bottom: 10px;"><button class="resetbot" style="font-size: .7rem;" onclick="apagaData();">Apagar</button></div>
+                <div style="padding-bottom: 10px;"><button id="apagaregistro" class="resetbot" style="font-size: .7rem;" onclick="apagaData();">Apagar</button></div>
             </div>
         </div> <!-- Fim Modal-->
 
@@ -933,17 +997,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
                     <tr>
                         <td class="etiq aDir">Empresa: </td>
                         <td>
-                        <select id="empresalocal" onchange="modif();" style="font-size: 1rem; width: 100%;" title="Selecione uma empresa.">
-                            <option value="0"></option>
-                            <?php 
-                            if($rsEmprLocal){
-                                while ($Opcoes = pg_fetch_row($rsEmprLocal)){ ?>
-                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
-                                <?php 
-                                }
-                            }
-                            ?>
-                            </select>
+                           <select id="empresalocal" onchange="modif();" style="font-size: 1rem; width: 100%;" title="Selecione uma empresa."></select>
                         </td>
                         <td></td>
                         <td></td>
@@ -955,6 +1009,45 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
                         <td colspan="4" style="text-align: center;"><button class="resetbot" style="font-size: .9rem;" onclick="salvaLocal();">Salvar</button></td>
                     </tr>
                 </table>
+            </div>
+        </div> <!-- Fim Modal-->
+
+        <!-- div para editar nome das empresas  -->
+        <div id="relacmodalConfig" class="relacmodal">
+            <div class="modal-content-Controle">
+                <span class="close" onclick="fechaModal();">&times;</span>
+                <h5 id="titulomodal" style="text-align: center; color: #666;">Empresas de Manutenção</h5>
+                <div class='divbot corFundo' onclick='insEmpresa()' title="Adicionar nova empresa de manutenção"> Inserir </div>
+
+                <div id="configAr" style="text-align: center;"></div>
+
+            </div>
+        </div> <!-- Fim Modal-->
+        
+        <div id="relacEditEmpresa" class="relacmodal">
+            <div class="modal-content-InsControle">
+                <span class="close" onclick="fechaEditEmpr();">&times;</span>
+                <h5 id="titulomodal" style="text-align: center; color: #666;">Nome da Empresa</h5>
+                <div id="subtitulomodal" style="text-align: center; color: red;"></div>
+                    <table style="margin: 0 auto; width: 90%">
+                        <tr>
+                            <td class="etiq aDir">Empresa: </td>
+                            <td><input type="text" id="editNomeEmpr" valor="" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 90%;"></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="etiq aDir">Valor da visita: </td>
+                            <td><input type="text" id="valorvisita" valor="" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 120px; text-align: right;"></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                    <br>
+                    <div style="text-align: center;">
+                        <button id="botSalvarEditEmpr" class="resetbot" style="font-size: .9rem;" onclick="salvaEditEmpr();">Salvar</button>
+                    </div>
+                </div>
             </div>
         </div> <!-- Fim Modal-->
     </body>

@@ -26,7 +26,7 @@ if($Acao=="buscadados"){
         }
         $var = array("coderro"=>$Erro, "apar"=>str_pad($tbl[0], 3, 0, STR_PAD_LEFT), "local"=>$Local );
     }
-    
+
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -141,7 +141,7 @@ if($Acao=="salvamanutcorret"){
     $InsEdit = (int) filter_input(INPUT_GET, 'insedit');
     $Tipo = (int) filter_input(INPUT_GET, 'tipomanut');
     $Empresa = (int) filter_input(INPUT_GET, 'empresa');
-//    $DataAc = addslashes(filter_input(INPUT_GET, 'dataAcionam'));
+
     $DataAc = addslashes(filter_input(INPUT_GET, 'dataAcionam'));
     if($DataAc == ""){
         $DataAc = "1500/01/01 00:00";
@@ -154,10 +154,6 @@ if($Acao=="salvamanutcorret"){
     if($DataConc == ""){
         $DataConc = "1500/01/01 00:00";
     }
-//    $DataAcionam = date('Y-d-m H:i:s', strtotime($DataAc));
-//    $DataAcionam = date('Y-m-d', strtotime($DataAc));
-//    $HoraAcionam = date('H:i:s', strtotime($DataAc));
-//$DataAcionam = implode("-", array_reverse(explode("/", $DataAcio)));
 
     $DataAcio = substr($DataAc, 0, 10);
     $DataAcionam = implode("-", array_reverse(explode("/", $DataAcio)));
@@ -204,7 +200,6 @@ if($Acao=="salvamanutcorret"){
     $responseText = json_encode($var);
     echo $responseText;
 }
-
 
 if($Acao=="salvadataedit"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
@@ -267,3 +262,52 @@ if($Acao=="apagadata"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
+if($Acao=="buscaempresa"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Erro = 0;
+    $rs = pg_query($Conec, "SELECT empresa, valorvisita FROM ".$xProj.".empresas_ar WHERE id = $Cod And ativo = 1");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $tbl = pg_fetch_row($rs);
+    $var = array("coderro"=>$Erro, "nome"=>$tbl[0], "valor"=>number_format($tbl[1], 2, ",",".")  );
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao=="salvanomeempresa"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Nome = filter_input(INPUT_GET, 'nomeempresa');
+    $Valor = str_replace(",", ".", filter_input(INPUT_GET, 'valorvisita'));
+    $ValorVis = number_format($Valor, 2, ".",",");
+
+    $Erro = 0;
+    if($Cod > 0){ // salvar
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".empresas_ar SET empresa = '$Nome', valorvisita = $ValorVis  WHERE id = $Cod ");
+    }else{ // inserir
+        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".empresas_ar");
+        $tblCod = pg_fetch_row($rsCod);
+        $Codigo = $tblCod[0];
+        $CodigoNovo = ($Codigo+1);
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".empresas_ar (id, empresa) VALUES ($CodigoNovo, '$Nome') ");
+    }
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao == "buscarelempresas"){  // vem de controleAr.php
+    $rsEmpr = pg_query($Conec, "SELECT id, empresa FROM ".$xProj.".empresas_ar WHERE ativo = 1");
+
+    while ($tbl = pg_fetch_row($rsEmpr)){
+       $Empr[] = array(
+       'Cod' => $tbl[0],
+       'Nome' => $tbl[1]);
+    }
+    $responseText = json_encode($Empr);
+    echo $responseText;
+ }

@@ -39,31 +39,30 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             $("#insdata").mask("99/99/9999");
         </script>
     </head>
-    <body> 
-        <div  style="text-align: center;"><label class="titRelat">Leituras Medidor Eletricidade da Operadora Claro<label></div>
-            <?php 
-                date_default_timezone_set('America/Sao_Paulo');
-                $admIns = parAdm("insleituraeletric", $Conec, $xProj);   // nível para inserir 
-                $admEdit = parAdm("editleituraeletric", $Conec, $xProj); // nível para editar
-                $hoje = date('d/m/Y');
-                $rs = pg_query($Conec, "SELECT valorinieletric2, TO_CHAR(datainieletric2, 'YYYY/MM/DD') FROM ".$xProj.".paramsis WHERE idpar = 1 ");
-                $row = pg_num_rows($rs);
-                if($row > 0){
-                    $tbl = pg_fetch_row($rs);
-                    $ValorIni = $tbl[0];
-                    $DataIni = $tbl[1];
-                }
-//echo $ValorIni;
-                if($ValorIni == 0 || is_null($DataIni)){
-                    echo "<div style='text-align: center;'>É necessário inserir os valores iniciais da medição nos parâmetros do sistema.</div>";
-                    echo "<div style='text-align: center;'>Informe à ATI.</div>";
-                    return false;
-                }
-                $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(dataleitura2, 'DD/MM/YYYY'), date_part('dow', dataleitura2), leitura2, dataleitura2 FROM ".$xProj.".leitura_eletric WHERE colec = 2 And ativo = 1 ORDER BY dataleitura2 DESC ");
-                $row0 = pg_num_rows($rs0);
-                $Cont = 0;
-                $Leit24Ant = 0;
-                ?>
+    <body>         
+        <?php 
+            $Menu2 = escMenu($Conec, $xProj, 2);
+            date_default_timezone_set('America/Sao_Paulo');
+            $admIns = parAdm("insleituraeletric", $Conec, $xProj);   // nível para inserir 
+            $admEdit = parAdm("editleituraeletric", $Conec, $xProj); // nível para editar
+            $hoje = date('d/m/Y');
+            $rs = pg_query($Conec, "SELECT valorinieletric2, TO_CHAR(datainieletric2, 'YYYY/MM/DD') FROM ".$xProj.".paramsis WHERE idpar = 1 ");
+            $row = pg_num_rows($rs);
+            if($row > 0){
+                $tbl = pg_fetch_row($rs);
+                $ValorIni = $tbl[0];
+                $DataIni = $tbl[1];
+            }
+            if($ValorIni == 0 || is_null($DataIni)){
+                echo "<div style='text-align: center;'>É necessário inserir os valores iniciais da medição nos parâmetros do sistema.</div>";
+                echo "<div style='text-align: center;'>Informe à ATI.</div>";
+                return false;
+            }
+            $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(dataleitura2, 'DD/MM/YYYY'), date_part('dow', dataleitura2), leitura2, dataleitura2 FROM ".$xProj.".leitura_eletric WHERE colec = 2 And ativo = 1 ORDER BY dataleitura2 DESC ");
+            $Leit24Ant = 0;
+            $Cont = 0;
+            ?>
+            <div  style="text-align: center;"><label class="titRelat">Leituras Medidor Eletricidade da Operadora<?php echo " - ".$Menu2; ?><label></div>
                 <table id="idTabela" class="display" style="margin: 0 auto; width: 95%;">
                     <thead>
                         <tr>
@@ -82,7 +81,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <?php
                             while($tbl0 = pg_fetch_row($rs0)){
                                 $Dow = $tbl0[2];
-//echo $tbl0[3];
                                 switch ($Dow){
                                     case 0:
                                         $Sem = "DOM";

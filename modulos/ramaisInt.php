@@ -194,7 +194,6 @@ session_start();
                             if(ajax.responseText){
 //alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
-//                                if(parseInt(Resp.jatem) > 0){
                                     document.getElementById("usuario").value = Resp.nomeusual;
                                     document.getElementById("ramal").value = Resp.ramal;
                                     document.getElementById("nomecompleto").value = Resp.nomecompleto;
@@ -202,7 +201,6 @@ session_start();
                                     document.getElementById("ramal").value = Resp.ramal;
                                     document.getElementById("guardaCodSetor").value = Resp.codsetor;
                                     document.getElementById("guardaid_click").value = Resp.codtel;
-//                                }
                             }
                         }
                     };
@@ -334,7 +332,7 @@ session_start();
                 <?php
                     while ($tbl = pg_fetch_row($rs0)){
                         $Cod = $tbl[0]; // CodTel
-                        if(is_null($tbl[4]) or $tbl[4] == "undefined"){
+                        if(is_null($tbl[4]) || $tbl[4] == "undefined"){
                             $DescSetor = "";
                         }else{
                             $DescSetor = $tbl[4];

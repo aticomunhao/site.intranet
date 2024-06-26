@@ -324,6 +324,7 @@ if(!isset($_SESSION["usuarioID"])){
             $admIns = parAdm("insleituraeletric", $Conec, $xProj);   // nível para inserir 
             $admEdit = parAdm("editleituraeletric", $Conec, $xProj); // nível para editar
             $InsEletric = parEsc("eletric2", $Conec, $xProj, $_SESSION["usuarioID"]); // procura coluna eletric em poslog 
+            $Menu2 = escMenu($Conec, $xProj, 2);
 
             // Preenche caixa de escolha mes/ano para impressão
             $OpcoesEscMes = pg_query($Conec, "SELECT EXTRACT(MONTH FROM ".$xProj.".leitura_eletric.dataleitura2)::text ||'/'|| EXTRACT(YEAR FROM ".$xProj.".leitura_eletric.dataleitura2)::text 
@@ -342,7 +343,7 @@ if(!isset($_SESSION["usuarioID"])){
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->
                 <div class="col" style="margin: 0 auto; text-align: center;" title="Inserir leitura do medidor de energia elétrica"><button id="botInserir" class="botpadrblue" onclick="insereModal();">Inserir</button></div> <!-- quadro -->
-                <div class="col" style="text-align: center;">Controle do Consumo de Energia Elétrica da Operadora Claro</div> <!-- espaçamento entre colunas  -->
+                <div class="col" style="text-align: center;">Controle do Consumo de Energia Elétrica<?php echo " - ".$Menu2; ?></div> <!-- espaçamento entre colunas  -->
                 <div class="col" style="margin: 0 auto; text-align: center;"><button id="botImprimir" class="botpadrred" onclick="abreImprLeitura();">PDF</button></div> <!-- quadro -->
             </div>
 
@@ -363,7 +364,7 @@ if(!isset($_SESSION["usuarioID"])){
         <div id="relacimprLeituraEletric" class="relacmodal">
             <div class="modal-content-imprLeitura">
                 <span class="close" onclick="fechaModalImpr();">&times;</span>
-                <h5 id="titulomodal" style="text-align: center;color: #666;">Controle do Consumo de Eletricidade - Claro</h5>
+                <h5 id="titulomodal" style="text-align: center;color: #666;">Controle do Consumo de Eletricidade<?php echo " - ".$Menu2; ?></h5>
                 <h6 id="titulomodal" style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
                 <div style="border: 2px solid #C6E2FF; border-radius: 10px;">
                     <table style="margin: 0 auto; width: 95%;">

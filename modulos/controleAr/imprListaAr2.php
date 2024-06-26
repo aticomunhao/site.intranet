@@ -11,6 +11,7 @@ if(isset($_REQUEST["acao"])){
     require_once('../../class/fpdf/fpdf.php'); // adaptado ao PHP 7.2 - 8.2
     define('FPDF_FONTPATH', '../../class/fpdf/font/');  
     $Dom = "logo_comunhao_completa_cor_pos_150px.png";
+    $Menu5 = escMenu($Conec, $xProj, 5);
 
     $rsCabec = pg_query($Conec, "SELECT cabec1, cabec2, cabec3 FROM ".$xProj.".setores WHERE codset = ".$_SESSION["CodSetorUsu"]." ");
     $rowCabec = pg_num_rows($rsCabec);
@@ -92,7 +93,7 @@ if(isset($_REQUEST["acao"])){
     $pdf->SetFont('Arial', '' , 10);
     $pdf->SetTextColor(25, 25, 112);
     if($Acao == "listamesManut"){
-        $pdf->MultiCell(0, 3, "Controle de Manutenção nos Aparelhos de Ar Condicionado", 0, 'C', false);
+        $pdf->MultiCell(0, 3, "Controle de Manutenção nos Aparelhos de Ar Condicionado - ".$Menu5, 0, 'C', false);
     }
 
     $pdf->SetTextColor(0, 0, 0);
@@ -178,7 +179,6 @@ if(isset($_REQUEST["acao"])){
                     }
                     $pdf->SetY($lin);
                 }
-
 
                 $rs2 = pg_query($Conec, "SELECT to_char(datavis, 'DD'), to_char(datavis, 'MM'), tipovis FROM ".$xProj.".visitas_ar2 WHERE controle_id = $Cod And ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And DATE_PART('MONTH', datavis) = '02' ORDER BY datavis DESC");
                 $row2 = pg_num_rows($rs2);
@@ -562,19 +562,16 @@ if(isset($_REQUEST["acao"])){
                     $i++;
                 }
 
-
                 $lin = $pdf->GetY();
                 $pdf->Line(10, $lin, 290, $lin);
             }
             $lin = $pdf->GetY();               
             $pdf->Line(10, $lin, 290, $lin);
 
-
             $pdf->ln(10);
             $pdf->SetX(50);
             $pdf->SetFont('Arial', 'I', 12);
             $pdf->Cell(17, 5, "Ano: ".$Ano, 0, 1, 'C');
-
 
             $rs0 = pg_query($Conec, "SELECT id FROM ".$xProj.".visitas_ar2 WHERE ativo = 1 And DATE_PART('YEAR', datavis) = '$Ano' And tipovis = 1");
             $row0 = pg_num_rows($rs0);
@@ -587,9 +584,6 @@ if(isset($_REQUEST["acao"])){
             $pdf->SetX(50);
             $pdf->Cell(60, 5, "Manutenção Corretiva: ", 0, 0, 'L');
             $pdf->Cell(10, 5, $row1, 0, 1, 'R');
-
-
-
         }else{
             $pdf->SetFont('Arial', 'I', 14);
             $pdf->ln(5);

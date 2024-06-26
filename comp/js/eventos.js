@@ -78,6 +78,10 @@ function openhref(Num){
     if(parseInt(Num) === 69){
         $('#container3').load('modulos/controleAr/controleAr2.php');
     }
+    if(parseInt(Num) === 70){
+        $('#container3').load('modulos/controleAr/controleAr3.php');
+    }
+
 
 
     if(parseInt(Num) === 30){
@@ -101,12 +105,14 @@ function openhref(Num){
     if(parseInt(Num) === 36){
         $('#container3').load('modulos/lro/livroReg.php');
     }
-    if(parseInt(Num) === 70){
-        $('#container3').load('modulos/conteudo/tarefas.php');
-    }
     if(parseInt(Num) === 80){
         $('#container3').load('modulos/trocas/relTrocas.php');
     }
+    if(parseInt(Num) === 90){
+        $('#container3').load('modulos/conteudo/tarefas.php');
+    }
+
+
 }
 
 function openhrefDir(Num){

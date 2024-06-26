@@ -125,6 +125,9 @@ if(!isset($_SESSION["usuarioID"])){
                 if(parseInt(document.getElementById("UsuAdm").value) < parseInt(document.getElementById("admIns").value)){ // nível administrativo
                     document.getElementById("botinserir").style.visibility = "hidden"; // botão de inserir
                 }
+                if(parseInt(document.getElementById("UsuAdm").value) < parseInt(document.getElementById("admEdit").value)){ // nível administrativo
+                    document.getElementById("botimprTarefas").style.visibility = "hidden"; // botão de inserir
+                }
                 //Fecha caixa ao clicar na página
                 modalMsg = document.getElementById('relacmodalMsg'); //span[0]
                 spanMsg = document.getElementsByClassName("close")[0];
@@ -138,6 +141,50 @@ if(!isset($_SESSION["usuarioID"])){
                         modalHelp.style.display = "none";
                     }
                 };
+
+                $("#selecMesAno").change(function(){
+                    document.getElementById("selecAno").value = "";
+                    document.getElementById("selecMandante").value = "";
+                    document.getElementById("selecExecutante").value = "";
+                    if(document.getElementById("selecMesAno").value != ""){
+                        window.open("modulos/conteudo/imprTarefas.php?acao=listamesTarefa&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), document.getElementById("selecMesAno").value);
+                        document.getElementById("selecMesAno").value = "";
+                        document.getElementById("relacimprTarefas").style.display = "none";
+                    }
+                });
+                $("#selecAno").change(function(){
+                    document.getElementById("selecMesAno").value = "";
+                    document.getElementById("selecMandante").value = "";
+                    document.getElementById("selecExecutante").value = "";
+                    if(document.getElementById("selecAno").value != ""){
+                        window.open("modulos/conteudo/imprTarefas.php?acao=listaanoTarefa&ano="+encodeURIComponent(document.getElementById("selecAno").value), document.getElementById("selecAno").value);
+                        document.getElementById("selecAno").value = "";
+                        document.getElementById("relacimprTarefas").style.display = "none";
+                    }
+                });
+
+                $("#selecMandante").change(function(){
+                    document.getElementById("selecMesAno").value = "";
+                    document.getElementById("selecAno").value = "";
+                    document.getElementById("selecExecutante").value = "";
+                    if(document.getElementById("selecMandante").value != ""){
+                        window.open("modulos/conteudo/imprTarefas.php?acao=listaMandante&codigo="+document.getElementById("selecMandante").value, document.getElementById("selecMandante").value);
+                        document.getElementById("selecMandante").value = "";
+                        document.getElementById("relacimprTarefas").style.display = "none";
+                    }
+                });
+                
+                $("#selecExecutante").change(function(){
+                    document.getElementById("selecMesAno").value = "";
+                    document.getElementById("selecAno").value = "";
+                    document.getElementById("selecMandante").value = "";
+                    if(document.getElementById("selecExecutante").value != ""){
+                        window.open("modulos/conteudo/imprTarefas.php?acao=listaExecutante&codigo="+document.getElementById("selecExecutante").value, document.getElementById("selecExecutante").value);
+                        document.getElementById("selecExecutante").value = "";
+                        document.getElementById("relacimprTarefas").style.display = "none";
+                    }
+                });
+                
             });
             function ajaxIni(){
                 try{
@@ -477,6 +524,12 @@ if(!isset($_SESSION["usuarioID"])){
             function fechaModalTransf(){
                 document.getElementById("relacmodalTransf").style.display = "none";
             }
+            function escImprTarefas(){
+                document.getElementById("relacimprTarefas").style.display = "block";
+            }
+            function fechaModalImpr(){
+                document.getElementById("relacimprTarefas").style.display = "none";
+            }
         </script>
     </head>
     <body>
@@ -492,19 +545,27 @@ if(!isset($_SESSION["usuarioID"])){
         $VerTarefas = parAdm("vertarefa", $Conec, $xProj); // ver tarefas   1: todos - 2: só mandante e executante
 
         //Relacionar usuários - adm <= $Adm - só paga tarefa para nível adm menor ou igual
-        $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE adm <= $Adm ORDER BY nomecompl");
-        $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE adm >= $admIns And pessoas_id != $UsuLogadoId ORDER BY nomecompl");
+        $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 And adm <= $Adm ORDER BY nomecompl");
+        $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 And adm >= $admIns And pessoas_id != $UsuLogadoId ORDER BY nomecompl");
+
+        // Preenche caixa de escolha mes/ano para impressão - ano antes para indexar primeiro pelo ano
+        $OpcoesEscMes = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".tarefas.datains)::text ||'/'|| EXTRACT(MONTH FROM ".$xProj.".tarefas.datains)::text 
+        FROM ".$xProj.".tarefas GROUP BY 1 ORDER BY 1 DESC ");
+        $OpcoesEscAno = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".tarefas.datains)::text 
+        FROM ".$xProj.".tarefas GROUP BY 1 ORDER BY 1 DESC ");
+        $OpcoesUserMand = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
+        $OpcoesUserExec = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
 
         //marca que foi visualizado nesta data - dataSit1
         pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit1 = NOW() WHERE usuexec = ".$_SESSION["usuarioID"]." And datasit1 = '3000/12/31' And ativo = 1");
-    ?>
+        ?>
         <input type="hidden" id="guardaid" value="0" />
         <input type="hidden" id="guardaidEdit" value="0" />
         <input type="hidden" id="usu_Logado_id" value="<?php echo $_SESSION["usuarioID"]; ?>" />
         <input type="hidden" id="nome_Logado" value="<?php echo $_SESSION["NomeCompl"]; ?>" />
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>" />
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir tarefas -->
-        <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" /> <!-- nível mínimo para inserir tarefas -->
+        <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" /> <!-- nível mínimo para editar tarefas -->
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
         <input type="hidden" id="guardaAtiv" value="1" /> <!-- Guarda se a tarefa foi finalizada-->
         <input type="hidden" id="guardaUsuExec" value="0" />
@@ -529,6 +590,8 @@ if(!isset($_SESSION["usuarioID"])){
                 </div> <!-- Central - espaçamento entre colunas  -->
 
                 <div class="col quadro" style="margin: 0 auto; text-align: right;">
+                    <button class="botpadrred" style="font-size: 80%;" id="botimprTarefas" onclick="escImprTarefas();">Gerar PDF</button>
+                    <label style="padding-left: 20px;"></label>
                     <button class="botpadr" id="botTransfIns" onclick="carregaTransf();" title="Transferir tarefas designadas para acompanhamento por outro usuário">Transferir</button>
                     <label style="padding-left: 20px;"></label>
                     <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpTarefas();" title="Guia rápido">
@@ -542,7 +605,7 @@ if(!isset($_SESSION["usuarioID"])){
 //            if($Adm >= $admEdit){
                 $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI')  
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
-                WHERE ".$xProj.".tarefas.ativo > 0  
+                WHERE ".$xProj.".tarefas.ativo > 0 
                 ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
             }else{
                 if($VerTarefas == 1){
@@ -897,6 +960,86 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
         </div>  <!-- Fim Modal Mensagens-->
 
+        <!-- div modal para imprimir em pdf  -->
+        <div id="relacimprTarefas" class="relacmodal">
+            <div class="modal-content-imprLeitura">
+                <span class="close" onclick="fechaModalImpr();">&times;</span>
+                <h5 id="titulomodal" style="text-align: center;color: #666;">Relatórios Tarefas</h5>
+                <div style="border: 2px solid #C6E2FF; border-radius: 10px; padding: 5px;">
+                    <table style="margin: 0 auto; width: 95%;">
+                        <tr>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Mensal - Selecione o Ano/Mês: </label></td>
+                            <td>
+                                <select id="selecMesAno" style="font-size: 1rem; width: 90px;" title="Selecione o período.">
+                                    <option value=""></option>
+                                    <?php 
+                                    if($OpcoesEscMes){
+                                        while ($Opcoes = pg_fetch_row($OpcoesEscMes)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Anual - Selecione o Ano: </label></td>
+                            <td>
+                                <select id="selecAno" style="font-size: 1rem; width: 90px;" title="Selecione o Ano.">
+                                    <option value=""></option>
+                                    <?php 
+                                    if($OpcoesEscAno){
+                                        while ($Opcoes = pg_fetch_row($OpcoesEscAno)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Mandante - Selecione o Usuário: </label></td>
+                            <td>
+                                <select id="selecMandante" style="font-size: 1rem; width: 180px;" title="Selecione o Usuário.">
+                                    <option value=""></option>
+                                    <?php 
+                                    if($OpcoesUserMand){
+                                        while ($Opcoes = pg_fetch_row($OpcoesUserMand)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Executante - Selecione o Usuário: </label></td>
+                            <td>
+                                <select id="selecExecutante" style="font-size: 1rem; width: 180px;" title="Selecione o Usuário.">
+                                    <option value=""></option>
+                                    <?php 
+                                    if($OpcoesUserExec){
+                                        while ($Opcoes = pg_fetch_row($OpcoesUserExec)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+
+                    </table>
+                </div>
+                <div style="padding-bottom: 20px;"></div>
+           </div>
+           <br><br>
+        </div> <!-- Fim Modal escolha impressão -->
 
 
         <!-- div modal para leitura instruções -->

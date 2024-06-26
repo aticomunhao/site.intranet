@@ -45,3 +45,14 @@ function parAdm($Campo, $Conec, $xProj){
    }
    return $escSis;
 }
+function escMenu($Conec, $xProj, $Cod){
+   $rsSis = pg_query($Conec, "SELECT descr FROM ".$xProj.".cesbmenu WHERE id = $Cod");
+   $row = pg_num_rows($rsSis);
+   if($row > 0){
+      $ProcSis = pg_fetch_row($rsSis);
+      $escSis = $ProcSis[0]; // nível para inserir 
+   }else{
+      $escSis = "Menu".$Cod;
+   }
+   return $escSis;
+}

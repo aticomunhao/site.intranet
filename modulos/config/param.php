@@ -18,6 +18,14 @@
             .etiq{
                 text-align: right; color: #036; font-size: .9em; font-weight: bold; padding: 3px;
             }
+            .fundoMenu{
+                border: 1px solid; border-radius: 5px; 
+                padding-left: 3px; padding-right: 3px; 
+                background-color: #BDD2FF;
+            }
+            .bordaRed{
+                border-color: red;
+            }
         </style>
 
         <script type="text/javascript">
@@ -49,6 +57,7 @@
 //                    $('#dataIniEletric3').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
 
                     $("#cardiretoria").load("modulos/config/carDir.php");
+                    $("#relmenu").load("modulos/config/relMenu.php"); // para editar menu
                 });
 
                 function salvaParam(Valor, Param){
@@ -303,7 +312,7 @@
             }
             function zeraEletric(Num, Opr){
                 $.confirm({
-                    title: 'Apagar Coleção da '+ Opr,
+                    title: 'Apagar Coleção - '+ Opr,
                     content: 'Confirma apagar todos os lançamentos do Controle do Consumo de Energia Elétrica?  Não haverá possibilidade de recuperação. Continua?',
                     autoClose: 'Não|10000',
                     draggable: true,
@@ -429,6 +438,49 @@
                 }
             }
 
+            function abreEditMenu(Cod){
+                document.getElementById("mudou").value = 0;
+                document.getElementById("guardaItemMenu").value = Cod;
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/config/registr.php?acao=buscaMenuOpr&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                document.getElementById("nomeMenu").innerHTML = Resp.valor;
+                                document.getElementById("novoNome").value = Resp.valor;
+                                document.getElementById("relacEditMenuOpr").style.display = "block";
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            } 
+
+            function salvaMenuOpr(){
+                if(parseInt(document.getElementById("mudou").value) === 1){
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/config/registr.php?acao=salvamenuOpr&codigo="+document.getElementById("guardaItemMenu").value
+                        +"&valor="+encodeURIComponent(document.getElementById("novoNome").value), true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    $("#relmenu").load("modulos/config/relMenu.php"); 
+                                    document.getElementById("relacEditMenuOpr").style.display = "none";
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                }else{
+                    document.getElementById("relacEditMenuOpr").style.display = "none";
+                }
+            }
+
             function guardaData(Valor){
                 document.getElementById("guardaData").value = Valor;
             }
@@ -441,6 +493,10 @@
             function fechaModalDir(){
                 document.getElementById("relacmodalDir").style.display = "none";
             }
+            function fechaEditMenuOpr(){
+                document.getElementById("relacEditMenuOpr").style.display = "none";
+            }
+
             function modif(){ // assinala se houve qualquer modificação nos campos do modal durante a edição para evitar salvar desnecessariamente
                 document.getElementById("mudou").value = "1";
             }
@@ -484,6 +540,10 @@
     <body>
         <?php
             require_once("abrealas.php");
+            $Menu1 = escMenu($Conec, $xProj, 1); //abre alas
+            $Menu2 = escMenu($Conec, $xProj, 2); //abre alas
+            $Menu3 = escMenu($Conec, $xProj, 3); //abre alas
+
             $rsSis = pg_query($Conec, "SELECT admvisu, admedit, admcad, insevento, editevento, instarefa, edittarefa, insramais, editramais, instelef, edittelef, 
             editpagina, insarq, insaniver, editaniver, instroca, edittroca, insocor, editocor, insleituraagua, editleituraagua, 
             TO_CHAR(datainiagua, 'DD/MM/YYYY'), valoriniagua, insleituraeletric, editleituraeletric, TO_CHAR(datainieletric, 'DD/MM/YYYY'), valorinieletric, inslro, editlro, insbens, editbens, 
@@ -684,6 +744,7 @@
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
         <input type="hidden" id="guardaAtiv" value="0" />
         <input type="hidden" id="guardaData" value="0" />
+        <input type="hidden" id="guardaItemMenu" value="0" />
         <input type="hidden" id="guardaPrazoDel" value="<?php echo $PrazoDel; ?>" />
         <div style="margin: 0 auto; margin-top: 40px; padding: 20px; border: 2px solid blue; border-radius: 15px; width: 70%; min-height: 200px;">
             <div style="text-align: center;">
@@ -882,38 +943,38 @@
                     </tr>
 
                     <tr>
-                        <td style="text-align: right; font-size: 80%; padding-right: 3px; padding-top: 10px;">Data Inicial Comunhão:</td>
+                        <td style="text-align: right; font-size: 80%; padding-right: 3px; padding-top: 10px;">Data Inicial<?php echo " - ".$Menu1.":"; ?></td>
                         <td colspan="2" style="text-align: left; font-size: 80%; padding-left: 3px; padding-top: 10px;"><input type="text" id="dataIniEletric" value="<?php echo $DataIniEletric; ?>" onchange="salvaDataIniEletric(value, 1);" onclick="guardaData(value);" style="width: 90px; text-align: center;">
                             <label style="color: gray; font-size: .8em;"><- Este é o dia da primeira leitura</label>
                         </td>
                         
                     </tr>
                     <tr>
-                        <td style="text-align: right; font-size: 80%; padding-right: 3px;">Leitura Inicial Comunhão:</td>
+                        <td style="text-align: right; font-size: 80%; padding-right: 3px;">Leitura Inicial<?php echo " - ".$Menu1.":"; ?></td>
                         <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="valorIniEletric" value="<?php echo $ValorIniEletric; ?>" onchange="salvaLeitIniEletric(value, 1);" style="width: 90px; text-align: center;"></td>
-                        <td><div style="text-align: left; font-size: 80%;"><button class="botpadr" onclick="zeraEletric(1, 'Comunhão');">Apagar Tudo da Comunhão</button></div></td>
+                        <td><div style="text-align: left; font-size: 80%;"><button class="botpadr" onclick="zeraEletric(1, '<?php echo $Menu1; ?>');">Apagar Tudo<?php echo " - ".$Menu1; ?></button></div></td>
                     </tr>
                     <tr>
-                        <td style="text-align: right; font-size: 80%; padding-right: 3px; padding-top: 10px;">Data Inicial Claro:</td>
+                        <td style="text-align: right; font-size: 80%; padding-right: 3px; padding-top: 10px;">Data Inicial<?php echo " - ".$Menu2.":"; ?></td>
                         <td colspan="2" style="text-align: left; font-size: 80%; padding-left: 3px; padding-top: 10px;"><input type="text" id="dataIniEletric2" value="<?php echo $DataIniEletric2; ?>" onchange="salvaDataIniEletric(value, 2);" onclick="guardaData(value);" style="width: 90px; text-align: center;">
                             <label style="color: gray; font-size: .8em;"><- Este é o dia da primeira leitura</label>
                         </td>
                     </tr>
                     <tr>
-                        <td style="text-align: right; font-size: 80%; padding-right: 3px;">Leitura Inicial Claro:</td>
+                        <td style="text-align: right; font-size: 80%; padding-right: 3px;">Leitura Inicial<?php echo " - ".$Menu2.":"; ?></td>
                         <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="valorIniEletric2" value="<?php echo $ValorIniEletric2; ?>" onchange="salvaLeitIniEletric(value, 2);" style="width: 90px; text-align: center;"></td>
-                        <td><div style="text-align: left; font-size: 80%;"><button class="botpadr" onclick="zeraEletric(2, 'Operadora Claro');">Apagar Tudo da Claro</button></div></td>
+                        <td><div style="text-align: left; font-size: 80%;"><button class="botpadr" onclick="zeraEletric(2, '<?php echo $Menu2; ?>');">Apagar Tudo<?php echo " - ".$Menu2; ?></button></div></td>
                     </tr>
                     <tr>
-                        <td style="text-align: right; font-size: 80%; padding-right: 3px; padding-top: 10px;">Data Inicial Oi:</td>
+                        <td style="text-align: right; font-size: 80%; padding-right: 3px; padding-top: 10px;">Data Inicial<?php echo " - ".$Menu3.":"; ?></td>
                         <td colspan="2" style="text-align: left; font-size: 80%; padding-left: 3px; padding-top: 10px;"><input type="text" id="dataIniEletric3" value="<?php echo $DataIniEletric3; ?>" onchange="salvaDataIniEletric(value, 3);" onclick="guardaData(value);" style="width: 90px; text-align: center;">
                             <label style="color: gray; font-size: .8em;"><- Este é o dia da primeira leitura</label>
                         </td>
                     </tr>
                     <tr>
-                        <td style="text-align: right; font-size: 80%; padding-right: 3px;">Leitura Inicial Oi:</td>
+                        <td style="text-align: right; font-size: 80%; padding-right: 3px;">Leitura Inicial<?php echo " - ".$Menu3.":"; ?></td>
                         <td style="text-align: left; font-size: 80%; padding-left: 3px;"><input type="text" id="valorIniEletric3" value="<?php echo $ValorIniEletric3; ?>" onchange="salvaLeitIniEletric(value, 3);" style="width: 90px; text-align: center;"></td>
-                        <td><div style="text-align: left; font-size: 80%;"><button class="botpadr" onclick="zeraEletric(3, 'Operadora SBA');">Apagar Tudo da SBA</button></div></td>
+                        <td><div style="text-align: left; font-size: 80%;"><button class="botpadr" onclick="zeraEletric(3, '<?php echo $Menu3; ?>');">Apagar Tudo<?php echo " - ".$Menu3; ?></button></div></td>
                     </tr>
                 </table>
             </div>
@@ -1210,8 +1271,33 @@
             <hr>
             <br>
 
-            <!-- Mostra as diretores e assessorias mais os seus usuários  -->
+    <!-- Mostra as diretores e assessorias mais os seus usuários  -->
             <div id="cardiretoria"></div>
+
+            <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
+                <b>Itens de Menu</b>: <label style="color: gray; font-size: .8em;">Modificações aqui vão para o menu</label><br>
+                <div id="relmenu"></div>
+            </div>
+
+    <!-- Edita descrição de alguns itens do menu  -->
+            <div id="relacEditMenuOpr" class="relacmodal">
+                <div class="modal-content-EditMenu">
+                    <span class="close" onclick="fechaEditMenuOpr();">&times;</span>
+                    <h5 id="titulomodal" style="text-align: center; color: #666;">Itens do Menu</h5>
+                        <table style="margin: 0 auto; width: 90%">
+                            <tr>
+                                <td class="etiq aDir">Menu: <label id="nomeMenu" style="text-align: center; border: 1px solid; border-radius: 5px; width: 150px;"></label></td>
+                                <td class="etiq aDir">Novo Valor: </td>
+                                <td><input type="text" id="novoNome" valor="" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 150px; text-align: left;"></td>
+                            </tr>
+                        </table>
+                        <br>
+                        <div style="text-align: center;">
+                            <button class="resetbot" style="font-size: .9rem;" onclick="salvaMenuOpr();">Salvar</button>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- Fim Modal-->
 
             <!-- Prazo para apagar registros -->
             <div style="margin: 50px; border: 3px solid red; border-radius: 20px; padding: 15px;">

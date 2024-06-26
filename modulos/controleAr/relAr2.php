@@ -56,7 +56,7 @@ date_default_timezone_set('America/Sao_Paulo');
                     <tr>
                         <th style="display: none;"></th>
                         <th title="Número do aparelho">Apar.</th>
-                        <th title="Loca de instalação do aparelho">Local</th>
+                        <th title="Local de instalação do aparelho">Local</th>
                         <th style="text-align: center;">Jan</th>
                         <th style="text-align: center;">Fev</th>
                         <th style="text-align: center;">Mar</th>

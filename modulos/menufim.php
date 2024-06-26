@@ -68,6 +68,13 @@
                 echo "Faltam tabelas. Informe à ATI.";
 				return false;
             }
+			$rs = pg_query($Conec, "SELECT column_name, data_type, character_maximum_length FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'cesbmenu'");
+            $row = pg_num_rows($rs);
+            if($row == 0){
+                $Erro = 1;
+                echo "Faltam tabelas de menu. Informe à ATI.";
+				return false;
+            }
         ?>
 		
 		<input type="hidden" id="guardadiasemana" value="<?php echo $diaSemana; ?>"/>		
@@ -122,7 +129,7 @@
 				<a href="#" onclick="openhref(36);">LRO</a>
 			</li>
             <li>
-				<a href="#" href="#" onclick="openhref(70);">Tarefas</a>
+				<a href="#" href="#" onclick="openhref(90);">Tarefas</a>
 			</li>
             <li>
 				<a href="#" href="#" onclick="openhref(80);">Trocas</a>
@@ -179,13 +186,16 @@
 								echo "<a href='#'>Eletricidade</a>";
 								echo "<ul>";
 									echo "<li>";
-									echo "<a href='#' onclick='openhref(35);'>Comunhão</a>";
+									$Menu1 = escMenu($Conec, $xProj, 1); //abre alas
+									echo "<a href='#' onclick='openhref(35);'>$Menu1</a>";
 									echo "</li>";
 									echo "<li>";
-									echo "<a href='#' onclick='openhref(67);'>Operadora Claro</a>";
+									$Menu2 = escMenu($Conec, $xProj, 2);
+									echo "<a href='#' onclick='openhref(67);'>$Menu2</a>";
 									echo "</li>";
 									echo "<li>";
-									echo "<a href='#' onclick='openhref(68);'>Operadora SBA</a>";
+									$Menu3 = escMenu($Conec, $xProj, 3);
+									echo "<a href='#' onclick='openhref(68);'>$Menu3</a>";
 									echo "</li>";
 								echo "</ul>";
 								echo "</li>";
@@ -193,12 +203,17 @@
 								echo "<a href='#'>Ar Condicionado</a>";
 									echo "<ul>";
 										echo "<li>";
-										echo "<a href='#' onclick='openhref(65);'>Controle 1</a>";
+										$Menu4 = escMenu($Conec, $xProj, 4);
+										echo "<a href='#' onclick='openhref(65);'>$Menu4</a>";
 										echo "</li>";
 										echo "<li>";
-										echo "<a href='#' onclick='openhref(69);'>Controle 2</a>";
+										$Menu5 = escMenu($Conec, $xProj, 5);
+										echo "<a href='#' onclick='openhref(69);'>$Menu5</a>";
 										echo "</li>";
-
+										echo "<li>";
+										$Menu6 = escMenu($Conec, $xProj, 6);
+										echo "<a href='#' onclick='openhref(70);'>$Menu6</a>";
+										echo "</li>";
 									echo "</ul>";
 								echo "</li>";
 							echo "</ul>";

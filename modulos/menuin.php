@@ -22,7 +22,7 @@
 				$diaSemana = 1;
 			}
 			            //Provisório
-					if($_SERVER['HTTP_HOST'] != 'www.phpini.com.br'){
+					
 						if(strtotime('2024/07/30') > strtotime(date('Y/m/d'))){
 							require_once(dirname(__FILE__)."/config/abrealas.php");
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS nomeusual VARCHAR(50)");
@@ -86,16 +86,33 @@
 
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS editpagini smallint NOT NULL DEFAULT 2;");
 							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS soinsbens smallint NOT NULL DEFAULT 0;");
-							pg_query($Conec, "UPDATE ".$xProj.".setores SET textopag = '&lt;h3 style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 20pt;&quot;&gt;Co&lt;/span&gt;&lt;span style=&quot;font-size: 20pt;&quot;&gt;munh&amp;atilde;o Esp&amp;iacute;rita de Bras&amp;iacute;lia&lt;/span&gt;&lt;/h3&gt;
-&lt;h3&gt;&lt;span style=&quot;font-size: 16pt;&quot;&gt;&lt;img style=&quot;float: left;&quot; src=&quot;itr/VPR-6672ddd854c70-Buckley_rose20.png&quot; alt=&quot;&quot; width=&quot;140&quot; height=&quot;235&quot; /&gt;&lt;/span&gt;&lt;/h3&gt;
-&lt;p style=&quot;text-align: center;&quot;&gt;&amp;nbsp;&lt;/p&gt;
-&lt;p style=&quot;text-align: center;&quot;&gt;&amp;nbsp;&lt;/p&gt;
-&lt;p style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 16pt;&quot;&gt;A Casa Esp&amp;iacute;rita de excel&amp;ecirc;ncia na sua organiza&amp;ccedil;&amp;atilde;o, na gera&amp;ccedil;&amp;atilde;o de conhecimento, na educa&amp;ccedil;&amp;atilde;o, na difus&amp;atilde;o doutrin&amp;aacute;ria, na assist&amp;ecirc;ncia espiritual e social, com est&amp;iacute;mulo &amp;agrave; viv&amp;ecirc;ncia crist&amp;atilde;.&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;&amp;nbsp;&lt;/p&gt;
-&lt;h5 style=&quot;text-align: center;&quot;&gt;&lt;span style=&quot;font-size: 20pt;&quot;&gt;Fora da caridade n&amp;atilde;o h&amp;aacute; salva&amp;ccedil;&amp;atilde;o.&lt;/span&gt;&lt;/h5&gt;
-&lt;p&gt;&amp;nbsp;&lt;/p&gt;' WHERE codset = 1 And textopag = ''");
-						}
-					}
+
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS arcond2 smallint NOT NULL DEFAULT 0;");
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS arcond3 smallint NOT NULL DEFAULT 0;");
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".empresas_ar ADD COLUMN IF NOT EXISTS valorvisita double precision NOT NULL DEFAULT 0;");
+							pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS tempototal VARCHAR(100);");
+							
+
+							pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".cesbmenu (
+								id SERIAL PRIMARY KEY, 
+								descr VARCHAR(100), 
+								ativo smallint NOT NULL DEFAULT 1,
+							   	usumodif bigint NOT NULL DEFAULT 0,
+   								datamodif timestamp without time zone DEFAULT '3000-12-31'
+								)
+							 ");
+							 $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".cesbmenu LIMIT 2");
+							 $row = pg_num_rows($rs);
+							 if($row == 0){
+							 	pg_query($Conec, "INSERT INTO ".$xProj.".cesbmenu (id, descr) VALUES (1, 'Comunhão') ");
+								pg_query($Conec, "INSERT INTO ".$xProj.".cesbmenu (id, descr) VALUES (2, 'Operadora Claro') ");
+								pg_query($Conec, "INSERT INTO ".$xProj.".cesbmenu (id, descr) VALUES (3, 'Operadora SBA') ");
+								pg_query($Conec, "INSERT INTO ".$xProj.".cesbmenu (id, descr) VALUES (4, 'Controle Ar Cond 1') ");
+								pg_query($Conec, "INSERT INTO ".$xProj.".cesbmenu (id, descr) VALUES (5, 'Controle Ar Cond 2') ");
+								pg_query($Conec, "INSERT INTO ".$xProj.".cesbmenu (id, descr) VALUES (6, 'Controle Ar Cond 3') ");
+							 }
+						} // fim data limite
+			
         ?>
 		<!-- menu para a página inicial  -->
         <ul id="example" class="sf-menu sf-js-enabled sf-arrows sf-menu-dia<?php echo $diaSemana; ?> ">
