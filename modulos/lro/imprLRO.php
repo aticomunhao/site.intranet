@@ -50,7 +50,8 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->SetFont('Arial','' , 14); 
     $pdf->Cell(150, 5, $Cabec1, 0, 2, 'C');
     $pdf->SetFont('Arial','' , 12); 
-    $pdf->Cell(150, 5, $Cabec2, 0, 2, 'C');
+//    $pdf->Cell(150, 5, $Cabec2, 0, 2, 'C');
+    $pdf->Cell(150, 5, 'Diretoria Administrativa e Financeira', 0, 2, 'C');
     $pdf->SetFont('Arial','' , 10); 
     $pdf->Cell(150, 5, $Cabec3, 0, 2, 'C');
     $pdf->SetFont('Arial', '' , 10);
@@ -69,7 +70,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
     $rs = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, numrelato, to_char(".$xProj.".livroreg.datains, 'DD/MM/YYYY'), turno, descturno, nomecompl, usuant, relato, ocor 
     FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id
-    WHERE ".$xProj.".livroreg.ativo = 1 ORDER BY ".$xProj.".livroreg.datains DESC ");
+    WHERE ".$xProj.".livroreg.ativo = 1 ORDER BY ".$xProj.".livroreg.dataocor DESC, ".$xProj.".livroreg.turno DESC, ".$xProj.".livroreg.datains DESC ");
     $row = pg_num_rows($rs);
 
     if($row > 0){
@@ -78,8 +79,8 @@ if(!isset($_SESSION['AdmUsu'])){
         $pdf->Cell(20, 4, "Número", 0, 0, 'L');
         $pdf->Cell(20, 4, "Data", 0, 0, 'L');
         $pdf->Cell(25, 4, "Turno", 0, 0, 'L');
-        $pdf->Cell(70, 4, "Nome", 0, 0, 'L');
-        $pdf->Cell(50, 4, "Relato", 0, 1, 'L');
+        $pdf->Cell(80, 4, "Nome", 0, 0, 'L');
+        $pdf->Cell(50, 4, "Ocorrência", 0, 1, 'L');
 
         $lin = $pdf->GetY();
         $pdf->Line(10, $lin, 200, $lin);
@@ -93,7 +94,6 @@ if(!isset($_SESSION['AdmUsu'])){
             $CodAnt = $tbl[6];
             $Relato = $tbl[7];
             $Ocor = $tbl[8];
-
 
             $rs0 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodAnt ");
             $tbl0 = pg_fetch_row($rs0);
@@ -113,16 +113,26 @@ if(!isset($_SESSION['AdmUsu'])){
             }
 
             $pdf->SetX(15);
-            $pdf->Cell(20, 5, $NumRelat, 0, 0, 'L');
+            if(strlen($NumRelat) > 9){
+                $pdf->SetTextColor(255, 0, 0); // vermelho
+                $pdf->Cell(20, 5, substr($NumRelat, 0, 9), 0, 0, 'L');
+                $pdf->SetTextColor(0, 0, 0);
+            }else{
+                $pdf->Cell(20, 5, $NumRelat, 0, 0, 'L');
+            }
+            
             $pdf->Cell(20, 5, $DataIns, 0, 0, 'L');
             $pdf->Cell(25, 5, $DescTurno, 0, 0, 'L');
-            $pdf->Cell(70, 5, substr($NomeUsu, 0, 70), 0, 0, 'L');
             if($Ocor == 0){
+                $pdf->Cell(80, 5, substr($NomeUsu, 0, 80), 0, 0, 'L');
                 $pdf->Cell(30, 5, "Não houve.", 0, 1, 'L');
             }else{
-                $pdf->Cell(30, 5, substr($Relato, 0, 30), 0, 1, 'L');
-                $pdf->SetX(85);
-                $pdf->MultiCell(0, 4, substr($Relato, 31), 0, 'J', false); //relato
+                $pdf->Cell(80, 5, $NomeUsu, 0, 0, 'L');
+                $pdf->Cell(30, 5, "", 0, 1, 'L');
+                $pdf->SetX(80);
+                $pdf->SetFont('Arial', '', 8);
+                $pdf->MultiCell(0, 4, "-Relato: ".$Relato, 0, 'J', false); //relato
+                $pdf->SetFont('Arial', '', 9);
             }
             $lin = $pdf->GetY();
             $pdf->Line(10, $lin, 200, $lin);

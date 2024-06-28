@@ -87,34 +87,38 @@
             <li>
 				<a href="#" onclick="openhref(54);">Organograma</a>
 			</li>
-            <li class="current">
-				<a href="#">Diretorias</a>
+			<li>
+				<a href="#">Setores</a>
 				<ul>
-					<?php
-						$Cont = 101;
-						$rs1 = pg_query($Conec, "SELECT codset, siglasetor, descsetor FROM ".$xProj.".setores WHERE menu = 1 And ativo = 1 ORDER BY codset");
-						while($tbl1 = pg_fetch_row($rs1)){
-							echo "<li><a href='#' onclick='openhrefDir($tbl1[0]);'>$tbl1[1] - $tbl1[2]</a></li>";
-							$Cont = $Cont+100;
-						}
-					?>
-
+					<li>
+						<a href="#">Diretorias</a>
+						<ul>
+							<?php
+								$Cont = 101;
+								$rs1 = pg_query($Conec, "SELECT codset, siglasetor, descsetor FROM ".$xProj.".setores WHERE menu = 1 And ativo = 1 ORDER BY codset");
+								while($tbl1 = pg_fetch_row($rs1)){
+									echo "<li><a href='#' onclick='openhrefDir($tbl1[0]);'>$tbl1[1] - $tbl1[2]</a></li>";
+									$Cont = $Cont+100;
+								}
+							?>
+						</ul>
+					</li>
+					<li>
+						<a href="#">Assessorias</a>
+						<ul>
+							<?php
+								$Cont = 901;
+								$rs2 = pg_query($Conec, "SELECT codset, siglasetor, descsetor FROM ".$xProj.".setores WHERE menu = 2 And ativo = 1 ORDER BY codset");
+								while($tbl2 = pg_fetch_row($rs2)){
+									echo "<li><a href='#' onclick='openhrefDir($tbl2[0]);'>$tbl2[1] - $tbl2[2]</a></li>";
+									$Cont++;
+								}
+							?>
+						</ul>
+					</li>
 				</ul>
 			</li>
-            <li class="current">
-				<a href="#">Assessorias</a>
-				<ul>
-					<?php
-						$Cont = 901;
-						$rs2 = pg_query($Conec, "SELECT codset, siglasetor, descsetor FROM ".$xProj.".setores WHERE menu = 2 And ativo = 1 ORDER BY codset");
-						while($tbl2 = pg_fetch_row($rs2)){
-							echo "<li><a href='#' onclick='openhrefDir($tbl2[0]);'>$tbl2[1] - $tbl2[2]</a></li>";
-							$Cont++;
-						}
-					?>
-				</ul>
-			</li>
-            <li>
+             <li>
 				<a href="#">Telefones</a>
 				<ul>
 					<li>
@@ -134,8 +138,53 @@
             <li>
 				<a href="#" href="#" onclick="openhref(80);">Trocas</a>
 			</li>
+			<li>
+				<a href="#">Controles</a>
+				<ul>
+					<li>
+						<a href='#' onclick='openhref(34);'>Água</a>
+					</li>
+					<li>
+						<a href='#'>Eletricidade</a>
+						<ul>
+							<?php
+								echo "<li>";
+								$Menu1 = escMenu($Conec, $xProj, 1); //abre alas
+								echo "<a href='#' onclick='openhref(35);'>$Menu1</a>";
+								echo "</li>";
+								echo "<li>";
+								$Menu2 = escMenu($Conec, $xProj, 2);
+								echo "<a href='#' onclick='openhref(67);'>$Menu2</a>";
+								echo "</li>";
+								echo "<li>";
+								$Menu3 = escMenu($Conec, $xProj, 3);
+								echo "<a href='#' onclick='openhref(68);'>$Menu3</a>";
+								echo "</li>";
+							?>
+						</ul>
+					</li>
+					<li>
+						<a href='#'>Ar Condicionado</a>
+						<ul>
+							<?php
+								echo "<li>";
+								$Menu4 = escMenu($Conec, $xProj, 4);
+								echo "<a href='#' onclick='openhref(65);'>$Menu4</a>";
+								echo "</li>";
+								echo "<li>";
+								$Menu5 = escMenu($Conec, $xProj, 5);
+								echo "<a href='#' onclick='openhref(69);'>$Menu5</a>";
+								echo "</li>";
+								echo "<li>";
+								$Menu6 = escMenu($Conec, $xProj, 6);
+								echo "<a href='#' onclick='openhref(70);'>$Menu6</a>";
+								echo "</li>";
+							?>
+						</ul>
+					</li>
+				</ul>
+			</li>
 			<?php
-
 				echo "<li>";
 					echo "<a href='#'>Ferramentas</a>";
 					echo "<ul>";
@@ -153,7 +202,6 @@
 								echo "</ul>";
 							echo "</li>";
 						}
-
 						echo "<li>";
 							echo "<a href='#' onclick='openhref(59);'>Aniversariantes</a>";
 						echo "</li>";
@@ -176,48 +224,7 @@
 							echo "<a href='#' onclick='openhref(63);'>Calendário</a>";
 						echo "</li>";
 
-						echo "<li>";
-							echo "<a href='#'>Controles</a>";
-							echo "<ul>";
-								echo "<li>";
-								echo "<a href='#' onclick='openhref(34);'>Água</a>";
-								echo "</li>";
-								echo "<li>";
-								echo "<a href='#'>Eletricidade</a>";
-								echo "<ul>";
-									echo "<li>";
-									$Menu1 = escMenu($Conec, $xProj, 1); //abre alas
-									echo "<a href='#' onclick='openhref(35);'>$Menu1</a>";
-									echo "</li>";
-									echo "<li>";
-									$Menu2 = escMenu($Conec, $xProj, 2);
-									echo "<a href='#' onclick='openhref(67);'>$Menu2</a>";
-									echo "</li>";
-									echo "<li>";
-									$Menu3 = escMenu($Conec, $xProj, 3);
-									echo "<a href='#' onclick='openhref(68);'>$Menu3</a>";
-									echo "</li>";
-								echo "</ul>";
-								echo "</li>";
-								echo "<li>";
-								echo "<a href='#'>Ar Condicionado</a>";
-									echo "<ul>";
-										echo "<li>";
-										$Menu4 = escMenu($Conec, $xProj, 4);
-										echo "<a href='#' onclick='openhref(65);'>$Menu4</a>";
-										echo "</li>";
-										echo "<li>";
-										$Menu5 = escMenu($Conec, $xProj, 5);
-										echo "<a href='#' onclick='openhref(69);'>$Menu5</a>";
-										echo "</li>";
-										echo "<li>";
-										$Menu6 = escMenu($Conec, $xProj, 6);
-										echo "<a href='#' onclick='openhref(70);'>$Menu6</a>";
-										echo "</li>";
-									echo "</ul>";
-								echo "</li>";
-							echo "</ul>";
-						echo "</li>";
+
 
 						if($_SESSION["AdmUsu"] > 6){ // superusuário
 							echo "<li>";
@@ -237,7 +244,6 @@
 						}
 					echo "</ul>";
 				echo "</li>";
-
 			?>
 
             <li style="border-right: 0; border-left: 0px;">

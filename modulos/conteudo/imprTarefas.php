@@ -188,8 +188,8 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->SetFont('Arial','' , 14); 
     $pdf->Cell(150, 5, $Cabec1, 0, 2, 'C');
     $pdf->SetFont('Arial','' , 12); 
-//    $pdf->Cell(150, 5, $Cabec2, 0, 2, 'C');
-    $pdf->Cell(150, 5, 'Diretoria Administrativa e Financeira', 0, 2, 'C');
+    $pdf->Cell(150, 5, $Cabec2, 0, 2, 'C');
+//    $pdf->Cell(150, 5, 'Diretoria Administrativa e Financeira', 0, 2, 'C');
     $pdf->SetFont('Arial','' , 10); 
     $pdf->Cell(150, 5, $Cabec3, 0, 2, 'C');
 
@@ -198,7 +198,7 @@ if(!isset($_SESSION['AdmUsu'])){
     }else if($Acao == "listaExecutante"){
         $pdf->MultiCell(150, 3, "Relação Individual de Tarefas Recebidas", 0, 'C', false);
     }else{
-        $pdf->MultiCell(150, 3, "Relação de Tarefas", 0, 'C', false);
+        $pdf->MultiCell(150, 3, "Tarefas", 0, 'C', false);
     }
     $pdf->SetDrawColor(0);
     $pdf->SetTextColor(0, 0, 0);
@@ -207,11 +207,11 @@ if(!isset($_SESSION['AdmUsu'])){
     $lin = $pdf->GetY();
     $pdf->Line(10, $lin, 200, $lin);
 
-    if($Acao == "listamesTarefa" || $Acao == "listaanoTarefa" || $Acao == "listaMandante" || $Acao == "listaExecutante"){
+    if($Acao == "listamesTarefa" || $Acao == "listaanoTarefa" || $Acao == "listaMandante" || $Acao == "listaExecutante" || $Acao == "listaSitTarefa"){
         $pdf->ln();
         $pdf->SetFont('Arial', 'I', 14);
         $pdf->SetX(30);
-        if($Acao == "listamesTarefa"){ 
+        if($Acao == "listamesTarefa"){
             $Busca = addslashes(filter_input(INPUT_GET, 'mesano')); 
             $Proc = explode("/", $Busca);
             $Mes = $Proc[1];
@@ -284,6 +284,44 @@ if(!isset($_SESSION['AdmUsu'])){
             WHERE ".$xProj.".tarefas.ativo != 0 And ".$xProj.".poslog.pessoas_id = $CodUsu "); 
         }
 
+        if($Acao == "listaSitTarefa"){ 
+            $Sit = (int) filter_input(INPUT_GET, 'numero');
+            if($Sit == 1){
+                $Desc = "Designada";
+            }
+            if($Sit == 2){
+                $Desc = "Aceita";
+            }
+            if($Sit == 3){
+                $Desc = "em Andamento";
+            }
+            if($Sit == 4){
+                $Desc = "Terminada";
+            }
+
+            $pdf->SetTitle('Relação de Tarefas', $isUTF8=TRUE);
+            $pdf->SetFont('Arial', 'I', 14);
+            $pdf->MultiCell(0, 5, "Tarefas na fase: ".$Desc, 0, 'C', false);
+            $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And sit = $Sit");
+            $tblCont = pg_fetch_row($rsCont);
+            $pdf->SetTextColor(120, 120, 120);  
+            $pdf->SetFont('Arial', 'I', 9);
+            $pdf->SetX(30);
+            $pdf->MultiCell(0, 3, $tblCont[0]." tarefas", 0, 'C', false);
+            $pdf->SetTextColor(0, 0, 0);
+
+            $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl  
+            FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
+            WHERE ".$xProj.".tarefas.ativo != 0 And sit = $Sit 
+            GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl 
+            ORDER BY ".$xProj.".poslog.nomecompl");        
+
+            $pdf->ln(3);
+            $pdf->SetDrawColor(0);
+            $lin = $pdf->GetY();
+            $pdf->Line(10, $lin, 200, $lin);
+        }
+
         $row1 = pg_num_rows($rs1);
         if($row1 > 0){
             $pdf->SetFont('Arial','' , 10); 
@@ -340,7 +378,19 @@ if(!isset($_SESSION['AdmUsu'])){
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), 
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
-                    WHERE ".$xProj.".tarefas.usuexec = $CodUsu And  ".$xProj.".tarefas.ativo != 0 
+                    WHERE ".$xProj.".tarefas.usuexec = $CodUsu And ".$xProj.".tarefas.ativo != 0 
+                    ORDER BY ".$xProj.".tarefas.datains DESC");
+                }
+
+                if($Acao == "listaSitTarefa"){ 
+                    $rs2 = pg_query($Conec, "SELECT usuexec, tittarefa, nomecompl, TO_CHAR(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI'), TO_CHAR(".$xProj.".tarefas.datasit1, 'DD/MM/YYYY HH24:MI'), TO_CHAR(".$xProj.".tarefas.datasit2, 'DD/MM/YYYY HH24:MI'), TO_CHAR(".$xProj.".tarefas.datasit3, 'DD/MM/YYYY HH24:MI'), TO_CHAR(".$xProj.".tarefas.datasit4, 'DD/MM/YYYY HH24:MI'), 
+                    EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit1, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit1, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit1, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit1, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit1, ".$xProj.".tarefas.datains)), 
+                    EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), 
+                    EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), 
+                    EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), 
+                    EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio 
+                    FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id
+                    WHERE ".$xProj.".tarefas.usuins = $Cod And sit = $Sit and ".$xProj.".tarefas.ativo != 0 
                     ORDER BY ".$xProj.".tarefas.datains DESC");
                 }
 
@@ -354,6 +404,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $pdf->Cell(9, 5, "para: ", 0, 0, 'L');
                         $pdf->SetFont('Arial', 'B' , 10); 
                     }
+                    
                     $pdf->Cell(0, 5, $tbl2[2], 0, 1, 'L');
                     switch ($tbl2[33]){
                         case 0:
@@ -477,7 +528,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
                     $pdf->SetFont('Arial', '' , 10); 
                     $pdf->SetX(40);
-                    $pdf->Cell(25, 4, "Quantidade de Tarefas executadas:  ".$NumTar, 0, 1, 'L');
+                    $pdf->Cell(25, 4, "Quantidade de Tarefas terminadas:  ".$NumTar, 0, 1, 'L');
 
                     if($NumTar > 0){
                         $pdf->SetX(40);
@@ -498,14 +549,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $pdf->SetX(40);
                     $pdf->SetFont('Arial', 'B' , 10); 
                     $pdf->Cell(0, 5, $tbl6[0], 0, 1, 'L'); //nome
-
                     $pdf->SetFont('Arial', '' , 10); 
                     $pdf->SetX(40);
-                    $pdf->Cell(55, 4, "Quantidade de Tarefas expedidas:", 0, 0, 'L');
-                    $pdf->Cell(15, 4, $NumTar, 0, 1, 'R');
-                    $pdf->SetX(40);
-                    $pdf->Cell(55, 4, "Quantidade de Tarefas cumpridas:", 0, 0, 'L');
-                    $pdf->Cell(15, 4, $NumTarTerm, 0, 1, 'R');
+                    $pdf->Cell(85, 4, "Quantidade de Tarefas expedidas:", 0, 0, 'L');
+                    $pdf->Cell(15, 4, number_format($NumTar, 0, ",",".")."    (".$NumTarTerm." terminadas)", 0, 1, 'R');
                 }
             }
         }else{
@@ -514,5 +561,197 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->Cell(20, 4, "Nenhum registro encontrado.", 0, 1, 'L');
         }
     }
+    if($Acao == "estatTarefas"){
+        $pdf->SetTitle('Relatório Anual', $isUTF8=TRUE);
+        $pdf->ln();
+        $pdf->SetFont('Arial', 'I', 12);
+        $pdf->MultiCell(0, 5, "Relatório Anual de Tarefas Expedidas", 0, 'C', false);
+
+        $rs0 = pg_query($Conec, "SELECT DATE_PART('YEAR', datains) FROM ".$xProj.".tarefas WHERE ativo != 0 
+        GROUP BY DATE_PART('YEAR', datains) ORDER BY DATE_PART('YEAR', datains) DESC");
+        $row0 = pg_num_rows($rs0);
+        if($row0 > 0){
+            while($tbl0 = pg_fetch_row($rs0)){
+                $pdf->ln(5);
+                $AnoTar = $tbl0[0];
+
+                $pdf->SetX(40);
+                $pdf->SetFont('Arial', 'BU' , 10); 
+                $pdf->Cell(0, 5, $tbl0[0], 0, 1, 'L'); //Ano
+                
+                $rs1 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar'");
+                $tbl1 = pg_fetch_row($rs1);
+                $pdf->SetFont('Arial', '' , 10); 
+                $pdf->SetX(50);
+                $pdf->Cell(55, 5, "Tarefas expedidas: ", 0, 0, 'L');
+                $pdf->SetFont('Arial', 'B' , 10); 
+                $pdf->Cell(10, 5, number_format($tbl1[0], 0, ",","."), 0, 1, 'R');
+
+                $pdf->ln(2);
+                $pdf->SetX(50);
+                $pdf->SetFont('Arial', '' , 8); 
+                $pdf->Cell(50, 4, "Prioridades: ", 0, 1, 'L');
+
+                $rsP1 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 0");
+                $tblP1 = pg_fetch_row($rsP1);
+                $pdf->SetFont('Arial', '' , 10); 
+                $pdf->SetX(55);
+                $pdf->Cell(50, 4, "Urgentes: ", 0, 0, 'L');
+                $pdf->SetFont('Arial', 'B' , 10); 
+                $pdf->Cell(10, 4, number_format($tblP1[0], 0, ",","."), 0, 1, 'R');
+
+                $rsP2 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 1");
+                $tblP2 = pg_fetch_row($rsP2);
+                $pdf->SetFont('Arial', '' , 10); 
+                $pdf->SetX(55);
+                $pdf->Cell(50, 4, "Muito Importantes: ", 0, 0, 'L');
+                $pdf->SetFont('Arial', 'B' , 10); 
+                $pdf->Cell(10, 4, number_format($tblP2[0], 0, ",","."), 0, 1, 'R');
+
+                $rsP3 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 2");
+                $tblP3 = pg_fetch_row($rsP3);
+                $pdf->SetFont('Arial', '' , 10); 
+                $pdf->SetX(55);
+                $pdf->Cell(50, 4, "Importantes: ", 0, 0, 'L');
+                $pdf->SetFont('Arial', 'B' , 10); 
+                $pdf->Cell(10, 4, number_format($tblP3[0], 0, ",","."), 0, 1, 'R');
+
+                $rsP4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 3");
+                $tblP4 = pg_fetch_row($rsP4);
+                $pdf->SetFont('Arial', '' , 10); 
+                $pdf->SetX(55);
+                $pdf->Cell(50, 4, "Nomais: ", 0, 0, 'L');
+                $pdf->SetFont('Arial', 'B' , 10); 
+                $pdf->Cell(10, 4, number_format($tblP4[0], 0, ",","."), 0, 1, 'R');
+
+
+                $pdf->ln(2);
+                $pdf->SetX(50);
+                $pdf->SetFont('Arial', '' , 8); 
+                $pdf->Cell(50, 4, "Situação: ", 0, 1, 'L');
+
+                $rs2 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 1");
+                $tbl2 = pg_fetch_row($rs2);
+                $pdf->SetFont('Arial', '' , 10); 
+                $pdf->SetX(55);
+                $pdf->Cell(50, 4, "Tarefas Designadas: ", 0, 0, 'L');
+                $pdf->SetFont('Arial', 'B' , 10); 
+                $pdf->Cell(10, 4, number_format($tbl2[0], 0, ",","."), 0, 1, 'R');
+
+
+                $rs3 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 2");
+                $tbl3 = pg_fetch_row($rs3);
+                $pdf->SetFont('Arial', '' , 10); 
+                $pdf->SetX(55);
+                $pdf->Cell(50, 4, "Tarefas Aceitas: ", 0, 0, 'L');
+                $pdf->SetFont('Arial', 'B' , 10); 
+                $pdf->Cell(10, 4, number_format($tbl3[0], 0, ",","."), 0, 1, 'R');
+
+
+                $rs4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 3");
+                $tbl4 = pg_fetch_row($rs4);
+                $pdf->SetFont('Arial', '' , 10); 
+                $pdf->SetX(55);
+                $pdf->Cell(50, 4, "Tarefas em Andamento: ", 0, 0, 'L');
+                $pdf->SetFont('Arial', 'B' , 10); 
+                $pdf->Cell(10, 4, number_format($tbl4[0], 0, ",","."), 0, 1, 'R');
+
+
+                $rs5 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4");
+                $tbl5 = pg_fetch_row($rs5);
+                $pdf->SetFont('Arial', '' , 10); 
+                $pdf->SetX(55);
+                $pdf->Cell(50, 4, "Tarefas Terminadas: ", 0, 0, 'L');
+                $pdf->SetFont('Arial', 'B' , 10); 
+                $pdf->Cell(10, 4, number_format($tbl5[0], 0, ",","."), 0, 0, 'R');
+                $pdf->SetFont('Arial', '' , 10); 
+
+                $Ano = 0;
+                $Mes = 0;
+                $Dia = 0;
+                $Hor = 0;
+                $Min = 0;
+                $rsCalc = pg_query($Conec, "SELECT tempototal FROM ".$xProj.".tarefas WHERE DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And ativo != 0 And tempototal IS NOT NULL");
+                $rowCalc = pg_num_rows($rsCalc);
+
+                while($tblCalc = pg_fetch_row($rsCalc)){
+                    if(!is_null($tblCalc[0])){
+                        $e = explode(';', $tblCalc[0]);
+                        $Ano = $Ano+$e[0];
+                        $Mes = $Mes+$e[1];
+                        $Dia = $Dia+$e[2];
+                        $Hor = $Hor+$e[3];
+                        $Min = $Min+$e[4];
+                    }
+                }
+                if($rowCalc > 0){
+                    $pdf->SetFont('Arial', '' , 8); 
+                    $pdf->Cell(25, 4, "  Tempo médio: ".CalcMedia($Ano, $Mes, $Dia, $Hor, $Min, $rowCalc), 0, 0, 'L');
+                }
+                $pdf->Cell(25, 4, "", 0, 1, 'L');
+                $pdf->SetFont('Arial', '' , 8); 
+
+                $pdf->ln(7);
+                $rs6 = pg_query($Conec, "SELECT TO_CHAR(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI'), TO_CHAR((CURRENT_DATE - ".$xProj.".tarefas.datains), 'DD'), tittarefa, ".$xProj.".poslog.nomecompl, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.sit 
+                FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id 
+                WHERE DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 ORDER BY (CURRENT_DATE - ".$xProj.".tarefas.datains) DESC");
+                $row6 = pg_num_rows($rs6);
+                if($row6 > 0){
+                    $pdf->SetX(50);
+                    $pdf->SetFont('Arial', '' , 8); 
+                    $pdf->Cell(50, 4, "Tarefas em aberto a: ", 0, 1, 'L');
+                    $pdf->ln(1);
+                    while($tbl6 = pg_fetch_row($rs6)){
+                        $UsuIns = $tbl6[4];
+                        $rs7 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $UsuIns");
+                        $tbl7 = pg_fetch_row($rs7);
+                        $NomeUsuIns = $tbl7[0];
+                        if($tbl6[5] == 1){
+                            $DescSit = "Designada";
+                        }
+                        if($tbl6[5] == 2){
+                            $DescSit = "Aceita";
+                        }
+                        if($tbl6[5] == 3){
+                            $DescSit = "em Andamento";
+                        }
+
+                        $pdf->SetX(41);
+                        $pdf->Cell(30, 4, number_format($tbl6[1], 0, ",",".")." dias", 0, 0, 'R');
+
+                        $pdf->Cell(0, 4, "para ".$tbl6[3], 0, 1, 'L');
+
+                        $pdf->SetX(71);
+                        $pdf->MultiCell(0, 3, "Expedida em ".$tbl6[0]." por ".$NomeUsuIns, 0, 'L', false);
+                        $pdf->SetX(71);
+                        $pdf->MultiCell(0, 3, "Situação: ".$DescSit, 0, 'L', false);
+                        $pdf->SetX(71);
+                        $pdf->MultiCell(0, 3, "Tarefa: ".$tbl6[2], 0, 'L', false);
+                        $pdf->ln(1);
+                    }
+                }else{
+                    $pdf->SetX(50);
+                    $pdf->SetFont('Arial', '' , 8); 
+                    $pdf->Cell(50, 4, "Tarefas em aberto:", 0, 1, 'L');
+                    $pdf->SetX(60);
+                    $pdf->Cell(50, 4, "Nenhum registro.", 0, 1, 'L');
+                    $pdf->ln(1);
+                }
+
+                $pdf->ln(5);
+                $pdf->SetDrawColor(0);
+                $lin = $pdf->GetY();
+                $pdf->Line(10, $lin, 200, $lin);
+            }
+        }else{
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->ln(10);
+            $pdf->MultiCell(0, 5, 'Nenhum registro encontrado', 0, 'C', false);
+        }
+
+ 
+
+    }
+
     $pdf->Output();
 }

@@ -84,7 +84,7 @@ if($Acao=="buscaTarefa"){
         }
         $row = pg_num_rows($Sql);
         $tbl = pg_fetch_row($Sql);
-        $usuIns = $tbl[2];
+        $usuIns = $tbl[1];
         $var = array("coderro"=>$Erro, "usuExec"=>$tbl[3], "usuIns"=>$usuIns, "NomeUsuIns"=>$usuIns, "TitTarefa"=>$tbl[4], "TextoTarefa"=>$tbl[5], "Usuario"=>$tbl[1], "sit"=>$tbl[6], "priorid"=>$tbl[7]);
     }
     $responseText = json_encode($var);

@@ -56,6 +56,17 @@ if(!isset($_SESSION["usuarioID"])){
                 border: 3px solid blue;
                 background-color: #C6E2FF;
             }
+            .divbot{ /* botão */
+                border: 1px solid blue;
+                background-color: blue;
+                color: white;
+                cursor: pointer;
+                border-radius: 10px; 
+                padding-left: 10px; 
+                padding-right: 10px;
+                font-size: 80%;
+                text-align: center;
+            }
             .relacmodal{
                display: none; /* oculto default */
                 position: fixed;
@@ -156,6 +167,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("selecMesAno").value = "";
                     document.getElementById("selecMandante").value = "";
                     document.getElementById("selecExecutante").value = "";
+                    document.getElementById("selecsit").value = "";
                     if(document.getElementById("selecAno").value != ""){
                         window.open("modulos/conteudo/imprTarefas.php?acao=listaanoTarefa&ano="+encodeURIComponent(document.getElementById("selecAno").value), document.getElementById("selecAno").value);
                         document.getElementById("selecAno").value = "";
@@ -167,6 +179,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("selecMesAno").value = "";
                     document.getElementById("selecAno").value = "";
                     document.getElementById("selecExecutante").value = "";
+                    document.getElementById("selecsit").value = "";
                     if(document.getElementById("selecMandante").value != ""){
                         window.open("modulos/conteudo/imprTarefas.php?acao=listaMandante&codigo="+document.getElementById("selecMandante").value, document.getElementById("selecMandante").value);
                         document.getElementById("selecMandante").value = "";
@@ -178,14 +191,30 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("selecMesAno").value = "";
                     document.getElementById("selecAno").value = "";
                     document.getElementById("selecMandante").value = "";
+                    document.getElementById("selecsit").value = "";
                     if(document.getElementById("selecExecutante").value != ""){
                         window.open("modulos/conteudo/imprTarefas.php?acao=listaExecutante&codigo="+document.getElementById("selecExecutante").value, document.getElementById("selecExecutante").value);
                         document.getElementById("selecExecutante").value = "";
                         document.getElementById("relacimprTarefas").style.display = "none";
                     }
                 });
-                
+                $("#selecsit").change(function(){
+                    document.getElementById("selecAno").value = "";
+                    document.getElementById("selecMesAno").value = "";
+                    document.getElementById("selecMandante").value = "";
+                    document.getElementById("selecExecutante").value = "";
+                    if(document.getElementById("selecsit").value != ""){
+                        window.open("modulos/conteudo/imprTarefas.php?acao=listaSitTarefa&numero="+document.getElementById("selecsit").value, document.getElementById("selecsit").value);
+                        document.getElementById("selecsit").value = "";
+                        document.getElementById("relacimprTarefas").style.display = "none";
+                    }
+                });
             });
+            function relatTarefas(){
+                window.open("modulos/conteudo/imprTarefas.php?acao=estatTarefas", "Estaristica");
+                document.getElementById("relacimprTarefas").style.display = "none";
+            }
+
             function ajaxIni(){
                 try{
                 ajax = new ActiveXObject("Microsoft.XMLHTTP");}
@@ -263,7 +292,8 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(document.getElementById("usu_Logado_id").value) === parseInt(Resp.usuIns)){ // se for o usuário que inseriu a tarefa
                                     document.getElementById("selectStatus").disabled = false;
                                     document.getElementById("botapagar").style.visibility = "visible";
-                                }document.getElementById("titulomodal").innerHTML = "Edição de Tarefa";
+                                }
+                                document.getElementById("titulomodal").innerHTML = "Edição de Tarefa";
                                 document.getElementById("labelnomeIns").innerHTML = "Inserida por: "+Resp.NomeUsuIns;
                                 document.getElementById("relacmodalTarefa").style.display = "block";
                                 document.getElementById("textoEvid").focus();
@@ -695,21 +725,20 @@ if(!isset($_SESSION["usuarioID"])){
                         }
 
                         echo "<tr>";  //Primeira coluna à esquerda - data e nomes
-                        echo "<td style='vertical-align: top;'><div style='padding-bottom: 8px; padding-top: 2px; color: #808080;'><sup>Em $DataInsert para:</sup></div>";
+                        echo "<td style='vertical-align: top;'><div style='padding-bottom: 8px; padding-top: 2px;' title='Tarefa expedida para $NomeExec'><sub>Em $DataInsert para:</sub></div>";
                             echo "<div class='etiqLat'>" . $NomeExec;
-                            echo "<div style='position: relative; top: -10px; font-size: .5em; text-align: center;'> <sub>Ciência: " . $DataVisu . "</sub></div>";
-                            if($DataSit2 != "31/12/3000 00:00"){
-                                echo "<div style='position: relative; top: -13px; font-size: .5em; text-align: center;'> <sub>Aceita: " . $DataSit2 . "</sub></div>";
-                            }
-                            if($DataSit3 != "31/12/3000 00:00"){
-                                echo "<div style='position: relative; top: -13px; font-size: .5em; text-align: center;'> <sub>Andamento: " . $DataSit3 . "</sub></div>";
-                            }
-                            if($DataSit4 != "31/12/3000 00:00"){
-                                echo "<div style='position: relative; top: -13px; font-size: .5em; text-align: center; color: blue;'> <sub>Terminada: " . $DataSit4 . "</sub></div>";
-                            }
-
-                        echo "</div>";
-                        echo "<div><sub>Pedido de: " . $NomeIns . "</sub></div>";
+                                echo "<div style='position: relative; top: -10px; font-size: .5em; text-align: center;'> <sub>Ciência: " . $DataVisu . "</sub></div>";
+                                if($DataSit2 != "31/12/3000 00:00"){
+                                    echo "<div style='position: relative; top: -10px; font-size: .5em; text-align: center;'> <sub>Aceita: " . $DataSit2 . "</sub></div>";
+                                }
+                                if($DataSit3 != "31/12/3000 00:00"){
+                                    echo "<div style='position: relative; top: -13px; font-size: .5em; text-align: center;'><sub>Andamento: ".$DataSit3."</sub></div>";
+                                }
+                                if($DataSit4 != "31/12/3000 00:00"){
+                                    echo "<div style='position: relative; top: -13px; font-size: .5em; text-align: center; color: blue;'><sub>Terminada: ".$DataSit4."</sub></div>";
+                                }
+                            echo "</div>";
+                            echo "<div title='Tarefa expedida por $NomeIns'><sup>de: " . $NomeIns . "</sup></div>";
                         echo "</td>";
 
                         echo "<td style='text-align: center;'>";
@@ -1034,6 +1063,23 @@ if(!isset($_SESSION["usuarioID"])){
                             </td>
                         </tr>
 
+                        <tr>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Situação - Selecione a opção: </label></td>
+                            <td>
+                                <select id="selecsit" style="font-size: 1rem;" title="Selecione a situação.">
+                                    <option value=""></option>
+                                    <option value="1">Designada</option>
+                                    <option value="2">Aceita</option>
+                                    <option value="3">Andamento</option>
+                                    <option value="4">Terminada</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="padding: 10px; text-align: center;">
+                            <button class="resetbotazul" style="font-size: 80%;" onclick="relatTarefas();" title="Demonstrativo anual das tarefas expedidas">Relatório Anual</button>
+                            </td>
+                        </tr>
                     </table>
                 </div>
                 <div style="padding-bottom: 20px;"></div>
