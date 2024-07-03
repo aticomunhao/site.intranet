@@ -1299,7 +1299,7 @@
                 </div>
             </div> <!-- Fim Modal-->
 
-            <!-- Prazo para apagar registros -->
+    <!-- Prazo para apagar registros -->
             <div style="margin: 50px; border: 3px solid red; border-radius: 20px; padding: 15px;">
                 <div style="margin: 5px; padding: 15px; text-align: center;">
                     <h4>Apagar Registros Antigos</h4>

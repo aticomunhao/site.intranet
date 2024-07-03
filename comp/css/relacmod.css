@@ -172,6 +172,14 @@
     border-radius: 15px;
     width: 55%; /* acertar de acordo com a tela */
 }
+.modal-content-Escala{
+    background: linear-gradient(180deg, white, #86c1eb);
+    margin: 7% auto;
+    padding: 10px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 60%;
+}
 
 .modal-content-matrix{
     background-color: #fefefe;
@@ -263,7 +271,6 @@
  .resetbotbloq{
     color: #363636;
     text-align: center;
-    text-align: center;
     padding-left: 5px;
     padding-right: 5px; 
     border-radius: 5px;
@@ -343,7 +350,6 @@
 .altura30{
     height: 30px;
 }
-
 .botTable{
     min-width: 30px;
     min-height: 20px; 
@@ -374,6 +380,13 @@
     border: 2px solid red;
     border-radius: 2px;
 }
+.divaniv{
+    border: 2px solid blue;
+}
+.divaniv:hover{
+    opacity: .5;
+}
+
 /* Botão fechar */
 .close{
     color: #aaa;

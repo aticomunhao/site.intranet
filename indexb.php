@@ -38,6 +38,29 @@
                 padding-left: 10px; 
                 padding-right: 10px; 
             }
+            .divTemTarefa{
+                display: none; 
+                margin-bottom: 20px; 
+                color: white; font-weight: bold; 
+                background-color: #DC143C; 
+                text-align: center; padding: 10px; border-radius: 10px;
+                cursor: pointer;
+            }
+            .divTemBens{
+                display: none; 
+                margin-bottom: 0px; 
+                color: white; font-weight: bold; 
+                background-color: #000080; 
+                text-align: center; padding: 10px; border-radius: 10px;
+                cursor: pointer;
+            }
+            .divTemBensPrazo{
+                display: none; 
+                margin-bottom: 20px; 
+                color: white; font-weight: bold; 
+                background-color: #000080; text-align: center; padding: 10px; border-radius: 10px;
+                cursor: pointer;
+            }
             .blink{
                 animation: blink 1.2s infinite;
             }
@@ -309,7 +332,7 @@
                 <div id="CorouselPagIni" class="carousel slide carousel-fade" data-bs-ride="carousel" style="text-align: center;"></div>
 
                 <div id="container5" style="width: 25%;"> <!--  containers 5 e 6 dentro do container 3 -->
-                    <div style="text-align: center; border: 2px solid blue; border-radius: 10px; padding: 10px; font-family: tahoma, arial, cursive, sans-serif;">
+                    <div class='divaniv' style="text-align: center; border: 2px solid blue; border-radius: 10px; padding: 10px; font-family: tahoma, arial, cursive, sans-serif;">
                         <span style="font-weight: bold;">Aniversariantes</span>
                         <?php
                             require_once("modulos/aniverIni.php");
@@ -325,9 +348,9 @@
                     ?>
                     <!-- tarja vermelha aviso de tarefa  -->
                     <div id="tarefa" class="blink" onclick="carregaPag();" style="display: none; font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 10px; color: red; font-size: 1.5em; font-weigth: bold; text-align: center; padding: 10px; border-radius: 10px;">TAREFA</div>
-                    <div id="temTarefa" onclick="carregaPag();" style="display: none; margin-bottom: 20px; color: white; font-weight: bold; background-color: red; text-align: center; padding: 10px; border-radius: 10px;"></div>
-                    <div id="temBens" onclick="carregaBens();" style="display: none; margin-bottom: 0px; color: white; font-weight: bold; background-color: blue; text-align: center; padding: 10px; border-radius: 10px;"></div>
-                    <div id="temBensPrazo" onclick="carregaBens();" style="display: none; margin-bottom: 20px; color: white; font-weight: bold; background-color: blue; text-align: center; padding: 10px; border-radius: 10px;"></div>
+                    <div id="temTarefa" class="divTemTarefa" onclick="carregaPag();"></div>
+                    <div id="temBens" class="divTemBens" onclick="carregaBens();"></div>
+                    <div id="temBensPrazo" class="divTemBensPrazo" onclick="carregaBens();"></div>
 
                     <!-- texto da página inicial  -->
                     <div id="container7" style="padding-left: 10px; padding-right: 10px;"></div>

@@ -562,10 +562,10 @@ if(!isset($_SESSION['AdmUsu'])){
         }
     }
     if($Acao == "estatTarefas"){
-        $pdf->SetTitle('Relatório Anual', $isUTF8=TRUE);
+        $pdf->SetTitle('Resumo Anual', $isUTF8=TRUE);
         $pdf->ln();
         $pdf->SetFont('Arial', 'I', 12);
-        $pdf->MultiCell(0, 5, "Relatório Anual de Tarefas Expedidas", 0, 'C', false);
+        $pdf->MultiCell(0, 5, "Resumo Anual de Tarefas Expedidas", 0, 'C', false);
 
         $rs0 = pg_query($Conec, "SELECT DATE_PART('YEAR', datains) FROM ".$xProj.".tarefas WHERE ativo != 0 
         GROUP BY DATE_PART('YEAR', datains) ORDER BY DATE_PART('YEAR', datains) DESC");

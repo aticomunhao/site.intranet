@@ -383,7 +383,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         }
                                     }
                                     ?>
-                                    
+                                </select>
                             </td>
                         </tr>
                         <tr>
@@ -399,6 +399,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         }
                                     }
                                     ?>
+                                </select>
                             </td>
                         </tr>
                     </table>

@@ -81,6 +81,9 @@ function openhref(Num){
     if(parseInt(Num) === 70){
         $('#container3').load('modulos/controleAr/controleAr3.php');
     }
+    if(parseInt(Num) === 71){
+        $('#container3').load('modulos/escalas/escala.php');
+    }
 
 
 

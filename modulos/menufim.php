@@ -90,12 +90,19 @@
 			<li>
 				<a href="#">Setores</a>
 				<ul>
+					<?php
+						//Pr e Vpr
+						$rs1 = pg_query($Conec, "SELECT codset, siglasetor, descsetor FROM ".$xProj.".setores WHERE menu = 1 And ativo = 1 And codset < 5 ORDER BY codset");
+						while($tbl1 = pg_fetch_row($rs1)){
+							echo "<li><a href='#' onclick='openhrefDir($tbl1[0]);'>$tbl1[1] - $tbl1[2]</a></li>";
+						}
+					?>
 					<li>
 						<a href="#">Diretorias</a>
 						<ul>
 							<?php
 								$Cont = 101;
-								$rs1 = pg_query($Conec, "SELECT codset, siglasetor, descsetor FROM ".$xProj.".setores WHERE menu = 1 And ativo = 1 ORDER BY codset");
+								$rs1 = pg_query($Conec, "SELECT codset, siglasetor, descsetor FROM ".$xProj.".setores WHERE menu = 1 And ativo = 1 And codset > 4 ORDER BY codset");
 								while($tbl1 = pg_fetch_row($rs1)){
 									echo "<li><a href='#' onclick='openhrefDir($tbl1[0]);'>$tbl1[1] - $tbl1[2]</a></li>";
 									$Cont = $Cont+100;
@@ -224,9 +231,12 @@
 							echo "<a href='#' onclick='openhref(63);'>Calendário</a>";
 						echo "</li>";
 
-
-
 						if($_SESSION["AdmUsu"] > 6){ // superusuário
+							if($_SESSION['usuarioCPF'] == "13652176049"){
+								echo "<li>";
+									echo "<a href='#' onclick='openhref(71);'>Escalas</a>";
+								echo "</li>";
+							}
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(31);'>Parâmetros do Sistema</a>";
 							echo "</li>";
