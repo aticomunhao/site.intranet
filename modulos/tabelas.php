@@ -153,7 +153,8 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".paramsis (
    datainieletric3 date DEFAULT '3000-12-31'::date,
    valorinieletric2 double precision NOT NULL DEFAULT 0,
    valorinieletric3 double precision NOT NULL DEFAULT 0,
-   editpagini smallint NOT NULL DEFAULT 2
+   editpagini smallint NOT NULL DEFAULT 2,
+   marcaescala character varying(10)
    ) ");
 
    echo "Tabela ".$xProj.".paramsis checada. <br>";

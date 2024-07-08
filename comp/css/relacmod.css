@@ -305,10 +305,10 @@
  }
  .botpadrblue{
     text-align: center;
-    padding: 5px; 
+    padding: 2px; 
     padding-left: 15px;
     padding-right: 15px; 
-    border-radius: 5px;
+    border-radius: 7px;
     font-size: 80%;
     font-weight: bold;
     color: white;
@@ -369,6 +369,9 @@
 }
 .fundoAzul{
     background-color: #87CEFA;
+}
+.fundoAzul2{
+    background-color: #CCFFFF;
 }
 .fundoCinza{
     background-color: #EFF5FB;

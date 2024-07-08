@@ -28,8 +28,8 @@
     function pegaAniver($param, $mdate, $ddate, $ConecPes, $xPes, $ProxMes) {
         $rs0 = pg_query($ConecPes, "SELECT nome_completo, nome_completo, TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') 
         FROM ".$xPes.".pessoas 
-        WHERE TO_CHAR(dt_nascimento, 'MM') = '$mdate' And TO_CHAR(dt_nascimento, 'DD') $param '$ddate' Or TO_CHAR(dt_nascimento, 'MM') = '$ProxMes' 
-        ORDER BY TO_CHAR(dt_nascimento, 'MM'), TO_CHAR(dt_nascimento, 'DD')");
+        WHERE status = 1 And TO_CHAR(dt_nascimento, 'MM') = '$mdate' And TO_CHAR(dt_nascimento, 'DD') $param '$ddate' Or status = 1 And TO_CHAR(dt_nascimento, 'MM') = '$ProxMes' 
+        ORDER BY TO_CHAR(dt_nascimento, 'MM'), TO_CHAR(dt_nascimento, 'DD'), nome_completo LIMIT 20");
         return $rs0;
     }
     $NiverHoje = 0;

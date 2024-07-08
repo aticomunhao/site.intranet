@@ -16,41 +16,46 @@ if(!isset($_SESSION["usuarioID"])){
         <script src="comp/js/jquery-confirm.min.js"></script> <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
         <script src="comp/js/jquery.mask.js"></script>
         <style>
-            td.other-month {
-                opacity: .5;
-                text-align: center;
+            .quadrodia {
+                font-size: 90%;
+                min-width: 33px;
+                border: 1px solid;
+                border-radius: 3px;
+                cursor: pointer;
             }
             .quadrinho {
                 font-size: 90%;
                 min-width: 33px;
                 border: 1px solid;
                 border-radius: 3px;
+                cursor: pointer;
             }
             .quadroEscolha {
                 position: relative; float: left; 
+                min-height: 35px;
                 border: 1px solid; border-radius: 5px; 
                 text-align: center; 
                 padding: 5px; width: 40px;
+                cursor: pointer;
             }
-            
             .modalEngr{
-            display: none; /* Hidden por default */
-            position: fixed;
-            z-index: 200;
-            left: 0;
-            top: 0;
-            width: 100%; /* largura total */
-            height: 100%; /* altura total */
-            overflow: auto; /* autoriza scroll se necessário */
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-         }
-         .modalEngr-content{
-            background-color: transparent;
-            margin: 20% auto; /* 15% do topo e centrado */
-            text-align: center;
-            width: 10%; /* acertar de acordo com a tela */
-         }
+                display: none; /* Hidden por default */
+                position: fixed;
+                z-index: 200;
+                left: 0;
+                top: 0;
+                width: 100%; /* largura total */
+                height: 100%; /* altura total */
+                overflow: auto; /* autoriza scroll se necessário */
+                background-color: rgb(0,0,0); /* Fallback color */
+                background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            }
+            .modalEngr-content{
+                background-color: transparent;
+                margin: 20% auto; /* 15% do topo e centrado */
+                text-align: center;
+                width: 10%; /* acertar de acordo com a tela */
+            }
         </style>
         <script>
              function ajaxIni(){
@@ -71,6 +76,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
             $(document).ready(function(){
                 document.getElementById("selecMesAno").value = document.getElementById("guardamesano").value;
+                document.getElementById("botLimpaDados").innerHTML = "Limpar Dados "+document.getElementById("selecMesAno").value;
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escalas/salvaEscala.php?acao=carregaOpr&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), true);
@@ -79,26 +85,6 @@ if(!isset($_SESSION["usuarioID"])){
                             if(ajax.responseText){
 //alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");
-                                document.getElementById("corOpr01").innerHTML = Resp.trigr1;
-                                document.getElementById("corOpr01Prev").innerHTML = Resp.trigr1;
-                                document.getElementById("corOpr02").innerHTML = Resp.trigr2;
-                                document.getElementById("corOpr02Prev").innerHTML = Resp.trigr2;
-                                document.getElementById("corOpr03").innerHTML = Resp.trigr3;
-                                document.getElementById("corOpr03Prev").innerHTML = Resp.trigr3;
-                                document.getElementById("corOpr04").innerHTML = Resp.trigr4;
-                                document.getElementById("corOpr04Prev").innerHTML = Resp.trigr4;
-                                document.getElementById("corOpr05").innerHTML = Resp.trigr5;
-                                document.getElementById("corOpr05Prev").innerHTML = Resp.trigr5;
-                                document.getElementById("corOpr06").innerHTML = Resp.trigr6;
-                                document.getElementById("corOpr06Prev").innerHTML = Resp.trigr6;
-                                document.getElementById("corOpr07").innerHTML = Resp.trigr7;
-                                document.getElementById("corOpr07Prev").innerHTML = Resp.trigr7;
-                                document.getElementById("corOpr08").innerHTML = Resp.trigr8;
-                                document.getElementById("corOpr08Prev").innerHTML = Resp.trigr8;
-                                document.getElementById("corOpr09").innerHTML = Resp.trigr9;
-                                document.getElementById("corOpr09Prev").innerHTML = Resp.trigr9;
-                                document.getElementById("corOpr10").innerHTML = Resp.trigr10;
-                                document.getElementById("corOpr10Prev").innerHTML = Resp.trigr10;
                                 document.getElementById("selecOpr1").value = Resp.codOpr1;
                                 document.getElementById("selecOpr2").value = Resp.codOpr2;
                                 document.getElementById("selecOpr3").value = Resp.codOpr3;
@@ -109,14 +95,105 @@ if(!isset($_SESSION["usuarioID"])){
                                 document.getElementById("selecOpr8").value = Resp.codOpr8;
                                 document.getElementById("selecOpr9").value = Resp.codOpr9;
                                 document.getElementById("selecOpr10").value = Resp.codOpr10;
+
+                                document.getElementById("somaOpr1").innerHTML = Resp.tempo1;
+                                document.getElementById("somaOpr2").innerHTML = Resp.tempo2;
+                                document.getElementById("somaOpr3").innerHTML = Resp.tempo3;
+                                document.getElementById("somaOpr4").innerHTML = Resp.tempo4;
+                                document.getElementById("somaOpr5").innerHTML = Resp.tempo5;
+                                document.getElementById("somaOpr6").innerHTML = Resp.tempo6;
+                                document.getElementById("somaOpr7").innerHTML = Resp.tempo7;
+                                document.getElementById("somaOpr8").innerHTML = Resp.tempo8;
+                                document.getElementById("somaOpr9").innerHTML = Resp.tempo9;
+                                document.getElementById("somaOpr10").innerHTML = Resp.tempo10;
+
+                                document.getElementById("tempoEscala1").innerHTML = Resp.tempo1;
+                                document.getElementById("tempoEscala2").innerHTML = Resp.tempo2;
+                                document.getElementById("tempoEscala3").innerHTML = Resp.tempo3;
+                                document.getElementById("tempoEscala4").innerHTML = Resp.tempo4;
+                                document.getElementById("tempoEscala5").innerHTML = Resp.tempo5;
+                                document.getElementById("tempoEscala6").innerHTML = Resp.tempo6;
+                                document.getElementById("tempoEscala7").innerHTML = Resp.tempo7;
+                                document.getElementById("tempoEscala8").innerHTML = Resp.tempo8;
+                                document.getElementById("tempoEscala9").innerHTML = Resp.tempo9;
+                                document.getElementById("tempoEscala10").innerHTML = Resp.tempo10;
+
+                                document.getElementById("corOpr01").innerHTML = Resp.trigr1;
+                                document.getElementById("corOpr01").style.backgroundColor = Resp.cor1;
+                                document.getElementById("selecCorOpr1").value = Resp.cor1;
+                                document.getElementById("guardacor1").value = Resp.cor1;
+                                document.getElementById("trigrOpr1").style.backgroundColor = Resp.cor1;
+                                document.getElementById("trigrOpr1").value = Resp.trigr1;
+
+                                document.getElementById("corOpr02").innerHTML = Resp.trigr2;
+                                document.getElementById("corOpr02").style.backgroundColor = Resp.cor2;
+                                document.getElementById("selecCorOpr2").value = Resp.cor2;
+                                document.getElementById("guardacor2").value = Resp.cor2;
+                                document.getElementById("trigrOpr2").style.backgroundColor = Resp.cor2;
+                                document.getElementById("trigrOpr2").value = Resp.trigr2;
+
+                                document.getElementById("corOpr03").innerHTML = Resp.trigr3;
+                                document.getElementById("corOpr03").style.backgroundColor = Resp.cor3;
+                                document.getElementById("selecCorOpr3").value = Resp.cor3;
+                                document.getElementById("guardacor3").value = Resp.cor3;
+                                document.getElementById("trigrOpr3").style.backgroundColor = Resp.cor3;
+                                document.getElementById("trigrOpr3").value = Resp.trigr3;
+  
+                                document.getElementById("corOpr04").innerHTML = Resp.trigr4;
+                                document.getElementById("corOpr04").style.backgroundColor = Resp.cor4;
+                                document.getElementById("selecCorOpr4").value = Resp.cor4;
+                                document.getElementById("guardacor4").value = Resp.cor4;
+                                document.getElementById("trigrOpr4").style.backgroundColor = Resp.cor4;
+                                document.getElementById("trigrOpr4").value = Resp.trigr4;
+
+                                document.getElementById("corOpr05").innerHTML = Resp.trigr5;
+                                document.getElementById("corOpr05").style.backgroundColor = Resp.cor5;
+                                document.getElementById("selecCorOpr5").value = Resp.cor5;
+                                document.getElementById("guardacor5").value = Resp.cor5;
+                                document.getElementById("trigrOpr5").style.backgroundColor = Resp.cor5;
+                                document.getElementById("trigrOpr5").value = Resp.trigr5;
+
+                                document.getElementById("corOpr06").innerHTML = Resp.trigr6;
+                                document.getElementById("corOpr06").style.backgroundColor = Resp.cor6;
+                                document.getElementById("selecCorOpr6").value = Resp.cor6;
+                                document.getElementById("guardacor6").value = Resp.cor6;
+                                document.getElementById("trigrOpr6").style.backgroundColor = Resp.cor6;
+                                document.getElementById("trigrOpr6").value = Resp.trigr6;
+
+                                document.getElementById("corOpr07").innerHTML = Resp.trigr7;
+                                document.getElementById("corOpr07").style.backgroundColor = Resp.cor7;
+                                document.getElementById("selecCorOpr7").value = Resp.cor7;
+                                document.getElementById("guardacor7").value = Resp.cor7;
+                                document.getElementById("trigrOpr7").style.backgroundColor = Resp.cor7;
+                                document.getElementById("trigrOpr7").value = Resp.trigr7;
+
+                                document.getElementById("corOpr08").innerHTML = Resp.trigr8;
+                                document.getElementById("corOpr08").style.backgroundColor = Resp.cor8;
+                                document.getElementById("selecCorOpr8").value = Resp.cor8;
+                                document.getElementById("guardacor8").value = Resp.cor8;
+                                document.getElementById("trigrOpr8").style.backgroundColor = Resp.cor8;
+                                document.getElementById("trigrOpr8").value = Resp.trigr8;
+
+                                document.getElementById("corOpr09").innerHTML = Resp.trigr9;
+                                document.getElementById("corOpr09").style.backgroundColor = Resp.cor9;
+                                document.getElementById("selecCorOpr9").value = Resp.cor9;
+                                document.getElementById("guardacor9").value = Resp.cor9;
+                                document.getElementById("trigrOpr9").style.backgroundColor = Resp.cor9;
+                                document.getElementById("trigrOpr9").value = Resp.trigr9;
+
+                                document.getElementById("corOpr10").innerHTML = Resp.trigr10;
+                                document.getElementById("corOpr10").style.backgroundColor = Resp.cor10;
+                                document.getElementById("selecCorOpr10").value = Resp.cor10;
+                                document.getElementById("guardacor10").value = Resp.cor10;
+                                document.getElementById("trigrOpr10").style.backgroundColor = Resp.cor10;
+                                document.getElementById("trigrOpr10").value = Resp.trigr10;
+
                             }
                         }
                     };
                     ajax.send(null);
                 }
                 $("#escala").load("modulos/escalas/relEsc_adm.php?mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
-
-                
 
                 modalMostra = document.getElementById('relacMostraEscala'); //span[0]
                 spanMostra = document.getElementsByClassName("close")[0];
@@ -127,6 +204,11 @@ if(!isset($_SESSION["usuarioID"])){
                 };
 
                 $("#selecMesAno").change(function(){
+                    document.getElementById("guardaOpr").value = ""; // para não ficar de um mês para outro
+                    document.getElementById("amostraCor").style.backgroundColor = "#FFFFFF"; // fundo branco
+                    document.getElementById("guardatrigrama").value = "&nbsp;"; // para manter a caixa com altura
+                    document.getElementById("guardacor").value = "";
+                    document.getElementById("botLimpaDados").innerHTML = "Limpar Dados "+document.getElementById("selecMesAno").value;
                     if(document.getElementById("selecMesAno").value != ""){
                         document.getElementById("engrenagem").style.display = "block";
                         ajaxIni();
@@ -137,36 +219,109 @@ if(!isset($_SESSION["usuarioID"])){
                                     if(ajax.responseText){
 //alert(ajax.responseText);
                                         Resp = eval("(" + ajax.responseText + ")");
-                                        document.getElementById("corOpr01").innerHTML = Resp.trigr1;
-                                        document.getElementById("corOpr01Prev").innerHTML = Resp.trigr1;
-                                        document.getElementById("corOpr02").innerHTML = Resp.trigr2;
-                                        document.getElementById("corOpr02Prev").innerHTML = Resp.trigr2;
-                                        document.getElementById("corOpr03").innerHTML = Resp.trigr3;
-                                        document.getElementById("corOpr03Prev").innerHTML = Resp.trigr3;
-                                        document.getElementById("corOpr04").innerHTML = Resp.trigr4;
-                                        document.getElementById("corOpr04Prev").innerHTML = Resp.trigr4;
-                                        document.getElementById("corOpr05").innerHTML = Resp.trigr5;
-                                        document.getElementById("corOpr05Prev").innerHTML = Resp.trigr5;
-                                        document.getElementById("corOpr06").innerHTML = Resp.trigr6;
-                                        document.getElementById("corOpr06Prev").innerHTML = Resp.trigr6;
-                                        document.getElementById("corOpr07").innerHTML = Resp.trigr7;
-                                        document.getElementById("corOpr07Prev").innerHTML = Resp.trigr7;
-                                        document.getElementById("corOpr08").innerHTML = Resp.trigr8;
-                                        document.getElementById("corOpr08Prev").innerHTML = Resp.trigr8;
-                                        document.getElementById("corOpr09").innerHTML = Resp.trigr9;
-                                        document.getElementById("corOpr09Prev").innerHTML = Resp.trigr9;
-                                        document.getElementById("corOpr10").innerHTML = Resp.trigr10;
-                                        document.getElementById("corOpr10Prev").innerHTML = Resp.trigr10;
                                         document.getElementById("selecOpr1").value = Resp.codOpr1;
-                                        document.getElementById("selecOpr2").value = Resp.codOpr2;
-                                        document.getElementById("selecOpr3").value = Resp.codOpr3;
-                                        document.getElementById("selecOpr4").value = Resp.codOpr4;
-                                        document.getElementById("selecOpr5").value = Resp.codOpr5;
-                                        document.getElementById("selecOpr6").value = Resp.codOpr6;
-                                        document.getElementById("selecOpr7").value = Resp.codOpr7;
-                                        document.getElementById("selecOpr8").value = Resp.codOpr8;
-                                        document.getElementById("selecOpr9").value = Resp.codOpr9;
-                                        document.getElementById("selecOpr10").value = Resp.codOpr10;
+                                document.getElementById("selecOpr2").value = Resp.codOpr2;
+                                document.getElementById("selecOpr3").value = Resp.codOpr3;
+                                document.getElementById("selecOpr4").value = Resp.codOpr4;
+                                document.getElementById("selecOpr5").value = Resp.codOpr5;
+                                document.getElementById("selecOpr6").value = Resp.codOpr6;
+                                document.getElementById("selecOpr7").value = Resp.codOpr7;
+                                document.getElementById("selecOpr8").value = Resp.codOpr8;
+                                document.getElementById("selecOpr9").value = Resp.codOpr9;
+                                document.getElementById("selecOpr10").value = Resp.codOpr10;
+
+                                document.getElementById("somaOpr1").innerHTML = Resp.tempo1;
+                                document.getElementById("somaOpr2").innerHTML = Resp.tempo2;
+                                document.getElementById("somaOpr3").innerHTML = Resp.tempo3;
+                                document.getElementById("somaOpr4").innerHTML = Resp.tempo4;
+                                document.getElementById("somaOpr5").innerHTML = Resp.tempo5;
+                                document.getElementById("somaOpr6").innerHTML = Resp.tempo6;
+                                document.getElementById("somaOpr7").innerHTML = Resp.tempo7;
+                                document.getElementById("somaOpr8").innerHTML = Resp.tempo8;
+                                document.getElementById("somaOpr9").innerHTML = Resp.tempo9;
+                                document.getElementById("somaOpr10").innerHTML = Resp.tempo10;
+
+                                document.getElementById("tempoEscala1").innerHTML = Resp.tempo1;
+                                document.getElementById("tempoEscala2").innerHTML = Resp.tempo2;
+                                document.getElementById("tempoEscala3").innerHTML = Resp.tempo3;
+                                document.getElementById("tempoEscala4").innerHTML = Resp.tempo4;
+                                document.getElementById("tempoEscala5").innerHTML = Resp.tempo5;
+                                document.getElementById("tempoEscala6").innerHTML = Resp.tempo6;
+                                document.getElementById("tempoEscala7").innerHTML = Resp.tempo7;
+                                document.getElementById("tempoEscala8").innerHTML = Resp.tempo8;
+                                document.getElementById("tempoEscala9").innerHTML = Resp.tempo9;
+                                document.getElementById("tempoEscala10").innerHTML = Resp.tempo10;
+
+                                document.getElementById("corOpr01").innerHTML = Resp.trigr1;
+                                document.getElementById("corOpr01").style.backgroundColor = Resp.cor1;
+                                document.getElementById("selecCorOpr1").value = Resp.cor1;
+                                document.getElementById("guardacor1").value = Resp.cor1;
+                                document.getElementById("trigrOpr1").style.backgroundColor = Resp.cor1;
+                                document.getElementById("trigrOpr1").value = Resp.trigr1;
+
+                                document.getElementById("corOpr02").innerHTML = Resp.trigr2;
+                                document.getElementById("corOpr02").style.backgroundColor = Resp.cor2;
+                                document.getElementById("selecCorOpr2").value = Resp.cor2;
+                                document.getElementById("guardacor2").value = Resp.cor2;
+                                document.getElementById("trigrOpr2").style.backgroundColor = Resp.cor2;
+                                document.getElementById("trigrOpr2").value = Resp.trigr2;
+
+                                document.getElementById("corOpr03").innerHTML = Resp.trigr3;
+                                document.getElementById("corOpr03").style.backgroundColor = Resp.cor3;
+                                document.getElementById("selecCorOpr3").value = Resp.cor3;
+                                document.getElementById("guardacor3").value = Resp.cor3;
+                                document.getElementById("trigrOpr3").style.backgroundColor = Resp.cor3;
+                                document.getElementById("trigrOpr3").value = Resp.trigr3;
+  
+                                document.getElementById("corOpr04").innerHTML = Resp.trigr4;
+                                document.getElementById("corOpr04").style.backgroundColor = Resp.cor4;
+                                document.getElementById("selecCorOpr4").value = Resp.cor4;
+                                document.getElementById("guardacor4").value = Resp.cor4;
+                                document.getElementById("trigrOpr4").style.backgroundColor = Resp.cor4;
+                                document.getElementById("trigrOpr4").value = Resp.trigr4;
+
+                                document.getElementById("corOpr05").innerHTML = Resp.trigr5;
+                                document.getElementById("corOpr05").style.backgroundColor = Resp.cor5;
+                                document.getElementById("selecCorOpr5").value = Resp.cor5;
+                                document.getElementById("guardacor5").value = Resp.cor5;
+                                document.getElementById("trigrOpr5").style.backgroundColor = Resp.cor5;
+                                document.getElementById("trigrOpr5").value = Resp.trigr5;
+
+                                document.getElementById("corOpr06").innerHTML = Resp.trigr6;
+                                document.getElementById("corOpr06").style.backgroundColor = Resp.cor6;
+                                document.getElementById("selecCorOpr6").value = Resp.cor6;
+                                document.getElementById("guardacor6").value = Resp.cor6;
+                                document.getElementById("trigrOpr6").style.backgroundColor = Resp.cor6;
+                                document.getElementById("trigrOpr6").value = Resp.trigr6;
+
+                                document.getElementById("corOpr07").innerHTML = Resp.trigr7;
+                                document.getElementById("corOpr07").style.backgroundColor = Resp.cor7;
+                                document.getElementById("selecCorOpr7").value = Resp.cor7;
+                                document.getElementById("guardacor7").value = Resp.cor7;
+                                document.getElementById("trigrOpr7").style.backgroundColor = Resp.cor7;
+                                document.getElementById("trigrOpr7").value = Resp.trigr7;
+
+                                document.getElementById("corOpr08").innerHTML = Resp.trigr8;
+                                document.getElementById("corOpr08").style.backgroundColor = Resp.cor8;
+                                document.getElementById("selecCorOpr8").value = Resp.cor8;
+                                document.getElementById("guardacor8").value = Resp.cor8;
+                                document.getElementById("trigrOpr8").style.backgroundColor = Resp.cor8;
+                                document.getElementById("trigrOpr8").value = Resp.trigr8;
+
+                                document.getElementById("corOpr09").innerHTML = Resp.trigr9;
+                                document.getElementById("corOpr09").style.backgroundColor = Resp.cor9;
+                                document.getElementById("selecCorOpr9").value = Resp.cor9;
+                                document.getElementById("guardacor9").value = Resp.cor9;
+                                document.getElementById("trigrOpr9").style.backgroundColor = Resp.cor9;
+                                document.getElementById("trigrOpr9").value = Resp.trigr9;
+
+                                document.getElementById("corOpr10").innerHTML = Resp.trigr10;
+                                document.getElementById("corOpr10").style.backgroundColor = Resp.cor10;
+                                document.getElementById("selecCorOpr10").value = Resp.cor10;
+                                document.getElementById("guardacor10").value = Resp.cor10;
+                                document.getElementById("trigrOpr10").style.backgroundColor = Resp.cor10;
+                                document.getElementById("trigrOpr10").value = Resp.trigr10;
+
                                     }
                                 }
                             };
@@ -177,253 +332,799 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
 
-                $("#selecOpr1").change(function(){
-                    if(document.getElementById("selecOpr1").value != ""){
-                        ajaxIni();
-                        if(ajax){
-                            ajax.open("POST", "modulos/escalas/salvaEscala.php?acao=buscaOpr&opr=1&codigo="+document.getElementById("selecOpr1").value, true);
-                            ajax.onreadystatechange = function(){
-                                if(ajax.readyState === 4 ){
-                                    if(ajax.responseText){
-//alert(ajax.responseText);
-                                        Resp = eval("(" + ajax.responseText + ")");
-                                        document.getElementById("corOpr01").innerHTML = Resp.trigrama;
-
-                                        document.getElementById("corOtrigramaoprpr01").value = Resp.trigrama;
-
-                                        document.getElementById("corOpr01Prev").innerHTML = Resp.trigrama;
-
-                                        
-                                    }
-                                }
-                            };
-                            ajax.send(null);
-                        }
-                    }
+                $("#amostraCor").click(function(){ // zerra participante selecionado
+                    document.getElementById("guardaOpr").value = "";
+                    document.getElementById("guardacor").value = "";
+                    document.getElementById("guardatrigrama").value = "";
+                    document.getElementById("guardaCodOpr").value = "";
+                    document.getElementById("amostraCor").style.backgroundColor= "#FFFFFF";
                 });
 
-                $("#selecOpr2").change(function(){
-                    if(document.getElementById("selecOpr2").value != ""){
-                        ajaxIni();
-                        if(ajax){
-                            ajax.open("POST", "modulos/escalas/salvaEscala.php?acao=buscaOpr&opr=2&codigo="+document.getElementById("selecOpr2").value, true);
-                            ajax.onreadystatechange = function(){
-                                if(ajax.readyState === 4 ){
-                                    if(ajax.responseText){
-//alert(ajax.responseText); 
-                                        Resp = eval("(" + ajax.responseText + ")");
-                                        document.getElementById("corOpr02").innerHTML = Resp.trigrama;
-                                        document.getElementById("corOpr02Prev").innerHTML = Resp.trigrama;
-                                    }
+                $("#selecOpr1").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCodOpr").value = document.getElementById("selecOpr1").value;
+                });
+                $("#selecOpr1").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecOpr1").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecOpr2").value || Codigo == document.getElementById("selecOpr3").value || Codigo == document.getElementById("selecOpr4").value || Codigo == document.getElementById("selecOpr5").value || Codigo == document.getElementById("selecOpr6").value || Codigo == document.getElementById("selecOpr7").value || Codigo == document.getElementById("selecOpr8").value || Codigo == document.getElementById("selecOpr9").value || Codigo == document.getElementById("selecOpr10").value){
+                            document.getElementById("selecOpr1").value = document.getElementById("guardaCodOpr").value; //volta ao que era
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Já está selecionado.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
                                 }
-                            };
-                            ajax.send(null);
+                            });
+                            return false;
                         }
+                    }else{
+                        document.getElementById("trigrOpr1").value = "";
+                        document.getElementById("selecCorOpr1").value = "";
                     }
+                });
+                $("#selecOpr2").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCodOpr").value = document.getElementById("selecOpr2").value;
+                });
+                $("#selecOpr2").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecOpr2").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecOpr1").value || Codigo == document.getElementById("selecOpr3").value || Codigo == document.getElementById("selecOpr4").value || Codigo == document.getElementById("selecOpr5").value || Codigo == document.getElementById("selecOpr6").value || Codigo == document.getElementById("selecOpr7").value || Codigo == document.getElementById("selecOpr8").value || Codigo == document.getElementById("selecOpr9").value || Codigo == document.getElementById("selecOpr10").value){
+                            document.getElementById("selecOpr2").value = document.getElementById("guardaCodOpr").value; //volta ao que era
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Já está selecionado.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }
+                    }else{
+                        document.getElementById("trigrOpr2").value = "";
+                        document.getElementById("selecCorOpr2").value = "";
+                    }
+                });
+                $("#selecOpr3").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCodOpr").value = document.getElementById("selecOpr3").value;
                 });
                 $("#selecOpr3").change(function(){
-                    if(document.getElementById("selecOpr3").value != ""){
-                        ajaxIni();
-                        if(ajax){
-                            ajax.open("POST", "modulos/escalas/salvaEscala.php?acao=buscaOpr&opr=3&codigo="+document.getElementById("selecOpr3").value, true);
-                            ajax.onreadystatechange = function(){
-                                if(ajax.readyState === 4 ){
-                                    if(ajax.responseText){
-//alert(ajax.responseText); 
-                                        Resp = eval("(" + ajax.responseText + ")");
-                                        document.getElementById("corOpr03").innerHTML = Resp.trigrama;
-                                        document.getElementById("corOpr03Prev").innerHTML = Resp.trigrama;
-                                    }
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecOpr3").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecOpr1").value || Codigo == document.getElementById("selecOpr2").value || Codigo == document.getElementById("selecOpr4").value || Codigo == document.getElementById("selecOpr5").value || Codigo == document.getElementById("selecOpr6").value || Codigo == document.getElementById("selecOpr7").value || Codigo == document.getElementById("selecOpr8").value || Codigo == document.getElementById("selecOpr9").value || Codigo == document.getElementById("selecOpr10").value){
+                            document.getElementById("selecOpr3").value = document.getElementById("guardaCodOpr").value; //volta ao que era
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Já está selecionado.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
                                 }
-                            };
-                            ajax.send(null);
+                            });
+                            return false;
                         }
+                    }else{
+                        document.getElementById("trigrOpr3").value = "";
+                        document.getElementById("selecCorOpr3").value = "";
                     }
+                });
+                $("#selecOpr4").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCodOpr").value = document.getElementById("selecOpr4").value;
                 });
                 $("#selecOpr4").change(function(){
-                    if(document.getElementById("selecOpr4").value != ""){
-                        ajaxIni();
-                        if(ajax){
-                            ajax.open("POST", "modulos/escalas/salvaEscala.php?acao=buscaOpr&opr=4&codigo="+document.getElementById("selecOpr4").value, true);
-                            ajax.onreadystatechange = function(){
-                                if(ajax.readyState === 4 ){
-                                    if(ajax.responseText){
-//alert(ajax.responseText); 
-                                        Resp = eval("(" + ajax.responseText + ")");
-                                        document.getElementById("corOpr04").innerHTML = Resp.trigrama;
-                                        document.getElementById("corOpr04Prev").innerHTML = Resp.trigrama;
-                                    }
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecOpr4").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecOpr1").value || Codigo == document.getElementById("selecOpr2").value || Codigo == document.getElementById("selecOpr3").value || Codigo == document.getElementById("selecOpr5").value || Codigo == document.getElementById("selecOpr6").value || Codigo == document.getElementById("selecOpr7").value || Codigo == document.getElementById("selecOpr8").value || Codigo == document.getElementById("selecOpr9").value || Codigo == document.getElementById("selecOpr10").value){
+                            document.getElementById("selecOpr4").value = document.getElementById("guardaCodOpr").value; //volta ao que era
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Já está selecionado.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
                                 }
-                            };
-                            ajax.send(null);
+                            });
+                            return false;
                         }
+                    }else{
+                        document.getElementById("trigrOpr4").value = "";
+                        document.getElementById("selecCorOpr4").value = "";
                     }
+                });
+                $("#selecOpr5").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCodOpr").value = document.getElementById("selecOpr5").value;
                 });
                 $("#selecOpr5").change(function(){
-                    if(document.getElementById("selecOpr5").value != ""){
-                        ajaxIni();
-                        if(ajax){
-                            ajax.open("POST", "modulos/escalas/salvaEscala.php?acao=buscaOpr&opr=5&codigo="+document.getElementById("selecOpr5").value, true);
-                            ajax.onreadystatechange = function(){
-                                if(ajax.readyState === 4 ){
-                                    if(ajax.responseText){
-//alert(ajax.responseText); 
-                                        Resp = eval("(" + ajax.responseText + ")");
-                                        document.getElementById("corOpr05").innerHTML = Resp.trigrama;
-                                        document.getElementById("corOpr05Prev").innerHTML = Resp.trigrama;
-                                    }
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecOpr5").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecOpr1").value || Codigo == document.getElementById("selecOpr2").value || Codigo == document.getElementById("selecOpr3").value || Codigo == document.getElementById("selecOpr4").value || Codigo == document.getElementById("selecOpr6").value || Codigo == document.getElementById("selecOpr7").value || Codigo == document.getElementById("selecOpr8").value || Codigo == document.getElementById("selecOpr9").value || Codigo == document.getElementById("selecOpr10").value){
+                            document.getElementById("selecOpr5").value = document.getElementById("guardaCodOpr").value; //volta ao que era
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Já está selecionado.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
                                 }
-                            };
-                            ajax.send(null);
+                            });
+                            return false;
                         }
+                    }else{
+                        document.getElementById("trigrOpr5").value = "";
+                        document.getElementById("selecCorOpr5").value = "";
                     }
+                });
+                $("#selecOpr6").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCodOpr").value = document.getElementById("selecOpr6").value;
                 });
                 $("#selecOpr6").change(function(){
-                    if(document.getElementById("selecOpr6").value != ""){
-                        ajaxIni();
-                        if(ajax){
-                            ajax.open("POST", "modulos/escalas/salvaEscala.php?acao=buscaOpr&opr=6&codigo="+document.getElementById("selecOpr6").value, true);
-                            ajax.onreadystatechange = function(){
-                                if(ajax.readyState === 4 ){
-                                    if(ajax.responseText){
-//alert(ajax.responseText); 
-                                        Resp = eval("(" + ajax.responseText + ")");
-                                        document.getElementById("corOpr06").innerHTML = Resp.trigrama;
-                                        document.getElementById("corOpr06Prev").innerHTML = Resp.trigrama;
-                                    }
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecOpr6").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecOpr1").value || Codigo == document.getElementById("selecOpr2").value || Codigo == document.getElementById("selecOpr3").value || Codigo == document.getElementById("selecOpr4").value || Codigo == document.getElementById("selecOpr5").value || Codigo == document.getElementById("selecOpr7").value || Codigo == document.getElementById("selecOpr8").value || Codigo == document.getElementById("selecOpr9").value || Codigo == document.getElementById("selecOpr10").value){
+                            document.getElementById("selecOpr6").value = document.getElementById("guardaCodOpr").value; //volta ao que era
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Já está selecionado.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
                                 }
-                            };
-                            ajax.send(null);
+                            });
+                            return false;
                         }
+                    }else{
+                        document.getElementById("trigrOpr6").value = "";
+                        document.getElementById("selecCorOpr6").value = "";
                     }
+                });
+                $("#selecOpr7").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCodOpr").value = document.getElementById("selecOpr7").value;
                 });
                 $("#selecOpr7").change(function(){
-                    if(document.getElementById("selecOpr7").value != ""){
-                        ajaxIni();
-                        if(ajax){
-                            ajax.open("POST", "modulos/escalas/salvaEscala.php?acao=buscaOpr&opr=7&codigo="+document.getElementById("selecOpr7").value, true);
-                            ajax.onreadystatechange = function(){
-                                if(ajax.readyState === 4 ){
-                                    if(ajax.responseText){
-//alert(ajax.responseText); 
-                                        Resp = eval("(" + ajax.responseText + ")");
-                                        document.getElementById("corOpr07").innerHTML = Resp.trigrama;
-                                        document.getElementById("corOpr07Prev").innerHTML = Resp.trigrama;
-                                    }
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecOpr7").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecOpr1").value || Codigo == document.getElementById("selecOpr2").value || Codigo == document.getElementById("selecOpr3").value || Codigo == document.getElementById("selecOpr4").value || Codigo == document.getElementById("selecOpr5").value || Codigo == document.getElementById("selecOpr6").value || Codigo == document.getElementById("selecOpr8").value || Codigo == document.getElementById("selecOpr9").value || Codigo == document.getElementById("selecOpr10").value){
+                            document.getElementById("selecOpr7").value = document.getElementById("guardaCodOpr").value; //volta ao que era
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Já está selecionado.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
                                 }
-                            };
-                            ajax.send(null);
+                            });
+                            return false;
                         }
+                    }else{
+                        document.getElementById("trigrOpr7").value = "";
+                        document.getElementById("selecCorOpr7").value = "";
                     }
+                });
+                $("#selecOpr8").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCodOpr").value = document.getElementById("selecOpr8").value;
                 });
                 $("#selecOpr8").change(function(){
-                    if(document.getElementById("selecOpr8").value != ""){
-                        ajaxIni();
-                        if(ajax){
-                            ajax.open("POST", "modulos/escalas/salvaEscala.php?acao=buscaOpr&opr=8&codigo="+document.getElementById("selecOpr8").value, true);
-                            ajax.onreadystatechange = function(){
-                                if(ajax.readyState === 4 ){
-                                    if(ajax.responseText){
-//alert(ajax.responseText); 
-                                        Resp = eval("(" + ajax.responseText + ")");
-                                        document.getElementById("corOpr08").innerHTML = Resp.trigrama;
-                                        document.getElementById("corOpr08Prev").innerHTML = Resp.trigrama;
-                                    }
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecOpr8").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecOpr1").value || Codigo == document.getElementById("selecOpr2").value || Codigo == document.getElementById("selecOpr3").value || Codigo == document.getElementById("selecOpr4").value || Codigo == document.getElementById("selecOpr5").value || Codigo == document.getElementById("selecOpr6").value || Codigo == document.getElementById("selecOpr7").value || Codigo == document.getElementById("selecOpr9").value || Codigo == document.getElementById("selecOpr10").value){
+                            document.getElementById("selecOpr8").value = document.getElementById("guardaCodOpr").value; //volta ao que era
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Já está selecionado.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
                                 }
-                            };
-                            ajax.send(null);
+                            });
+                            return false;
                         }
+                    }else{
+                        document.getElementById("trigrOpr8").value = "";
+                        document.getElementById("selecCorOpr8").value = "";
                     }
+                });
+                $("#selecOpr9").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCodOpr").value = document.getElementById("selecOpr9").value;
                 });
                 $("#selecOpr9").change(function(){
-                    if(document.getElementById("selecOpr9").value != ""){
-                        ajaxIni();
-                        if(ajax){
-                            ajax.open("POST", "modulos/escalas/salvaEscala.php?acao=buscaOpr&opr=9&codigo="+document.getElementById("selecOpr9").value, true);
-                            ajax.onreadystatechange = function(){
-                                if(ajax.readyState === 4 ){
-                                    if(ajax.responseText){
-//alert(ajax.responseText); 
-                                        Resp = eval("(" + ajax.responseText + ")");
-                                        document.getElementById("corOpr09").innerHTML = Resp.trigrama;
-                                        document.getElementById("corOpr09Prev").innerHTML = Resp.trigrama;
-                                    }
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecOpr9").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecOpr1").value || Codigo == document.getElementById("selecOpr2").value || Codigo == document.getElementById("selecOpr3").value || Codigo == document.getElementById("selecOpr4").value || Codigo == document.getElementById("selecOpr5").value || Codigo == document.getElementById("selecOpr6").value || Codigo == document.getElementById("selecOpr7").value || Codigo == document.getElementById("selecOpr8").value || Codigo == document.getElementById("selecOpr10").value){
+                            document.getElementById("selecOpr9").value = document.getElementById("guardaCodOpr").value; //volta ao que era
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Já está selecionado.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
                                 }
-                            };
-                            ajax.send(null);
+                            });
+                            return false;
+                        }
+                    }else{
+                        document.getElementById("trigrOpr9").value = "";
+                        document.getElementById("selecCorOpr9").value = "";
+                    }
+                });
+                $("#selecOpr9").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCodOpr").value = document.getElementById("selecOpr9").value;
+                });
+                $("#selecOpr10").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecOpr10").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecOpr1").value || Codigo == document.getElementById("selecOpr2").value || Codigo == document.getElementById("selecOpr3").value || Codigo == document.getElementById("selecOpr4").value || Codigo == document.getElementById("selecOpr5").value || Codigo == document.getElementById("selecOpr6").value || Codigo == document.getElementById("selecOpr7").value || Codigo == document.getElementById("selecOpr8").value || Codigo == document.getElementById("selecOpr9").value){
+                            document.getElementById("selecOpr10").value = document.getElementById("guardaCodOpr").value; //volta ao que era
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Já está selecionado.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }
+                    }else{
+                        document.getElementById("trigrOpr10").value = "";
+                        document.getElementById("selecCorOpr10").value = "";
+                    }
+                });
+
+                //Cores
+                $("#selecCorOpr1").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCorOpr").value = document.getElementById("selecCorOpr1").value;
+                });
+                $("#selecCorOpr1").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecCorOpr1").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecCorOpr2").value || Codigo == document.getElementById("selecCorOpr3").value || Codigo == document.getElementById("selecCorOpr4").value || Codigo == document.getElementById("selecCorOpr5").value || Codigo == document.getElementById("selecCorOpr6").value || Codigo == document.getElementById("selecCorOpr7").value || Codigo == document.getElementById("selecCorOpr8").value || Codigo == document.getElementById("selecCorOpr9").value || Codigo == document.getElementById("selecCorOpr10").value){
+                            document.getElementById("selecCorOpr1").value = document.getElementById("guardaCorOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Esta cor já foi selecionada.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }else{
+                            if(document.getElementById("selecOpr1").value != ""){
+                                document.getElementById("corOpr01").style.backgroundColor = Codigo;
+                            }
                         }
                     }
                 });
-                $("#selecOpr10").change(function(){
-                    if(document.getElementById("selecOpr10").value != ""){
-                        ajaxIni();
-                        if(ajax){
-                            ajax.open("POST", "modulos/escalas/salvaEscala.php?acao=buscaOpr&opr=10&codigo="+document.getElementById("selecOpr10").value, true);
-                            ajax.onreadystatechange = function(){
-                                if(ajax.readyState === 4 ){
-                                    if(ajax.responseText){
-//alert(ajax.responseText); 
-                                        Resp = eval("(" + ajax.responseText + ")");
-                                        document.getElementById("corOpr10").innerHTML = Resp.trigrama;
-                                        document.getElementById("corOpr10Prev").innerHTML = Resp.trigrama;
-                                    }
+                $("#selecCorOpr2").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCorOpr").value = document.getElementById("selecCorOpr2").value;
+                });
+                $("#selecCorOpr2").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecCorOpr2").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecCorOpr1").value || Codigo == document.getElementById("selecCorOpr3").value || Codigo == document.getElementById("selecCorOpr4").value || Codigo == document.getElementById("selecCorOpr5").value || Codigo == document.getElementById("selecCorOpr6").value || Codigo == document.getElementById("selecCorOpr7").value || Codigo == document.getElementById("selecCorOpr8").value || Codigo == document.getElementById("selecCorOpr9").value || Codigo == document.getElementById("selecCorOpr10").value){
+                            document.getElementById("selecCorOpr2").value = document.getElementById("guardaCorOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Esta cor já foi selecionada.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
                                 }
-                            };
-                            ajax.send(null);
+                            });
+                            return false;
+                        }else{
+                            if(document.getElementById("selecOpr2").value != ""){
+                                document.getElementById("corOpr02").style.backgroundColor = Codigo;
+                            }
                         }
                     }
+                });
+                $("#selecCorOpr3").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCorOpr").value = document.getElementById("selecCorOpr3").value;
+                });
+                $("#selecCorOpr3").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecCorOpr3").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecCorOpr1").value || Codigo == document.getElementById("selecCorOpr2").value || Codigo == document.getElementById("selecCorOpr4").value || Codigo == document.getElementById("selecCorOpr5").value || Codigo == document.getElementById("selecCorOpr6").value || Codigo == document.getElementById("selecCorOpr7").value || Codigo == document.getElementById("selecCorOpr8").value || Codigo == document.getElementById("selecCorOpr9").value || Codigo == document.getElementById("selecCorOpr10").value){
+                            document.getElementById("selecCorOpr3").value = document.getElementById("guardaCorOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Esta cor já foi selecionada.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }else{
+                            if(document.getElementById("selecOpr3").value != ""){
+                                document.getElementById("corOpr03").style.backgroundColor = Codigo;
+                            }
+                        }
+                    }
+                });
+                $("#selecCorOpr4").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCorOpr").value = document.getElementById("selecCorOpr4").value;
+                });
+                $("#selecCorOpr4").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecCorOpr4").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecCorOpr1").value || Codigo == document.getElementById("selecCorOpr2").value || Codigo == document.getElementById("selecCorOpr3").value || Codigo == document.getElementById("selecCorOpr5").value || Codigo == document.getElementById("selecCorOpr6").value || Codigo == document.getElementById("selecCorOpr7").value || Codigo == document.getElementById("selecCorOpr8").value || Codigo == document.getElementById("selecCorOpr9").value || Codigo == document.getElementById("selecCorOpr10").value){
+                            document.getElementById("selecCorOpr4").value = document.getElementById("guardaCorOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Esta cor já foi selecionada.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }else{
+                            if(document.getElementById("selecOpr4").value != ""){
+                                document.getElementById("corOpr04").style.backgroundColor = Codigo;
+                            }
+                        }
+                    }
+                });
+                $("#selecCorOpr5").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCorOpr").value = document.getElementById("selecCorOpr5").value;
+                });
+                $("#selecCorOpr5").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecCorOpr5").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecCorOpr1").value || Codigo == document.getElementById("selecCorOpr2").value || Codigo == document.getElementById("selecCorOpr3").value || Codigo == document.getElementById("selecCorOpr4").value || Codigo == document.getElementById("selecCorOpr6").value || Codigo == document.getElementById("selecCorOpr7").value || Codigo == document.getElementById("selecCorOpr8").value || Codigo == document.getElementById("selecCorOpr9").value || Codigo == document.getElementById("selecCorOpr10").value){
+                            document.getElementById("selecCorOpr5").value = document.getElementById("guardaCorOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Esta cor já foi selecionada.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }else{
+                            if(document.getElementById("selecOpr5").value != ""){
+                                document.getElementById("corOpr05").style.backgroundColor = Codigo;
+                            }
+                        }
+                    }
+                });
+                $("#selecCorOpr6").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCorOpr").value = document.getElementById("selecCorOpr6").value;
+                });
+                $("#selecCorOpr6").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecCorOpr6").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecCorOpr1").value || Codigo == document.getElementById("selecCorOpr2").value || Codigo == document.getElementById("selecCorOpr3").value || Codigo == document.getElementById("selecCorOpr4").value || Codigo == document.getElementById("selecCorOpr5").value || Codigo == document.getElementById("selecCorOpr7").value || Codigo == document.getElementById("selecCorOpr8").value || Codigo == document.getElementById("selecCorOpr9").value || Codigo == document.getElementById("selecCorOpr10").value){
+                            document.getElementById("selecCorOpr6").value = document.getElementById("guardaCorOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Esta cor já foi selecionada.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }else{
+                            if(document.getElementById("selecOpr6").value != ""){
+                                document.getElementById("corOpr06").style.backgroundColor = Codigo;
+                            }
+                        }
+                    }
+                });
+                $("#selecCorOpr7").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCorOpr").value = document.getElementById("selecCorOpr7").value;
+                });
+                $("#selecCorOpr7").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecCorOpr7").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecCorOpr1").value || Codigo == document.getElementById("selecCorOpr2").value || Codigo == document.getElementById("selecCorOpr3").value || Codigo == document.getElementById("selecCorOpr4").value || Codigo == document.getElementById("selecCorOpr5").value || Codigo == document.getElementById("selecCorOpr6").value || Codigo == document.getElementById("selecCorOpr8").value || Codigo == document.getElementById("selecCorOpr9").value || Codigo == document.getElementById("selecCorOpr10").value){
+                            document.getElementById("selecCorOpr7").value = document.getElementById("guardaCorOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Esta cor já foi selecionada.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }else{
+                            if(document.getElementById("selecOpr7").value != ""){
+                                document.getElementById("corOpr07").style.backgroundColor = Codigo;
+                            }
+                        }
+                    }
+                });
+                $("#selecCorOpr8").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCorOpr").value = document.getElementById("selecCorOpr8").value;
+                });
+                $("#selecCorOpr8").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecCorOpr8").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecCorOpr1").value || Codigo == document.getElementById("selecCorOpr2").value || Codigo == document.getElementById("selecCorOpr3").value || Codigo == document.getElementById("selecCorOpr4").value || Codigo == document.getElementById("selecCorOpr5").value || Codigo == document.getElementById("selecCorOpr6").value || Codigo == document.getElementById("selecCorOpr7").value || Codigo == document.getElementById("selecCorOpr9").value || Codigo == document.getElementById("selecCorOpr10").value){
+                            document.getElementById("selecCorOpr8").value = document.getElementById("guardaCorOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Esta cor já foi selecionada.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }else{
+                            if(document.getElementById("selecOpr8").value != ""){
+                                document.getElementById("corOpr08").style.backgroundColor = Codigo;
+                            }
+                        }
+                    }
+                });
+                $("#selecCorOpr9").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCorOpr").value = document.getElementById("selecCorOpr9").value;
+                });
+                $("#selecCorOpr9").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecCorOpr9").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecCorOpr1").value || Codigo == document.getElementById("selecCorOpr2").value || Codigo == document.getElementById("selecCorOpr3").value || Codigo == document.getElementById("selecCorOpr4").value || Codigo == document.getElementById("selecCorOpr5").value || Codigo == document.getElementById("selecCorOpr6").value || Codigo == document.getElementById("selecCorOpr7").value || Codigo == document.getElementById("selecCorOpr8").value || Codigo == document.getElementById("selecCorOpr10").value){
+                            document.getElementById("selecCorOpr9").value = document.getElementById("guardaCorOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Esta cor já foi selecionada.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }else{
+                            if(document.getElementById("selecOpr9").value != ""){
+                                document.getElementById("corOpr09").style.backgroundColor = Codigo;
+                            }
+                        }
+                    }
+                });
+                $("#selecCorOpr10").click(function(){ // para repor se houver erro
+                    document.getElementById("guardaCorOpr").value = document.getElementById("selecCorOpr10").value;
+                });
+                $("#selecCorOpr10").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let Codigo = document.getElementById("selecCorOpr10").value;
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("selecCorOpr1").value || Codigo == document.getElementById("selecCorOpr2").value || Codigo == document.getElementById("selecCorOpr3").value || Codigo == document.getElementById("selecCorOpr4").value || Codigo == document.getElementById("selecCorOpr5").value || Codigo == document.getElementById("selecCorOpr6").value || Codigo == document.getElementById("selecCorOpr7").value || Codigo == document.getElementById("selecCorOpr8").value || Codigo == document.getElementById("selecCorOpr9").value){
+                            document.getElementById("selecCorOpr10").value = document.getElementById("guardaCorOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Esta cor já foi selecionada.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }else{
+                            if(document.getElementById("selecOpr10").value != ""){
+                                document.getElementById("corOpr10").style.backgroundColor = Codigo;
+                            }
+                        }
+                    }
+                });
+
+                //Trigramas
+                $("#trigrOpr1").click(function(){ // para repor se houver erro
+                    document.getElementById("guardatrigOpr").value = document.getElementById("trigrOpr1").value;
+                });
+                $("#trigrOpr1").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let text = document.getElementById("trigrOpr1").value;
+                    Codigo = text.toUpperCase();
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("trigrOpr2").value || Codigo == document.getElementById("trigrOpr3").value || Codigo == document.getElementById("trigrOpr4").value || Codigo == document.getElementById("trigrOpr5").value || Codigo == document.getElementById("trigrOpr6").value || Codigo == document.getElementById("trigrOpr7").value || Codigo == document.getElementById("trigrOpr8").value || Codigo == document.getElementById("trigrOpr9").value || Codigo == document.getElementById("trigrOpr10").value){
+                            document.getElementById("trigrOpr1").value = document.getElementById("guardatrigOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Este trigrama já foi inserido.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }else{
+                            document.getElementById("corOpr01").innerHTML = Codigo;
+                        }
+                    }
+                });
+                $("#trigrOpr2").click(function(){ // para repor se houver erro
+                    document.getElementById("guardatrigOpr").value = document.getElementById("trigrOpr2").value;
+                });
+                $("#trigrOpr2").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let text = document.getElementById("trigrOpr2").value;
+                    Codigo = text.toUpperCase();
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("trigrOpr1").value || Codigo == document.getElementById("trigrOpr3").value || Codigo == document.getElementById("trigrOpr4").value || Codigo == document.getElementById("trigrOpr5").value || Codigo == document.getElementById("trigrOpr6").value || Codigo == document.getElementById("trigrOpr7").value || Codigo == document.getElementById("trigrOpr8").value || Codigo == document.getElementById("trigrOpr9").value || Codigo == document.getElementById("trigrOpr10").value){
+                            document.getElementById("trigrOpr2").value = document.getElementById("guardatrigOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Este trigrama já foi inserido.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }else{
+                            document.getElementById("corOpr02").innerHTML = Codigo;
+                        }
+                    }
+                });
+                $("#trigrOpr3").click(function(){ // para repor se houver erro
+                    document.getElementById("guardatrigOpr").value = document.getElementById("trigrOpr3").value;
+                });
+                $("#trigrOpr3").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let text = document.getElementById("trigrOpr3").value;
+                    Codigo = text.toUpperCase();
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("trigrOpr1").value || Codigo == document.getElementById("trigrOpr2").value || Codigo == document.getElementById("trigrOpr4").value || Codigo == document.getElementById("trigrOpr5").value || Codigo == document.getElementById("trigrOpr6").value || Codigo == document.getElementById("trigrOpr7").value || Codigo == document.getElementById("trigrOpr8").value || Codigo == document.getElementById("trigrOpr9").value || Codigo == document.getElementById("trigrOpr10").value){
+                            document.getElementById("trigrOpr3").value = document.getElementById("guardatrigOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Este trigrama já foi inserido.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }else{
+                            document.getElementById("corOpr03").innerHTML = Codigo;
+                        }
+                    }
+                });
+                $("#trigrOpr4").click(function(){ // para repor se houver erro
+                    document.getElementById("guardatrigOpr").value = document.getElementById("trigrOpr4").value;
+                });
+                $("#trigrOpr4").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let text = document.getElementById("trigrOpr4").value;
+                    Codigo = text.toUpperCase();
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("trigrOpr1").value || Codigo == document.getElementById("trigrOpr2").value || Codigo == document.getElementById("trigrOpr3").value || Codigo == document.getElementById("trigrOpr5").value || Codigo == document.getElementById("trigrOpr6").value || Codigo == document.getElementById("trigrOpr7").value || Codigo == document.getElementById("trigrOpr8").value || Codigo == document.getElementById("trigrOpr9").value || Codigo == document.getElementById("trigrOpr10").value){
+                            document.getElementById("trigrOpr4").value = document.getElementById("guardatrigOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Este trigrama já foi inserido.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }else{
+                            document.getElementById("corOpr04").innerHTML = Codigo;
+                        }
+                    }
+                });
+                $("#trigrOpr5").click(function(){ // para repor se houver erro
+                    document.getElementById("guardatrigOpr").value = document.getElementById("trigrOpr5").value;
+                });
+                $("#trigrOpr5").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let text = document.getElementById("trigrOpr5").value;
+                    Codigo = text.toUpperCase();
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("trigrOpr1").value || Codigo == document.getElementById("trigrOpr2").value || Codigo == document.getElementById("trigrOpr3").value || Codigo == document.getElementById("trigrOpr4").value || Codigo == document.getElementById("trigrOpr6").value || Codigo == document.getElementById("trigrOpr7").value || Codigo == document.getElementById("trigrOpr8").value || Codigo == document.getElementById("trigrOpr9").value || Codigo == document.getElementById("trigrOpr10").value){
+                            document.getElementById("trigrOpr5").value = document.getElementById("guardatrigOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Este trigrama já foi inserido.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }else{
+                            document.getElementById("corOpr05").innerHTML = Codigo;
+                        }
+                    }
+                });
+                $("#trigrOpr6").click(function(){ // para repor se houver erro
+                    document.getElementById("guardatrigOpr").value = document.getElementById("trigrOpr6").value;
+                });
+                $("#trigrOpr6").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let text = document.getElementById("trigrOpr6").value;
+                    Codigo = text.toUpperCase();
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("trigrOpr1").value || Codigo == document.getElementById("trigrOpr2").value || Codigo == document.getElementById("trigrOpr3").value || Codigo == document.getElementById("trigrOpr4").value || Codigo == document.getElementById("trigrOpr5").value || Codigo == document.getElementById("trigrOpr7").value || Codigo == document.getElementById("trigrOpr8").value || Codigo == document.getElementById("trigrOpr9").value || Codigo == document.getElementById("trigrOpr10").value){
+                            document.getElementById("trigrOpr6").value = document.getElementById("guardatrigOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Este trigrama já foi inserido.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }else{
+                            document.getElementById("corOpr06").innerHTML = Codigo;
+                        }
+                    }
+                });
+                $("#trigrOpr7").click(function(){ // para repor se houver erro
+                    document.getElementById("guardatrigOpr").value = document.getElementById("trigrOpr7").value;
+                });
+                $("#trigrOpr7").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let text = document.getElementById("trigrOpr7").value;
+                    Codigo = text.toUpperCase();
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("trigrOpr1").value || Codigo == document.getElementById("trigrOpr2").value || Codigo == document.getElementById("trigrOpr3").value || Codigo == document.getElementById("trigrOpr4").value || Codigo == document.getElementById("trigrOpr5").value || Codigo == document.getElementById("trigrOpr6").value || Codigo == document.getElementById("trigrOpr8").value || Codigo == document.getElementById("trigrOpr9").value || Codigo == document.getElementById("trigrOpr10").value){
+                            document.getElementById("trigrOpr7").value = document.getElementById("guardatrigOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Este trigrama já foi inserido.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }else{
+                            document.getElementById("corOpr07").innerHTML = Codigo;
+                        }
+                    }
+                });
+                $("#trigrOpr8").click(function(){ // para repor se houver erro
+                    document.getElementById("guardatrigOpr").value = document.getElementById("trigrOpr8").value;
+                });
+                $("#trigrOpr8").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let text = document.getElementById("trigrOpr8").value;
+                    Codigo = text.toUpperCase();
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("trigrOpr1").value || Codigo == document.getElementById("trigrOpr2").value || Codigo == document.getElementById("trigrOpr3").value || Codigo == document.getElementById("trigrOpr4").value || Codigo == document.getElementById("trigrOpr5").value || Codigo == document.getElementById("trigrOpr6").value || Codigo == document.getElementById("trigrOpr7").value || Codigo == document.getElementById("trigrOpr9").value || Codigo == document.getElementById("trigrOpr10").value){
+                            document.getElementById("trigrOpr8").value = document.getElementById("guardatrigOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Este trigrama já foi inserido.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }
+                        else{
+                            document.getElementById("corOpr08").innerHTML = Codigo;
+                        }
+                    }
+                });
+                $("#trigrOpr9").click(function(){ // para repor se houver erro
+                    document.getElementById("guardatrigOpr").value = document.getElementById("trigrOpr9").value;
+                });
+                $("#trigrOpr9").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let text = document.getElementById("trigrOpr9").value;
+                    Codigo = text.toUpperCase();
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("trigrOpr1").value || Codigo == document.getElementById("trigrOpr2").value || Codigo == document.getElementById("trigrOpr3").value || Codigo == document.getElementById("trigrOpr4").value || Codigo == document.getElementById("trigrOpr5").value || Codigo == document.getElementById("trigrOpr6").value || Codigo == document.getElementById("trigrOpr7").value || Codigo == document.getElementById("trigrOpr8").value || Codigo == document.getElementById("trigrOpr10").value){
+                            document.getElementById("trigrOpr9").value = document.getElementById("guardatrigOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Este trigrama já foi inserido.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }else{
+                            document.getElementById("corOpr09").innerHTML = Codigo;
+                        }
+                    }
+                });
+                $("#trigrOpr10").click(function(){ // para repor se houver erro
+                    document.getElementById("guardatrigOpr").value = document.getElementById("trigrOpr10").value;
+                });
+                $("#trigrOpr10").change(function(){
+                    document.getElementById("mudou").value = "1";
+                    let text = document.getElementById("trigrOpr10").value;
+                    Codigo = text.toUpperCase();
+                    if(Codigo != ""){
+                        if(Codigo == document.getElementById("trigrOpr1").value || Codigo == document.getElementById("trigrOpr2").value || Codigo == document.getElementById("trigrOpr3").value || Codigo == document.getElementById("trigrOpr4").value || Codigo == document.getElementById("trigrOpr5").value || Codigo == document.getElementById("trigrOpr6").value || Codigo == document.getElementById("trigrOpr7").value || Codigo == document.getElementById("trigrOpr8").value || Codigo == document.getElementById("trigrOpr9").value){
+                            document.getElementById("trigrOpr10").value = document.getElementById("guardatrigOpr").value;
+                            $.confirm({
+                                title: 'Falhou!',
+                                content: 'Este trigrama já foi inserido.',
+                                draggable: true,
+                                buttons: {
+                                    OK: function(){}
+                                }
+                            });
+                            return false;
+                        }else{
+                            document.getElementById("corOpr10").innerHTML = Codigo;
+                        }
+                    }
+                });
+
+                $("#selecCorOpr1").change(function(){
+                    document.getElementById("trigrOpr1").style.backgroundColor = document.getElementById("selecCorOpr1").value;
+                });
+                $("#selecCorOpr2").change(function(){
+                    document.getElementById("trigrOpr2").style.backgroundColor = document.getElementById("selecCorOpr2").value;
+                });
+                $("#selecCorOpr3").change(function(){
+                    document.getElementById("trigrOpr3").style.backgroundColor = document.getElementById("selecCorOpr3").value;
+                });
+                $("#selecCorOpr4").change(function(){
+                    document.getElementById("trigrOpr4").style.backgroundColor = document.getElementById("selecCorOpr4").value;
+                });
+                $("#selecCorOpr5").change(function(){
+                    document.getElementById("trigrOpr5").style.backgroundColor = document.getElementById("selecCorOpr5").value;
+                });
+                $("#selecCorOpr6").change(function(){
+                    document.getElementById("trigrOpr6").style.backgroundColor = document.getElementById("selecCorOpr6").value;
+                });
+                $("#selecCorOpr7").change(function(){
+                    document.getElementById("trigrOpr7").style.backgroundColor = document.getElementById("selecCorOpr7").value;
+                });
+                $("#selecCorOpr8").change(function(){
+                    document.getElementById("trigrOpr8").style.backgroundColor = document.getElementById("selecCorOpr8").value;
+                });
+                $("#selecCorOpr9").change(function(){
+                    document.getElementById("trigrOpr9").style.backgroundColor = document.getElementById("selecCorOpr9").value;
+                });
+                $("#selecCorOpr10").change(function(){
+                    document.getElementById("trigrOpr10").style.backgroundColor = document.getElementById("selecCorOpr10").value;
                 });
 
 
             }); // fim do ready
 
- 
-            function validaData (valor) { // tks ao Arthur Ronconi  - https://devarthur.com/blog/funcao-para-validar-data-em-javascript
-                // Verifica se a entrada é uma string
-                if (typeof valor !== 'string') {
-                    return false;
-                }
-                // Verifica formado da data
-                if (!/^\d{2}\/\d{2}\/\d{4}$/.test(valor)) {
-                    return false;
-                }
-                // Divide a data para o objeto "data"
-                const partesData = valor.split('/')
-                const data = { 
-                    dia: partesData[0], 
-                    mes: partesData[1], 
-                    ano: partesData[2] 
-                }
-                // Converte strings em número
-                const dia = parseInt(data.dia);
-                const mes = parseInt(data.mes);
-                const ano = parseInt(data.ano);
-                // Dias de cada mês, incluindo ajuste para ano bissexto
-                const diasNoMes = [ 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ];
-                // Atualiza os dias do mês de fevereiro para ano bisexto
-                if (ano % 400 === 0 || ano % 4 === 0 && ano % 100 !== 0) {
-                    diasNoMes[2] = 29
-                }
-                // Regras de validação:
-                // Mês deve estar entre 1 e 12, e o dia deve ser maior que zero
-                if (mes < 1 || mes > 12 || dia < 1) {
-                    return false;
-                }else if (dia > diasNoMes[mes]) { // Valida número de dias do mês
-                    return false;
-                }
-                return true // Passou nas validações
-            }
+            function pegaCor(Opr){
+                document.getElementById("guardaOpr").value = "";
+                document.getElementById("guardacor").value = "";
+                document.getElementById("guardacor").value = document.getElementById("guardacor"+Opr).value;
 
-            function pegaCor(Cor, Opr){
-                document.getElementById("guardacor").value = Cor;
+                document.getElementById("amostraCor").style.backgroundColor = document.getElementById("guardacor"+Opr).value;
+
                 document.getElementById("guardaOpr").value = document.getElementById("selecOpr"+Opr).value;
                 document.getElementById("guardatrigrama").value = document.getElementById("corOpr0"+Opr).innerHTML;
-
-
-//                document.getElementById("guardaid").value = document.getElementById("selecOpr1").value;
             }
 
             function insereCor(id, Dia, Mes, Ano, Hora){
+                if(document.getElementById("guardaOpr").value == ""){
+                    return false;
+                }
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escalas/salvaEscala.php?acao=marcaescala&codigo="+document.getElementById("guardaOpr").value
@@ -437,25 +1138,331 @@ if(!isset($_SESSION["usuarioID"])){
                             if(ajax.responseText){
 //alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
-                                if(document.getElementById(id).style.backgroundColor == document.getElementById("guardacor").value){
+                                if(document.getElementById(id).innerHTML == document.getElementById("guardatrigrama").value){
                                     document.getElementById(id).style.backgroundColor = "#FFFFFF"; // fundo branco
                                     document.getElementById(id).innerHTML = "&nbsp;"; // espaço
                                 }else{
                                     document.getElementById(id).style.backgroundColor = document.getElementById("guardacor").value;
                                     document.getElementById(id).innerHTML = document.getElementById("guardatrigrama").value;
                                 }
+                                document.getElementById("tempoEscala"+Resp.opr).innerHTML = Resp.tempototal;
+                                if(parseInt(Resp.oprlocal) > 0){ // se tinha um participante no local clicado
+                                    document.getElementById("tempoEscala"+Resp.oprlocal).innerHTML = Resp.tempototallocal;
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+
+            }
+            function fechaModal(){
+                if(document.getElementById("mudou").value == "1"){
+                    $("#escala").load("modulos/escalas/relEsc_adm.php?mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
+                }
+                document.getElementById("relacMostraEscala").style.display = "none";
+            }
+
+            function abreModal(){
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escalas/salvaEscala.php?acao=calculatempos&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                
+                                document.getElementById("somaOpr1").innerHTML = Resp.tempo1;
+                                document.getElementById("somaOpr2").innerHTML = Resp.tempo2;
+                                document.getElementById("somaOpr3").innerHTML = Resp.tempo3;
+                                document.getElementById("somaOpr4").innerHTML = Resp.tempo4;
+                                document.getElementById("somaOpr5").innerHTML = Resp.tempo5;
+                                document.getElementById("somaOpr6").innerHTML = Resp.tempo6;
+                                document.getElementById("somaOpr7").innerHTML = Resp.tempo7;
+                                document.getElementById("somaOpr8").innerHTML = Resp.tempo8;
+                                document.getElementById("somaOpr9").innerHTML = Resp.tempo9;
+                                document.getElementById("somaOpr10").innerHTML = Resp.tempo10;
+                                document.getElementById("relacMostraEscala").style.display = "block";
                             }
                         }
                     };
                     ajax.send(null);
                 }
             }
-            function fechaModal(){
-                document.getElementById("relacMostraEscala").style.display = "none";
+
+            function salvaOpr(Pos){
+                if(document.getElementById("selecMesAno").value != ""){
+                    if(document.getElementById("selecOpr"+Pos).value == ""){
+                        $.confirm({
+                             title: 'Atenção!',
+                            content: 'Selecione um participante <br>na primeira caixa de escolha à esquerda.',
+                            draggable: true,
+                            buttons: {
+                                OK: function(){}
+                            }
+                        });
+                        return false;
+                    }
+                    if(document.getElementById("trigrOpr"+Pos).value == "" || document.getElementById("trigrOpr"+Pos).value == "xxx" || document.getElementById("trigrOpr"+Pos).value == "XXX"){
+                        document.getElementById("trigrOpr"+Pos).focus();
+                        $.confirm({
+                             title: 'Atenção!',
+                            content: 'Informe um identificador de três letras.',
+                            draggable: true,
+                            buttons: {
+                                OK: function(){}
+                            }
+                        });
+                        return false;
+                    }
+                    if(document.getElementById("selecCorOpr"+Pos).value == "0" || document.getElementById("selecCorOpr"+Pos).value == ""){
+                        document.getElementById("selecCorOpr"+Pos).focus();
+                        $.confirm({
+                             title: 'Atenção!',
+                            content: 'Selecione uma cor <br>para representar o participante.',
+                            draggable: true,
+                            buttons: {
+                                OK: function(){}
+                            }
+                        });
+                        return false;
+                    }
+                    document.getElementById("guardacor"+Pos).value = document.getElementById("selecCorOpr"+Pos).value;
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/escalas/salvaEscala.php?acao=salvaOpr&opr="+Pos+"&codigo="+document.getElementById("selecOpr"+Pos).value
+                        +"&trigr="+document.getElementById("trigrOpr"+Pos).value
+                        +"&cor="+encodeURIComponent(document.getElementById("selecCorOpr"+Pos).value)
+                        +"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value)
+                        , true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText); 
+                                    Resp = eval("(" + ajax.responseText + ")");
+                                    if(parseInt(Resp.coderro) === 1){
+                                        alert("Houve um erro no servidor.")
+                                    }else if(parseInt(Resp.coderro) === 2){
+                                        $.confirm({
+                                            title: 'Erro!',
+                                            content: 'Já está na escala neste mês.',
+                                            draggable: true,
+                                            buttons: {
+                                                OK: function(){}
+                                            }
+                                        });
+                                    }else{
+                                        $.confirm({
+                                            title: 'Sucesso!',
+                                            content: 'Valores salvos com sucesso.',
+                                            autoClose: 'OK|7000',
+                                            draggable: true,
+                                            buttons: {
+                                                OK: function(){}
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                }else{
+                    $.confirm({
+                         title: 'Atenção!',
+                        content: 'Selecione mês e ano.',
+                        draggable: true,
+                        buttons: {
+                            OK: function(){}
+                        }
+                    });
+                    return false;
+                }
             }
-            function abreModal(){
-                document.getElementById("relacMostraEscala").style.display = "block";
+
+            function limparMes(){  //'+document.getElementById("selecMesAno").value
+                let MesAno = 'Não haverá possibilidade de recuperação. <br>Confirma apagar lançamentos de '+document.getElementById('selecMesAno').value+'?';
+                $.confirm({
+                    title: 'Confirmação!',
+                    content: 'Não haverá possibilidade de recuperação. <br>Confirma apagar lançamentos de '+document.getElementById('selecMesAno').value+'?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/escalas/salvaEscala.php?acao=apagadatas&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                            if(parseInt(Resp.coderro) === 0){
+                                                document.getElementById("relacMostraEscala").style.display = "none";
+                                                $("#escala").load("modulos/escalas/relEsc_adm.php?mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
+
+                $.confirm({
+                    title: 'Confirmação!',
+                    content: 'Confirma limpar também <br>os nomes dos participantes da <br>escala de '+document.getElementById("selecMesAno").value+'?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/escalas/salvaEscala.php?acao=apagaparticip&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                            if(parseInt(Resp.coderro) === 0){
+                                                document.getElementById("relacMostraEscala").style.display = "none";
+                                                $("#escala").load("modulos/escalas/relEsc_adm.php?mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
+
+                                                document.getElementById("guardaOpr").value = ""; // para não ficar de um mês para outro
+                                                document.getElementById("amostraCor").style.backgroundColor = "#FFFFFF"; // fundo branco
+                                                document.getElementById("guardatrigrama").value = "&nbsp;"; // para manter a caixa com altura
+                                                document.getElementById("guardacor").value = "";
+
+                                                document.getElementById("corOpr01").innerHTML = "";
+                                                document.getElementById("corOpr01").style.backgroundColor = "#FFFFFF"; // fundo branco
+                                                document.getElementById("corOpr02").innerHTML = "";
+                                                document.getElementById("corOpr02").style.backgroundColor = "#FFFFFF"; // fundo branco
+                                                document.getElementById("corOpr03").innerHTML = "";
+                                                document.getElementById("corOpr03").style.backgroundColor = "#FFFFFF"; // fundo branco
+                                                document.getElementById("corOpr04").innerHTML = "";
+                                                document.getElementById("corOpr04").style.backgroundColor = "#FFFFFF"; // fundo branco
+                                                document.getElementById("corOpr05").innerHTML = "";
+                                                document.getElementById("corOpr05").style.backgroundColor = "#FFFFFF"; // fundo branco
+                                                document.getElementById("corOpr06").innerHTML = "";
+                                                document.getElementById("corOpr06").style.backgroundColor = "#FFFFFF"; // fundo branco
+                                                document.getElementById("corOpr07").innerHTML = "";
+                                                document.getElementById("corOpr07").style.backgroundColor = "#FFFFFF"; // fundo branco
+                                                document.getElementById("corOpr08").innerHTML = "";
+                                                document.getElementById("corOpr08").style.backgroundColor = "#FFFFFF"; // fundo branco
+                                                document.getElementById("corOpr09").innerHTML = "";
+                                                document.getElementById("corOpr09").style.backgroundColor = "#FFFFFF"; // fundo branco
+                                                document.getElementById("corOpr10").innerHTML = "";
+                                                document.getElementById("corOpr10").style.backgroundColor = "#FFFFFF"; // fundo branco
+
+                                                document.getElementById("selecOpr1").value = "";
+                                                document.getElementById("selecOpr2").value = "";
+                                                document.getElementById("selecOpr3").value = "";
+                                                document.getElementById("selecOpr4").value = "";
+                                                document.getElementById("selecOpr5").value = "";
+                                                document.getElementById("selecOpr6").value = "";
+                                                document.getElementById("selecOpr7").value = "";
+                                                document.getElementById("selecOpr8").value = "";
+                                                document.getElementById("selecOpr9").value = "";
+                                                document.getElementById("selecOpr10").value = "";
+
+                                                document.getElementById("trigrOpr1").value = "";
+                                                document.getElementById("trigrOpr2").value = "";
+                                                document.getElementById("trigrOpr3").value = "";
+                                                document.getElementById("trigrOpr4").value = "";
+                                                document.getElementById("trigrOpr5").value = "";
+                                                document.getElementById("trigrOpr6").value = "";
+                                                document.getElementById("trigrOpr7").value = "";
+                                                document.getElementById("trigrOpr8").value = "";
+                                                document.getElementById("trigrOpr9").value = "";
+                                                document.getElementById("trigrOpr10").value = "";
+
+                                                document.getElementById("trigrOpr1").style.backgroundColor = "#FFFFFF";
+                                                document.getElementById("trigrOpr2").style.backgroundColor = "#FFFFFF";
+                                                document.getElementById("trigrOpr3").style.backgroundColor = "#FFFFFF";
+                                                document.getElementById("trigrOpr4").style.backgroundColor = "#FFFFFF";
+                                                document.getElementById("trigrOpr5").style.backgroundColor = "#FFFFFF";
+                                                document.getElementById("trigrOpr6").style.backgroundColor = "#FFFFFF";
+                                                document.getElementById("trigrOpr7").style.backgroundColor = "#FFFFFF";
+                                                document.getElementById("trigrOpr8").style.backgroundColor = "#FFFFFF";
+                                                document.getElementById("trigrOpr9").style.backgroundColor = "#FFFFFF";
+                                                document.getElementById("trigrOpr10").style.backgroundColor = "#FFFFFF";
+
+                                                document.getElementById("selecCorOpr1").value = "";
+                                                document.getElementById("selecCorOpr2").value = "";
+                                                document.getElementById("selecCorOpr3").value = "";
+                                                document.getElementById("selecCorOpr4").value = "";
+                                                document.getElementById("selecCorOpr5").value = "";
+                                                document.getElementById("selecCorOpr6").value = "";
+                                                document.getElementById("selecCorOpr7").value = "";
+                                                document.getElementById("selecCorOpr8").value = "";
+                                                document.getElementById("selecCorOpr9").value = "";
+                                                document.getElementById("selecCorOpr10").value = "";
+                                            }else{
+                                                alert("Houve um erro no servidor.")
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {}
+                    }
+                });
+
+                                            }else{
+                                                alert("Houve um erro no servidor.")
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {}
+                    }
+                });
             }
+
+            function insereDia(Dia, Mes, Ano){ // marca dia 08/12 e 14/18
+                if(document.getElementById("guardaOpr").value != ""){
+                    $.confirm({
+                        title: 'Confirmação!',
+                        content: 'Confirma marcar o dia '+Dia+' todo <br>(08/12h e 14/18h) com '+document.getElementById("guardatrigrama").value+'?',
+                        autoClose: 'Não|10000',
+                        draggable: true,
+                        buttons: {
+                            Sim: function () {
+                                ajaxIni();
+                                if(ajax){
+                                    ajax.open("POST", "modulos/escalas/salvaEscala.php?acao=marcadia&codigo="+document.getElementById("guardaOpr").value +"&dia="+Dia+"&mes="+Mes+"&ano="+Ano, true);
+                                    ajax.onreadystatechange = function(){
+                                        if(ajax.readyState === 4 ){
+                                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                                if(parseInt(Resp.coderro) === 0){
+                                                    $("#escala").load("modulos/escalas/relEsc_adm.php?mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
+                                                    document.getElementById("tempoEscala"+Resp.opr).innerHTML = Resp.cargaEscala;
+                                                    document.getElementById("tempoEscala1").innerHTML = Resp.tempo1;
+                                                    document.getElementById("tempoEscala2").innerHTML = Resp.tempo2;
+                                                    document.getElementById("tempoEscala3").innerHTML = Resp.tempo3;
+                                                    document.getElementById("tempoEscala4").innerHTML = Resp.tempo4;
+                                                    document.getElementById("tempoEscala5").innerHTML = Resp.tempo5;
+                                                    document.getElementById("tempoEscala6").innerHTML = Resp.tempo6;
+                                                    document.getElementById("tempoEscala7").innerHTML = Resp.tempo7;
+                                                    document.getElementById("tempoEscala8").innerHTML = Resp.tempo8;
+                                                    document.getElementById("tempoEscala9").innerHTML = Resp.tempo9;
+                                                    document.getElementById("tempoEscala10").innerHTML = Resp.tempo10;
+                                                }else{
+                                                    alert("Houve um erro no servidor.")
+                                                }
+                                            }
+                                        }
+                                    };
+                                    ajax.send(null);
+                                }
+                            },
+                            Não: function () {}
+                        }
+                    });
+                }
+            }
+
+            
         </script>
     </head>
     <body>
@@ -542,6 +1549,8 @@ if(!isset($_SESSION["usuarioID"])){
             oprcor VARCHAR(10) DEFAULT '#FFFFFF',
             poslog_id BIGINT NOT NULL DEFAULT 0,
             trigr VARCHAR(4), 
+            tempomensal VARCHAR(100), 
+            tempototal VARCHAR(100), 
             ativo smallint DEFAULT 1 NOT NULL, 
             usuins integer DEFAULT 0 NOT NULL,
             datains timestamp without time zone DEFAULT '3000-12-31',
@@ -550,23 +1559,15 @@ if(!isset($_SESSION["usuarioID"])){
             ) 
          ");
 
-         $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".escala_eft LIMIT 3");
-         $row = pg_num_rows($rs);
-         if($row == 0){
-            pg_query($Conec, "INSERT INTO ".$xProj.".escala_eft (mes, ano, opr, oprcor, poslog_id, trigr, ativo, usuins, datains) VALUES ('07', '2024', 1, 'red', 153, 'PIC', 1, 153, NOW() )");
-            pg_query($Conec, "INSERT INTO ".$xProj.".escala_eft (mes, ano, opr, oprcor, poslog_id, trigr, ativo, usuins, datains) VALUES ('07', '2024', 2, 'blue', 6, 'PEN', 1, 153, NOW() )");
-            pg_query($Conec, "INSERT INTO ".$xProj.".escala_eft (mes, ano, opr, oprcor, poslog_id, trigr, ativo, usuins, datains) VALUES ('07', '2024', 3, 'green', 33, 'ARI', 1, 153, NOW() )");
-            pg_query($Conec, "INSERT INTO ".$xProj.".escala_eft (mes, ano, opr, oprcor, poslog_id, trigr, ativo, usuins, datains) VALUES ('07', '2024', 4, 'yellow', 30, 'POR', 1, 153, NOW() )");
-         }
-
          date_default_timezone_set('America/Sao_Paulo'); //Um dia = 86.400 seg
          require_once("../calendario/functions.php");
          $DiaIni = strtotime(date('Y/m/01')); // número - para começar com o dia 1
          $DiaIni = strtotime("-1 day", $DiaIni); // para começar com o dia 1 no loop for
-         $ParamIni = date("n/Y"); // n - repres o mês sem os zeros iniciais
+         $ParamIni = date("m/Y");
+//         $ParamIni = date("n/Y"); // n - repres o mês sem os zeros iniciais
 
-         //Mantem a tabela pelo menos 60 dias na frente, considerando que o loop pode começar no fim do mês
-         for($i = 0; $i < 90; $i++){
+         //Mantem a tabela meses à frente
+         for($i = 0; $i < 180; $i++){
             $Amanha = strtotime("+1 day", $DiaIni);
             $DiaIni = $Amanha;
             $Data = date("Y/m/d", $Amanha); // data legível
@@ -576,8 +1577,7 @@ if(!isset($_SESSION["usuarioID"])){
                 pg_query($Conec, "INSERT INTO ".$xProj.".escala_adm (dataescala) VALUES ('$Data')");
             }
          }
-         echo "<br>";
-
+         echo "<br><br>";
 
 //         $mesAno = date("F Y", $monthTime);
          $Ingl = array("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December");
@@ -588,30 +1588,52 @@ if(!isset($_SESSION["usuarioID"])){
 //    $admIns = parAdm("insevento", $Conec, $xProj);   // nível para inserir evento no calendário
 //    $admEdit = parAdm("editevento", $Conec, $xProj); // nível para editar evento no calendário
 
+//        $OpcoesEscMes = pg_query($Conec, "SELECT EXTRACT(MONTH FROM ".$xProj.".escala_adm.dataescala)::text ||'/'|| EXTRACT(YEAR FROM ".$xProj.".escala_adm.dataescala)::text 
+//        FROM ".$xProj.".escala_adm GROUP BY 1 ORDER BY 1 DESC ");
 
-        $OpUsuAnt = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE lro = 1 And Ativo = 1 And pessoas_id != ".$_SESSION["usuarioID"]." ORDER BY nomecompl"); // And codsetor = 
-        $OpcoesEscMes = pg_query($Conec, "SELECT EXTRACT(MONTH FROM ".$xProj.".escala_adm.dataescala)::text ||'/'|| EXTRACT(YEAR FROM ".$xProj.".escala_adm.dataescala)::text 
-        FROM ".$xProj.".escala_adm GROUP BY 1 ORDER BY 1 DESC ");
+         $rs1 = pg_query($Conec, "SELECT guardaescala FROM ".$xProj.".paramsis WHERE idpar = 1");
+         $tbl1 = pg_fetch_row($rs1);
+         $EscMes = $tbl1[0];
+         if(!is_null($EscMes)){
+            $ParamIni = $EscMes;
+         }
 
-        $OpUsu01 = pg_query($Conec, "SELECT poslog_id, nomecompl FROM ".$xProj.".poslog INNER JOIN ".$xProj.".escala_eft ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escala_eft.poslog_id WHERE ".$xProj.".escala_eft.ativo = 1 And ".$xProj.".poslog.ativo = 1 ORDER BY nomecompl"); 
-        $OpUsu02 = pg_query($Conec, "SELECT poslog_id, nomecompl FROM ".$xProj.".poslog INNER JOIN ".$xProj.".escala_eft ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escala_eft.poslog_id WHERE ".$xProj.".escala_eft.ativo = 1 And ".$xProj.".poslog.ativo = 1 ORDER BY nomecompl"); 
-        $OpUsu03 = pg_query($Conec, "SELECT poslog_id, nomecompl FROM ".$xProj.".poslog INNER JOIN ".$xProj.".escala_eft ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escala_eft.poslog_id WHERE ".$xProj.".escala_eft.ativo = 1 And ".$xProj.".poslog.ativo = 1 ORDER BY nomecompl"); 
-        $OpUsu04 = pg_query($Conec, "SELECT poslog_id, nomecompl FROM ".$xProj.".poslog INNER JOIN ".$xProj.".escala_eft ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escala_eft.poslog_id WHERE ".$xProj.".escala_eft.ativo = 1 And ".$xProj.".poslog.ativo = 1 ORDER BY nomecompl"); 
-        $OpUsu05 = pg_query($Conec, "SELECT poslog_id, nomecompl FROM ".$xProj.".poslog INNER JOIN ".$xProj.".escala_eft ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escala_eft.poslog_id WHERE ".$xProj.".escala_eft.ativo = 1 And ".$xProj.".poslog.ativo = 1 ORDER BY nomecompl"); 
-        $OpUsu06 = pg_query($Conec, "SELECT poslog_id, nomecompl FROM ".$xProj.".poslog INNER JOIN ".$xProj.".escala_eft ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escala_eft.poslog_id WHERE ".$xProj.".escala_eft.ativo = 1 And ".$xProj.".poslog.ativo = 1 ORDER BY nomecompl"); 
-        $OpUsu07 = pg_query($Conec, "SELECT poslog_id, nomecompl FROM ".$xProj.".poslog INNER JOIN ".$xProj.".escala_eft ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escala_eft.poslog_id WHERE ".$xProj.".escala_eft.ativo = 1 And ".$xProj.".poslog.ativo = 1 ORDER BY nomecompl"); 
-        $OpUsu08 = pg_query($Conec, "SELECT poslog_id, nomecompl FROM ".$xProj.".poslog INNER JOIN ".$xProj.".escala_eft ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escala_eft.poslog_id WHERE ".$xProj.".escala_eft.ativo = 1 And ".$xProj.".poslog.ativo = 1 ORDER BY nomecompl"); 
-        $OpUsu09 = pg_query($Conec, "SELECT poslog_id, nomecompl FROM ".$xProj.".poslog INNER JOIN ".$xProj.".escala_eft ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escala_eft.poslog_id WHERE ".$xProj.".escala_eft.ativo = 1 And ".$xProj.".poslog.ativo = 1 ORDER BY nomecompl"); 
-//        $OpUsu10 = pg_query($Conec, "SELECT poslog_id, nomecompl FROM ".$xProj.".poslog INNER JOIN ".$xProj.".escala_eft ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escala_eft.poslog_id WHERE ".$xProj.".escala_eft.ativo = 1 And ".$xProj.".poslog.ativo = 1 ORDER BY nomecompl"); 
+        $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataescala, 'MM'), '/', TO_CHAR(dataescala, 'YYYY')) 
+        FROM ".$xProj.".escala_adm GROUP BY TO_CHAR(dataescala, 'MM'), TO_CHAR(dataescala, 'YYYY') ORDER BY TO_CHAR(dataescala, 'YYYY'), TO_CHAR(dataescala, 'MM') DESC ");
+
+        $OpUsu01 = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
+        $OpUsu02 = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
+        $OpUsu03 = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
+        $OpUsu04 = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
+        $OpUsu05 = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
+        $OpUsu06 = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
+        $OpUsu07 = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
+        $OpUsu08 = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
+        $OpUsu09 = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
         $OpUsu10 = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl"); 
         ?>
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
         <input type="hidden" id="guardacor" value="" />
+        <input type="hidden" id="guardacor1" value="" />
+        <input type="hidden" id="guardacor2" value="" />
+        <input type="hidden" id="guardacor3" value="" />
+        <input type="hidden" id="guardacor4" value="" />
+        <input type="hidden" id="guardacor5" value="" />
+        <input type="hidden" id="guardacor6" value="" />
+        <input type="hidden" id="guardacor7" value="" />
+        <input type="hidden" id="guardacor8" value="" />
+        <input type="hidden" id="guardacor9" value="" />
+        <input type="hidden" id="guardacor10" value="" />
+
         <input type="hidden" id="guardamesano" value="<?php echo $ParamIni; ?>" />
         <input type="hidden" id="guardaid" value="" />
         <input type="hidden" id="guardaOpr" value="" />
         <input type="hidden" id="guardatrigrama" value="&nbsp;" />
-        
+        <input type="hidden" id="guardaCodOpr" value="" />
+        <input type="hidden" id="guardaCorOpr" value="" />
+        <input type="hidden" id="guardatrigOpr" value="" />
+        <input type="hidden" id="mudou" value = "0" />
+
         <label>Selecione o mês: </label>
         <select id="selecMesAno" style="font-size: 1rem; width: 90px;" title="Selecione o mês/ano.">
             <option value=""></option>
@@ -628,20 +1650,34 @@ if(!isset($_SESSION["usuarioID"])){
             <button class="botpadrblue" onclick="abreModal();">Participantes</button>
         </div>
 
-        <div style="position: fixed; top: 105px; left: 300px; background-color: white; opacity: .8; margin: 20px; border: 2px solid green; border-radius: 15px; padding: 10px; min-height: 70px; text-align: center;">
-
+        <div style="position: fixed; top: 105px; left: 300px; background-color: white; opacity: .8; margin: 20px; border: 2px solid green; border-radius: 15px; padding-left: 10px; padding-top: 2px; padding-right: 10px; padding-bottom: 2px; min-height: 70px; text-align: center;">
+            <label style="color: #036; font-style: italic; font-size: 80%; padding-left: 20px;">Clique para selecionar um participante</label>
+            <div id="amostraCor" style="position: absolute; top: 7px; width: 15px; height: 15px; border: 1px solid; border-radius: 3px;" title="Clique para zerar a seleção do participante"></div>
             <table style="margin: 0 auto; width: 60%;">
+            </tr>
                 <tr>
-                    <td><div id="corOpr01" class="box quadroEscolha" style="background-color: red;" onclick="pegaCor('red', '1');">XXX</div></td>
-                    <td><div id="corOpr02" class="box quadroEscolha" style="background-color: blue;" onclick="pegaCor('blue', '2');">XXX</div></td>
-                    <td><div id="corOpr03" class="box quadroEscolha" style="background-color: yellow;" onclick="pegaCor('yellow', '3');">XXX</div></td>
-                    <td><div id="corOpr04" class="box quadroEscolha" style="background-color: green;" onclick="pegaCor('green', '4');">XXX</div></td>
-                    <td><div id="corOpr05" class="box quadroEscolha" style="background-color: #FF00FF;" onclick="pegaCor('#FF00FF', '5');">XXX</div></td>
-                    <td><div id="corOpr06" class="box quadroEscolha" style="background-color: #FF9933;" onclick="pegaCor('#FF9933', '6');">XXX</div></td>
-                    <td><div id="corOpr07" class="box quadroEscolha" style="background-color: #CC9966;" onclick="pegaCor('#CC9966', '7');">XXX</div></td>
-                    <td><div id="corOpr08" class="box quadroEscolha" style="background-color: #99CC66;" onclick="pegaCor('#99CC66', '8');">XXX</div></td>
-                    <td><div id="corOpr09" class="box quadroEscolha" style="background-color: #6633CC;" onclick="pegaCor('#6633CC', '9');">XXX</div></td>
-                    <td><div id="corOpr10" class="box quadroEscolha" style="background-color: #009933;" onclick="pegaCor('#009933', '10');">XXX</div></td>
+                    <td><div id="corOpr01" class="box quadroEscolha" onclick="pegaCor('1');" title="Clique aqui e depois na escala.">xxx</div></td>
+                    <td><div id="corOpr02" class="box quadroEscolha" onclick="pegaCor('2');" title="Clique aqui e depois na escala.">xxx</div></td>
+                    <td><div id="corOpr03" class="box quadroEscolha" onclick="pegaCor('3');" title="Clique aqui e depois na escala.">xxx</div></td>
+                    <td><div id="corOpr04" class="box quadroEscolha" onclick="pegaCor('4');" title="Clique aqui e depois na escala.">xxx</div></td>
+                    <td><div id="corOpr05" class="box quadroEscolha" onclick="pegaCor('5');" title="Clique aqui e depois na escala.">xxx</div></td>
+                    <td><div id="corOpr06" class="box quadroEscolha" onclick="pegaCor('6');" title="Clique aqui e depois na escala.">xxx</div></td>
+                    <td><div id="corOpr07" class="box quadroEscolha" onclick="pegaCor('7');" title="Clique aqui e depois na escala.">xxx</div></td>
+                    <td><div id="corOpr08" class="box quadroEscolha" onclick="pegaCor('8');" title="Clique aqui e depois na escala.">xxx</div></td>
+                    <td><div id="corOpr09" class="box quadroEscolha" onclick="pegaCor('9');" title="Clique aqui e depois na escala.">xxx</div></td>
+                    <td><div id="corOpr10" class="box quadroEscolha" onclick="pegaCor('10');" title="Clique aqui e depois na escala.">xxx</div></td>
+                </tr>
+                <tr>
+                    <td class="etiq aCentro" id="tempoEscala1" title="Carga horária neste mês."></td>
+                    <td class="etiq aCentro" id="tempoEscala2" title="Carga horária neste mês."></td>
+                    <td class="etiq aCentro" id="tempoEscala3" title="Carga horária neste mês."></td>
+                    <td class="etiq aCentro" id="tempoEscala4" title="Carga horária neste mês."></td>
+                    <td class="etiq aCentro" id="tempoEscala5" title="Carga horária neste mês."></td>
+                    <td class="etiq aCentro" id="tempoEscala6" title="Carga horária neste mês."></td>
+                    <td class="etiq aCentro" id="tempoEscala7" title="Carga horária neste mês."></td>
+                    <td class="etiq aCentro" id="tempoEscala8" title="Carga horária neste mês."></td>
+                    <td class="etiq aCentro" id="tempoEscala9" title="Carga horária neste mês."></td>
+                    <td class="etiq aCentro" id="tempoEscala10" title="Carga horária neste mês."></td>
                 </tr>
             </table>
         </div>
@@ -663,7 +1699,7 @@ if(!isset($_SESSION["usuarioID"])){
             <div id="escala"></div>
         </div>
 
-        <!-- div modal para registrar leitura  -->
+        <!-- div modal   -->
         <div id="relacMostraEscala" class="relacmodal">
             <div class="modal-content-Escala">
                 <span class="close" onclick="fechaModal();">&times;</span>
@@ -671,20 +1707,17 @@ if(!isset($_SESSION["usuarioID"])){
                 <div style="border: 2px solid blue; border-radius: 10px;">
                 <table style="margin: 0 auto; width: 95%;">
                     <tr>
-                        <td colspan="2" class="etiq aCentro">A</td>
-                        <td colspan="2" class="etiq aCentro">B</td>
-                        <td colspan="2" class="etiq aCentro">C</td>
-                        <td colspan="2" class="etiq aCentro">D</td>
-                        <td colspan="2" class="etiq aCentro">E</td>
-                        <td colspan="2" class="etiq aCentro">F</td>
-                        <td colspan="2" class="etiq aCentro">G</td>
-                        <td colspan="2" class="etiq aCentro">H</td>
-                        <td colspan="2" class="etiq aCentro">I</td>
-                        <td colspan="2" class="etiq aCentro">J</td>
+                        <td colspan="2" class="etiq aCentro" style="padding-top: 5px;">Participantes</td>
+                        <td colspan="2" class="etiq aCentro" style="padding-top: 5px;">Trigrama</td>
+                        <td colspan="2" class="etiq aCentro" style="padding-top: 5px;">Cor</td>
+                        <td colspan="2"></td>
+                        <td colspan="2" class="etiq aCentro" style="padding-top: 5px;">Carga Mensal</td>
                     </tr>
+
                     <tr>
+                        <td class="etiq">01 </td>
                         <td>
-                            <select id="selecOpr1" style="font-size: 1rem; width: 28px;" title="Selecione um nome.">
+                            <select id="selecOpr1" style="font-size: 1rem; width: 100%;" title="Selecione um nome.">
                             <option value=""></option>
                                 <?php 
                                     if($OpUsu01){
@@ -695,8 +1728,24 @@ if(!isset($_SESSION["usuarioID"])){
                                     }
                                 ?>
                             </select>
-
-
+                        </td>
+                        <td class="etiq"> Trigrama: </td>
+                        <td><input type="text" id="trigrOpr1" placeholder="xxx" value="" style="border: 1px solid; border-radius: 5px; text-align: center; width: 40px; text-transform: uppercase;" /></td>
+                        <td class="etiq">Cor: </td>
+                        <td>
+                            <select id="selecCorOpr1" style="font-size: 1rem; width: 28px;" title="Selecione uma cor.">
+                                <option value="0"></option>
+                                <option style="background-color: #FF0000" value="#FF0000"><div>Vermelho</div></option>
+                                <option style="background-color: #0090FF" value="#0090FF"><div>Azul</div></option>
+                                <option style="background-color: #00FF00" value="#00FF00"><div>Verde</div></option>
+                                <option style="background-color: #FFFF00" value="#FFFF00"><div>Amarelo</div></option>
+                                <option style="background-color: #ffc4d8" value="#ffc4d8"><div>Rosa</div></option>
+                                <option style="background-color: #c8a2c8" value="#c8a2c8"><div>Lilás</div></option>
+                                <option style="background-color: #C0C0C0" value="#C0C0C0"><div>Prata</div></option>
+                                <option style="background-color: #FF00FF" value="#FF00FF"><div>Fúcsia</div></option>
+                                <option style="background-color: #00FFFF" value="#00FFFF"><div>Água</div></option>
+                                <option style="background-color: #808080" value="#808080"><div>Cinza</div></option>
+                            </select>
                             <!--
                             <input type="color" list="presetColors">
                             <datalist id="presetColors">
@@ -707,13 +1756,14 @@ if(!isset($_SESSION["usuarioID"])){
                             -->
 
                         </td>
-
-
-                        <td><div id="corOpr01Prev" class="box" style="position: relative; float: left; border: 1px solid; border-radius: 5px; text-align: center; padding: 5px; width: 40px; background-color: red;" onclick="pegaCor('red', '1');">XXX</div></td>
-
-       
+                        <td></td>
+                        <td><button class="botpadr" onclick="salvaOpr(1);">Salvar</button></td>
+                        <td class="etiq"><div id="somaOpr1" title="Carga horária neste mês."></div></td>
+                    </tr>
+                    <tr>
+                        <td class="etiq">02 </td>
                         <td>
-                        <select id="selecOpr2" style="font-size: 1rem; width: 28px;" title="Selecione um nome.">
+                            <select id="selecOpr2" style="font-size: 1rem; width: 100%;" title="Selecione um nome.">
                             <option value=""></option>
                                 <?php 
                                     if($OpUsu02){
@@ -723,11 +1773,35 @@ if(!isset($_SESSION["usuarioID"])){
                                         }
                                     }
                                 ?>
-                        </select>
+                            </select>
                         </td>
-                        <td><div id="corOpr02Prev" class="box" style="position: relative; float: left; border: 1px solid; border-radius: 5px; text-align: center; padding: 5px; width: 40px; background-color: blue;" onclick="pegaCor('blue', '2');">XXX</div></td>
+                        <td class="etiq"> Trigrama: </td>
+                        <td><input type="text" id="trigrOpr2" placeholder="xxx" value="" style="border: 1px solid; border-radius: 5px; text-align: center; width: 40px; text-transform: uppercase;" /></td>
+                        <td class="etiq">Cor: </td>
                         <td>
-                        <select id="selecOpr3" style="font-size: 1rem; width: 28px;" title="Selecione um nome.">
+                            <select id="selecCorOpr2" style="font-size: 1rem; width: 28px;" title="Selecione uma cor.">
+                                <option value="0"></option>
+                                <option style="background-color: #FF0000" value="#FF0000"><div>Vermelho</div></option>
+                                <option style="background-color: #0090FF" value="#0090FF"><div>Azul</div></option>
+                                <option style="background-color: #00FF00" value="#00FF00"><div>Verde</div></option>
+                                <option style="background-color: #FFFF00" value="#FFFF00"><div>Amarelo</div></option>
+                                <option style="background-color: #ffc4d8" value="#ffc4d8"><div>Rosa</div></option>
+                                <option style="background-color: #c8a2c8" value="#c8a2c8"><div>Lilás</div></option>
+                                <option style="background-color: #C0C0C0" value="#C0C0C0"><div>Prata</div></option>
+                                <option style="background-color: #FF00FF" value="#FF00FF"><div>Fúcsia</div></option>
+                                <option style="background-color: #00FFFF" value="#00FFFF"><div>Água</div></option>
+                                <option style="background-color: #808080" value="#808080"><div>Cinza</div></option>
+                            </select>
+                        </td>
+                        <td></td>
+                        <td><button class="botpadr" onclick="salvaOpr(2);">Salvar</button></td>
+                        <td class="etiq"><div id="somaOpr2" title="Carga horária neste mês."></div></td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq">03 </td>
+                        <td>
+                            <select id="selecOpr3" style="font-size: 1rem; width: 100%;" title="Selecione um nome.">
                             <option value=""></option>
                                 <?php 
                                     if($OpUsu03){
@@ -737,12 +1811,35 @@ if(!isset($_SESSION["usuarioID"])){
                                         }
                                     }
                                 ?>
-                        </select>
+                            </select>
                         </td>
-                        <td><div id="corOpr03Prev" class="box" style="position: relative; float: left; border: 1px solid; border-radius: 5px; text-align: center; padding: 5px; width: 40px; background-color: yellow;" onclick="pegaCor('yellow', '3');">XXX</div></td>
-
+                        <td class="etiq"> Trigrama: </td>
+                        <td><input type="text" id="trigrOpr3" placeholder="xxx" value="" style="border: 1px solid; border-radius: 5px; text-align: center; width: 40px; text-transform: uppercase;" /></td>
+                        <td class="etiq">Cor: </td>
                         <td>
-                        <select id="selecOpr4" style="font-size: 1rem; width: 28px;" title="Selecione um nome.">
+                            <select id="selecCorOpr3" style="font-size: 1rem; width: 28px;" title="Selecione uma cor.">
+                                <option value="0"></option>
+                                <option style="background-color: #FF0000" value="#FF0000"><div>Vermelho</div></option>
+                                <option style="background-color: #0090FF" value="#0090FF"><div>Azul</div></option>
+                                <option style="background-color: #00FF00" value="#00FF00"><div>Verde</div></option>
+                                <option style="background-color: #FFFF00" value="#FFFF00"><div>Amarelo</div></option>
+                                <option style="background-color: #ffc4d8" value="#ffc4d8"><div>Rosa</div></option>
+                                <option style="background-color: #c8a2c8" value="#c8a2c8"><div>Lilás</div></option>
+                                <option style="background-color: #C0C0C0" value="#C0C0C0"><div>Prata</div></option>
+                                <option style="background-color: #FF00FF" value="#FF00FF"><div>Fúcsia</div></option>
+                                <option style="background-color: #00FFFF" value="#00FFFF"><div>Água</div></option>
+                                <option style="background-color: #808080" value="#808080"><div>Cinza</div></option>
+                            </select>
+                        </td>
+                        <td></td>
+                        <td><button class="botpadr" onclick="salvaOpr(3);">Salvar</button></td>
+                        <td class="etiq"><div id="somaOpr3" title="Carga horária neste mês."></div></td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq">04 </td>
+                        <td>
+                            <select id="selecOpr4" style="font-size: 1rem; width: 100%;" title="Selecione um nome.">
                             <option value=""></option>
                                 <?php 
                                     if($OpUsu04){
@@ -752,12 +1849,35 @@ if(!isset($_SESSION["usuarioID"])){
                                         }
                                     }
                                 ?>
-                        </select>
+                            </select>
                         </td>
-                        <td><div id="corOpr04Prev" class="box" style="position: relative; float: left; border: 1px solid; border-radius: 5px; text-align: center; padding: 5px; width: 40px; background-color: green;" onclick="pegaCor('green', '4');">XXX</div></td>
-
+                        <td class="etiq"> Trigrama: </td>
+                        <td><input type="text" id="trigrOpr4" placeholder="xxx" value="" style="border: 1px solid; border-radius: 5px; text-align: center; width: 40px; text-transform: uppercase;" /></td>
+                        <td class="etiq">Cor: </td>
                         <td>
-                        <select id="selecOpr5" style="font-size: 1rem; width: 28px;" title="Selecione um nome.">
+                            <select id="selecCorOpr4" style="font-size: 1rem; width: 28px;" title="Selecione uma cor.">
+                                <option value="0"></option>
+                                <option style="background-color: #FF0000" value="#FF0000"><div>Vermelho</div></option>
+                                <option style="background-color: #0090FF" value="#0090FF"><div>Azul</div></option>
+                                <option style="background-color: #00FF00" value="#00FF00"><div>Verde</div></option>
+                                <option style="background-color: #FFFF00" value="#FFFF00"><div>Amarelo</div></option>
+                                <option style="background-color: #ffc4d8" value="#ffc4d8"><div>Rosa</div></option>
+                                <option style="background-color: #c8a2c8" value="#c8a2c8"><div>Lilás</div></option>
+                                <option style="background-color: #C0C0C0" value="#C0C0C0"><div>Prata</div></option>
+                                <option style="background-color: #FF00FF" value="#FF00FF"><div>Fúcsia</div></option>
+                                <option style="background-color: #00FFFF" value="#00FFFF"><div>Água</div></option>
+                                <option style="background-color: #808080" value="#808080"><div>Cinza</div></option>
+                            </select>
+                        </td>
+                        <td></td>
+                        <td><button class="botpadr" onclick="salvaOpr(4);">Salvar</button></td>
+                        <td class="etiq"><div id="somaOpr4" title="Carga horária neste mês."></div></td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq">05 </td>
+                        <td>
+                            <select id="selecOpr5" style="font-size: 1rem; width: 100%;" title="Selecione um nome.">
                             <option value=""></option>
                                 <?php 
                                     if($OpUsu05){
@@ -767,12 +1887,35 @@ if(!isset($_SESSION["usuarioID"])){
                                         }
                                     }
                                 ?>
-                        </select>
+                            </select>
                         </td>
-                        <td><div id="corOpr05Prev" class="box" style="position: relative; float: left; border: 1px solid; border-radius: 5px; text-align: center; padding: 5px; width: 40px; background-color: #FF00FF;" onclick="pegaCor('#FF00FF', '5');">XXX</div></td>
-
+                        <td class="etiq"> Trigrama: </td>
+                        <td><input type="text" id="trigrOpr5" placeholder="xxx" value="" style="border: 1px solid; border-radius: 5px; text-align: center; width: 40px; text-transform: uppercase;" /></td>
+                        <td class="etiq">Cor: </td>
                         <td>
-                        <select id="selecOpr6" style="font-size: 1rem; width: 28px;" title="Selecione um nome.">
+                            <select id="selecCorOpr5" style="font-size: 1rem; width: 28px;" title="Selecione uma cor.">
+                                <option value="0"></option>
+                                <option style="background-color: #FF0000" value="#FF0000"><div>Vermelho</div></option>
+                                <option style="background-color: #0090FF" value="#0090FF"><div>Azul</div></option>
+                                <option style="background-color: #00FF00" value="#00FF00"><div>Verde</div></option>
+                                <option style="background-color: #FFFF00" value="#FFFF00"><div>Amarelo</div></option>
+                                <option style="background-color: #ffc4d8" value="#ffc4d8"><div>Rosa</div></option>
+                                <option style="background-color: #c8a2c8" value="#c8a2c8"><div>Lilás</div></option>
+                                <option style="background-color: #C0C0C0" value="#C0C0C0"><div>Prata</div></option>
+                                <option style="background-color: #FF00FF" value="#FF00FF"><div>Fúcsia</div></option>
+                                <option style="background-color: #00FFFF" value="#00FFFF"><div>Água</div></option>
+                                <option style="background-color: #808080" value="#808080"><div>Cinza</div></option>
+                            </select>
+                        </td>
+                        <td></td>
+                        <td><button class="botpadr" onclick="salvaOpr(5);">Salvar</button></td>
+                        <td class="etiq"><div id="somaOpr5" title="Carga horária neste mês."></div></td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq">06 </td>
+                        <td>
+                            <select id="selecOpr6" style="font-size: 1rem; width: 100%;" title="Selecione um nome.">
                             <option value=""></option>
                                 <?php 
                                     if($OpUsu06){
@@ -782,12 +1925,35 @@ if(!isset($_SESSION["usuarioID"])){
                                         }
                                     }
                                 ?>
-                        </select>
+                            </select>
                         </td>
-                        <td><div id="corOpr06Prev" class="box" style="position: relative; float: left; border: 1px solid; border-radius: 5px; text-align: center; padding: 5px; width: 40px; background-color: #FF9933;" onclick="pegaCor('#FF00FF', '6');">XXX</div></td>
-
+                        <td class="etiq"> Trigrama: </td>
+                        <td><input type="text" id="trigrOpr6" placeholder="xxx" value="" style="border: 1px solid; border-radius: 5px; text-align: center; width: 40px; text-transform: uppercase;" /></td>
+                        <td class="etiq">Cor: </td>
                         <td>
-                        <select id="selecOpr7" style="font-size: 1rem; width: 28px;" title="Selecione um nome.">
+                            <select id="selecCorOpr6" style="font-size: 1rem; width: 28px;" title="Selecione uma cor.">
+                                <option value="0"></option>
+                                <option style="background-color: #FF0000" value="#FF0000"><div>Vermelho</div></option>
+                                <option style="background-color: #0090FF" value="#0090FF"><div>Azul</div></option>
+                                <option style="background-color: #00FF00" value="#00FF00"><div>Verde</div></option>
+                                <option style="background-color: #FFFF00" value="#FFFF00"><div>Amarelo</div></option>
+                                <option style="background-color: #ffc4d8" value="#ffc4d8"><div>Rosa</div></option>
+                                <option style="background-color: #c8a2c8" value="#c8a2c8"><div>Lilás</div></option>
+                                <option style="background-color: #C0C0C0" value="#C0C0C0"><div>Prata</div></option>
+                                <option style="background-color: #FF00FF" value="#FF00FF"><div>Fúcsia</div></option>
+                                <option style="background-color: #00FFFF" value="#00FFFF"><div>Água</div></option>
+                                <option style="background-color: #808080" value="#808080"><div>Cinza</div></option>
+                            </select>
+                        </td>
+                        <td></td>
+                        <td><button class="botpadr" onclick="salvaOpr(6);">Salvar</button></td>
+                        <td class="etiq"><div id="somaOpr6" title="Carga horária neste mês."></div></td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq">07 </td>
+                        <td>
+                            <select id="selecOpr7" style="font-size: 1rem; width: 100%;" title="Selecione um nome.">
                             <option value=""></option>
                                 <?php 
                                     if($OpUsu07){
@@ -797,12 +1963,35 @@ if(!isset($_SESSION["usuarioID"])){
                                         }
                                     }
                                 ?>
-                        </select>
+                            </select>
                         </td>
-                        <td><div id="corOpr07Prev" class="box" style="position: relative; float: left; border: 1px solid; border-radius: 5px; text-align: center; padding: 5px; width: 40px; background-color: #CC9966;" onclick="pegaCor('#FF00FF', '7');">XXX</div></td>
-
+                        <td class="etiq"> Trigrama: </td>
+                        <td><input type="text" id="trigrOpr7" placeholder="xxx" value="" style="border: 1px solid; border-radius: 5px; text-align: center; width: 40px; text-transform: uppercase;" /></td>
+                        <td class="etiq">Cor: </td>
                         <td>
-                        <select id="selecOpr8" style="font-size: 1rem; width: 28px;" title="Selecione um nome.">
+                            <select id="selecCorOpr7" style="font-size: 1rem; width: 28px;" title="Selecione uma cor.">
+                                <option value="0"></option>
+                                <option style="background-color: #FF0000" value="#FF0000"><div>Vermelho</div></option>
+                                <option style="background-color: #0090FF" value="#0090FF"><div>Azul</div></option>
+                                <option style="background-color: #00FF00" value="#00FF00"><div>Verde</div></option>
+                                <option style="background-color: #FFFF00" value="#FFFF00"><div>Amarelo</div></option>
+                                <option style="background-color: #ffc4d8" value="#ffc4d8"><div>Rosa</div></option>
+                                <option style="background-color: #c8a2c8" value="#c8a2c8"><div>Lilás</div></option>
+                                <option style="background-color: #C0C0C0" value="#C0C0C0"><div>Prata</div></option>
+                                <option style="background-color: #FF00FF" value="#FF00FF"><div>Fúcsia</div></option>
+                                <option style="background-color: #00FFFF" value="#00FFFF"><div>Água</div></option>
+                                <option style="background-color: #808080" value="#808080"><div>Cinza</div></option>
+                            </select>
+                        </td>
+                        <td></td>
+                        <td><button class="botpadr" onclick="salvaOpr(7);">Salvar</button></td>
+                        <td class="etiq"><div id="somaOpr7" title="Carga horária neste mês."></div></td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq">08 </td>
+                        <td>
+                            <select id="selecOpr8" style="font-size: 1rem; width: 100%;" title="Selecione um nome.">
                             <option value=""></option>
                                 <?php 
                                     if($OpUsu08){
@@ -812,12 +2001,35 @@ if(!isset($_SESSION["usuarioID"])){
                                         }
                                     }
                                 ?>
-                        </select>
+                            </select>
                         </td>
-                        <td><div id="corOpr08Prev" class="box" style="position: relative; float: left; border: 1px solid; border-radius: 5px; text-align: center; padding: 5px; width: 40px; background-color: #99CC66;" onclick="pegaCor('#FF00FF', '8');">XXX</div></td>
-
+                        <td class="etiq"> Trigrama: </td>
+                        <td><input type="text" id="trigrOpr8" placeholder="xxx" value="" style="border: 1px solid; border-radius: 5px; text-align: center; width: 40px; text-transform: uppercase;" /></td>
+                        <td class="etiq">Cor: </td>
                         <td>
-                        <select id="selecOpr9" style="font-size: 1rem; width: 28px;" title="Selecione um nome.">
+                            <select id="selecCorOpr8" style="font-size: 1rem; width: 28px;" title="Selecione uma cor.">
+                                <option value="0"></option>
+                                <option style="background-color: #FF0000" value="#FF0000"><div>Vermelho</div></option>
+                                <option style="background-color: #0090FF" value="#0090FF"><div>Azul</div></option>
+                                <option style="background-color: #00FF00" value="#00FF00"><div>Verde</div></option>
+                                <option style="background-color: #FFFF00" value="#FFFF00"><div>Amarelo</div></option>
+                                <option style="background-color: #ffc4d8" value="#ffc4d8"><div>Rosa</div></option>
+                                <option style="background-color: #c8a2c8" value="#c8a2c8"><div>Lilás</div></option>
+                                <option style="background-color: #C0C0C0" value="#C0C0C0"><div>Prata</div></option>
+                                <option style="background-color: #FF00FF" value="#FF00FF"><div>Fúcsia</div></option>
+                                <option style="background-color: #00FFFF" value="#00FFFF"><div>Água</div></option>
+                                <option style="background-color: #808080" value="#808080"><div>Cinza</div></option>
+                            </select>
+                        </td>
+                        <td></td>
+                        <td><button class="botpadr" onclick="salvaOpr(8);">Salvar</button></td>
+                        <td class="etiq" title="Carga horária neste mês."><div id="somaOpr8"></div></td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq">09 </td>
+                        <td>
+                            <select id="selecOpr9" style="font-size: 1rem; width: 100%;" title="Selecione um nome.">
                             <option value=""></option>
                                 <?php 
                                     if($OpUsu09){
@@ -827,12 +2039,35 @@ if(!isset($_SESSION["usuarioID"])){
                                         }
                                     }
                                 ?>
-                        </select>
+                            </select>
                         </td>
-                        <td><div id="corOpr09Prev" class="box" style="position: relative; float: left; border: 1px solid; border-radius: 5px; text-align: center; padding: 5px; width: 40px; background-color: #6633CC;" onclick="pegaCor('#FF00FF', '9');">XXX</div></td>
-
+                        <td class="etiq"> Trigrama: </td>
+                        <td><input type="text" id="trigrOpr9" placeholder="xxx" value="" style="border: 1px solid; border-radius: 5px; text-align: center; width: 40px; text-transform: uppercase;" /></td>
+                        <td class="etiq">Cor: </td>
                         <td>
-                        <select id="selecOpr10" style="font-size: 1rem; width: 28px;" title="Selecione um nome.">
+                            <select id="selecCorOpr9" style="font-size: 1rem; width: 28px;" title="Selecione uma cor.">
+                                <option value="0"></option>
+                                <option style="background-color: #FF0000" value="#FF0000"><div>Vermelho</div></option>
+                                <option style="background-color: #0090FF" value="#0090FF"><div>Azul</div></option>
+                                <option style="background-color: #00FF00" value="#00FF00"><div>Verde</div></option>
+                                <option style="background-color: #FFFF00" value="#FFFF00"><div>Amarelo</div></option>
+                                <option style="background-color: #ffc4d8" value="#ffc4d8"><div>Rosa</div></option>
+                                <option style="background-color: #c8a2c8" value="#c8a2c8"><div>Lilás</div></option>
+                                <option style="background-color: #C0C0C0" value="#C0C0C0"><div>Prata</div></option>
+                                <option style="background-color: #FF00FF" value="#FF00FF"><div>Fúcsia</div></option>
+                                <option style="background-color: #00FFFF" value="#00FFFF"><div>Água</div></option>
+                                <option style="background-color: #808080" value="#808080"><div>Cinza</div></option>
+                            </select>
+                        </td>
+                        <td></td>
+                        <td><button class="botpadr" onclick="salvaOpr(9);">Salvar</button></td>
+                        <td class="etiq" title="Carga horária neste mês."><div id="somaOpr9"></div></td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq">10 </td>
+                        <td>
+                            <select id="selecOpr10" style="font-size: 1rem; width: 100%;" title="Selecione um nome.">
                             <option value=""></option>
                                 <?php 
                                     if($OpUsu10){
@@ -842,11 +2077,37 @@ if(!isset($_SESSION["usuarioID"])){
                                         }
                                     }
                                 ?>
-                        </select>
+                            </select>
                         </td>
-                        <td><div id="corOpr10Prev" class="box" style="position: relative; float: left; border: 1px solid; border-radius: 5px; text-align: center; padding: 5px; width: 40px; background-color: #009933;">XXX</div></td>
-
+                        <td class="etiq"> Trigrama: </td>
+                        <td><input type="text" id="trigrOpr10" placeholder="xxx" value="" style="border: 1px solid; border-radius: 5px; text-align: center; width: 40px; text-transform: uppercase;" /></td>
+                        <td class="etiq">Cor: </td>
+                        <td>
+                            <select id="selecCorOpr10" style="font-size: 1rem; width: 28px;" title="Selecione uma cor.">
+                                <option value="0"></option>
+                                <option style="background-color: #FF0000" value="#FF0000"><div>Vermelho</div></option>
+                                <option style="background-color: #0090FF" value="#0090FF"><div>Azul</div></option>
+                                <option style="background-color: #00FF00" value="#00FF00"><div>Verde</div></option>
+                                <option style="background-color: #FFFF00" value="#FFFF00"><div>Amarelo</div></option>
+                                <option style="background-color: #ffc4d8" value="#ffc4d8"><div>Rosa</div></option>
+                                <option style="background-color: #c8a2c8" value="#c8a2c8"><div>Lilás</div></option>
+                                <option style="background-color: #C0C0C0" value="#C0C0C0"><div>Prata</div></option>
+                                <option style="background-color: #FF00FF" value="#FF00FF"><div>Fúcsia</div></option>
+                                <option style="background-color: #00FFFF" value="#00FFFF"><div>Água</div></option>
+                                <option style="background-color: #808080" value="#808080"><div>Cinza</div></option>
+                            </select>
+                        </td>
+                        <td></td>
+                        <td><button class="botpadr" onclick="salvaOpr(10);">Salvar</button></td>
+                        <td class="etiq" title="Carga horária neste mês."><div id="somaOpr10"></div></td>
                     </tr>
+                    <tr>
+                        <td colspan="10" style="padding-top: 5px;"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="10"><button class="botpadr" id="botLimpaDados" onclick="limparMes();">Limpar Dados</button></td>
+                    </tr>
+
                 </table>
                 </div>
            </div>
