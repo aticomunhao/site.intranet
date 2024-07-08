@@ -78,7 +78,9 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
-//alert(ajax.responseText);
+
+    alert(ajax.responseText);
+
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 if(parseInt(Resp.coderro) === 0){
                                     document.getElementById("usulogin").value = format_CnpjCpf(Resp.usuario);
@@ -286,7 +288,9 @@ if(!isset($_SESSION["usuarioID"])){
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
-//alert(ajax.responseText);
+
+    alert(ajax.responseText);
+
                                     Resp = eval("(" + ajax.responseText + ")");
                                     if(parseInt(Resp.coderro) === 2){
                                         $('#mensagem').fadeIn("slow");
@@ -622,7 +626,7 @@ if(!isset($_SESSION["usuarioID"])){
                 echo "Faltam tabelas. Informe à ATI.";
                 return false;
             }
-            
+
             require_once("modais.php");
             //Para carregar os select de dia e mês
             $OpcoesMes = pg_query($Conec, "SELECT Esc1 FROM ".$xProj.".escolhas WHERE CodEsc < 14 ORDER BY Esc1");
@@ -649,6 +653,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardaid_cpf" value="0" />
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
         <input type="hidden" id="guarda_usulogado_id" value="<?php echo $_SESSION["usuarioID"]; ?>" />
+        <input type="hidden" id="guardausu_cpf" value="<?php echo $_SESSION["usuarioCPF"]; ?>" />
         <input type="hidden" id="guardaidpessoa" value="0" />
         <input type="hidden" id="guardaAtiv" value="1" />
         <input type="hidden" id="guardaLro" value="0" />
