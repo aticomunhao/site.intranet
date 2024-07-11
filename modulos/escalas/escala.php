@@ -1121,7 +1121,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("guardatrigrama").value = document.getElementById("corOpr0"+Opr).innerHTML;
             }
 
-            function insereCor(id, Dia, Mes, Ano, Hora){
+            function insereCor(id, Dia, Mes, Ano, Hora){ //insere o id do participante no quadrinho 
                 if(document.getElementById("guardaOpr").value == ""){
                     return false;
                 }
@@ -1462,6 +1462,11 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
+            function imprEscala(){
+                if(document.getElementById("selecMesAno").value != ""){
+                    window.open("modulos/escalas/imprEscala.php?acao=listamesEscala&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), document.getElementById("selecMesAno").value);
+                }
+            }
             
         </script>
     </head>
@@ -1647,6 +1652,8 @@ if(!isset($_SESSION["usuarioID"])){
                 ?>
         </select>
         <div style="position: relative; float: right; padding-right: 20px;">
+            <button class="botpadrred" onclick="imprEscala();">Gerar PDF</button>
+            <label style="padding-right: 20px;"></label>
             <button class="botpadrblue" onclick="abreModal();">Participantes</button>
         </div>
 

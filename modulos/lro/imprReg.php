@@ -66,7 +66,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
 //    $rs = pg_query($Conec, "SELECT usuins, TO_CHAR(datains, 'DD/MM/YYYY'), TO_CHAR(dataocor, 'DD/MM/YYYY'), codsetor, ocorrencia, numocor FROM ".$xProj.".ocorrencias WHERE codocor = $Num ");
     
-    $rs = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, to_char(".$xProj.".livroreg.datains, 'DD/MM/YYYY'), turno, descturno, numrelato, nomecompl, usuant, relato 
+    $rs = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, to_char(".$xProj.".livroreg.datains, 'DD/MM/YYYY'), turno, descturno, numrelato, nomecompl, usuant, relato, ocor 
     FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id
     WHERE ".$xProj.".livroreg.ativo = 1 And ".$xProj.".livroreg.id =  $Num");
 
@@ -92,13 +92,25 @@ if(!isset($_SESSION['AdmUsu'])){
         $DescTurno = "";
     }
 
-
-
     $pdf->SetFont('Arial', 'B', 9);
     $pdf->ln(7);
 
     $pdf->SetTextColor(125, 125, 125); //cinza  //   $pdf->SetTextColor(190, 190, 190); //cinza claro   //  $pdf->SetTextColor(204, 204, 204); //cinza mais claro
-    $pdf->Cell(0, 4, "- Ocorrência: ".$tbl[4]." registrada em ".$tbl[1]." - Turno: ".$DescTurno);
+    //$pdf->Cell(0, 4, "- Registro: ".$tbl[4]." de ".$tbl[1]." - Turno: ".$DescTurno, 0, 1, 'L');
+
+    $pdf->SetFont('Arial', '', 9);
+    $pdf->Cell(16, 4, "- Registro: ", 0, 0, 'L');
+    $pdf->SetFont('Arial', 'B', 9);
+
+    $Tam = $pdf->GetStringWidth($tbl[4]); // calcula o tamanho ocupado pq pvaria com o complemento
+    $pdf->Cell($Tam, 4, $tbl[4], 0, 0, 'L');
+    $pdf->SetFont('Arial', '', 9);
+    $pdf->Cell(6, 4, " de ", 0, 0, 'L');
+    $pdf->SetFont('Arial', 'B', 9);
+    $pdf->Cell(14, 4, $tbl[1], 0, 0, 'L');
+    $pdf->SetFont('Arial', '', 9);
+    $pdf->Cell(60, 4, " - Turno: ".$DescTurno, 0, 0, 'L');
+
     $pdf->ln(5);
     $pdf->SetFont('Arial', '', 10);
     $pdf->SetDrawColor(200); // cinza claro
@@ -106,10 +118,17 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->ln(5);
     $pdf->SetFont('Arial', 'B', 10);
     $pdf->Cell(0, 4, "- Relato: ", 0, 1, 'L');
+
     $pdf->SetFont('Arial', '', 10);
     $pdf->ln(3);
     $pdf->SetX(15); 
-    $pdf->MultiCell(0, 5, $tbl[7], 0, 'J', false); //relato
+
+    if($tbl[8] == 0){
+        $pdf->Cell(0, 4, "Não houve ocorrências", 0, 1, 'L');
+    }else{
+        $pdf->MultiCell(0, 5, $tbl[7], 0, 'J', false); //relato
+    }
+
     $pdf->ln(3);
     $lin = $pdf->GetY();
     $pdf->Line(10, $lin, 200, $lin);

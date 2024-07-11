@@ -232,11 +232,11 @@
 						echo "</li>";
 
 						if($_SESSION["AdmUsu"] > 6){ // superusuário
-							if($_SESSION['usuarioCPF'] == "13652176049"){
-								echo "<li>";
-									echo "<a href='#' onclick='openhref(71);'>Escalas</a>";
-								echo "</li>";
-							}
+//							if($_SESSION['usuarioCPF'] == "13652176049"){
+//								echo "<li>";
+//									echo "<a href='#' onclick='openhref(71);'>Escalas</a>";
+//								echo "</li>";
+//							}
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(31);'>Parâmetros do Sistema</a>";
 							echo "</li>";

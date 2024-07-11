@@ -79,10 +79,17 @@ if(!isset($_SESSION["usuarioID"])){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
 
+if(document.getElementById("guardausu_cpf").value == "13652176049"){
     alert(ajax.responseText);
-
+}
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 if(parseInt(Resp.coderro) === 0){
+                                    if(Resp.usuario == null){
+                                        alert("Sem contato com a tabela pessoas. CPF nulo")
+                                    }
+                                    if(Resp.usuarioNome == null){
+                                        alert("Sem contato com a tabela pessoas. Usuário nulo")
+                                    }
                                     document.getElementById("usulogin").value = format_CnpjCpf(Resp.usuario);
                                     document.getElementById("usuarioNome").value = Resp.usuarioNome;
                                     document.getElementById("nomecompl").value = Resp.nomecompl;
@@ -174,8 +181,13 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("mudou").value = "0";
                                     document.getElementById("relacmodalUsu").style.display = "block";
                                     document.getElementById("usulogin").disabled = true;
-                                }else{
-                                    alert("Houve um erro no servidor.")
+                                }
+                                if(parseInt(Resp.coderro) === 1){
+                                    if(Resp.usuario == null){
+                                        alert("Sem contato com a tabela pessoas. CPF nulo")
+                                    }else{
+                                        alert("Houve um erro no servidor.")
+                                    }
                                 }
                             }
                         }
@@ -288,9 +300,9 @@ if(!isset($_SESSION["usuarioID"])){
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
-
+if(document.getElementById("guardausu_cpf").value == "13652176049"){
     alert(ajax.responseText);
-
+}
                                     Resp = eval("(" + ajax.responseText + ")");
                                     if(parseInt(Resp.coderro) === 2){
                                         $('#mensagem').fadeIn("slow");
@@ -488,7 +500,7 @@ if(!isset($_SESSION["usuarioID"])){
                         Sim: function () {
                             ajaxIni();
                             if(ajax){
-                                ajax.open("POST", "modulos/config/registr.php?acao=resetsenha&numero="+document.getElementById("guardaid_cpf").value, true);
+                                ajax.open("POST", "modulos/config/registr.php?acao=resetsenha&numero="+encodeURIComponent(document.getElementById("guardaid_cpf").value), true);
                                 ajax.onreadystatechange = function(){
                                     if(ajax.readyState === 4 ){
                                         if(ajax.responseText){
@@ -522,7 +534,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("leituraEletric").checked = false;
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/config/registr.php?acao=checaBoxes&param="+Valor+"&numero="+document.getElementById("guardaid_cpf").value, true);
+                    ajax.open("POST", "modulos/config/registr.php?acao=checaBoxes&param="+Valor+"&numero="+encodeURIComponent(document.getElementById("guardaid_cpf").value), true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){

@@ -1818,7 +1818,7 @@ function buscaSemana($Conec, $xProj, $Data, $Dias){
     $row = pg_num_rows($rsSis);
     if($row > 0){
        $ProcSis = pg_fetch_row($rsSis);
-       $escSis = $ProcSis[0]; // nível para inserir 
+       $escSis = $ProcSis[0]; 
     }else{
        $escSis = "xª";
     }
@@ -1831,7 +1831,7 @@ function buscaDia($Conec, $xProj, $Data, $Dias){
     $row = pg_num_rows($rsSis);
     if($row > 0){
        $ProcSis = pg_fetch_row($rsSis);
-       $escSis = $ProcSis[0]; // nível para inserir 
+       $escSis = $ProcSis[0];
     }else{
        $escSis = "dia";
     }
@@ -1856,7 +1856,7 @@ function buscaCor($Conec, $xProj, $Mes, $Ano, $Cod){
     $row = pg_num_rows($rsSis);
     if($row > 0){
        $ProcSis = pg_fetch_row($rsSis);
-       $escSis = $ProcSis[0]; // nível para inserir 
+       $escSis = $ProcSis[0]; 
     }else{
        $escSis = "#FFFFFF";
     }

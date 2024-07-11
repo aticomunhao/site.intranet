@@ -28,8 +28,16 @@ require_once("abrealas.php");
                 let data = tableUsu.row(this).data();
                 $id = data[2];//
                 document.getElementById("guardaid_click").value = $id;
-                $Cpf = data[1];//
-                document.getElementById("guardaid_cpf").value = $Cpf;
+//                $Cpf = data[1];//
+//                $cpf1 = $Cpf.replace(".", "");
+//                document.getElementById("guardaid_cpf").value = $Cpf;
+
+                let PegaCpf = data[1]; // erro no linux atravessando cpf formatado
+                Cpf1 = PegaCpf.replace(".", ""); // replaceAll ainda não funciona no internet explorer
+                Cpf2 = Cpf1.replace(".", "");
+                Cpf3 = Cpf2.replace("-", "");
+                document.getElementById("guardaid_cpf").value = Cpf3;
+
                 if($id !== ""){
                     if(parseInt(document.getElementById("UsuAdm").value) < 7){  // superusuário
                         if(parseInt(document.getElementById("UsuAdm").value) > 3 && parseInt(document.getElementById("admEditUsu").value) === 1){ // adminisetrador 

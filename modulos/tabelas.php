@@ -377,6 +377,24 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
       pg_query($Conec, "INSERT INTO ".$xProj.".empresas_ar (empresa, ativo) VALUES ('Empresa Contratada', 1)");
    }
 
-
+   
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".cesbmenu (
+      id SERIAL PRIMARY KEY, 
+      descr VARCHAR(100), 
+      ativo smallint NOT NULL DEFAULT 1,
+         usumodif bigint NOT NULL DEFAULT 0,
+      datamodif timestamp without time zone DEFAULT '3000-12-31'
+      )
+   ");
+   $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".cesbmenu LIMIT 2");
+   $row = pg_num_rows($rs);
+   if($row == 0){
+      pg_query($Conec, "INSERT INTO ".$xProj.".cesbmenu (id, descr) VALUES (1, 'Comunhão') ");
+      pg_query($Conec, "INSERT INTO ".$xProj.".cesbmenu (id, descr) VALUES (2, 'Operadora Claro') ");
+      pg_query($Conec, "INSERT INTO ".$xProj.".cesbmenu (id, descr) VALUES (3, 'Operadora SBA') ");
+      pg_query($Conec, "INSERT INTO ".$xProj.".cesbmenu (id, descr) VALUES (4, 'Controle Ar Cond 1') ");
+      pg_query($Conec, "INSERT INTO ".$xProj.".cesbmenu (id, descr) VALUES (5, 'Controle Ar Cond 2') ");
+      pg_query($Conec, "INSERT INTO ".$xProj.".cesbmenu (id, descr) VALUES (6, 'Controle Ar Cond 3') ");
+   }
    
    echo "<br><br>";
