@@ -122,6 +122,7 @@ if(!isset($_SESSION["usuarioID"])){
 //alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");
                                 var options = "";  //Cria array
+                                options += "<option value='0'></option>";
                                 $.each(Resp, function(key, Resp){
                                     options += '<option value="' + Resp.Cod + '">'+Resp.Nome + '</option>';
                                 });
@@ -708,13 +709,6 @@ if(!isset($_SESSION["usuarioID"])){
         <?php
 
 //Provisório
-$rs = pg_query($Conec, "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'controle_ar' AND COLUMN_NAME = 'data01'");
-$row = pg_num_rows($rs);
-if($row > 0){
-    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".controle_ar");
-    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".visitas_ar");
-}
-
 pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
     id SERIAL PRIMARY KEY, 
     num_ap integer NOT NULL DEFAULT 0,
@@ -784,7 +778,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
         ?>
         <div style="margin: 20px; border: 2px solid blue; border-radius: 15px; padding: 20px; min-height: 200px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
-                <input type="button" id="botinserir" class="resetbot" style="font-size: 80%;" value="Inserir Novo Aparelho" onclick="insAparelho();">
+                <input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Inserir Novo Aparelho" onclick="insAparelho();">
                 <img src="imagens/settings.png" height="20px;" style="cursor: pointer; padding-left: 30px;" onclick="carregaConfig();" title="Configurar empresas de manutenção">
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
@@ -1016,7 +1010,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
         <div id="relacmodalConfig" class="relacmodal">
             <div class="modal-content-Controle">
                 <span class="close" onclick="fechaModal();">&times;</span>
-                <h5 id="titulomodal" style="text-align: center; color: #666;">Empresas de Manutenção</h5>
+                <h5 id="titulomodal" style="text-align: center; color: #666;">Empresas de Manutenção de Ar Condicionado</h5>
                 <div class='divbot corFundo' onclick='insEmpresa()' title="Adicionar nova empresa de manutenção"> Inserir </div>
 
                 <div id="configAr" style="text-align: center;"></div>
@@ -1027,7 +1021,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
         <div id="relacEditEmpresa" class="relacmodal">
             <div class="modal-content-InsControle">
                 <span class="close" onclick="fechaEditEmpr();">&times;</span>
-                <h5 id="titulomodal" style="text-align: center; color: #666;">Nome da Empresa</h5>
+                <h5 id="titulomodal" style="text-align: center; color: #666;">Nome da Empresa de Ar Condicionado</h5>
                 <div id="subtitulomodal" style="text-align: center; color: red;"></div>
                     <table style="margin: 0 auto; width: 90%">
                         <tr>

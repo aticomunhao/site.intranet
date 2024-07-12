@@ -176,6 +176,17 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                                         document.getElementById("fiscalArCond").checked = false;
                                     }
 
+                                    if(parseInt(Resp.regelev) === 1){
+                                        document.getElementById("registroElev").checked = true;
+                                    }else{
+                                        document.getElementById("registroElev").checked = false;
+                                    }
+                                    if(parseInt(Resp.fiscelev) === 1){
+                                        document.getElementById("fiscalElev").checked = true;
+                                    }else{
+                                        document.getElementById("fiscalElev").checked = false;
+                                    }
+
                                     document.getElementById("titulomodal").innerHTML = "Edição de Usuários";
                                     document.getElementById("ressetsenha").disabled = false;
                                     document.getElementById("mudou").value = "0";
@@ -272,6 +283,16 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                 if(document.getElementById("fiscalArCond").checked === true){
                     FiscAr = 1;
                 }
+
+                Elev = 0;
+                if(document.getElementById("registroElev").checked === true){
+                    Elev = 1;
+                }
+                FiscElev = 0;
+                if(document.getElementById("fiscalElev").checked === true){
+                    FiscElev = 1;
+                }
+
                 if(parseInt(document.getElementById("mudou").value) === 1){
                     ajaxIni();
                     if(ajax){
@@ -296,6 +317,8 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                         +"&arcond2="+ArCond2
                         +"&arcond3="+ArCond3
                         +"&fiscar="+FiscAr
+                        +"&elev="+Elev
+                        +"&fiscelev="+FiscElev
                         , true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
@@ -313,7 +336,6 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                                         document.getElementById("guardaid_click").value = 0;
                                         document.getElementById("relacmodalUsu").style.display = "none";
                                     }
-//                                    $('#container3').load('modulos/config/cadUsu.php');
                                     $("#faixacentral").load("modulos/config/jUsu.php?acao=todos");
                                 }
                             }
@@ -612,7 +634,14 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     Titulo = "Fiscalizar a manutenção dos Condicionadores de Ar";
                     Texto = "Com esta marca o usuário tem acesso a todos os lançamentos das visitas técnicas para manutenção preventiva ou corretiva dos aparelhos de Ar Condicionado.<br>Não pode editar os lançamentos.<br>Este módulo não é controlado por níveis administrativos.";
                 }
-
+                if(parseInt(Cod) === 7){
+                    Titulo = "Manutenção dos Elevadores";
+                    Texto = "Somente esta marca dá acesso ao REGISTRO das visitas técnicas para manutenção preventiva ou corretiva dos Elevadores.<br>Este módulo não é controlado por níveis administrativos.";
+                }
+                if(parseInt(Cod) === 8){
+                    Titulo = "Fiscalizar a manutenção dos Elevadores";
+                    Texto = "Com esta marca o usuário tem acesso a todos os lançamentos das visitas técnicas para manutenção preventiva ou corretiva dos Elevadores.<br>Não pode editar os lançamentos.<br>Este módulo não é controlado por níveis administrativos.";
+                }
                 document.getElementById("textoInfo").innerHTML = Texto;
                 document.getElementById("textoTitulo").innerHTML = Titulo;
                 document.getElementById("infomensagem").style.display = "block"; // está em modais.php
@@ -887,11 +916,31 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     </tr>
 
                     <tr>
+                        <td class="etiq80" title="Registrar as visitas técnicas da empresa contratada para manutenção dos Elevadores">Elevadores:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="registroElev" title="Registrar as visitas técnicas da empresa de Elevadores" onchange="modif();" >
+                            <label for="registroElev" title="Registrar as visitas técnicas da empresa contratada para manutenção dos Elevadores">registrar Manutenção dos Elevadores</label>
+                        </td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(7);" title="Guia rápido"></td>
+                    </tr>
+                    <tr>
+                        <td class="etiq80" style="border-bottom: 1px solid;" title="Fiscalizar a manutenção dos Elevadoresr">Elevadores:</td>
+                        <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
+                            <input type="checkbox" id="fiscalElev" title="Fiscalizar a manutenção dos Elevadores" onchange="modif();" >
+                            <label for="fiscalElev" title="Fiscalizar a manutenção dos Elevadores">fiscalizar a Manutenção dos Elevadores</label>
+                        </td>
+                        <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(8);" title="Guia rápido"></td>
+                    </tr>
+
+
+
+
+                    <tr>
                         <td colspan="6"><hr style="margin: 3px; padding: 2px;"></td>
                     </tr>
                     <tr>
                         <td colspan="6" style="text-align: center;"><div id="mensagem" style="color: red; font-weight: bold;"></div></td>
-                    </tr>   
+                    </tr>
                     <tr>
                         <td class="etiq80" style="color: red; text-align: left;"></td> 
                         <td></td>

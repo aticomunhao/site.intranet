@@ -367,11 +367,17 @@
 .fundoAmarelo{
     background-color: #FFD700;
 }
+.fundoAmareloCl{
+    background-color: #FFFFCC;
+}
 .fundoAzul{
     background-color: #87CEFA;
 }
 .fundoAzul2{
-    background-color: #CCFFFF;
+    background-color: #66CCFF;
+}
+.fundoVerde{
+    background-color: #66FFCC;
 }
 .fundoCinza{
     background-color: #EFF5FB;

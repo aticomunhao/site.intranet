@@ -152,6 +152,25 @@
 						<a href='#' onclick='openhref(34);'>Água</a>
 					</li>
 					<li>
+						<a href='#'>Ar Condicionado</a>
+						<ul>
+							<?php
+								echo "<li>";
+								$Menu4 = escMenu($Conec, $xProj, 4);
+								echo "<a href='#' onclick='openhref(65);'>$Menu4</a>";
+								echo "</li>";
+								echo "<li>";
+								$Menu5 = escMenu($Conec, $xProj, 5);
+								echo "<a href='#' onclick='openhref(69);'>$Menu5</a>";
+								echo "</li>";
+								echo "<li>";
+								$Menu6 = escMenu($Conec, $xProj, 6);
+								echo "<a href='#' onclick='openhref(70);'>$Menu6</a>";
+								echo "</li>";
+							?>
+						</ul>
+					</li>
+					<li>
 						<a href='#'>Eletricidade</a>
 						<ul>
 							<?php
@@ -171,23 +190,7 @@
 						</ul>
 					</li>
 					<li>
-						<a href='#'>Ar Condicionado</a>
-						<ul>
-							<?php
-								echo "<li>";
-								$Menu4 = escMenu($Conec, $xProj, 4);
-								echo "<a href='#' onclick='openhref(65);'>$Menu4</a>";
-								echo "</li>";
-								echo "<li>";
-								$Menu5 = escMenu($Conec, $xProj, 5);
-								echo "<a href='#' onclick='openhref(69);'>$Menu5</a>";
-								echo "</li>";
-								echo "<li>";
-								$Menu6 = escMenu($Conec, $xProj, 6);
-								echo "<a href='#' onclick='openhref(70);'>$Menu6</a>";
-								echo "</li>";
-							?>
-						</ul>
+						<a href='#' onclick='openhref(73);'>Elevadores</a>
 					</li>
 				</ul>
 			</li>
@@ -237,6 +240,11 @@
 //									echo "<a href='#' onclick='openhref(71);'>Escalas</a>";
 //								echo "</li>";
 //							}
+							if($_SESSION['usuarioCPF'] == "13652176049"){
+								echo "<li>";
+									echo "<a href='#' onclick='openhref(72);'>Escalas</a>";
+								echo "</li>";
+							}
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(31);'>Parâmetros do Sistema</a>";
 							echo "</li>";

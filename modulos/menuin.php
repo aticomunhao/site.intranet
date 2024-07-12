@@ -27,6 +27,9 @@
 				//0026
 				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS guardaescala character varying(10);");
 
+				 //0029
+				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS elev smallint NOT NULL DEFAULT 0;");
+				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fiscelev smallint NOT NULL DEFAULT 0;");
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

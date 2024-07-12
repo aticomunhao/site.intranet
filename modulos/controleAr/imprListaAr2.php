@@ -150,6 +150,7 @@ if(isset($_REQUEST["acao"])){
                 $row1 = pg_num_rows($rs1);
                 if($row1 > $MaiorRow){$MaiorRow = $row1;}
                 $lin = $pdf->GetY();
+                $pdf->SetX(80);
                 if($row1 == 0){
                     $pdf->Cell(17, 5, '', 0, 0, 'C');
                 }
@@ -184,6 +185,7 @@ if(isset($_REQUEST["acao"])){
                 $row2 = pg_num_rows($rs2);
                 if($row2 > $MaiorRow){$MaiorRow = $row2;}
                 $lin = $pdf->GetY();
+                $pdf->SetX(97);
                 if($row2 == 0){
                     $pdf->Cell(17, 5, '', 0, 0, 'C');
                 }
@@ -218,6 +220,7 @@ if(isset($_REQUEST["acao"])){
                 $row3 = pg_num_rows($rs3);
                 if($row3 > $MaiorRow){$MaiorRow = $row3;}
                 $lin = $pdf->GetY();
+                $pdf->SetX(114);
                 if($row3 == 0){
                     $pdf->Cell(17, 5, '', 0, 0, 'C');
                 }
@@ -252,6 +255,7 @@ if(isset($_REQUEST["acao"])){
                 $row4 = pg_num_rows($rs4);
                 if($row4 > $MaiorRow){$MaiorRow = $row4;}
                 $lin = $pdf->GetY();
+                $pdf->SetX(131);
                 if($row4 == 0){
                     $pdf->Cell(17, 5, '', 0, 0, 'C');
                 }
@@ -286,6 +290,7 @@ if(isset($_REQUEST["acao"])){
                 $row5 = pg_num_rows($rs5);
                 if($row5 > $MaiorRow){$MaiorRow = $row5;}
                 $lin = $pdf->GetY();
+                $pdf->SetX(148);
                 if($row5 == 0){
                     $pdf->Cell(17, 5, '', 0, 0, 'C');
                 }
@@ -320,6 +325,7 @@ if(isset($_REQUEST["acao"])){
                 $row6 = pg_num_rows($rs6);
                 if($row6 > $MaiorRow){$MaiorRow = $row6;}
                 $lin = $pdf->GetY();
+                $pdf->SetX(165);
                 if($row6 == 0){
                     $pdf->Cell(17, 5, '', 0, 0, 'C');
                 }
@@ -355,6 +361,7 @@ if(isset($_REQUEST["acao"])){
                 $row7 = pg_num_rows($rs7);
                 if($row7 > $MaiorRow){$MaiorRow = $row7;}
                 $lin = $pdf->GetY();
+                $pdf->SetX(182);
                 if($row7 == 0){
                     $pdf->Cell(17, 5, '', 0, 0, 'C');
                 }
@@ -389,6 +396,7 @@ if(isset($_REQUEST["acao"])){
                 $row8 = pg_num_rows($rs8);
                 if($row8 > $MaiorRow){$MaiorRow = $row8;}
                 $lin = $pdf->GetY();
+                $pdf->SetX(199);
                 if($row8 == 0){
                     $pdf->Cell(17, 5, '', 0, 0, 'C');
                 }
@@ -423,6 +431,7 @@ if(isset($_REQUEST["acao"])){
                 $row9 = pg_num_rows($rs9);
                 if($row9 > $MaiorRow){$MaiorRow = $row9;}
                 $lin = $pdf->GetY();
+                $pdf->SetX(216);
                 if($row9 == 0){
                     $pdf->Cell(17, 5, '', 0, 0, 'C');
                 }
@@ -457,6 +466,7 @@ if(isset($_REQUEST["acao"])){
                 $row10 = pg_num_rows($rs10);
                 if($row10 > $MaiorRow){$MaiorRow = $row10;}
                 $lin = $pdf->GetY();
+                $pdf->SetX(233);
                 if($row10 == 0){
                     $pdf->Cell(17, 5, '', 0, 0, 'C');
                 }
@@ -491,6 +501,7 @@ if(isset($_REQUEST["acao"])){
                 $row11 = pg_num_rows($rs11);
                 if($row11 > $MaiorRow){$MaiorRow = $row11;}
                 $lin = $pdf->GetY();
+                $pdf->SetX(250);
                 if($row11 == 0){
                     $pdf->Cell(17, 5, '', 0, 0, 'C');
                 }
@@ -525,6 +536,7 @@ if(isset($_REQUEST["acao"])){
                 $row12 = pg_num_rows($rs12);
                 if($row12 > $MaiorRow){$MaiorRow = $row12;}
                 $lin = $pdf->GetY();
+                $pdf->SetX(267);
                 if($row12 == 0){
                     $pdf->Cell(17, 5, '', 0, 1, 'C');
                 }

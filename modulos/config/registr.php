@@ -314,7 +314,7 @@ if($Acao =="buscausu"){
         $Proc0 = pg_fetch_row($rs0);
     }
 
-    $rs = pg_query($Conec, "SELECT adm, codsetor, ativo, to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, lro, bens, fisclro, agua, eletric, arcond, arfisc, nomeusual, eletric2, eletric3, fiscbens, soinsbens, arcond2, arcond3 FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf' ");  //pessoas_id = $Usu ");
+    $rs = pg_query($Conec, "SELECT adm, codsetor, ativo, to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, lro, bens, fisclro, agua, eletric, arcond, arfisc, nomeusual, eletric2, eletric3, fiscbens, soinsbens, arcond2, arcond3, elev, fiscelev FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf' ");  //pessoas_id = $Usu ");
     $row = pg_num_rows($rs);
     if($row == 0){
         $Erro = 1;
@@ -331,7 +331,7 @@ if($Acao =="buscausu"){
         if($Proc[3] == "01/01/1500 00:00"){
             $UltLog = "";
         }
-        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$UltLog, "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "bens"=>$Proc[6], "lroFiscaliza"=>$Proc[7], "leituraAgua"=>$Proc[8], "leituraEletric"=>$Proc[9], "regarcond"=>$Proc[10], "regarcond2"=>$Proc[17], "regarcond3"=>$Proc[18], "fiscarcond"=>$Proc[11], "usuarioNome"=>$Proc[12], "leituraEletric2"=>$Proc[13], "leituraEletric3"=>$Proc[14], "fiscbens"=>$Proc[15], "soinsbens"=>$Proc[16], "diaAniv"=>$Proc0[2], "mesAniv"=>$Proc0[3], "cpf"=>$GuardaCpf);
+        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$UltLog, "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "bens"=>$Proc[6], "lroFiscaliza"=>$Proc[7], "leituraAgua"=>$Proc[8], "leituraEletric"=>$Proc[9], "regarcond"=>$Proc[10], "regarcond2"=>$Proc[17], "regarcond3"=>$Proc[18], "regelev"=>$Proc[19], "fiscelev"=>$Proc[20], "fiscarcond"=>$Proc[11], "usuarioNome"=>$Proc[12], "leituraEletric2"=>$Proc[13], "leituraEletric3"=>$Proc[14], "fiscbens"=>$Proc[15], "soinsbens"=>$Proc[16], "diaAniv"=>$Proc0[2], "mesAniv"=>$Proc0[3], "cpf"=>$GuardaCpf);
     }
     $responseText = json_encode($var);
     echo $responseText;
@@ -366,6 +366,9 @@ if($Acao =="salvaUsu"){
     $ArCond3 = (int) filter_input(INPUT_GET, 'arcond3');
     $FiscAr = (int) filter_input(INPUT_GET, 'fiscar');
 
+    $Elev = (int) filter_input(INPUT_GET, 'elev');
+    $FiscElev = (int) filter_input(INPUT_GET, 'fiscelev');
+
     $Cpf1 = addslashes($Cpf);
     $Cpf2 = str_replace(".", "", $Cpf1);
     $Cpf = str_replace("-", "", $Cpf2);
@@ -385,8 +388,8 @@ if($Acao =="salvaUsu"){
         $Sexo = 1;
     }
 
-    if($Usu > 0){  // salvar não atualiza logfim - logfim conta tempo para apagar (5 anos)
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET codsetor = $Setor, adm = $Adm, ativo = $Ativo, usumodif = $UsuLogado, datamodif = NOW(), nomeusual = '$NomeUsual', nomecompl = '$NomeCompl', lro = $Lro, fisclro = $FiscLro, bens = $Bens, fiscbens =  $FiscBens, soinsbens = $SoInsBens, agua = $Agua, eletric = $Eletric, eletric2 = $Eletric2, eletric3 = $Eletric3, arcond = $ArCond, arcond2 = $ArCond2, arcond3 = $ArCond3, arfisc = $FiscAr WHERE cpf = '$Cpf'"); 
+    if($Usu > 0){  // salvar não atualiza o campo logfim - logfim conta tempo para apagar (5 anos)
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET codsetor = $Setor, adm = $Adm, ativo = $Ativo, usumodif = $UsuLogado, datamodif = NOW(), nomeusual = '$NomeUsual', nomecompl = '$NomeCompl', lro = $Lro, fisclro = $FiscLro, bens = $Bens, fiscbens =  $FiscBens, soinsbens = $SoInsBens, agua = $Agua, eletric = $Eletric, eletric2 = $Eletric2, eletric3 = $Eletric3, arcond = $ArCond, arcond2 = $ArCond2, arcond3 = $ArCond3, arfisc = $FiscAr, elev = $Elev, fiscelev = $FiscElev WHERE cpf = '$Cpf'"); 
         pg_query($Conec, "UPDATE ".$xProj.".pessoas SET pessoas_id = $Usu, nome_completo = '$NomeCompl', sexo = $Sexo, status = $Ativo WHERE cpf = '$Cpf' "); //coleção
 
         if(!is_null($DNasc)){
@@ -411,8 +414,8 @@ if($Acao =="salvaUsu"){
             $Codigo = $tblCod[0];
             $CodigoNovo = ($Codigo+1);
             $Senha = password_hash($Cpf, PASSWORD_DEFAULT);
-            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, codsetor, adm, usuins, datains, cpf, nomecompl, senha, ativo, lro, fisclro, bens, fiscbens, soinsbens, agua, eletric, eletric2, eletric3, arcond, arcond2, arcond3, arfisc, logini, logfim, datamodif, datainat, nomeusual, avhoje) 
-            VALUES ($CodigoNovo, $GuardaId, $Setor, $Adm, $UsuLogado, NOW(), '$Cpf', '$NomeCompl', '$Senha', 1, $Lro, $FiscLro, $Bens, $FiscBens, $SoInsBens, $Agua, $Eletric, $Eletric2, $Eletric3, $ArCond, $ArCond2, $ArCond3, $FiscAr, '3000-12-31', '$HoraAnt', '3000-12-31', '3000-12-31', '$NomeUsual', (CURRENT_DATE - 1) )"); // logfim conta tempo para apagar usuário (5 anos)
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, codsetor, adm, usuins, datains, cpf, nomecompl, senha, ativo, lro, fisclro, bens, fiscbens, soinsbens, agua, eletric, eletric2, eletric3, arcond, arcond2, arcond3, arfisc, elev, fiscelev, logini, logfim, datamodif, datainat, nomeusual, avhoje) 
+            VALUES ($CodigoNovo, $GuardaId, $Setor, $Adm, $UsuLogado, NOW(), '$Cpf', '$NomeCompl', '$Senha', 1, $Lro, $FiscLro, $Bens, $FiscBens, $SoInsBens, $Agua, $Eletric, $Eletric2, $Eletric3, $ArCond, $ArCond2, $ArCond3, $FiscAr, $Elev, $FiscElev, '3000-12-31', '$HoraAnt', '3000-12-31', '3000-12-31', '$NomeUsual', (CURRENT_DATE - 1) )"); // logfim conta tempo para apagar usuário (5 anos)
             if(!$rs){
                 $Erro = 12;
             }

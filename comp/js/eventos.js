@@ -84,6 +84,12 @@ function openhref(Num){
     if(parseInt(Num) === 71){
         $('#container3').load('modulos/escalas/escala.php');
     }
+    if(parseInt(Num) === 72){
+        $('#container3').load('modulos/escala/preEscala.php');
+    }
+    if(parseInt(Num) === 73){
+        $('#container3').load('modulos/elevadores/controleEl.php');
+    }
 
 
 
