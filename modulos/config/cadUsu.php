@@ -187,6 +187,23 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                                         document.getElementById("fiscalElev").checked = false;
                                     }
 
+//                                    if(parseInt(Resp.escala) === 1){
+//                                        document.getElementById("escalaEft").checked = true;
+//                                    }else{
+//                                        document.getElementById("escalaEft").checked = false;
+//                                    }
+//                                    document.getElementById("grupoEscala").value = Resp.grupoescala;
+//                                    if(parseInt(Resp.editaescala) === 1){
+//                                        document.getElementById("escalante").checked = true;
+//                                    }else{
+//                                        document.getElementById("escalante").checked = false;
+//                                    }
+//                                    if(parseInt(Resp.fiscescala) === 1){
+//                                        document.getElementById("fiscalEscalas").checked = true;
+//                                    }else{
+//                                        document.getElementById("fiscalEscalas").checked = false;
+//                                    }
+
                                     document.getElementById("titulomodal").innerHTML = "Edição de Usuários";
                                     document.getElementById("ressetsenha").disabled = false;
                                     document.getElementById("mudou").value = "0";
@@ -292,6 +309,34 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                 if(document.getElementById("fiscalElev").checked === true){
                     FiscElev = 1;
                 }
+                
+                Escala = 0;
+//                if(document.getElementById("escalaEft").checked === true){
+//                    Escala = 1;
+//                }
+//                if(parseInt(Escala) === 1 && parseInt(document.getElementById("grupoEscala").value) === 0){
+//                    $('#mensagem').fadeIn("slow");
+//                    document.getElementById("mensagem").innerHTML = "Preencha o campo <u>Grupo da Escala</u> do usuário";
+//                    $('#mensagem').fadeOut(3000);
+//                    document.getElementById("grupoEscala").focus();
+//                    return false;
+//                }
+                Escalante = 0;
+//                if(document.getElementById("escalante").checked === true){
+//                    Escalante = 1;
+//                }
+//                if(parseInt(Escalante) === 1 && parseInt(document.getElementById("grupoEscala").value) === 0){
+//                    $('#mensagem').fadeIn("slow");
+//                    document.getElementById("mensagem").innerHTML = "Preencha o campo <u>Grupo da Escala</u> do usuário";
+//                    $('#mensagem').fadeOut(3000);
+//                    document.getElementById("grupoEscala").focus();
+//                    return false;
+//                }
+                FiscEscala = 0;
+//                if(document.getElementById("fiscalEscalas").checked === true){
+//                    FiscEscala = 1;
+//                }
+
 
                 if(parseInt(document.getElementById("mudou").value) === 1){
                     ajaxIni();
@@ -319,6 +364,10 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                         +"&fiscar="+FiscAr
                         +"&elev="+Elev
                         +"&fiscelev="+FiscElev
+                        +"&escala="+Escala
+                        +"&grupoesc="+document.getElementById("grupoEscala").value
+                        +"&escalante="+Escalante
+                        +"&fiscalescala="+FiscEscala
                         , true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
@@ -642,6 +691,15 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     Titulo = "Fiscalizar a manutenção dos Elevadores";
                     Texto = "Com esta marca o usuário tem acesso a todos os lançamentos das visitas técnicas para manutenção preventiva ou corretiva dos Elevadores.<br>Não pode editar os lançamentos.<br>Este módulo não é controlado por níveis administrativos.";
                 }
+                if(parseInt(Cod) === 9){
+                    Titulo = "Escala dos Grupos";
+                    Texto = "A marca da esquerda indica que o usuário participa e pode visualizar a escala de serviço do grupo a que pertence.  <br>A marca da direita indica que o usuário é o escalante do grupo. <br>É necessário escolher o grupo ao lado. Os grupos podem ser criados e editados nos Parâmetros do Sistema.";
+                }
+                if(parseInt(Cod) === 10){
+                    Titulo = "Escala dos Grupos";
+                    Texto = "Esta marca permite o acesso a todas as escalas de serviço, para verificação. Não permite a edição.";
+                }
+
                 document.getElementById("textoInfo").innerHTML = Texto;
                 document.getElementById("textoTitulo").innerHTML = Titulo;
                 document.getElementById("infomensagem").style.display = "block"; // está em modais.php
@@ -685,6 +743,8 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                 $OpcoesAdm = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
             }
             $OpcoesSetor = pg_query($Conec, "SELECT CodSet, SiglaSetor FROM ".$xProj.".setores ORDER BY SiglaSetor");
+            $OpcoesEscala = pg_query($Conec, "SELECT id, SiglaGrupo FROM ".$xProj.".escalas_gr ORDER BY SiglaGrupo");
+            
         ?>
 
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
@@ -765,6 +825,7 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                                 }
                             }
                             ?>
+                            </select>
                         </td>
                         <td></td>
                         <td></td>
@@ -774,7 +835,7 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     <tr>
                         <td class="etiq80">Nível Administrativo</td>
                         <td>
-                        <select id="flAdm" style="font-size: 1rem;" title="Selecione o nível administrativo do usuário." onchange="modif();">
+                            <select id="flAdm" style="font-size: 1rem;" title="Selecione o nível administrativo do usuário." onchange="modif();">
                             <?php 
                             if($OpcoesAdm){
                                 while ($Opcoes = pg_fetch_row($OpcoesAdm)){ ?>
@@ -783,6 +844,7 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                                 }
                             }
                             ?>
+                            </select>
                         </td>
                         <td></td>
                         <td></td>
@@ -932,6 +994,40 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                         <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(8);" title="Guia rápido"></td>
                     </tr>
 
+
+<!--  Aguardando
+                    <tr>
+                        <td class="etiq80" style="padding-top: 5px;" title="Faz parte do efetivo da escala">Escala de Serviço:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="escalaEft" title="Faz parte do efetivo da escala" onchange="modif();" >
+                            <label for="escalaEft" style="padding-right: 10px; padding-top: 5px;" title="Faz parte do efetivo da escala">Efetivo da Escala:</label>
+
+                            <select id="grupoEscala" style="font-size: 1rem;" title="Selecione um grupo." onchange="modif();">
+                            <option value="0"></option>
+                            <?php 
+//                            if($OpcoesEscala){
+//                                while ($Opcoes = pg_fetch_row($OpcoesEscala)){ ?>
+                                    <option value="<?php //echo $Opcoes[0]; ?>"><?php //echo $Opcoes[1]; ?></option>
+//                                <?php 
+//                                }
+//                            }
+                            ?>
+                            </select>                            
+                            <label for="escalante" style="padding-left: 30px; padding-top: 5px;" title="Confecciona a escala">Escalante:</label>
+                            <input type="checkbox" id="escalante" title="Confecciona a escala do grupo" onchange="modif();" >
+                        </td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(9);" title="Guia rápido"></td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq80" style="border-bottom: 1px solid;" title="Fiscalizar o andamento das escalas de serviço">Escalas:</td>
+                        <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
+                            <input type="checkbox" id="fiscalEscalas" title="Fiscalizar as escalas de serviço" onchange="modif();" >
+                            <label for="fiscalEscalas" title="Fiscalizar as escalas de serviço">fiscalizar as Escalas de Serviço</label>
+                        </td>
+                        <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(10);" title="Guia rápido"></td>
+                    </tr>
+-->
 
 
 

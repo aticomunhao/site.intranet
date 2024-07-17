@@ -4,6 +4,7 @@ if(!isset($_SESSION["usuarioID"])){
     header("Location: ../../index.php");
 }
 require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
+date_default_timezone_set('America/Sao_Paulo');
 $Acao = "";
 if(isset($_REQUEST["acao"])){
     $Acao = $_REQUEST["acao"]; 
@@ -213,7 +214,27 @@ if($Acao=="buscaAcessoLro"){
         $FiscLro = 0; 
     }
 
-    $var = array("coderro"=>$Erro, "acessoLro"=>$Lro, "fisclro"=>$FiscLro, "jatem"=>$row1, "descturno"=>$DescTurno, "numrelato"=>$NumRelat);
+    $DataLegivel = 0;
+    $Ini = strtotime(date('Y/m/d')); // número
+    $Ontem = strtotime("-1 day", $Ini);
+    $DataLegivel = date("Y/m/d", $Ontem);
+    $DataOntem = implode("/", array_reverse(explode("/", $DataLegivel)));
+
+    $InsTurno1 = 0;
+    $InsTurno2 = 0;
+    $InsTurno3 = 0;
+
+    $Hora = (int) date("H");
+    if($Hora > 0 && $Hora < 7){ // pernoite depois da meia-noite até 7 horas
+        $rs4 = pg_query($Conec, "SELECT id FROM ".$xProj.".livroreg WHERE to_char(dataocor, 'DD/MM/YYYY') = '$Ontem' And turno = 1");
+        $InsTurno1 = pg_num_rows($rs4);
+        $rs5 = pg_query($Conec, "SELECT id FROM ".$xProj.".livroreg WHERE to_char(dataocor, 'DD/MM/YYYY') = '$Ontem' And turno = 2");
+        $InsTurno2 = pg_num_rows($rs5);
+        $rs6 = pg_query($Conec, "SELECT id FROM ".$xProj.".livroreg WHERE to_char(dataocor, 'DD/MM/YYYY') = '$Ontem' And turno = 3");
+        $InsTurno3 = pg_num_rows($rs6);
+    }
+
+    $var = array("coderro"=>$Erro, "acessoLro"=>$Lro, "fisclro"=>$FiscLro, "jatem"=>$row1, "descturno"=>$DescTurno, "numrelato"=>$NumRelat, "hora"=>$Hora, "dataontem"=>$DataOntem, "turno1"=>$InsTurno1, "turno2"=>$InsTurno2, "turno3"=>$InsTurno3);
     $responseText = json_encode($var);
     echo $responseText;
 }

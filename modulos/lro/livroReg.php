@@ -125,7 +125,7 @@ if(!isset($_SESSION["usuarioID"])){
 
             });
 
-            function InsRegistro(){ // inserir novo registro 
+            function InsRegistro(){ // inserir novo registro
                 document.getElementById("jatem").value = "0";
                 document.getElementById("numrelato").value = "";
                 ajaxIni();
@@ -134,14 +134,13 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
-//alert(ajax.responseText);
+alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.")
                                 }else{
                                     if(parseInt(Resp.acessoLro) === 1){
                                         document.getElementById("guardacod").value = 0;
-                                        document.getElementById("mudou").value = "1";
                                         document.getElementById("dataocor").value = document.getElementById("guardahoje").value;
                                         document.getElementById("nomeusuario").innerHMTL = "";
                                         document.getElementById("selectusuant").value = "";
@@ -160,6 +159,12 @@ if(!isset($_SESSION["usuarioID"])){
                                                 }
                                             });
                                             document.getElementById("selecturno").value = "";
+                                        }
+                                        //Condição aqui: período entre 00 e 07 horas, turnos 1 e 2 do dia anterior já foram lançados, 
+                                        //já passou da meia noite e faltou o turno 3 -> voltar a data 1 dia
+                                        //Situação: o operador deixou para fazer o livro depois da meia noite.
+                                        if(parseInt(Resp.turno1) > 0 && parseInt(Resp.turno2) > 0 && parseInt(Resp.turno3) === 0){
+                                            document.getElementById("dataocor").value = Resp.dataontem;
                                         }
                                     }else{
                                         $.confirm({
@@ -489,7 +494,6 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("jatem").value = "1";
                                         document.getElementById("numrelato").value = Resp.numrelato;
                                         if(parseInt(Resp.codusu) !== parseInt(document.getElementById("guardaUsuId").value)){ // turno de outro funcionário
-                                           
                                             $.confirm({
                                                 title: 'Informação!',
                                                 content: 'Este turno foi cumprido por '+Resp.nomeusu,
@@ -511,6 +515,8 @@ if(!isset($_SESSION["usuarioID"])){
                                                         //continua
                                                     },
                                                     Não: function () {
+
+                                                        document.getElementById("mudou").value = "0";
                                                         document.getElementById("relacmodalReg").style.display = "none";
                                                     }
                                                 }
@@ -531,6 +537,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
             function fechaModal(){
                 document.getElementById("guardacod").value = 0;
+                document.getElementById("mudou").value = "0";
                 document.getElementById("relacmodalReg").style.display = "none";
             }
             function fechaMostraModal(){

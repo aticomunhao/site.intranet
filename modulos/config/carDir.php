@@ -21,7 +21,7 @@ require_once("abrealas.php");
                 $id = data[0];
                 document.getElementById("guardacod").value = $id;
                 if($id !== 0){
-                        carregaModal($id);
+                    carregaModal($id);
                 }
             });
             $(document).ready(function(){

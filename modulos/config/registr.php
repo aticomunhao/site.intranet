@@ -147,10 +147,13 @@ if($Acao =="loglog"){
                                 pg_query($Conec, "DELETE FROM ".$xProj.".livroreg WHERE datains < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros do livro de ocorrências há mais de $PrazoDel anos
                                 pg_query($Conec, "DELETE FROM ".$xProj.".bensachados WHERE datains < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros do achados e perdidos há mais de $PrazoDel anos
                                 pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE logfim < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros de usuários com último log há mais de $PrazoDel anos
-                                pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar WHERE datavis < CURRENT_DATE - interval '$PrazoDel years' "); 
                                 pg_query($Conec, "DELETE FROM ".$xProj.".ramais_int WHERE ativo = 0 And datains < CURRENT_DATE - interval '$PrazoDel years'"); 
                                 pg_query($Conec, "DELETE FROM ".$xProj.".ramais_ext WHERE ativo = 0 And datains < CURRENT_DATE - interval '$PrazoDel years'"); 
                                 pg_query($Conec, "DELETE FROM ".$xProj.".arqsetor WHERE dataapag < CURRENT_DATE - interval '$PrazoDel years'"); // apaga nome dos arquivos de upload
+                                pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
+                                pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar2 WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
+                                pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar3 WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
+                                pg_query($Conec, "DELETE FROM ".$xProj.".visitas_el WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
                             }
                             $rs6 = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog ");
                             $row6 = pg_num_rows($rs6); // atualiza nomes de poslog com pessoas
@@ -314,7 +317,9 @@ if($Acao =="buscausu"){
         $Proc0 = pg_fetch_row($rs0);
     }
 
-    $rs = pg_query($Conec, "SELECT adm, codsetor, ativo, to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, lro, bens, fisclro, agua, eletric, arcond, arfisc, nomeusual, eletric2, eletric3, fiscbens, soinsbens, arcond2, arcond3, elev, fiscelev FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf' ");  //pessoas_id = $Usu ");
+    $rs = pg_query($Conec, "SELECT adm, codsetor, ativo, to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, lro, bens, fisclro, agua, eletric, arcond, 
+    arfisc, nomeusual, eletric2, eletric3, fiscbens, soinsbens, arcond2, arcond3, elev, fiscelev, 
+    esc_eft, esc_edit, esc_grupo, esc_fisc FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf' ");  //pessoas_id = $Usu ");
     $row = pg_num_rows($rs);
     if($row == 0){
         $Erro = 1;
@@ -331,7 +336,8 @@ if($Acao =="buscausu"){
         if($Proc[3] == "01/01/1500 00:00"){
             $UltLog = "";
         }
-        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$UltLog, "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "bens"=>$Proc[6], "lroFiscaliza"=>$Proc[7], "leituraAgua"=>$Proc[8], "leituraEletric"=>$Proc[9], "regarcond"=>$Proc[10], "regarcond2"=>$Proc[17], "regarcond3"=>$Proc[18], "regelev"=>$Proc[19], "fiscelev"=>$Proc[20], "fiscarcond"=>$Proc[11], "usuarioNome"=>$Proc[12], "leituraEletric2"=>$Proc[13], "leituraEletric3"=>$Proc[14], "fiscbens"=>$Proc[15], "soinsbens"=>$Proc[16], "diaAniv"=>$Proc0[2], "mesAniv"=>$Proc0[3], "cpf"=>$GuardaCpf);
+        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$UltLog, "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "bens"=>$Proc[6], "lroFiscaliza"=>$Proc[7], "leituraAgua"=>$Proc[8], "leituraEletric"=>$Proc[9], "regarcond"=>$Proc[10], "regarcond2"=>$Proc[17], "regarcond3"=>$Proc[18], "regelev"=>$Proc[19], "fiscelev"=>$Proc[20], "escala"=>$Proc[21], "editaescala"=>$Proc[22], "grupoescala"=>$Proc[23], "fiscescala"=>$Proc[24],
+        "fiscarcond"=>$Proc[11], "usuarioNome"=>$Proc[12], "leituraEletric2"=>$Proc[13], "leituraEletric3"=>$Proc[14], "fiscbens"=>$Proc[15], "soinsbens"=>$Proc[16], "diaAniv"=>$Proc0[2], "mesAniv"=>$Proc0[3], "cpf"=>$GuardaCpf);
     }
     $responseText = json_encode($var);
     echo $responseText;
@@ -368,6 +374,10 @@ if($Acao =="salvaUsu"){
 
     $Elev = (int) filter_input(INPUT_GET, 'elev');
     $FiscElev = (int) filter_input(INPUT_GET, 'fiscelev');
+    $Escala = (int) filter_input(INPUT_GET, 'escala');
+    $GrupoEsc = (int) filter_input(INPUT_GET, 'grupoesc');
+    $Escalante = (int) filter_input(INPUT_GET, 'escalante');
+    $FiscEscala = (int) filter_input(INPUT_GET, 'fiscalescala');
 
     $Cpf1 = addslashes($Cpf);
     $Cpf2 = str_replace(".", "", $Cpf1);
@@ -389,7 +399,7 @@ if($Acao =="salvaUsu"){
     }
 
     if($Usu > 0){  // salvar não atualiza o campo logfim - logfim conta tempo para apagar (5 anos)
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET codsetor = $Setor, adm = $Adm, ativo = $Ativo, usumodif = $UsuLogado, datamodif = NOW(), nomeusual = '$NomeUsual', nomecompl = '$NomeCompl', lro = $Lro, fisclro = $FiscLro, bens = $Bens, fiscbens =  $FiscBens, soinsbens = $SoInsBens, agua = $Agua, eletric = $Eletric, eletric2 = $Eletric2, eletric3 = $Eletric3, arcond = $ArCond, arcond2 = $ArCond2, arcond3 = $ArCond3, arfisc = $FiscAr, elev = $Elev, fiscelev = $FiscElev WHERE cpf = '$Cpf'"); 
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET codsetor = $Setor, adm = $Adm, ativo = $Ativo, usumodif = $UsuLogado, datamodif = NOW(), nomeusual = '$NomeUsual', nomecompl = '$NomeCompl', lro = $Lro, fisclro = $FiscLro, bens = $Bens, fiscbens =  $FiscBens, soinsbens = $SoInsBens, agua = $Agua, eletric = $Eletric, eletric2 = $Eletric2, eletric3 = $Eletric3, arcond = $ArCond, arcond2 = $ArCond2, arcond3 = $ArCond3, arfisc = $FiscAr, elev = $Elev, fiscelev = $FiscElev, esc_eft = $Escala, esc_grupo = $GrupoEsc, esc_edit = $Escalante, esc_fisc = $FiscEscala WHERE cpf = '$Cpf'"); 
         pg_query($Conec, "UPDATE ".$xProj.".pessoas SET pessoas_id = $Usu, nome_completo = '$NomeCompl', sexo = $Sexo, status = $Ativo WHERE cpf = '$Cpf' "); //coleção
 
         if(!is_null($DNasc)){
@@ -414,8 +424,8 @@ if($Acao =="salvaUsu"){
             $Codigo = $tblCod[0];
             $CodigoNovo = ($Codigo+1);
             $Senha = password_hash($Cpf, PASSWORD_DEFAULT);
-            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, codsetor, adm, usuins, datains, cpf, nomecompl, senha, ativo, lro, fisclro, bens, fiscbens, soinsbens, agua, eletric, eletric2, eletric3, arcond, arcond2, arcond3, arfisc, elev, fiscelev, logini, logfim, datamodif, datainat, nomeusual, avhoje) 
-            VALUES ($CodigoNovo, $GuardaId, $Setor, $Adm, $UsuLogado, NOW(), '$Cpf', '$NomeCompl', '$Senha', 1, $Lro, $FiscLro, $Bens, $FiscBens, $SoInsBens, $Agua, $Eletric, $Eletric2, $Eletric3, $ArCond, $ArCond2, $ArCond3, $FiscAr, $Elev, $FiscElev, '3000-12-31', '$HoraAnt', '3000-12-31', '3000-12-31', '$NomeUsual', (CURRENT_DATE - 1) )"); // logfim conta tempo para apagar usuário (5 anos)
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, codsetor, adm, usuins, datains, cpf, nomecompl, senha, ativo, lro, fisclro, bens, fiscbens, soinsbens, agua, eletric, eletric2, eletric3, arcond, arcond2, arcond3, arfisc, elev, fiscelev, esc_eft, esc_grupo, esc_edit, esc_fisc, logini, logfim, datamodif, datainat, nomeusual, avhoje) 
+            VALUES ($CodigoNovo, $GuardaId, $Setor, $Adm, $UsuLogado, NOW(), '$Cpf', '$NomeCompl', '$Senha', 1, $Lro, $FiscLro, $Bens, $FiscBens, $SoInsBens, $Agua, $Eletric, $Eletric2, $Eletric3, $ArCond, $ArCond2, $ArCond3, $FiscAr, $Elev, $FiscElev, $Escala, $GrupoEsc, $Escalante, $FiscEscala, '3000-12-31', '$HoraAnt', '3000-12-31', '3000-12-31', '$NomeUsual', (CURRENT_DATE - 1) )"); // logfim conta tempo para apagar usuário (5 anos)
             if(!$rs){
                 $Erro = 12;
             }

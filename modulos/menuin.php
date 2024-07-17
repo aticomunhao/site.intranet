@@ -30,6 +30,21 @@
 				 //0029
 				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS elev smallint NOT NULL DEFAULT 0;");
 				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fiscelev smallint NOT NULL DEFAULT 0;");
+
+				//0030
+				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escalas_gr ADD COLUMN IF NOT EXISTS qtd_turno smallint NOT NULL DEFAULT 1;");
+				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escalas_gr ADD COLUMN IF NOT EXISTS ativo smallint NOT NULL DEFAULT 1;");
+				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escalas_gr ADD COLUMN IF NOT EXISTS usuins bigint NOT NULL DEFAULT 0;");
+				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escalas_gr ADD COLUMN IF NOT EXISTS datains timestamp without time zone DEFAULT '3000-12-31';");
+				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escalas_gr ADD COLUMN IF NOT EXISTS usuedit bigint NOT NULL DEFAULT 0;");
+				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escalas_gr ADD COLUMN IF NOT EXISTS dataedit timestamp without time zone DEFAULT '3000-12-31';");
+
+				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_eft smallint NOT NULL DEFAULT 0;");
+				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_edit smallint NOT NULL DEFAULT 0;");
+				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_grupo smallint NOT NULL DEFAULT 0;");
+				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_fisc smallint NOT NULL DEFAULT 0;");
+				 
+
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

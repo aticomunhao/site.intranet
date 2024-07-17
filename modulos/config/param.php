@@ -50,14 +50,11 @@
                     $("#dataIniEletric").mask("99/99/9999");
                     $("#dataIniEletric2").mask("99/99/9999");
                     $("#dataIniEletric3").mask("99/99/9999");
-
-//                    $('#dataIniAgua').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
-//                    $('#dataIniEletric').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
-//                    $('#dataIniEletric2').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
-//                    $('#dataIniEletric3').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
-
                     $("#cardiretoria").load("modulos/config/carDir.php");
                     $("#relmenu").load("modulos/config/relMenu.php"); // para editar menu
+//aguardando
+//                    $("#carGruposEscala").load("modulos/config/carGrupos.php");
+
                 });
 
                 function salvaParam(Valor, Param){
@@ -393,7 +390,88 @@
                 document.getElementById("atividade1").checked = true;
                 document.getElementById("guardaAtiv").value = 1;
                 document.getElementById("mudou").value = 1;
+                document.getElementById("relausuarios").innerHTML = "";
                 document.getElementById("relacmodalDir").style.display = "block"; // está em carDir.php
+            }
+
+            function carregaModalGrupos(Cod){
+                document.getElementById("mudou").value = "0";
+                document.getElementById("guardacodgrupo").value = Cod;
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escala/salvaEsc.php?acao=buscaGrupo&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    document.getElementById("siglagrupo").value = Resp.siglagrupo;
+                                    document.getElementById("nomegrupo").value = Resp.descgrupo;
+                                    document.getElementById("descgrupo").value = Resp.descescala;
+                                    document.getElementById("selecTurnos").value = Resp.turnos;
+                                    $("#relusugrupo").load("modulos/config/relGrupo.php?codigo="+Cod); // está em relGrupo.php
+                                    document.getElementById("relacEditaGrupos").style.display = "block";
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+                
+            }
+            function inserirGrupo(){
+                document.getElementById("guardacodgrupo").value = 0;
+                document.getElementById("siglagrupo").value = "";
+                document.getElementById("nomegrupo").value = "";
+                document.getElementById("descgrupo").value = "";
+                document.getElementById("selecTurnos").value = "1";
+                document.getElementById("relusugrupo").innerHTML = "";
+                document.getElementById("relacEditaGrupos").style.display = "block";
+            }
+            function salvaGrupo(){
+                if(document.getElementById("mudou").value != "0"){
+                    if(document.getElementById("siglagrupo").value == ""){
+                        document.getElementById("siglagrupo").focus();
+                        return false;
+                    }
+                    if(document.getElementById("nomegrupo").value == ""){
+                        document.getElementById("nomegrupo").focus();
+                        return false;
+                    }
+                    if(document.getElementById("selecTurnos").value == ""){
+                        document.getElementById("selecTurnos").focus();
+                        return false;
+                    }
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/escala/salvaEsc.php?acao=salvaGrupo&codigo="+document.getElementById("guardacodgrupo").value
+                        +"&siglagrupo="+document.getElementById("siglagrupo").value
+                        +"&selecTurnos="+document.getElementById("selecTurnos").value
+                        +"&nomegrupo="+document.getElementById("nomegrupo").value
+                        +"&descgrupo="+document.getElementById("descgrupo").value
+                        , true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");
+                                    if(parseInt(Resp.coderro) === 1){
+                                        alert("Houve um erro no servidor.");
+                                    }else{
+                                        $("#carGruposEscala").load("modulos/config/carGrupos.php");
+                                        document.getElementById("relacEditaGrupos").style.display = "none";
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                }else{
+                    document.getElementById("relacEditaGrupos").style.display = "none";
+                }
             }
 
             function salvaModalDir(){
@@ -496,10 +574,17 @@
             function fechaEditMenuOpr(){
                 document.getElementById("relacEditMenuOpr").style.display = "none";
             }
+            function fechaEditaGrupos(){
+                document.getElementById("relacEditaGrupos").style.display = "none";
+            }
 
             function modif(){ // assinala se houve qualquer modificação nos campos do modal durante a edição para evitar salvar desnecessariamente
                 document.getElementById("mudou").value = "1";
             }
+            function foco(id){
+                document.getElementById(id).focus();
+            }
+
             function validaData (valor) { // tks ao Arthur Ronconi  - https://devarthur.com/blog/funcao-para-validar-data-em-javascript
                 // Verifica se a entrada é uma string
                 if (typeof valor !== 'string') {
@@ -746,6 +831,7 @@
         <input type="hidden" id="guardaData" value="0" />
         <input type="hidden" id="guardaItemMenu" value="0" />
         <input type="hidden" id="guardaPrazoDel" value="<?php echo $PrazoDel; ?>" />
+        <input type="hidden" id="guardacodgrupo" value="0" />
         <div style="margin: 0 auto; margin-top: 40px; padding: 20px; border: 2px solid blue; border-radius: 15px; width: 70%; min-height: 200px;">
             <div style="text-align: center;">
                 <h4>Parâmetros do Sistema</h4>
@@ -1267,37 +1353,89 @@
                     </tr>
                 </table>
             </div>
-            <br>
-            <hr>
-            <br>
+            <br><hr><br>
 
-    <!-- Mostra as diretores e assessorias mais os seus usuários  -->
-            <div id="cardiretoria"></div>
-
+    
+    <!-- Mostra os ítens modificáveis do menu Controles  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
                 <b>Itens de Menu</b>: <label style="color: gray; font-size: .8em;">Modificações aqui vão para o menu</label><br>
                 <div id="relmenu"></div>
             </div>
+            <br><hr><br>
 
-    <!-- Edita descrição de alguns itens do menu  -->
+
+    <!-- Mostra as diretorias e assessorias mais os seus usuários  -->
+            <div id="cardiretoria"></div>
+
+    <!-- Mostra os grupos para escalas mais os seus usuários  -->
+            <div id="carGruposEscala"></div>
+
+
+        </div> <!-- Fim-->
+
+
+            
+            <!-- Modal para editar descrição de alguns itens do menu  -->
             <div id="relacEditMenuOpr" class="relacmodal">
                 <div class="modal-content-EditMenu">
                     <span class="close" onclick="fechaEditMenuOpr();">&times;</span>
                     <h5 id="titulomodal" style="text-align: center; color: #666;">Itens do Menu</h5>
-                        <table style="margin: 0 auto; width: 90%">
-                            <tr>
-                                <td class="etiq aDir">Menu: <label id="nomeMenu" style="text-align: center; border: 1px solid; border-radius: 5px; width: 150px;"></label></td>
-                                <td class="etiq aDir">Novo Valor: </td>
-                                <td><input type="text" id="novoNome" valor="" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 150px; text-align: left;"></td>
-                            </tr>
-                        </table>
-                        <br>
-                        <div style="text-align: center;">
-                            <button class="resetbot" style="font-size: .9rem;" onclick="salvaMenuOpr();">Salvar</button>
-                        </div>
+                    <table style="margin: 0 auto; width: 90%">
+                        <tr>
+                            <td class="etiq aDir">Menu: <label id="nomeMenu" style="text-align: center; border: 1px solid; border-radius: 5px; width: 150px;"></label></td>
+                            <td class="etiq aDir">Novo Valor: </td>
+                            <td><input type="text" id="novoNome" valor="" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 150px; text-align: left;"></td>
+                        </tr>
+                    </table>
+                    <br>
+                    <div style="text-align: center;">
+                        <button class="resetbot" style="font-size: .9rem;" onclick="salvaMenuOpr();">Salvar</button>
                     </div>
                 </div>
-            </div> <!-- Fim Modal-->
+            </div>
+
+
+
+        <!-- div modal edita grupos-->
+        <div id="relacEditaGrupos" class="relacmodal">
+            <div class="modal-content-editGrupos">
+                <span class="close" onclick="fechaEditaGrupos();">&times;</span>
+                <label style="font-size: 1.2em; color: #666;">Edita Grupo</label>
+                <table style="margin: 0 auto; width: 95%;">
+                    <tr>
+                        <td class="etiq">Sigla</td>
+                        <td><input type="text" id="siglagrupo" style="width: 50%;" onchange="modif();" placeholder="Sigla" onkeypress="if(event.keyCode===13){javascript:foco('nomegrupo');return false;}"/></td>
+                        <td class="etiq">Turnos</td>
+                        <td>
+                            <select id="selecTurnos" style="font-size: 1rem; width: 60px; text-align: centr;" onchange="modif();" title="Selecione o número de turnos para a escala.">
+                                <option value="0"></option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </select>
+                        </td>    
+                    </tr>
+                    <tr>
+                        <td class="etiq">Nome</td>
+                        <td colspan="3"><input type="text" id="nomegrupo" style="width: 100%;" onchange="modif();" placeholder="Nome Grupo" onkeypress="if(event.keyCode===13){javascript:foco('descgrupo');return false;}"/></td>
+                    </tr>
+                    <tr>
+                        <td class="etiq">Descrição</td>
+                        <td colspan="3"><input type="text" id="descgrupo" style="width: 100%;" onchange="modif();" placeholder="Descrição" onkeypress="if(event.keyCode===13){javascript:foco('botsalvar');return false;}"/></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"></td>
+                        <td style="text-align: center; padding-top: 20px;"><div class='bSalvar corFundo' onclick='salvaGrupo()'>Salvar</div></td>
+                    </tr>
+
+                </table>
+                <div id="relusugrupo" style="padding-left: 20px;"></div> <!-- Apresenta os usuários do grupo -->
+           </div>
+            <br><br><br>
+
+
+
 
     <!-- Prazo para apagar registros -->
             <div style="margin: 50px; border: 3px solid red; border-radius: 20px; padding: 15px;">
@@ -1339,6 +1477,7 @@
                         <li>Registros das leituras do consumo de água.</li>
                         <li>Registros das leituras do consumo de eletricidade.</li>
                         <li>Registros de manutenção dos Condicionadores de Ar.</li>
+                        <li>Registros de manutenção dos Elevadores.</li>
                         <li>Evendos do calendário.</li>
                         <li>Tarefas atribuidas.</li>
                     </ul>

@@ -27,7 +27,12 @@ if($PrazoDel < 1000){
    pg_query($Conec, "DELETE FROM ".$xProj.".ramais_int WHERE ativo = 0 And datains < CURRENT_DATE - interval '$PrazoDel years'"); 
    pg_query($Conec, "DELETE FROM ".$xProj.".ramais_ext WHERE ativo = 0 And datains < CURRENT_DATE - interval '$PrazoDel years'"); 
    pg_query($Conec, "DELETE FROM ".$xProj.".arqsetor WHERE dataapag < CURRENT_DATE - interval '$PrazoDel years'"); // apaga nome dos arquivos de upload
-   
+
+   pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
+   pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar2 WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
+   pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar3 WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
+   pg_query($Conec, "DELETE FROM ".$xProj.".visitas_el WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
+
 }else{
    echo "Eliminação de registros antigos desativado. <br>";   
 }
