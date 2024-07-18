@@ -874,7 +874,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td>  <!-- &nabla; -->
                             <select id="selecprio" title="Prioridade da tarefa" onchange="modif();">
                                 <option value='0'>Urgente</option>
-                                <option value='1'>Muito Importante</option>
+<!--                                <option value='1'>Muito Importante</option> -->
                                 <option value='2'>Importante</option>
                                 <option value='3'>Normal</option>
                             </select>

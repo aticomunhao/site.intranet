@@ -134,7 +134,7 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
-alert(ajax.responseText);
+//alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.")
