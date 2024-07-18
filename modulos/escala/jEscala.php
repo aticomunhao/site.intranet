@@ -168,7 +168,7 @@ $Mes_Extract = array(
                             <?php
                             }
                             ?>
-                            <td class="etiq" title="Horas do turno"><?php if(($tbl[8]-$tbl[7]) > 0){echo ($tbl[8]-$tbl[7])."h";} ?></td>
+                                <td class="etiq" title="Horas do turno"><?php if(($tbl[8]-$tbl[7]) > 0){echo ($tbl[8]-$tbl[7])."h";} ?></td>
                             <?php
                             }
                             ?>
@@ -178,9 +178,9 @@ $Mes_Extract = array(
                             <?php
                             if($Turnos >= 3){
                             ?>
-                            <td><label style="padding-left: 30px;"></label></td> <!-- separador -->
-                            <td><div class="quadrinho"> <?php if($tbl[10] == 0 && $tbl[11] == 0){echo "&nbsp;";}else{if($tbl[10] < 10){echo "0".$tbl[10].":00";}else{echo $tbl[10].":00";}}; ?> </div> </td>
-                            <td><div class="quadrinho"> <?php if($tbl[11] == 0){echo "&nbsp;";}else{if($tbl[11] < 10){echo "0".$tbl[11].":00";}else{echo $tbl[11].":00";}}; ?> </div> </td>
+                                <td><label style="padding-left: 30px;"></label></td> <!-- separador -->
+                                <td><div class="quadrinho"> <?php if($tbl[10] == 0 && $tbl[11] == 0){echo "&nbsp;";}else{if($tbl[10] < 10){echo "0".$tbl[10].":00";}else{echo $tbl[10].":00";}}; ?> </div> </td>
+                                <td><div class="quadrinho"> <?php if($tbl[11] == 0){echo "&nbsp;";}else{if($tbl[11] < 10){echo "0".$tbl[11].":00";}else{echo $tbl[11].":00";}}; ?> </div> </td>
                             <?php
                             $CodPartic3 = $tbl[9];
                             $rs3 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodPartic3;");
@@ -196,7 +196,7 @@ $Mes_Extract = array(
                             <?php
                             if($CodPartic2 != 0){
                             ?>
-                            <td><div class="quadrinhoClick" style="text-align: left;" onclick="abreParticip(3, <?php echo $Cod; ?>, <?php echo $CodPartic3; ?>, '<?php echo $tbl[2]; ?>');" title="Clique aqui para escalar ou editar o escalado"> <?php echo $Nome3; ?> </div> </td>
+                                <td><div class="quadrinhoClick" style="text-align: left;" onclick="abreParticip(3, <?php echo $Cod; ?>, <?php echo $CodPartic3; ?>, '<?php echo $tbl[2]; ?>');" title="Clique aqui para escalar ou editar o escalado"> <?php echo $Nome3; ?> </div> </td>
                             <?php
                             }else{
                                 ?>
@@ -214,9 +214,9 @@ $Mes_Extract = array(
                             <?php
                             if($Turnos >= 4){
                             ?>
-                            <td><label style="padding-left: 30px;"></label></td> <!-- separador -->
-                            <td><div class="quadrinho"> <?php if($tbl[13] == 0 && $tbl[14] == 0){echo "&nbsp;";}else{if($tbl[13] < 10){echo "0".$tbl[13].":00";}else{echo $tbl[13].":00";}}; ?> </div> </td>
-                            <td><div class="quadrinho"> <?php if($tbl[14] == 0){echo "&nbsp;";}else{if($tbl[14] < 10){echo "0".$tbl[14].":00";}else{echo $tbl[14].":00";}}; ?> </div> </td>
+                                <td><label style="padding-left: 30px;"></label></td> <!-- separador -->
+                                <td><div class="quadrinho"> <?php if($tbl[13] == 0 && $tbl[14] == 0){echo "&nbsp;";}else{if($tbl[13] < 10){echo "0".$tbl[13].":00";}else{echo $tbl[13].":00";}}; ?> </div> </td>
+                                <td><div class="quadrinho"> <?php if($tbl[14] == 0){echo "&nbsp;";}else{if($tbl[14] < 10){echo "0".$tbl[14].":00";}else{echo $tbl[14].":00";}}; ?> </div> </td>
                             <?php
                             $CodPartic4 = $tbl[12];
                             $rs4 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodPartic4;");
@@ -232,7 +232,7 @@ $Mes_Extract = array(
                             <?php
                             if($CodPartic3 != 0){
                             ?>
-                            <td><div class="quadrinhoClick" style="text-align: left;" onclick="abreParticip(4, <?php echo $Cod; ?>, <?php echo $CodPartic4; ?>, '<?php echo $tbl[2]; ?>');" title="Clique aqui para escalar ou editar o escalado"> <?php echo $Nome4; ?> </div> </td>
+                                <td><div class="quadrinhoClick" style="text-align: left;" onclick="abreParticip(4, <?php echo $Cod; ?>, <?php echo $CodPartic4; ?>, '<?php echo $tbl[2]; ?>');" title="Clique aqui para escalar ou editar o escalado"> <?php echo $Nome4; ?> </div> </td>
                             <?php
                             }else{
                                 ?>

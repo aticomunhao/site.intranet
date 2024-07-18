@@ -43,7 +43,50 @@
 				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_edit smallint NOT NULL DEFAULT 0;");
 				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_grupo smallint NOT NULL DEFAULT 0;");
 				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_fisc smallint NOT NULL DEFAULT 0;");
-				 
+
+				 pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escalas (
+					id SERIAL PRIMARY KEY, 
+					grupo_id integer NOT NULL DEFAULT 0,
+					dataescala date DEFAULT '3000-12-31',
+					turno1_id BIGINT NOT NULL DEFAULT 0,
+					horaini1 smallint NOT NULL DEFAULT 0, 
+					horafim1 smallint NOT NULL DEFAULT 0,
+					turno2_id BIGINT NOT NULL DEFAULT 0,
+					horaini2 smallint NOT NULL DEFAULT 0, 
+					horafim2 smallint NOT NULL DEFAULT 0,
+					turno3_id BIGINT NOT NULL DEFAULT 0,
+					horaini3 smallint NOT NULL DEFAULT 0, 
+					horafim3 smallint NOT NULL DEFAULT 0,
+					turno4_id BIGINT NOT NULL DEFAULT 0,
+					horaini4 smallint NOT NULL DEFAULT 0, 
+					horafim4 smallint NOT NULL DEFAULT 0,
+					turno5_id BIGINT NOT NULL DEFAULT 0,
+					horaini5 smallint NOT NULL DEFAULT 0, 
+					horafim5 smallint NOT NULL DEFAULT 0,
+					turno6_id BIGINT NOT NULL DEFAULT 0,
+					horaini6 smallint NOT NULL DEFAULT 0, 
+					horafim6 smallint NOT NULL DEFAULT 0,
+					ativo smallint NOT NULL DEFAULT 1, 
+					usuins bigint NOT NULL DEFAULT 0,
+					datains timestamp without time zone DEFAULT '3000-12-31',
+					usuedit bigint NOT NULL DEFAULT 0,
+					dataedit timestamp without time zone DEFAULT '3000-12-31' 
+					) 
+				 ");
+				 pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escalas_gr (
+					id SERIAL PRIMARY KEY, 
+					siglagrupo VARCHAR(20),
+					descgrupo VARCHAR(100),
+					descescala VARCHAR(200),
+					guardaescala VARCHAR(20),
+					qtd_turno smallint NOT NULL DEFAULT 1,
+					ativo smallint NOT NULL DEFAULT 1, 
+					usuins bigint NOT NULL DEFAULT 0,
+					datains timestamp without time zone DEFAULT '3000-12-31',
+					usuedit bigint NOT NULL DEFAULT 0,
+					dataedit timestamp without time zone DEFAULT '3000-12-31' 
+					) 
+				 ");
 
 			} // fim data limite
         ?>

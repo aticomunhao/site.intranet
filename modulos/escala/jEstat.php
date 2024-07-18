@@ -105,6 +105,10 @@ $Mes_Extract = array(
 
 
 
+            $Cod1 = 0;
+            $Cod2 = 0;
+            $Cod3 = 0;
+
             $rs = pg_query($Conec, "SELECT turno1_id, nomecompl 
             FROM ".$xProj.".escalas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escalas.turno1_id = ".$xProj.".poslog.pessoas_id 
             WHERE grupo_id = $NumGrupo And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' 

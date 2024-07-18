@@ -251,6 +251,18 @@ if($Acao =="salvaData"){
     echo $responseText;
 }
 
+if($Acao =="apagaData"){
+    $Cod = (float) filter_input(INPUT_GET, 'codigo'); 
+    $Erro = 0;
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".leitura_agua SET ativo = 0, usumodif = ".$_SESSION["usuarioID"].", datamodif = NOW() WHERE id = $Cod ");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
 if($Acao =="salvaDataEletric"){
     $Cod = (float) filter_input(INPUT_GET, 'codigo'); 
     $Colec = (int) filter_input(INPUT_GET, 'colec'); // 1 comunhão - 2 Claro - 3 Oi

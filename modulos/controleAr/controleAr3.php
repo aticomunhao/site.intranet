@@ -925,7 +925,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar3 (
                         <tr>
                             <td class="etiq aDir" title="Data e hora do acionamento">Acionamento: </td>
                             <td><input type="text" id="dataAcionam" width="200" style="text-align: center; border: 1px solid; border-radius: 5px;" valor="" onchange="modif();" title="Data do acionamento"></td>
-                            <td class="etiq aDir" title="Nome do responsável contactado da empresa contratada">Contactado na Empresa: </td>
+                            <td class="etiq aDir" title="Nome do responsável contactado da empresa contratada">Nome do Atendente: </td>
                             <td><input type="text" id="nomecontactado" style="width: 100%;" valor="" onchange="modif();" title="Nome do responsável contactado da empresa contratada"></td>
                         </tr>
                         <tr>

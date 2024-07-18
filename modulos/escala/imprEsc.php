@@ -62,7 +62,7 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf = new PDF();
     $pdf->AliasNbPages(); // pega o número total de páginas
     $pdf->AddPage();
-    $pdf->SetLeftMargin(15);
+    $pdf->SetLeftMargin(25);
     
     //Monta o arquivo pdf        
     $pdf->SetFont('Arial', '' , 12); 
@@ -124,29 +124,19 @@ if(!isset($_SESSION['AdmUsu'])){
         $row = pg_num_rows($rs);
         if($row > 0){
             $pdf->SetFont('Arial', 'I' , 7);
-            $pdf->Cell(18, 4, "Data", 0, 0, 'C');
-            $pdf->Cell(10, 4, "Início", 0, 0, 'C');
-            $pdf->Cell(10, 4, "Fim", 0, 0, 'C');
-            if($Turnos == 1){
-                $pdf->Cell(15, 4, "Escalado", 0, 1, 'L');
-            }else{
-                $pdf->Cell(15, 4, "Escalado", 0, 0, 'L');
-            }
+            $pdf->Cell(25, 4, "Data", 0, 0, 'C');
+            $pdf->Cell(15, 4, "Início", 0, 0, 'C');
+            $pdf->Cell(15, 4, "Fim", 0, 0, 'C');
+            $pdf->Cell(15, 4, "Escalado", 0, 1, 'L');
 
-            if($Turnos >= 2){
-                $pdf->SetX(120); 
-                $pdf->Cell(10, 4, "Início", 0, 0, 'C');
-                $pdf->Cell(10, 4, "Fim", 0, 0, 'C');
-                $pdf->Cell(15, 4, "Escalado", 0, 1, 'L');
-            }
             $lin = $pdf->GetY();
             $pdf->Line(10, $lin, 200, $lin);
-            $pdf->SetFont('Arial', '' , 8);
+            $pdf->SetFont('Arial', '' , 10);
             while($tbl = pg_fetch_row($rs)){
                 $Cod = $tbl[0]; // id de escalas
                 $CodPartic1 = $tbl[3]; // pessoas_id de poslog - salvo em salvaEsc.php
-                $pdf->Cell(18, 5, $tbl[2], 0, 0, 'C');
-                if($tbl[4] == 0){
+                $pdf->Cell(25, 5, $tbl[2], 0, 0, 'C');
+                if($tbl[4] == 0 && $tbl[5] == 0){
                     $Ini = "";
                 }else{
                     if($tbl[4] < 10){
@@ -164,8 +154,8 @@ if(!isset($_SESSION['AdmUsu'])){
                         $Fim = $tbl[5].":00";
                     }
                 }
-                $pdf->Cell(10, 5, $Ini, 0, 0, 'C');
-                $pdf->Cell(10, 5, $Fim, 0, 0, 'C');
+                $pdf->Cell(15, 5, $Ini, 0, 0, 'C');
+                $pdf->Cell(15, 5, $Fim, 0, 0, 'C');
 
                 $rs1 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodPartic1;");
                 $row1 = pg_num_rows($rs1);
@@ -176,56 +166,51 @@ if(!isset($_SESSION['AdmUsu'])){
                     $Nome1 = "";
                 }
 
-                if($Turnos == 1){
-                    $pdf->Cell(150, 5, $Nome1, 0, 1, 'L');
-                }else{
-                    $pdf->Cell(150, 5, $Nome1, 0, 0, 'L');
+                $pdf->Cell(150, 5, $Nome1, 0, 1, 'L');
+
+                if($tbl[6] != 0){
+                    if($Turnos >= 2){
+                        $pdf->SetX(50); 
+                        $CodPartic2 = $tbl[6]; // pessoas_id de poslog - salvo em salvaEsc.php
+                        if($tbl[7] == 0 && $tbl[8] == 0){
+                            $Ini = "";
+                        }else{
+                            if($tbl[7] < 10){
+                                $Ini = "0".$tbl[7].":00";
+                            }else{
+                                $Ini = $tbl[7].":00";
+                            }
+                        }
+
+                        if($tbl[8] == 0){
+                            $Fim = "";
+                        }else{
+                            if($tbl[8] < 10){
+                                $Fim = "0".$tbl[8].":00";
+                            }else{
+                                $Fim = $tbl[8].":00";
+                            }
+                        }
+                        $pdf->Cell(15, 5, $Ini, 0, 0, 'C');
+                        $pdf->Cell(15, 5, $Fim, 0, 0, 'C');
+
+                        $rs2 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodPartic2;");
+                        $row2 = pg_num_rows($rs2);
+                        if($row2 > 0){
+                            $tbl2 = pg_fetch_row($rs2);
+                            $Nome2 = $tbl2[0];
+                        }else{
+                            $Nome2 = "";
+                        }
+                        $pdf->Cell(150, 5, $Nome2, 0, 1, 'L');
+                    }
                 }
 
-
-                if($Turnos >= 2){
-                    $pdf->SetX(120); 
-                    $CodPartic2 = $tbl[6]; // pessoas_id de poslog - salvo em salvaEsc.php
-                    if($tbl[7] == 0){
-                        $Ini = "";
-                    }else{
-                        if($tbl[7] < 10){
-                            $Ini = "0".$tbl[7].":00";
-                        }else{
-                            $Ini = $tbl[7].":00";
-                        }
-                    }
-
-                    if($tbl[8] == 0){
-                        $Fim = "";
-                    }else{
-                        if($tbl[8] < 10){
-                            $Fim = "0".$tbl[8].":00";
-                        }else{
-                            $Fim = $tbl[8].":00";
-                        }
-                    }
-                    $pdf->Cell(10, 5, $Ini, 0, 0, 'C');
-                    $pdf->Cell(10, 5, $Fim, 0, 0, 'C');
-
-                    $rs2 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodPartic2;");
-                    $row2 = pg_num_rows($rs2);
-                    if($row2 > 0){
-                        $tbl2 = pg_fetch_row($rs2);
-                        $Nome2 = $tbl2[0];
-                    }else{
-                        $Nome2 = "";
-                    }
-                    $pdf->Cell(150, 5, $Nome2, 0, 1, 'L');
-                }
-
-
-                if($tbl[9] != 0 || $tbl[12] != 0){ // CodPartic3 e 4 - para não deixar linha em branco
-
+                if($tbl[9] != 0){
                     if($Turnos >= 3){
-                        $pdf->SetX(33); 
+                        $pdf->SetX(50); 
                         $CodPartic3 = $tbl[9];
-                        if($tbl[10] == 0){
+                        if($tbl[10] == 0 && $tbl[11] == 0){
                             $Ini = "";
                         }else{
                             if($tbl[10] < 10){
@@ -243,8 +228,8 @@ if(!isset($_SESSION['AdmUsu'])){
                                 $Fim = $tbl[11].":00";
                             }
                         }
-                        $pdf->Cell(10, 5, $Ini, 0, 0, 'C');
-                        $pdf->Cell(10, 5, $Fim, 0, 0, 'C');
+                        $pdf->Cell(15, 5, $Ini, 0, 0, 'C');
+                        $pdf->Cell(15, 5, $Fim, 0, 0, 'C');
 
                         $rs3 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodPartic3;");
                         $row3 = pg_num_rows($rs3);
@@ -254,17 +239,14 @@ if(!isset($_SESSION['AdmUsu'])){
                         }else{
                             $Nome3 = "";
                         }
-                        if($Turnos == 3){
-                            $pdf->Cell(150, 5, $Nome3, 0, 1, 'L');
-                        }else{
-                            $pdf->Cell(150, 5, $Nome3, 0, 0, 'L');
-                        }
+                        $pdf->Cell(150, 5, $Nome3, 0, 1, 'L');
                     }
-
+                }
+                if($tbl[12] != 0){
                     if($Turnos >= 4){
-                        $pdf->SetX(120); 
+                        $pdf->SetX(50); 
                         $CodPartic4 = $tbl[12];
-                        if($tbl[13] == 0){
+                        if($tbl[13] == 0 && $tbl[14] == 0){
                             $Ini = "";
                         }else{
                             if($tbl[13] < 10){
@@ -282,8 +264,8 @@ if(!isset($_SESSION['AdmUsu'])){
                                 $Fim = $tbl[14].":00";
                             }
                         }
-                        $pdf->Cell(10, 5, $Ini, 0, 0, 'C');
-                        $pdf->Cell(10, 5, $Fim, 0, 0, 'C');
+                        $pdf->Cell(15, 5, $Ini, 0, 0, 'C');
+                        $pdf->Cell(15, 5, $Fim, 0, 0, 'C');
 
                         $rs4 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodPartic4;");
                         $row4 = pg_num_rows($rs4);
@@ -296,7 +278,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $pdf->Cell(150, 5, $Nome4, 0, 1, 'L');
                     }
                 }
-
+                
                 $lin = $pdf->GetY();
                 $pdf->Line(10, $lin, 200, $lin);
             }

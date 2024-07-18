@@ -14,10 +14,12 @@ if(!isset($_SESSION["usuarioID"])){
         <title>Leituras</title>
         <link rel="stylesheet" type="text/css" media="screen" href="class/dataTable/datatables.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="class/gijgo/css/gijgo.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/relacmod.css" />
         <script src="comp/js/jquery.min.js"></script> <!-- versão 3.6.3 -->
         <script src="class/dataTable/datatables.min.js"></script>
         <script src="comp/js/jquery.mask.js"></script>
+        <script src="comp/js/jquery-confirm.min.js"></script> 
         <script src="class/gijgo/js/gijgo.js"></script>
         <script src="class/gijgo/js/messages/messages.pt-br.js"></script>
 
@@ -128,6 +130,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
             function insereModal(){
+
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/leituras/salvaLeitura.php?acao=ultData", true);
@@ -149,6 +152,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("insleitura2").value = "";
                                     document.getElementById("insleitura3").value = "";
                                     document.getElementById("relacmodalLeitura").style.display = "block";
+                                    document.getElementById("apagaRegistro").style.visibility = "hidden";
                                     $('#mensagemLeitura').fadeIn("slow");
                                     document.getElementById("mensagemLeitura").innerHTML = "Próxima data para lançamento.";
                                     $('#mensagemLeitura').fadeOut(2000);
@@ -244,6 +248,39 @@ if(!isset($_SESSION["usuarioID"])){
                     };
                     ajax.send(null);
                 }
+            }
+            function apagaModalAgua(){
+                $.confirm({
+                    title: 'Confirmação!',
+                    content: 'Confirma apagar o lançamento?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/leituras/salvaLeitura.php?acao=apagaData&codigo="+document.getElementById("guardacod").value, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                            if(parseInt(Resp.coderro) === 0){
+                                                document.getElementById("relacmodalLeitura").style.display = "none";
+                                                $("#container5").load("modulos/leituras/carAgua.php");
+                                                $("#container6").load("modulos/leituras/carEstatAgua.php");
+                                            }else{
+                                                alert("Houve um erro no servidor.")
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {}
+                    }
+                });
             }
             function imprMesLeitura(){
                 if(document.getElementById("selecMesAno").value == ""){

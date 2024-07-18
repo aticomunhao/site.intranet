@@ -280,7 +280,8 @@ if(!isset($_SESSION['AdmUsu'])){
                                 $MediaDiaria = ($Cons1+$Cons2+$Cons3)/$QuantDias;
                             }
                             $pdf->SetFont('Arial', 'I', 10);
-                            $pdf->Cell(163, 5, "Consumo Mensal:", 0, 0, 'R');
+                            $pdf->Cell(143, 5, "Consumo Mensal:", 0, 0, 'R');
+                            $pdf->SetX(173); 
                             $pdf->SetTextColor(255, 0, 0); // vermelho
                             $pdf->Cell(26, 5, number_format(($Cons1+$Cons2+$Cons3), 3, ",",".")." m3", 0, 1, 'R');
                             $pdf->SetTextColor(0, 0, 0);
@@ -317,7 +318,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $lin = $pdf->GetY();
                             $pdf->Line(40, $lin, 167, $lin);
 
-                            $pdf->SetX(112); 
+                            $pdf->SetX(105); 
                             if($QuantDias == 1){
                                 $pdf->Cell(20, 5, "Consumo Médio Diário: ( 1 dia)", 0, 0, 'L');
                             }else{
@@ -574,15 +575,15 @@ if(!isset($_SESSION['AdmUsu'])){
                                 $MediaDiaria = ($Cons1/$QuantDias);
                             }
                             $pdf->SetFont('Arial', 'I', 10);
-                            $pdf->SetX(132); 
+                            $pdf->SetX(125); 
                             $pdf->Cell(25, 5, "Consumo Mensal:", 0, 0, 'R');
                             $pdf->SetX(155); 
                             $pdf->SetTextColor(255, 0, 0); // vermelho
                             $pdf->Cell(27, 5, number_format($Cons1, 3, ",",".")." kWh", 0, 1, 'R');
                             $pdf->SetTextColor(0, 0, 0);
 
-                            $pdf->SetX(132); 
-                            $pdf->Cell(25, 5, "Consumo Médio Diário: ", 0, 0, 'R');
+                            $pdf->SetX(125); 
+                            $pdf->Cell(25, 5, "Consumo Médio Diário:", 0, 0, 'R');
 
                             $pdf->SetX(155); 
                             $pdf->SetTextColor(255, 0, 0); // vermelho

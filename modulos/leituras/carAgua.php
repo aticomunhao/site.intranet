@@ -34,9 +34,12 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 }
             });
             $(document).ready(function(){
+                document.getElementById("apagaRegistro").style.visibility = "hidden";
                 $('#insdata').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
+                if(parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
+                    document.getElementById("apagaRegistro").style.visibility = "visible";
+                }
             });
-//            $("#insdata").mask("99/99/9999"); // esse tipo de datepicker não deixa digitar
         </script>
 
     </head>
@@ -211,6 +214,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 </table>
 
                     <div style="text-align: center; padding-bottom: 4px;">
+                        <button id="apagaRegistro"class="botpadrred" onclick="apagaModalAgua();">Apagar</button>
+                        <label style="padding-left: 50%;"></label>
                         <button class="botpadrblue" onclick="salvaModal();">Salvar</button>
                     </div>
                 </div>
