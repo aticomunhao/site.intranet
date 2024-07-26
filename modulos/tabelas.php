@@ -33,6 +33,8 @@ if($PrazoDel < 1000){
    pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar3 WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
    pg_query($Conec, "DELETE FROM ".$xProj.".visitas_el WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
 
+   pg_query($Conec, "DELETE FROM ".$xProj.".escalas WHERE dataescala < CURRENT_DATE - interval '$PrazoDel years'");
+
 }else{
    echo "Eliminação de registros antigos desativado. <br>";   
 }

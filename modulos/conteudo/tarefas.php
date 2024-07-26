@@ -575,16 +575,16 @@ if(!isset($_SESSION["usuarioID"])){
         $VerTarefas = parAdm("vertarefa", $Conec, $xProj); // ver tarefas   1: todos - 2: só mandante e executante
 
         //Relacionar usuários - adm <= $Adm - só paga tarefa para nível adm menor ou igual
-        $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 And adm <= $Adm ORDER BY nomecompl");
-        $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 And adm >= $admIns And pessoas_id != $UsuLogadoId ORDER BY nomecompl");
+        $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm <= $Adm ORDER BY nomeusual, nomecompl");
+        $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm >= $admIns And pessoas_id != $UsuLogadoId ORDER BY nomeusual, nomecompl");
 
         // Preenche caixa de escolha mes/ano para impressão - ano antes para indexar primeiro pelo ano
         $OpcoesEscMes = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".tarefas.datains)::text ||'/'|| EXTRACT(MONTH FROM ".$xProj.".tarefas.datains)::text 
         FROM ".$xProj.".tarefas GROUP BY 1 ORDER BY 1 DESC ");
         $OpcoesEscAno = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".tarefas.datains)::text 
         FROM ".$xProj.".tarefas GROUP BY 1 ORDER BY 1 DESC ");
-        $OpcoesUserMand = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
-        $OpcoesUserExec = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
+        $OpcoesUserMand = pg_query($Conec, "SELECT pessoas_id, nomecompl,nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomeusual, nomecompl");
+        $OpcoesUserExec = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomeusual, nomecompl");
 
         //marca que foi visualizado nesta data - dataSit1
         pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit1 = NOW() WHERE usuexec = ".$_SESSION["usuarioID"]." And datasit1 = '3000/12/31' And ativo = 1");
@@ -688,20 +688,26 @@ if(!isset($_SESSION["usuarioID"])){
                         $DataSit3= $tbl[12];
                         $DataSit4= $tbl[13];
 
-                        $rs1 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $usuIns"); //mandante
+                        $rs1 = pg_query($Conec, "SELECT nomecompl, nomeusual FROM ".$xProj.".poslog WHERE pessoas_id = $usuIns"); //mandante
                         $row1 = pg_num_rows($rs1);
                         if($row1 > 0){
                             $Proc1 = pg_fetch_row($rs1);
-                            $NomeIns = $Proc1[0];
+                            $NomeIns = $Proc1[1];
+                            if(is_null($Proc1[1]) || $Proc1[1] == ""){
+                                $NomeIns = $Proc1[0];
+                            }
                         }else{
                             $NomeIns = "";
                         }
 
-                        $rs2 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $usuExec"); // executor
+                        $rs2 = pg_query($Conec, "SELECT nomecompl, nomeusual FROM ".$xProj.".poslog WHERE pessoas_id = $usuExec"); // executor
                         $row2 = pg_num_rows($rs2);
                         if($row2 > 0){
                             $Proc2 = pg_fetch_row($rs2);
-                            $NomeExec = $Proc2[0];
+                            $NomeExec = $Proc2[1];
+                            if(is_null($Proc2[1]) || $Proc2[1] == ""){
+                                $NomeExec = $Proc2[0];
+                            }
                         }else{
                             $NomeExec = "";
                         }
@@ -839,7 +845,7 @@ if(!isset($_SESSION["usuarioID"])){
                             <?php 
                             if($OpcoesUsers){
                                 while ($Opcoes = pg_fetch_row($OpcoesUsers)){ ?>
-                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php if(!is_null($Opcoes[2]) && $Opcoes[2] != ""){ echo $Opcoes[2]." - ".$Opcoes[1];}else{echo $Opcoes[1];} ?></option>
                                 <?php 
                                 }
                             }
@@ -974,7 +980,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     <?php 
                                     if($OpcoesTransf){
                                         while ($Opcoes = pg_fetch_row($OpcoesTransf)){ ?>
-                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php if(!is_null($Opcoes[2]) && $Opcoes[2] != ""){ echo $Opcoes[2]." - ".$Opcoes[1];}else{echo $Opcoes[1];} ?></option>
                                         <?php 
                                         }
                                     }
@@ -1037,7 +1043,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     <?php 
                                     if($OpcoesUserMand){
                                         while ($Opcoes = pg_fetch_row($OpcoesUserMand)){ ?>
-                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php if(!is_null($Opcoes[2]) && $Opcoes[2] != ""){ echo $Opcoes[2]." - ".$Opcoes[1];}else{echo $Opcoes[1];} ?></option>
                                         <?php 
                                         }
                                     }
@@ -1054,7 +1060,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     <?php 
                                     if($OpcoesUserExec){
                                         while ($Opcoes = pg_fetch_row($OpcoesUserExec)){ ?>
-                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php if(!is_null($Opcoes[2]) && $Opcoes[2] != ""){ echo $Opcoes[2]." - ".$Opcoes[1];}else{echo $Opcoes[1];} ?></option>
                                         <?php 
                                         }
                                     }

@@ -121,6 +121,9 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("insleitura3").value = Resp.leitura3;
                                     document.getElementById("guardacod").value = Cod;
                                     document.getElementById("relacmodalLeitura").style.display = "block";
+                                    if(parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
+                                        document.getElementById("apagaRegistro").style.visibility = "visible";
+                                    }
                                     document.getElementById("guardacod").value = Cod;
                                 }
                             }
@@ -130,7 +133,6 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
             function insereModal(){
-
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/leituras/salvaLeitura.php?acao=ultData", true);

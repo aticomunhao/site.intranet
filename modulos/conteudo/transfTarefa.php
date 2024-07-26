@@ -63,11 +63,14 @@ if(!isset($_SESSION["usuarioID"])){
                         $Prio = $tbl[3];
                         $Sit = $tbl[4];
                         $Marca = $tbl[5];
-                        $rs1 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $UsuExec "); 
+                        $rs1 = pg_query($Conec, "SELECT nomecompl, nomeusual FROM ".$xProj.".poslog WHERE pessoas_id = $UsuExec "); 
                         $row1 = pg_num_rows($rs1);
                         if($row1 > 0){
                             $tbl1 = pg_fetch_row($rs1);
-                            $NomeExec = $tbl1[0];
+                            $NomeExec = $tbl1[1];
+                            if(is_null($tbl1[1] || $tbl1[1] == "")){
+                                $NomeExec = $tbl1[0];
+                            }
                         }else{$NomeExec = "";}
 
                         if($Prio == 0){

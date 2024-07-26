@@ -68,7 +68,7 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->SetFont('Arial', 'B', 9);
     $pdf->ln(7);
 
-    $rs = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, numrelato, to_char(".$xProj.".livroreg.datains, 'DD/MM/YYYY'), turno, descturno, nomecompl, usuant, relato, ocor 
+    $rs = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, numrelato, to_char(".$xProj.".livroreg.datains, 'DD/MM/YYYY'), turno, descturno, nomecompl, usuant, relato, ocor, nomeusual 
     FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id
     WHERE ".$xProj.".livroreg.ativo = 1 ORDER BY ".$xProj.".livroreg.dataocor DESC, ".$xProj.".livroreg.turno DESC, ".$xProj.".livroreg.datains DESC ");
     $row = pg_num_rows($rs);
@@ -90,7 +90,11 @@ if(!isset($_SESSION['AdmUsu'])){
             $NumRelat = $tbl[1];
             $DataIns =  $tbl[2];
             $CodTurno = $tbl[3];
-            $NomeUsu = $tbl[5];
+            if(!is_null($tbl[9] && $tbl[9] != "")){
+                $NomeUsu = $tbl[9]." - ".$tbl[5];    
+            }else{
+                $NomeUsu = $tbl[5];
+            }
             $CodAnt = $tbl[6];
             $Relato = $tbl[7];
             $Ocor = $tbl[8];

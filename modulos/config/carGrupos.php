@@ -33,13 +33,12 @@ require_once("abrealas.php");
     <body> 
         <input type="hidden" id="guardacodsetor" value="0" /> <!-- quando carrega o modal -->
         <div style="border: 2px solid; border-radius: 15px; padding: 10px;">
-            <div style="text-align: center;"><h4>Grupos para Escalas</h4></div>
+            <div style="text-align: center;"><h4>Grupos que usam Escalas</h4></div>
             <div style="text-align: center;">Clique para editar<br>
-            <label class="etiqAzul">As modificações feitas aqui são passadas para o menu dos Grupos</label><br> 
-            <label class="etiqAzul">Os nomes dos usuários de cada grupo são mostrados na edição</label>
+            <label class="etiqAzul">As modificações feitas aqui são passadas para o módulo Escalas</label><br> 
         </div>
             <?php
-                $rs0 = pg_query($Conec, "SELECT id, siglagrupo, descgrupo, qtd_turno, ativo FROM ".$xProj.".escalas_gr WHERE id > 1 ORDER BY siglagrupo");
+                $rs0 = pg_query($Conec, "SELECT id, siglagrupo, descgrupo, qtd_turno, ativo FROM ".$xProj.".escalas_gr WHERE ativo = 1 ORDER BY siglagrupo");
             ?>
             <table id="idTabelaGr" class="display" style="width:85%">
                 <thead>

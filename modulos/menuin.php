@@ -44,49 +44,53 @@
 				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_grupo smallint NOT NULL DEFAULT 0;");
 				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_fisc smallint NOT NULL DEFAULT 0;");
 
+
+				 //Escala antiga
+				 pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escala_adm");
+				 pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escala_eft");
+				 pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".setores_ant");
+
 				 pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escalas (
-					id SERIAL PRIMARY KEY, 
-					grupo_id integer NOT NULL DEFAULT 0,
-					dataescala date DEFAULT '3000-12-31',
-					turno1_id BIGINT NOT NULL DEFAULT 0,
-					horaini1 smallint NOT NULL DEFAULT 0, 
-					horafim1 smallint NOT NULL DEFAULT 0,
-					turno2_id BIGINT NOT NULL DEFAULT 0,
-					horaini2 smallint NOT NULL DEFAULT 0, 
-					horafim2 smallint NOT NULL DEFAULT 0,
-					turno3_id BIGINT NOT NULL DEFAULT 0,
-					horaini3 smallint NOT NULL DEFAULT 0, 
-					horafim3 smallint NOT NULL DEFAULT 0,
-					turno4_id BIGINT NOT NULL DEFAULT 0,
-					horaini4 smallint NOT NULL DEFAULT 0, 
-					horafim4 smallint NOT NULL DEFAULT 0,
-					turno5_id BIGINT NOT NULL DEFAULT 0,
-					horaini5 smallint NOT NULL DEFAULT 0, 
-					horafim5 smallint NOT NULL DEFAULT 0,
-					turno6_id BIGINT NOT NULL DEFAULT 0,
-					horaini6 smallint NOT NULL DEFAULT 0, 
-					horafim6 smallint NOT NULL DEFAULT 0,
-					ativo smallint NOT NULL DEFAULT 1, 
-					usuins bigint NOT NULL DEFAULT 0,
-					datains timestamp without time zone DEFAULT '3000-12-31',
-					usuedit bigint NOT NULL DEFAULT 0,
-					dataedit timestamp without time zone DEFAULT '3000-12-31' 
+					    id SERIAL PRIMARY KEY, 
+    grupo_id integer NOT NULL DEFAULT 0,
+    dataescala date DEFAULT '3000-12-31',
+    turno1_id BIGINT NOT NULL DEFAULT 0,
+    horaini1 timestamp without time zone, 
+    horafim1 timestamp without time zone,
+    turno2_id BIGINT NOT NULL DEFAULT 0,
+    horaini2 timestamp without time zone, 
+    horafim2 timestamp without time zone,
+    turno3_id BIGINT NOT NULL DEFAULT 0,
+    horaini3 timestamp without time zone, 
+    horafim3 timestamp without time zone,
+    turno4_id BIGINT NOT NULL DEFAULT 0,
+    horaini4 timestamp without time zone, 
+    horafim4 timestamp without time zone,
+    ativo smallint NOT NULL DEFAULT 1, 
+    usuins bigint NOT NULL DEFAULT 0,
+    datains timestamp without time zone DEFAULT '3000-12-31',
+    usuedit bigint NOT NULL DEFAULT 0,
+    dataedit timestamp without time zone DEFAULT '3000-12-31' 
 					) 
 				 ");
 				 pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escalas_gr (
-					id SERIAL PRIMARY KEY, 
-					siglagrupo VARCHAR(20),
-					descgrupo VARCHAR(100),
-					descescala VARCHAR(200),
-					guardaescala VARCHAR(20),
-					qtd_turno smallint NOT NULL DEFAULT 1,
-					ativo smallint NOT NULL DEFAULT 1, 
-					usuins bigint NOT NULL DEFAULT 0,
-					datains timestamp without time zone DEFAULT '3000-12-31',
-					usuedit bigint NOT NULL DEFAULT 0,
-					dataedit timestamp without time zone DEFAULT '3000-12-31' 
+    id SERIAL PRIMARY KEY, 
+    siglagrupo VARCHAR(20),
+    descgrupo VARCHAR(100),
+    descescala VARCHAR(200),
+    guardaescala VARCHAR(20),
+    qtd_turno smallint NOT NULL DEFAULT 1,
+    ativo smallint NOT NULL DEFAULT 1, 
+    usuins bigint NOT NULL DEFAULT 0,
+    datains timestamp without time zone DEFAULT '3000-12-31',
+    usuedit bigint NOT NULL DEFAULT 0,
+    dataedit timestamp without time zone DEFAULT '3000-12-31' 
 					) 
 				 ");
+
+				 //0033
+				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_horaini VARCHAR(10) DEFAULT '08:00';");
+				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_horafim VARCHAR(10) DEFAULT '17:00';");
 
 			} // fim data limite
         ?>

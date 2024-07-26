@@ -99,6 +99,7 @@ if(!isset($_SESSION["usuarioID"])){
                     };
                     ajax.send(null);
                 }
+                document.getElementById("botRedigirCompl").style.visibility = "hidden"; // para redigir um complemento
                 document.getElementById("botimprLRO").style.visibility = "hidden"; // botão de imprimir todo o LRO
                 if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) && parseInt(Resp.fiscalizaLro) === 1){
                     document.getElementById("botimprLRO").style.visibility = "visible";
@@ -127,7 +128,9 @@ if(!isset($_SESSION["usuarioID"])){
 
             function InsRegistro(){ // inserir novo registro
                 document.getElementById("jatem").value = "0";
+                document.getElementById("quantjatem").value = "0";
                 document.getElementById("numrelato").value = "";
+                document.getElementById('ocorrencia2').checked = true; // não houve ocorr
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/lro/salvaReg.php?acao=buscaAcessoLro&geradata="+document.getElementById("guardahoje").value+"&geraturno="+document.getElementById("selecturno").value, true);
@@ -147,6 +150,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("relato").value = "";
                                         document.getElementById("relato").disabled = true;
                                         document.getElementById("relacmodalReg").style.display = "block";
+                                        document.getElementById("quantjatem").value = Resp.jatem;
                                         if(parseInt(Resp.jatem) > 0){
                                             document.getElementById("jatem").value = "1";
                                             document.getElementById("numrelato").value = Resp.numrelato;
@@ -155,10 +159,11 @@ if(!isset($_SESSION["usuarioID"])){
                                                 content: "Este turno "+document.getElementById("dataocor").value+" - "+Resp.descturno+"  já foi lançado.",
                                                 draggable: true,
                                                 buttons: {
-                                                    OK: function(){}
+                                                    OK: function(){
+                                                        document.getElementById("selecturno").value = "";
+                                                    }
                                                 }
                                             });
-                                            document.getElementById("selecturno").value = "";
                                         }
                                         //Condição aqui: período entre 00 e 07 horas, turnos 1 e 2 do dia anterior já foram lançados, 
                                         //já passou da meia noite e faltou o turno 3 -> voltar a data 1 dia
@@ -187,6 +192,7 @@ if(!isset($_SESSION["usuarioID"])){
 
             function mostraModal(Cod){ // só mostra após o clique. Para editar chama carregaModal()
                 document.getElementById("mostramensagem").innerHTML = "";
+                document.getElementById("botRedigirCompl").style.visibility = "hidden";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/lro/salvaReg.php?acao=buscaReg&codigo="+Cod, true);
@@ -216,6 +222,13 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("guardaenviado").value = Resp.enviado; // encerrou o relato - não edita mais
                                         if(parseInt(Resp.enviado) === 1){
                                             document.getElementById("mostramensagem").innerHTML = "Registro Enviado.";
+//Botão inserir complemento - Aguardando determinar tempo 
+                                            if(parseInt(Resp.codusuins) === parseInt(document.getElementById("guardaUsuId").value)){ // turno de outro funcionário
+                                                if(parseInt(Resp.diasdecorridos) < 1){ //    diasdecorridos < 1 -> no mesmo dia
+                                                    document.getElementById("botRedigirCompl").style.visibility = "visible";
+                                                }
+                                            }
+
                                         }
                                         document.getElementById("relacMostramodalReg").style.display = "block";
                                     }
@@ -223,7 +236,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("botedit").style.visibility = "hidden"; // botão de editar
                                     document.getElementById("botimpr").style.visibility = "hidden"; // botão de imprimir
                                     document.getElementById("mostrabotimpr").style.visibility = "hidden"; // botão de imprimir na visualização
-                                    
+
                                     if(parseInt(Resp.enviado) === 0 && parseInt(Resp.codusuins) === parseInt(document.getElementById("guardaUsuId").value)){ // ainda não fechou e foi o usu logado que inseriu
                                         document.getElementById("botedit").style.visibility = "visible"; // botão de editar
                                     }
@@ -274,6 +287,36 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
+            function carregaModalCompl(){
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/lro/salvaReg.php?acao=buscaReg&codigo="+document.getElementById("guardacod").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.")
+                                }else{
+                                    document.getElementById("compldataocor").value = Resp.data;
+                                    document.getElementById("complselecturno").value = Resp.turno;
+                                    document.getElementById("complselectusuant").value = Resp.usuant;
+                                    document.getElementById("complnomeusuario").innerHTML = Resp.nomeusuins;
+                                    document.getElementById("numrelato").value = Resp.numrelato;
+                                    document.getElementById("numrelatoCompl").innerHTML = "Complementando Relato: "+Resp.numrelato;
+                                    document.getElementById('complocorrencia1').checked = true; // houve ocorr
+                                    document.getElementById("complrelato").value = "";
+                                    document.getElementById("relacMostramodalReg").style.display = "none";
+                                    document.getElementById("relacmodalCompl").style.display = "block";
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
             function tiraBorda(id){
                 let element = document.getElementById(id);
                 element.classList.remove('destacaBorda');
@@ -309,8 +352,36 @@ if(!isset($_SESSION["usuarioID"])){
                         });
                     }
                 }
-
             }
+
+            function enviaModalCompl(Envia){
+                if(parseInt(Envia) === 1){
+                    if(document.getElementById("complrelato").value !== ""){
+                        $.confirm({
+                            title: 'Confirmação!',
+                            content: "O relato complementar será enviado ao setor competente.<br>Confirma enviar agora?",
+                            autoClose: 'Não|15000',
+                            draggable: true,
+                            buttons: {
+                                Sim: function () {
+                                    if(parseInt(document.getElementById("mudou").value) === 1){
+                                        salvaModalCompl(Envia);
+                                    }else{
+                                        salvaRegEnv(Envia);
+                                    }
+                                },
+                                Não: function () {
+                                }
+                            }
+                        });
+                    }else{
+                        $('#mensagemcompl').fadeIn("slow");
+                        document.getElementById("mensagemcompl").innerHTML = "Escreva o relato";
+                        $('#mensagemcompl').fadeOut(5000);
+                    }
+                }
+            }
+
             function salvaRegEnv(Envia){
                 if(document.getElementById("dataocor").value === ""){
                     let element = document.getElementById('dataocor');
@@ -453,6 +524,7 @@ if(!isset($_SESSION["usuarioID"])){
                     "&ocor="+Ocor+
                     "&envia="+Envia+
                     "&jatem="+document.getElementById("jatem").value+
+                    "&quantjatem="+document.getElementById("quantjatem").value+
                     "&numrelato="+encodeURIComponent(document.getElementById("numrelato").value)+
                     "&relato="+encodeURIComponent(document.getElementById("relato").value), true);
                     ajax.onreadystatechange = function(){
@@ -466,6 +538,44 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("guardacod").value = Resp.codigonovo;
                                     document.getElementById("mudou").value = "0";
                                     document.getElementById("relacmodalReg").style.display = "none";
+                                    $("#carregaReg").load("modulos/lro/relReg.php");
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function salvaModalCompl(Envia){
+                if(parseInt(document.getElementById("mudou").value) === 0){
+                    $('#mensagemcompl2').fadeIn("slow");
+                    document.getElementById("mensagemcompl2").innerHTML = "Escreva o relato";
+                    $('#mensagemcompl2').fadeOut(3000);
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/lro/salvaReg.php?acao=salvaRegCompl&codigo="+document.getElementById("guardacod").value+
+                    "&datareg="+encodeURIComponent(document.getElementById("compldataocor").value)+
+                    "&turno="+document.getElementById("complselecturno").value+
+                    "&usuant="+document.getElementById("complselectusuant").value+
+                    "&ocor=1"+
+                    "&envia="+Envia+
+                    "&jatem=1"+
+                    "&numrelato="+encodeURIComponent(document.getElementById("numrelato").value)+
+                    "&relato="+encodeURIComponent(document.getElementById("complrelato").value), true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.")
+                                }else{
+                                    document.getElementById("guardacod").value = Resp.codigonovo;
+                                    document.getElementById("mudou").value = "0";
+                                    document.getElementById("relacmodalCompl").style.display = "none";
                                     $("#carregaReg").load("modulos/lro/relReg.php");
                                 }
                             }
@@ -515,8 +625,8 @@ if(!isset($_SESSION["usuarioID"])){
                                                         //continua
                                                     },
                                                     Não: function () {
-
                                                         document.getElementById("mudou").value = "0";
+                                                        document.getElementById("selecturno").value = "";
                                                         document.getElementById("relacmodalReg").style.display = "none";
                                                     }
                                                 }
@@ -542,6 +652,9 @@ if(!isset($_SESSION["usuarioID"])){
             }
             function fechaMostraModal(){
                 document.getElementById("relacMostramodalReg").style.display = "none";
+            }
+            function fechaModalCompl(){
+                document.getElementById("relacmodalCompl").style.display = "none";
             }
             function carregaHelpLRO(){
                 document.getElementById("relacHelpLRO").style.display = "block";
@@ -654,20 +767,22 @@ if(!isset($_SESSION["usuarioID"])){
         $Lro = parEsc("lro", $Conec, $xProj, $_SESSION["usuarioID"]);
         $FiscLro = parEsc("fisclro", $Conec, $xProj, $_SESSION["usuarioID"]);
 
-        $OpUsuAnt = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE lro = 1 And Ativo = 1 And pessoas_id != ".$_SESSION["usuarioID"]." ORDER BY nomecompl"); // And codsetor = 
+        $OpUsuAnt = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE lro = 1 And Ativo = 1 And pessoas_id != ".$_SESSION["usuarioID"]." ORDER BY nomeusual, nomecompl"); // And codsetor = 
+        $OpUsuAnt2 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE lro = 1 And Ativo = 1 And pessoas_id != ".$_SESSION["usuarioID"]." ORDER BY nomeusual, nomecompl"); 
         ?>
-        <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
-        <input type="hidden" id="guardaUsuId" value="<?php echo $_SESSION["usuarioID"] ?>" />
-        <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->
-        <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" /> <!-- nível mínimo para editar -->
-        <input type="hidden" id="guardacod" value="0" /> <!-- id ocorrência -->
-        <input type="hidden" id="guardaenviado" value="0" /> <!-- relato fechado -->
-        <input type="hidden" id="guardahoje" value="<?php echo $Hoje; ?>" /> <!-- data -->
-        <input type="hidden" id="EditIndiv" value="0" /> <!-- autorização para um só indivíduo conferir o LRO -->
-        <input type="hidden" id="mudou" value="0" />
-        <input type="hidden" id="jatem" value="0" />
-        <input type="hidden" id="numrelato" value="" />
-        <input type="hidden" id="guardausuins" value="0" />
+        <input type="hidden" id="UsuAdm" value = "<?php echo $_SESSION["AdmUsu"] ?>" />
+        <input type="hidden" id="guardaUsuId" value = "<?php echo $_SESSION["usuarioID"] ?>" />
+        <input type="hidden" id="admIns" value = "<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->
+        <input type="hidden" id="admEdit" value = "<?php echo $admEdit; ?>" /> <!-- nível mínimo para editar -->
+        <input type="hidden" id="guardacod" value = "0" /> <!-- id ocorrência -->
+        <input type="hidden" id="guardaenviado" value = "0" /> <!-- relato fechado -->
+        <input type="hidden" id="guardahoje" value = "<?php echo $Hoje; ?>" /> <!-- data -->
+        <input type="hidden" id="EditIndiv" value = "0" /> <!-- autorização para um só indivíduo conferir o LRO -->
+        <input type="hidden" id="mudou" value = "0" />
+        <input type="hidden" id="jatem" value = "0" />
+        <input type="hidden" id="quantjatem" value = "0" />
+        <input type="hidden" id="numrelato" value = "" />
+        <input type="hidden" id="guardausuins" value = "0" />
         <input type="hidden" id="acessoLRO" value="<?php echo $Lro; ?>" />
         <input type="hidden" id="fiscalLRO" value="<?php echo $FiscLro; ?>" />
 
@@ -687,46 +802,6 @@ if(!isset($_SESSION["usuarioID"])){
             <div id="carregaReg"></div>
         </div>
 
-        <!-- div modal para mostrar ocorrência  -->
-        <div id="relacMostramodalReg" class="relacmodal">
-            <div class="modal-content-RegistroLRO">
-                <div style="position: absolute;"><button class="botpadrred" style="font-size: 80%;" id="mostrabotimpr" onclick="imprReg();">Gerar PDF</button></div>
-                <span class="close" onclick="fechaMostraModal();">&times;</span>
-                <h5 id="mostratitulomodal" style="text-align: center; color: #666;">Livro de Registro de Ocorrências</h5>
-
-                <div style="border: 2px solid blue; border-radius: 10px; padding: 5px; text-align: center;">
-                    <div style="paddling-left: 5%;">
-                        
-                        <label class="etiqAzul">Escritura do Livro de Registro de Ocorrências em: </label>
-                        
-                        <input disabled type="text" id="mostradataocor" value="<?php echo $Hoje; ?>" placeholder="Data" style="font-size: .9em; width: 100px; text-align: center;">
-
-                        <label class="etiqAzul"> - Turno: </label><label id="turnosvc" style="font-size: 1.2rem; padding-left: 3px;"></label>
-                        <input disabled type="text" id="mostraselecturno" value="" style="font-size: .9em; width: 100px; text-align: center;">
-                        <br>
-                        <label class="etiqAzul">Registrado por: </label><label id="mostranomeusuario" style="font-size: 1.2rem; padding-left: 3px;"></label>
-                        <br>
-                        <div style="text-align: center;">
-                            <label class="etiqAzul"> - Recebi o serviço de: </label>
-                            <input disabled type="text" id="mostraselectusuant" value="" >
-
-                            <label class="etiqAzul"> ciente das alterações dos turnos anteriores. </label>
-                            <br>
-                            <label class="etiqAzul" title="Checar se houve ou não houve ocorrência digna de nota">Ocorrências: </label>
-                            <input disabled type="radio" name="mostraocorrencia" id="mostraocorrencia1" value="1" title="Houve algo que precisa ser relatado"><label for="mostraocorrencia1" class="etiqAzul" style="padding-left: 3px;"> Houve</label>
-                            <input disabled type="radio" name="mostraocorrencia" id="mostraocorrencia2" value="0" CHECKED title="Nada aconteceu que seja digno de nota"><label for="mostraocorrencia2" class="etiqAzul" style="padding-left: 3px;"> Não Houve</label>
-                            <br>
-                            <textarea disabled id="mostrarelato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="10" cols="85"></textarea>
-                        </div>
-                    </div>
-                    <div id="mostramensagem" style="color: red; font-weight: bold;"></div>
-                    <br>
-                    <div style="text-align: center; padding-bottom: 10px;">
-                        <button id="botedit" class="botpadrblue" onclick="carregaModal();">Editar</button>
-                    </div>
-                </div>
-           </div>
-        </div> <!-- Fim Modal-->
 
         <!-- div modal para registrar ocorrência  -->
         <div id="relacmodalReg" class="relacmodal">
@@ -764,7 +839,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 <?php 
                                 if($OpUsuAnt){
                                     while ($Opcoes = pg_fetch_row($OpUsuAnt)){ ?>
-                                        <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                        <option value="<?php echo $Opcoes[0]; ?>"><?php if(!is_null($Opcoes[2]) && $Opcoes[2] != ""){ echo $Opcoes[2]." - ".$Opcoes[1];}else{echo $Opcoes[1];} ?></option>
                                     <?php 
                                     }
                                 }
@@ -772,11 +847,11 @@ if(!isset($_SESSION["usuarioID"])){
                             </select>
                             <label class="etiqAzul"> ciente das alterações dos turnos anteriores.</label>
                             <br>
-                            <label class="etiqAzul" title="Checar se houve ou não houve ocorrência digna de nota">Ocorrências: </label>
+                            <label class="etiqAzul" title="Marcar se houve ou não houve ocorrência digna de nota">Ocorrências: </label>
                             <input type="radio" name="ocorrencia" id="ocorrencia1" value="1" title="Houve algo que precisa ser relatado" onclick="abreOcor(value);"><label for="ocorrencia1" class="etiqAzul" style="padding-left: 3px;"> Houve</label>
                             <input type="radio" name="ocorrencia" id="ocorrencia2" value="0" CHECKED title="Nada aconteceu que seja digno de nota" onclick="abreOcor(value);"><label for="ocorrencia2" class="etiqAzul" style="padding-left: 3px;"> Não Houve</label>
                             <br>
-                            <textarea style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="8" cols="85" id="relato" onclick="tiraBorda(id);" onchange="modif();"></textarea>
+                            <textarea style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="8" cols="90" id="relato" onclick="tiraBorda(id);" onchange="modif();"></textarea>
                         </div>
                         <br>
                     </div>
@@ -787,6 +862,118 @@ if(!isset($_SESSION["usuarioID"])){
                 </div>
            </div>
         </div> <!-- Fim Modal-->
+
+
+        <!-- div modal para mostrar ocorrência  -->
+        <div id="relacMostramodalReg" class="relacmodal">
+            <div class="modal-content-RegistroLRO">
+                <div style="position: absolute;"><button class="botpadrred" style="font-size: 80%;" id="mostrabotimpr" onclick="imprReg();">Gerar PDF</button></div>
+                <span class="close" onclick="fechaMostraModal();">&times;</span>
+                <h5 id="mostratitulomodal" style="text-align: center; color: #666;">Livro de Registro de Ocorrências</h5>
+
+                <div class="container" style="margin: 0 auto;">
+                    <div class="row">
+                        <div class="col" style="margin: 0 auto;"> </div>
+                        <div class="col"><h6 style="text-align: center; color: blue;">Visualização</h6></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col" style="margin: 0 auto; text-align: right; padding-bottom: 5px;"><button id="botRedigirCompl" class="botpadrblue" style="font-size: 70%;" onclick="carregaModalCompl();" title="Redigir um complemento a esta ocorrência">Complemento</button></div> 
+                    </div>
+                </div>
+
+                <div style="border: 2px solid blue; border-radius: 10px; padding: 5px; text-align: center;">
+                    <div style="paddling-left: 5%;">
+                        
+                        <label class="etiqAzul">Escritura do Livro de Registro de Ocorrências em: </label>
+                        
+                        <input disabled type="text" id="mostradataocor" value="<?php echo $Hoje; ?>" placeholder="Data" style="font-size: .9em; width: 100px; text-align: center;">
+
+                        <label class="etiqAzul"> - Turno: </label><label id="turnosvc" style="font-size: 1.2rem; padding-left: 3px;"></label>
+                        <input disabled type="text" id="mostraselecturno" value="" style="font-size: .9em; width: 100px; text-align: center;">
+                        <br>
+                        <label class="etiqAzul">Registrado por: </label><label id="mostranomeusuario" style="font-size: 1.2rem; padding-left: 3px;"></label>
+                        <br>
+                        <div style="text-align: center;">
+                            <label class="etiqAzul"> - Recebi o serviço de: </label>
+                            <input disabled type="text" id="mostraselectusuant" value="" >
+
+                            <label class="etiqAzul"> ciente das alterações dos turnos anteriores. </label>
+                            <br>
+                            <label class="etiqAzul" title="Marcar se houve ou não houve ocorrência digna de nota">Ocorrências: </label>
+                            <input disabled type="radio" name="mostraocorrencia" id="mostraocorrencia1" value="1" title="Houve algo que precisa ser relatado"><label for="mostraocorrencia1" class="etiqAzul" style="padding-left: 3px;"> Houve</label>
+                            <input disabled type="radio" name="mostraocorrencia" id="mostraocorrencia2" value="0" CHECKED title="Nada aconteceu que seja digno de nota"><label for="mostraocorrencia2" class="etiqAzul" style="padding-left: 3px;"> Não Houve</label>
+                            <br>
+                            <textarea disabled id="mostrarelato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="10" cols="90"></textarea>
+                        </div>
+                    </div>
+                    <div id="mostramensagem" style="color: red; font-weight: bold;"></div>
+                    <div style="text-align: center; padding-bottom: 10px;">
+                        <button id="botedit" class="botpadrblue" onclick="carregaModal();">Editar</button>
+                    </div>
+                </div>
+           </div>
+        </div> <!-- Fim Modal-->
+
+        <!-- div modal para redigir complemento  -->
+        <div id="relacmodalCompl" class="relacmodal">
+            <div class="modal-content-RegistroLRO">
+                <span class="close" onclick="fechaModalCompl();">&times;</span>
+                <!-- div três colunas -->
+                <div class="container" style="margin: 0 auto;">
+                    <div class="row">
+                        <div class="col" style="margin: 0 auto;"> <!-- <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprReg();">Gerar PDF</button> --> </div>
+                        <div class="col"><h5 style="text-align: center; color: #666;">Complemento ao LRO</h5>
+                            <div id="numrelatoCompl" style="color: blue; text-align: center; font-size: 90%;"></div>
+                        </div> <!-- Central - espaçamento entre colunas  -->
+                        
+                        <div class="col" style="margin: 0 auto; text-align: center;"><button id="botenviarcompl" class="botpadrred" onclick="enviaModalCompl(1);">Enviar</button>
+                        <div id="mensagemcompl" style="color: red; font-weight: bold;"></div>
+                    </div> 
+                    </div>
+                </div>
+                <div style="border: 2px solid blue; border-radius: 10px; padding: 5px; text-align: center;">
+                    <div style="paddling-left: 5%;">
+                        <label class="etiqAzul">Escritura do Livro de Registro de Ocorrências em: </label>
+                        <input disabled type="text" id="compldataocor" onclick="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; width: 100px; text-align: center;">
+                        <label class="etiqAzul"> - Turno: </label><label id="complturnosvc" style="font-size: 1.2rem; padding-left: 3px;"></label>
+                        <select disabled id="complselecturno" style="font-size: 0.8rem;" title="Selecione o turno.">
+                            <option value=""></option>
+                            <option value="1">07h00 / 13h15</option>
+                            <option value="2">13h15 / 19h00</option>
+                            <option value="3">19h00 / 07h00</option>
+                        </select>
+                        <br>
+                        <label class="etiqAzul">Titular em serviço: </label><label id="complnomeusuario" style="font-size: 1.2rem; padding: 5px;"><?php echo $_SESSION["NomeCompl"]; ?></label>
+                        <br>
+                        <div style="text-align: center;">
+                            <label class="etiqAzul"> - Recebi o serviço de: </label>
+                            <select disabled id="complselectusuant" style="min-width: 120px;">
+                                <option value=""></option>
+                                <?php 
+                                if($OpUsuAnt2){
+                                    while ($Opcoes = pg_fetch_row($OpUsuAnt2)){ ?>
+                                        <option value="<?php echo $Opcoes[0]; ?>"><?php if(!is_null($Opcoes[2]) && $Opcoes[2] != ""){ echo $Opcoes[2]." - ".$Opcoes[1];}else{echo $Opcoes[1];} ?></option>
+                                    <?php 
+                                    }
+                                }
+                                ?>
+                            </select>
+                            <label class="etiqAzul"> ciente das alterações dos turnos anteriores.</label>
+                            <br>
+                            <label class="etiqAzul" title="Marcar se houve ou não houve ocorrência digna de nota">Ocorrências: </label>
+                            <input type="radio" name="complocorrencia" id="complocorrencia1" value="1" CHECKED title="Houve algo que precisa ser relatado"><label for="complocorrencia1" class="etiqAzul" style="padding-left: 3px;"> Houve</label>
+                            <input type="radio" name="complocorrencia" id="complocorrencia2" value="0" title="Nada aconteceu que seja digno de nota"><label for="complocorrencia2" class="etiqAzul" style="padding-left: 3px;"> Não Houve</label> 
+                            <br>
+                            <textarea id="complrelato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="8" cols="90" onclick="tiraBorda(id);" onchange="modif();"></textarea>
+                        </div>
+                        <br>
+                    </div>
+                    <div id="mensagemcompl2" style="color: red; font-weight: bold;"></div>
+                    <div style="text-align: center; padding-bottom: 10px;">
+                        <button class="botpadrblue" onclick="salvaModalCompl(0);">Salvar</button>
+                    </div>
+                </div>
+           </div>
+        </div> <!-- Fim Modal-->
+
 
         <!-- div modal para leitura instruções -->
         <div id="relacHelpLRO" class="relacmodal">
@@ -803,7 +990,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <li>4 - Ao salvar o registro, ele aparecerá no topo da relação e pode ser editado até o final do turno. Basta clicar sobre linha do registro e depois em Editar na caixa que aparece.</li>
                         <li>5 - Ao final do turno um clique no botão Enviar encerra o serviço e envia o relato para a administração.</li>
                         <li>6 - Depois de enviado o registro não poderá mais ser alterado.</li>
-                        <li>7 - Caso haja necessidade de complementar o registro depois de enviado, é possível inserir outro registro para o mesmo turno no mesmo dia.</li>
+                        <li>7 - Caso haja necessidade de complementar o registro depois de enviado, é possível inserir outro registro para o mesmo turno pelo mesmo funcionário no mesmo dia.</li>
                         <li>8 - Esse segundo registro terá o mesmo número e será nomeado como complementar. Não pode ser feito em outro dia.</li>
                         <li>9 - Evite comentários e opiniões pessoais, isso pode ser feito pessoalmente na administração.</li>
                     </ul>

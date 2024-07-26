@@ -17,14 +17,19 @@ require_once("abrealas.php");
         <div style="padding: 10px;">
             <label class="etiqAzul">Usuários do Grupo:</label>
             <?php
-                $rs3 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 And esc_grupo = $Cod ORDER BY nomecompl ");
+                $rs3 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual, esc_horaini, esc_horafim FROM ".$xProj.".poslog WHERE ativo = 1 And esc_grupo = $Cod ORDER BY nomeusual, nomecompl ");
             ?>
             <table class="display" style="width:85%">
                 <?php 
                 while($tbl3 = pg_fetch_row($rs3)){
+                    $Cod = $tbl3[0];
                     ?>
                     <tr>
-                        <td style="font-size: 80%; padding-left: 20px;"><?php echo $tbl3[0]; ?></td>
+                        <td style="display: none;"><?php echo $tbl3[0]; ?></td>
+                        <td style="font-size: 80%; padding-left: 20px;"><?php echo $tbl3[2]; ?></td>
+                        <td style="font-size: 80%;"><?php echo $tbl3[1]; ?></td>
+                        <td style="font-size: 80%;"><?php echo $tbl3[3]; ?></td>
+                        <td style="font-size: 80%;"><?php echo $tbl3[4]; ?></td>
                     </tr>
                 <?php
                 }

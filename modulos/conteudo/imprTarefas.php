@@ -231,10 +231,10 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->MultiCell(0, 3, $tblCont[0]." tarefas expedidas", 0, 'C', false);
             $pdf->SetTextColor(0, 0, 0);
 
-            $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl  
+            $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
             FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
             WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' 
-            GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl 
+            GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
             ORDER BY ".$xProj.".poslog.nomecompl");    
             $pdf->ln(3);
             $pdf->SetDrawColor(0);
@@ -257,10 +257,10 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->SetTextColor(0, 0, 0);
 
 
-            $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl  
+            $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
             FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
             WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' 
-            GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl 
+            GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
             ORDER BY ".$xProj.".poslog.nomecompl");    
             $pdf->ln(3);
             $pdf->SetDrawColor(0);
@@ -271,7 +271,7 @@ if(!isset($_SESSION['AdmUsu'])){
         if($Acao == "listaMandante"){ 
             $CodUsu = addslashes(filter_input(INPUT_GET, 'codigo')); 
             $pdf->SetTitle('Relação Individual', $isUTF8=TRUE);
-            $rs1 = pg_query($Conec, "SELECT DISTINCT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl  
+            $rs1 = pg_query($Conec, "SELECT DISTINCT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
             FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
             WHERE ".$xProj.".tarefas.ativo != 0 And ".$xProj.".poslog.pessoas_id = $CodUsu "); 
         }
@@ -279,7 +279,7 @@ if(!isset($_SESSION['AdmUsu'])){
         if($Acao == "listaExecutante"){ 
             $CodUsu = addslashes(filter_input(INPUT_GET, 'codigo')); 
             $pdf->SetTitle('Relação Individual', $isUTF8=TRUE);
-            $rs1 = pg_query($Conec, "SELECT DISTINCT ".$xProj.".tarefas.usuexec, ".$xProj.".poslog.nomecompl  
+            $rs1 = pg_query($Conec, "SELECT DISTINCT ".$xProj.".tarefas.usuexec, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual  
             FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id
             WHERE ".$xProj.".tarefas.ativo != 0 And ".$xProj.".poslog.pessoas_id = $CodUsu "); 
         }
@@ -310,10 +310,10 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->MultiCell(0, 3, $tblCont[0]." tarefas", 0, 'C', false);
             $pdf->SetTextColor(0, 0, 0);
 
-            $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl  
+            $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
             FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
             WHERE ".$xProj.".tarefas.ativo != 0 And sit = $Sit 
-            GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl 
+            GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
             ORDER BY ".$xProj.".poslog.nomecompl");        
 
             $pdf->ln(3);
@@ -330,11 +330,19 @@ if(!isset($_SESSION['AdmUsu'])){
                 $pdf->ln(3);
                 $pdf->SetFont('Arial', '' , 10); 
 
+                if(!is_null($tbl1[2]) && $tbl1[2] != ""){
+                    $Nome = $tbl1[2]." - ".$tbl1[1]; // nomeusual
+                }else{
+                    $Nome = $tbl1[1]; // Nomecompleto
+                }
+
                 if($Acao == "listaExecutante"){
                     $pdf->SetFont('Arial', 'B' , 10); 
-                    $pdf->Cell(23, 5, "Executadas por: ".$tbl1[1], 0, 1, 'L');
+//                    $pdf->Cell(23, 5, "Executadas por: ".$tbl1[1], 0, 1, 'L');
+                    $pdf->Cell(23, 5, "Executadas por: ".$Nome, 0, 1, 'L');
                 }else{
-                    $pdf->Cell(23, 5, "Expedidas por: ".$tbl1[1], 0, 1, 'L');
+//                    $pdf->Cell(23, 5, "Expedidas por: ".$tbl1[1], 0, 1, 'L');
+                    $pdf->Cell(23, 5, "Expedidas por: ".$Nome, 0, 1, 'L');
                 }
                 if($Acao == "listamesTarefa"){ 
                     $rs2 = pg_query($Conec, "SELECT usuexec, tittarefa, nomecompl, TO_CHAR(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI'), TO_CHAR(".$xProj.".tarefas.datasit1, 'DD/MM/YYYY HH24:MI'), TO_CHAR(".$xProj.".tarefas.datasit2, 'DD/MM/YYYY HH24:MI'), TO_CHAR(".$xProj.".tarefas.datasit3, 'DD/MM/YYYY HH24:MI'), TO_CHAR(".$xProj.".tarefas.datasit4, 'DD/MM/YYYY HH24:MI'), 
@@ -342,7 +350,7 @@ if(!isset($_SESSION['AdmUsu'])){
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), 
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), 
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), 
-                    EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio 
+                    EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio, nomeusual 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id
                     WHERE ".$xProj.".tarefas.usuins = $Cod And ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' 
                     ORDER BY ".$xProj.".tarefas.datains DESC");
@@ -353,7 +361,7 @@ if(!isset($_SESSION['AdmUsu'])){
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), 
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), 
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), 
-                    EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio 
+                    EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio, nomeusual 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id
                     WHERE ".$xProj.".tarefas.usuins = $Cod And ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' 
                     ORDER BY ".$xProj.".tarefas.datains DESC");
@@ -364,7 +372,7 @@ if(!isset($_SESSION['AdmUsu'])){
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), 
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), 
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), 
-                    EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio 
+                    EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio, nomeusual 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id
                     WHERE ".$xProj.".tarefas.usuins = $CodUsu And ".$xProj.".tarefas.ativo != 0 
                     ORDER BY ".$xProj.".tarefas.datains DESC");
@@ -376,7 +384,7 @@ if(!isset($_SESSION['AdmUsu'])){
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), 
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), 
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), 
-                    EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio 
+                    EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio, nomeusual 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
                     WHERE ".$xProj.".tarefas.usuexec = $CodUsu And ".$xProj.".tarefas.ativo != 0 
                     ORDER BY ".$xProj.".tarefas.datains DESC");
@@ -388,7 +396,7 @@ if(!isset($_SESSION['AdmUsu'])){
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit2, ".$xProj.".tarefas.datasit1)), 
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit3, ".$xProj.".tarefas.datasit2)), 
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), 
-                    EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio 
+                    EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio, nomeusual 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id
                     WHERE ".$xProj.".tarefas.usuins = $Cod And sit = $Sit and ".$xProj.".tarefas.ativo != 0 
                     ORDER BY ".$xProj.".tarefas.datains DESC");
@@ -404,8 +412,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         $pdf->Cell(9, 5, "para: ", 0, 0, 'L');
                         $pdf->SetFont('Arial', 'B' , 10); 
                     }
-                    
-                    $pdf->Cell(0, 5, $tbl2[2], 0, 1, 'L');
+                    if(!is_null($tbl2[34]) && $tbl2[34] != ""){
+                        $Nome = $tbl2[34]." - ".$tbl2[2]; // nomeusual
+                    }else{
+                        $Nome = $tbl2[2]; // Nomecompleto
+                    }
+//                    $pdf->Cell(0, 5, $tbl2[2], 0, 1, 'L');
+                    $pdf->Cell(0, 5, $Nome, 0, 1, 'L');
                     switch ($tbl2[33]){
                         case 0:
                             $Prio = "Urgente";
@@ -600,13 +613,13 @@ if(!isset($_SESSION['AdmUsu'])){
                 $pdf->SetFont('Arial', 'B' , 10); 
                 $pdf->Cell(10, 4, number_format($tblP1[0], 0, ",","."), 0, 1, 'R');
 
-                $rsP2 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 1");
-                $tblP2 = pg_fetch_row($rsP2);
-                $pdf->SetFont('Arial', '' , 10); 
-                $pdf->SetX(55);
-                $pdf->Cell(50, 4, "Muito Importantes: ", 0, 0, 'L');
-                $pdf->SetFont('Arial', 'B' , 10); 
-                $pdf->Cell(10, 4, number_format($tblP2[0], 0, ",","."), 0, 1, 'R');
+//                $rsP2 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 1");
+//                $tblP2 = pg_fetch_row($rsP2);
+//                $pdf->SetFont('Arial', '' , 10); 
+//                $pdf->SetX(55);
+//                $pdf->Cell(50, 4, "Muito Importantes: ", 0, 0, 'L');
+//                $pdf->SetFont('Arial', 'B' , 10); 
+//                $pdf->Cell(10, 4, number_format($tblP2[0], 0, ",","."), 0, 1, 'R');
 
                 $rsP3 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 2");
                 $tblP3 = pg_fetch_row($rsP3);
@@ -620,10 +633,9 @@ if(!isset($_SESSION['AdmUsu'])){
                 $tblP4 = pg_fetch_row($rsP4);
                 $pdf->SetFont('Arial', '' , 10); 
                 $pdf->SetX(55);
-                $pdf->Cell(50, 4, "Nomais: ", 0, 0, 'L');
+                $pdf->Cell(50, 4, "Normais: ", 0, 0, 'L');
                 $pdf->SetFont('Arial', 'B' , 10); 
                 $pdf->Cell(10, 4, number_format($tblP4[0], 0, ",","."), 0, 1, 'R');
-
 
                 $pdf->ln(2);
                 $pdf->SetX(50);
@@ -638,7 +650,6 @@ if(!isset($_SESSION['AdmUsu'])){
                 $pdf->SetFont('Arial', 'B' , 10); 
                 $pdf->Cell(10, 4, number_format($tbl2[0], 0, ",","."), 0, 1, 'R');
 
-
                 $rs3 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 2");
                 $tbl3 = pg_fetch_row($rs3);
                 $pdf->SetFont('Arial', '' , 10); 
@@ -647,7 +658,6 @@ if(!isset($_SESSION['AdmUsu'])){
                 $pdf->SetFont('Arial', 'B' , 10); 
                 $pdf->Cell(10, 4, number_format($tbl3[0], 0, ",","."), 0, 1, 'R');
 
-
                 $rs4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 3");
                 $tbl4 = pg_fetch_row($rs4);
                 $pdf->SetFont('Arial', '' , 10); 
@@ -655,7 +665,6 @@ if(!isset($_SESSION['AdmUsu'])){
                 $pdf->Cell(50, 4, "Tarefas em Andamento: ", 0, 0, 'L');
                 $pdf->SetFont('Arial', 'B' , 10); 
                 $pdf->Cell(10, 4, number_format($tbl4[0], 0, ",","."), 0, 1, 'R');
-
 
                 $rs5 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4");
                 $tbl5 = pg_fetch_row($rs5);
@@ -737,7 +746,6 @@ if(!isset($_SESSION['AdmUsu'])){
                     $pdf->Cell(50, 4, "Nenhum registro.", 0, 1, 'L');
                     $pdf->ln(1);
                 }
-
                 $pdf->ln(5);
                 $pdf->SetDrawColor(0);
                 $lin = $pdf->GetY();
@@ -748,10 +756,6 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->ln(10);
             $pdf->MultiCell(0, 5, 'Nenhum registro encontrado', 0, 'C', false);
         }
-
- 
-
     }
-
     $pdf->Output();
 }

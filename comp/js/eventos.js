@@ -81,11 +81,11 @@ function openhref(Num){
     if(parseInt(Num) === 70){
         $('#container3').load('modulos/controleAr/controleAr3.php');
     }
-    if(parseInt(Num) === 71){
-        $('#container3').load('modulos/escalas/escala.php');
-    }
+//    if(parseInt(Num) === 71){
+//        $('#container3').load('modulos/escalas/escala.php');
+//    }
     if(parseInt(Num) === 72){
-        $('#container3').load('modulos/escala/preEscala.php');
+        $('#container3').load('modulos/escala/escalas.php?numgrupo=1');
     }
     if(parseInt(Num) === 73){
         $('#container3').load('modulos/elevadores/controleEl.php');

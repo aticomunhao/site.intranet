@@ -52,9 +52,7 @@
                     $("#dataIniEletric3").mask("99/99/9999");
                     $("#cardiretoria").load("modulos/config/carDir.php");
                     $("#relmenu").load("modulos/config/relMenu.php"); // para editar menu
-//aguardando
-//                    $("#carGruposEscala").load("modulos/config/carGrupos.php");
-
+                    $("#carGruposEscala").load("modulos/config/carGrupos.php");
                 });
 
                 function salvaParam(Valor, Param){
@@ -1395,8 +1393,7 @@
             </div>
 
 
-
-        <!-- div modal edita grupos-->
+        <!-- div modal edita grupos para confecção das escalas de serviço nos grupos-->
         <div id="relacEditaGrupos" class="relacmodal">
             <div class="modal-content-editGrupos">
                 <span class="close" onclick="fechaEditaGrupos();">&times;</span>
@@ -1407,7 +1404,7 @@
                         <td><input type="text" id="siglagrupo" style="width: 50%;" onchange="modif();" placeholder="Sigla" onkeypress="if(event.keyCode===13){javascript:foco('nomegrupo');return false;}"/></td>
                         <td class="etiq">Turnos</td>
                         <td>
-                            <select id="selecTurnos" style="font-size: 1rem; width: 60px; text-align: centr;" onchange="modif();" title="Selecione o número de turnos para a escala.">
+                            <select id="selecTurnos" style="font-size: 1rem; width: 60px; text-align: centr;" onchange="modif();" title="Selecione o número de turnos para compor a escala deste grupo.">
                                 <option value="0"></option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -1431,11 +1428,9 @@
 
                 </table>
                 <div id="relusugrupo" style="padding-left: 20px;"></div> <!-- Apresenta os usuários do grupo -->
-           </div>
+            </div>
             <br><br><br>
-
-
-
+        </div>
 
     <!-- Prazo para apagar registros -->
             <div style="margin: 50px; border: 3px solid red; border-radius: 20px; padding: 15px;">

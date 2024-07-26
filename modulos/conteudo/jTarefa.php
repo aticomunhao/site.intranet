@@ -84,7 +84,7 @@
                 <td style="width: 10%;"></td>
             </tr>
             <?php
-            $rs = pg_query($Conec, "SELECT idmsg, ".$xProj.".tarefas_msg.iduser, nomecompl, idtarefa, textomsg, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataMensagem 
+            $rs = pg_query($Conec, "SELECT idmsg, ".$xProj.".tarefas_msg.iduser, nomecompl, idtarefa, textomsg, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataMensagem, nomeusual 
             FROM ".$xProj.".poslog INNER JOIN (".$xProj.".tarefas INNER JOIN ".$xProj.".tarefas_msg ON ".$xProj.".tarefas.idtar = ".$xProj.".tarefas_msg.idtarefa) ON ".$xProj.".poslog.pessoas_id = ".$xProj.".tarefas_msg.idUser 
             WHERE ".$xProj.".tarefas_msg.elim = 0 And idtarefa = $IdTarefa");
             $row = pg_num_rows($rs);
@@ -92,7 +92,10 @@
                 While ($tbl = pg_fetch_row($rs)){
                     $Cod = $tbl[0];  // idMsg
                     $MsgUser = $tbl[1]; // id de quem inseriu a mensagem
-                    $Nome = $tbl[2];
+                    $Nome = $tbl[6];
+                    if(is_null($tbl[6]) || $tbl[6] == ""){
+                        $Nome = $tbl[2];
+                    }
                     $DataMsg = $tbl[5];  // DataMensagem
                     $Msg = nl2br($tbl[4]); // textoMsg
 
@@ -116,7 +119,7 @@
             ?>
             <tr>
                 <td class="etiq">Mensagem:</td>
-                <td><textarea id='novamensagem' placeholder='Mensagem' rows='2' cols='45'></textarea></td>
+                <td><textarea id='novamensagem' placeholder='Mensagem' rows='4' cols='55'></textarea></td>
                 <td style="text-align: center;"><input type="button" class="resetbot" style="color: blue; font-weight: bold; font-size: .7rem;" id="botenviar" value="Enviar" onclick="enviaMsg(<?php echo $IdTarefa; ?>, <?php echo $UsuLogadoId; ?>);" title="Enviar mensagem."></td>
             </tr>
             <tr>

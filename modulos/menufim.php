@@ -233,18 +233,23 @@
 						echo "<li>";
 							echo "<a href='#' onclick='openhref(63);'>Calendário</a>";
 						echo "</li>";
-
+						$Efet = parEsc("esc_eft", $Conec, $xProj, $_SESSION["usuarioID"]); // procura marca Efetivo da escala em poslog
+						$FiscEscala = parEsc("esc_fisc", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de escala
+						$Escalante = parEsc("esc_edit", $Conec, $xProj, $_SESSION["usuarioID"]); // escalante do grupo
+						if($Efet == 1){
+							$_SESSION["EscalaGrupo"] = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]); // procurar a que grupo de escala pertence
+						}
+						if($_SESSION["EscalaGrupo"] > 0 || $FiscEscala > 0 || $Escalante > 0){
+							echo "<li>";
+								echo "<a href='#' onclick='openhref(72);'>Escala</a>";
+							echo "</li>";
+						}
 						if($_SESSION["AdmUsu"] > 6){ // superusuário
 //							if($_SESSION['usuarioCPF'] == "13652176049"){
 //								echo "<li>";
 //									echo "<a href='#' onclick='openhref(71);'>Escalas</a>";
 //								echo "</li>";
 //							}
-							if($_SESSION['usuarioCPF'] == "13652176049"){
-								echo "<li>";
-									echo "<a href='#' onclick='openhref(72);'>Escalas</a>";
-								echo "</li>";
-							}
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(31);'>Parâmetros do Sistema</a>";
 							echo "</li>";

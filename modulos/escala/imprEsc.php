@@ -47,7 +47,18 @@ if(!isset($_SESSION['AdmUsu'])){
         '11' => 'Outubro',
         '12' => 'Dezembro'
     );
-
+//numeração do dia da semana da função extract() (DOW) é diferente da função to_char() (D)
+//Função para Extract no postgres
+    $Semana_Extract = array(
+        '0' => 'Dom',
+        '1' => '2ª',
+        '2' => '3ª',
+        '3' => '4ª',
+        '4' => '5ª',
+        '5' => '6ª',
+        '6' => 'Sab',
+        'xª'=> ''
+    );
     class PDF extends FPDF{
         function Footer(){
            // Vai para 1.5 cm da parte inferior
@@ -58,15 +69,15 @@ if(!isset($_SESSION['AdmUsu'])){
            $this->Cell(0,10,'Pag '.$this->PageNo().'/{nb}',0,0,'R');
          }
     }
-        
+
     $pdf = new PDF();
     $pdf->AliasNbPages(); // pega o número total de páginas
     $pdf->AddPage();
     $pdf->SetLeftMargin(25);
-    
+
     //Monta o arquivo pdf        
     $pdf->SetFont('Arial', '' , 12); 
-    
+
     if($Dom != "" && $Dom != "NULL"){
         if(file_exists('../../imagens/'.$Dom)){
             if(getimagesize('../../imagens/'.$Dom)!=0){
@@ -103,7 +114,6 @@ if(!isset($_SESSION['AdmUsu'])){
             $Turnos = 1;
         }
 
-
         $Data = date('01/'.$Mes.'/'.$Ano);
         $DescMes = $mes_extenso[$Mes];
 
@@ -119,12 +129,13 @@ if(!isset($_SESSION['AdmUsu'])){
         $pdf->ln(2);
 
         $rs = pg_query($Conec, "SELECT id, grupo_id, TO_CHAR(dataescala, 'DD/MM/YYYY'), turno1_id, horaini1, horafim1, turno2_id, horaini2, horafim2, turno3_id, horaini3, 
-        horafim3, turno4_id, horaini4, horafim4, turno5_id, horaini5, horafim5, turno6_id, horaini6, horafim6
+        horafim3, turno4_id, horaini4, horafim4, turno5_id, horaini5, horafim5, turno6_id, horaini6, horafim6, date_part('dow', dataescala) 
         FROM ".$xProj.".escalas WHERE grupo_id = $NumGrupo And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ORDER BY dataescala");
         $row = pg_num_rows($rs);
         if($row > 0){
             $pdf->SetFont('Arial', 'I' , 7);
             $pdf->Cell(25, 4, "Data", 0, 0, 'C');
+            $pdf->Cell(10, 4, "Sem", 0, 0, 'L');
             $pdf->Cell(15, 4, "Início", 0, 0, 'C');
             $pdf->Cell(15, 4, "Fim", 0, 0, 'C');
             $pdf->Cell(15, 4, "Escalado", 0, 1, 'L');
@@ -136,6 +147,7 @@ if(!isset($_SESSION['AdmUsu'])){
                 $Cod = $tbl[0]; // id de escalas
                 $CodPartic1 = $tbl[3]; // pessoas_id de poslog - salvo em salvaEsc.php
                 $pdf->Cell(25, 5, $tbl[2], 0, 0, 'C');
+                $pdf->Cell(10, 5, $Semana_Extract[$tbl[21]], 0, 0, 'L');
                 if($tbl[4] == 0 && $tbl[5] == 0){
                     $Ini = "";
                 }else{
@@ -170,7 +182,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
                 if($tbl[6] != 0){
                     if($Turnos >= 2){
-                        $pdf->SetX(50); 
+                        $pdf->SetX(60); 
                         $CodPartic2 = $tbl[6]; // pessoas_id de poslog - salvo em salvaEsc.php
                         if($tbl[7] == 0 && $tbl[8] == 0){
                             $Ini = "";
@@ -208,7 +220,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
                 if($tbl[9] != 0){
                     if($Turnos >= 3){
-                        $pdf->SetX(50); 
+                        $pdf->SetX(60); 
                         $CodPartic3 = $tbl[9];
                         if($tbl[10] == 0 && $tbl[11] == 0){
                             $Ini = "";
@@ -244,7 +256,7 @@ if(!isset($_SESSION['AdmUsu'])){
                 }
                 if($tbl[12] != 0){
                     if($Turnos >= 4){
-                        $pdf->SetX(50); 
+                        $pdf->SetX(60); 
                         $CodPartic4 = $tbl[12];
                         if($tbl[13] == 0 && $tbl[14] == 0){
                             $Ini = "";
@@ -278,7 +290,6 @@ if(!isset($_SESSION['AdmUsu'])){
                         $pdf->Cell(150, 5, $Nome4, 0, 1, 'L');
                     }
                 }
-                
                 $lin = $pdf->GetY();
                 $pdf->Line(10, $lin, 200, $lin);
             }

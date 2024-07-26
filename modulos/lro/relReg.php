@@ -41,10 +41,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
          <!-- Apresenta os usuários do setor com o nível administrativo -->
         <div style="padding: 10px;">
             <?php
-            $rs0 = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), turno, descturno, numrelato, nomecompl, usuant, enviado, codusu, ocor 
+            $rs0 = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), turno, descturno, numrelato, nomeusual, usuant, enviado, codusu, ocor 
             FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id
             WHERE ".$xProj.".livroreg.ativo = 1 And AGE(".$xProj.".livroreg.dataocor, CURRENT_DATE) <= '1 YEAR' 
-            ORDER BY ".$xProj.".livroreg.dataocor DESC, ".$xProj.".livroreg.turno DESC, ".$xProj.".livroreg.descturno");
+            ORDER BY ".$xProj.".livroreg.dataocor DESC, ".$xProj.".livroreg.turno DESC, ".$xProj.".livroreg.numrelato DESC");
             ?>
             <table id="idTabela" class="display" style="width:85%">
                 <thead>

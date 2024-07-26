@@ -34,6 +34,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 }
             });
             $(document).ready(function(){
+                document.getElementById("apagaRegEletric").style.visibility = "hidden";
+                if(parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
+                    document.getElementById("apagaRegEletric").style.visibility = "visible";
+                }
                 $('#insdata').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
             });
             $("#insdata").mask("99/99/9999");
@@ -179,6 +183,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 </table>
 
                     <div style="text-align: center; padding-bottom: 4px;">
+                        <button id="apagaRegEletric" class="botpadrred" onclick="apagaModalEletric();">Apagar</button>
+                        <label style="padding-left: 50%;"></label>
                         <button id="botsalvar" class="botpadrblue" onclick="salvaModal();">Salvar</button>
                     </div>
                 </div>

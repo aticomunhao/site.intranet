@@ -278,9 +278,13 @@ if($Acao=="procuramarcas"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');  // usuário que vai receber
     $Erro = 0;
     $NomeCompleto = "";
-    $rs0 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $Cod ");
+    $rs0 = pg_query($Conec, "SELECT nomecompl, nomeusual FROM ".$xProj.".poslog WHERE pessoas_id = $Cod ");
     $tbl0 = pg_fetch_row($rs0);
-    $NomeCompleto = $tbl0[0];
+    if(!is_null($tbl0[1]) && $tbl0[1] != ""){
+        $NomeCompleto = $tbl0[1]." - ".$tbl0[0];
+    }else{
+        $NomeCompleto = $tbl0[0];
+    }
 
     $rs0 = pg_query($Conec, "SELECT marca FROM ".$xProj.".tarefas WHERE usuins = ".$_SESSION["usuarioID"]." And sit != 4 ");
     $row0 = pg_num_rows($rs0);

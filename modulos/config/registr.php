@@ -310,9 +310,16 @@ if($Acao =="buscausu"){
     $Erro = 0;
 
     $rs0 = pg_query($ConecPes, "SELECT cpf, nome_completo, to_char(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM'), nome_resumido FROM ".$xPes.".pessoas WHERE cpf = '$GuardaCpf' ");
+    if(!$rs0){
+        $Erro = 1;
+    }
     $row0 = pg_num_rows($rs0);
     if($row0 == 0){
-        $Erro = 1;
+        $Erro = 2;
+        $var = array("coderro"=>$Erro);
+        $responseText = json_encode($var);
+        echo $responseText;
+        return false;
     }else{
         $Proc0 = pg_fetch_row($rs0);
     }

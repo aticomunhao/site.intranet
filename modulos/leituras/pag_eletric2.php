@@ -112,6 +112,9 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("insleitura2").value = Resp.leitura2;
                                     document.getElementById("guardacod").value = Cod;
                                     document.getElementById("relacmodalEletric").style.display = "block";
+                                    if(parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
+                                        document.getElementById("apagaRegEletric").style.visibility = "visible";
+                                    }
                                     document.getElementById("guardacod").value = Cod;
                                 }
                             }
@@ -140,6 +143,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("insdiasemana").innerHTML = Resp.sem;
                                     document.getElementById("insleitura2").value = "";
                                     document.getElementById("relacmodalEletric").style.display = "block";
+                                    document.getElementById("apagaRegEletric").style.visibility = "hidden";
                                     $('#mensagemLeitura').fadeIn("slow");
                                     document.getElementById("mensagemLeitura").innerHTML = "Data inicial para os lançamentos. <br>O valor anterior anotado é: "+Resp.valorini;
                                     $('#mensagemLeitura').fadeOut(10000);
@@ -153,6 +157,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("insdiasemana").innerHTML = Resp.sem;
                                     document.getElementById("insleitura2").value = "";
                                     document.getElementById("relacmodalEletric").style.display = "block";
+                                    document.getElementById("apagaRegEletric").style.visibility = "hidden";
                                     $('#mensagemLeitura').fadeIn("slow");
                                     document.getElementById("mensagemLeitura").innerHTML = "Próxima data para lançamento.";
                                     $('#mensagemLeitura').fadeOut(2000);

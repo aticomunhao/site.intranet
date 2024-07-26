@@ -83,6 +83,9 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
     alert(ajax.responseText);
 }
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 2){
+                                    alert("CPF não encontrado.");
+                                }
                                 if(parseInt(Resp.coderro) === 0){
                                     if(Resp.usuario == null){
                                         alert("Sem contato com a tabela pessoas. CPF nulo")
@@ -187,22 +190,22 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                                         document.getElementById("fiscalElev").checked = false;
                                     }
 
-//                                    if(parseInt(Resp.escala) === 1){
-//                                        document.getElementById("escalaEft").checked = true;
-//                                    }else{
-//                                        document.getElementById("escalaEft").checked = false;
-//                                    }
-//                                    document.getElementById("grupoEscala").value = Resp.grupoescala;
-//                                    if(parseInt(Resp.editaescala) === 1){
-//                                        document.getElementById("escalante").checked = true;
-//                                    }else{
-//                                        document.getElementById("escalante").checked = false;
-//                                    }
-//                                    if(parseInt(Resp.fiscescala) === 1){
-//                                        document.getElementById("fiscalEscalas").checked = true;
-//                                    }else{
-//                                        document.getElementById("fiscalEscalas").checked = false;
-//                                    }
+                                    if(parseInt(Resp.escala) === 1){
+                                        document.getElementById("escalaEft").checked = true;
+                                    }else{
+                                        document.getElementById("escalaEft").checked = false;
+                                    }
+                                    document.getElementById("grupoEscala").value = Resp.grupoescala;
+                                    if(parseInt(Resp.editaescala) === 1){
+                                        document.getElementById("escalante").checked = true;
+                                    }else{
+                                        document.getElementById("escalante").checked = false;
+                                    }
+                                    if(parseInt(Resp.fiscescala) === 1){
+                                        document.getElementById("fiscalEscalas").checked = true;
+                                    }else{
+                                        document.getElementById("fiscalEscalas").checked = false;
+                                    }
 
                                     document.getElementById("titulomodal").innerHTML = "Edição de Usuários";
                                     document.getElementById("ressetsenha").disabled = false;
@@ -311,31 +314,31 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                 }
                 
                 Escala = 0;
-//                if(document.getElementById("escalaEft").checked === true){
-//                    Escala = 1;
-//                }
-//                if(parseInt(Escala) === 1 && parseInt(document.getElementById("grupoEscala").value) === 0){
-//                    $('#mensagem').fadeIn("slow");
-//                    document.getElementById("mensagem").innerHTML = "Preencha o campo <u>Grupo da Escala</u> do usuário";
-//                    $('#mensagem').fadeOut(3000);
-//                    document.getElementById("grupoEscala").focus();
-//                    return false;
-//                }
+                if(document.getElementById("escalaEft").checked === true){
+                    Escala = 1;
+                }
+                if(parseInt(Escala) === 1 && parseInt(document.getElementById("grupoEscala").value) === 0){
+                    $('#mensagem').fadeIn("slow");
+                    document.getElementById("mensagem").innerHTML = "Preencha o campo <u>Grupo da Escala</u> do usuário";
+                    $('#mensagem').fadeOut(3000);
+                    document.getElementById("grupoEscala").focus();
+                    return false;
+                }
                 Escalante = 0;
-//                if(document.getElementById("escalante").checked === true){
-//                    Escalante = 1;
-//                }
-//                if(parseInt(Escalante) === 1 && parseInt(document.getElementById("grupoEscala").value) === 0){
-//                    $('#mensagem').fadeIn("slow");
-//                    document.getElementById("mensagem").innerHTML = "Preencha o campo <u>Grupo da Escala</u> do usuário";
-//                    $('#mensagem').fadeOut(3000);
-//                    document.getElementById("grupoEscala").focus();
-//                    return false;
-//                }
+                if(document.getElementById("escalante").checked === true){
+                    Escalante = 1;
+                }
+                if(parseInt(Escalante) === 1 && parseInt(document.getElementById("grupoEscala").value) === 0){
+                    $('#mensagem').fadeIn("slow");
+                    document.getElementById("mensagem").innerHTML = "Preencha o campo <u>Grupo da Escala</u> do usuário";
+                    $('#mensagem').fadeOut(3000);
+                    document.getElementById("grupoEscala").focus();
+                    return false;
+                }
                 FiscEscala = 0;
-//                if(document.getElementById("fiscalEscalas").checked === true){
-//                    FiscEscala = 1;
-//                }
+                if(document.getElementById("fiscalEscalas").checked === true){
+                    FiscEscala = 1;
+                }
 
 
                 if(parseInt(document.getElementById("mudou").value) === 1){
@@ -995,7 +998,6 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     </tr>
 
 
-<!--  Aguardando
                     <tr>
                         <td class="etiq80" style="padding-top: 5px;" title="Faz parte do efetivo da escala">Escala de Serviço:</td>
                         <td colspan="4">
@@ -1005,12 +1007,12 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                             <select id="grupoEscala" style="font-size: 1rem;" title="Selecione um grupo." onchange="modif();">
                             <option value="0"></option>
                             <?php 
-//                            if($OpcoesEscala){
-//                                while ($Opcoes = pg_fetch_row($OpcoesEscala)){ ?>
-                                    <option value="<?php //echo $Opcoes[0]; ?>"><?php //echo $Opcoes[1]; ?></option>
-//                                <?php 
-//                                }
-//                            }
+                            if($OpcoesEscala){
+                                while ($Opcoes = pg_fetch_row($OpcoesEscala)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                <?php 
+                                }
+                            }
                             ?>
                             </select>                            
                             <label for="escalante" style="padding-left: 30px; padding-top: 5px;" title="Confecciona a escala">Escalante:</label>
@@ -1027,7 +1029,6 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                         </td>
                         <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(10);" title="Guia rápido"></td>
                     </tr>
--->
 
 
 

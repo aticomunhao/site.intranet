@@ -11,7 +11,11 @@ if($ConecPes != "sConec" && $ConecPes != "sFunc"){
    $xProj =  "cesb";
    $xPes = "public";
 }else{
-   die("<br>Não foi possível conectar-se ao banco de dados Pessoal.");
+   if($ConecPes == "sFunc"){
+      die("<br>Não foi possível conectar-se ao banco de dados Pessoal. <br>Habilite a extensão pgsql no PHP.");
+   }else{
+      die("<br>Não foi possível conectar-se ao banco de dados Pessoal. <br>Verifique os parâmetros da conexão.");
+   }
 }
 
 $Conec = conecPost(); // habilitar a extensão: extension = pgsql no phpini
