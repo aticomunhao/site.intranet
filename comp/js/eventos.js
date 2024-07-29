@@ -90,6 +90,9 @@ function openhref(Num){
     if(parseInt(Num) === 73){
         $('#container3').load('modulos/elevadores/controleEl.php');
     }
+    if(parseInt(Num) === 74){
+        $('#container3').load('modulos/quadroHorario/quadro1.php');
+    }
 
 
 

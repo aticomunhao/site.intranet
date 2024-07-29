@@ -91,6 +91,8 @@
 				 //0033
 				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_horaini VARCHAR(10) DEFAULT '08:00';");
 				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_horafim VARCHAR(10) DEFAULT '17:00';");
+				//0034
+				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_marca smallint NOT NULL DEFAULT 1;");
 
 			} // fim data limite
         ?>

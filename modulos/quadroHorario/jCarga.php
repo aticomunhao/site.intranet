@@ -29,6 +29,7 @@ $Mes_Extract = array(
         if($M == 0){
             $M = "00";
         }
+
         $H = floor($Min/60);
         $Hora = $Hora+$H;
         return $Hora."h ".$M."min";
@@ -59,6 +60,7 @@ $Mes_Extract = array(
         $NumGrupo = (int) filter_input(INPUT_GET, 'numgrupo');
     }
 
+
     $rsGr = pg_query($Conec, "SELECT qtd_turno FROM ".$xProj.".escalas_gr WHERE id = '$NumGrupo' ");
     $rowGr = pg_num_rows($rsGr);
     if($rowGr > 0){
@@ -67,8 +69,10 @@ $Mes_Extract = array(
     }else{
         $Turnos = 1;
     }
+
+    $Turnos = 1;
+    
     ?>
-<!--    <div style="border: 1px solid blue; border-radius: 15px; margin: 40px; padding: 20px; min-height: 200px; text-align: center;"> -->
     <div style="text-align: center;">
         <h5><?php echo $Mes_Extract[$Mes].'/'.$Ano; ?></h5>
 
@@ -93,64 +97,41 @@ $Mes_Extract = array(
                     }
                     $Carga = 0;
                     $Carga1 = 0;
-                    $Carga2 = 0;
-                    $Carga3 = 0;
-                    $Carga4 = 0;
                     $CargaMin = 0;
                     $Carga1Min = 0;
-                    $Carga2Min = 0;
-                    $Carga3Min = 0;
-                    $Carga4Min = 0;
 
-                    $rs1 = pg_query($Conec, "SELECT TO_CHAR(AGE(horafim1, horaini1), 'HH24'), TO_CHAR(AGE(horafim1, horaini1), 'MI') FROM ".$xProj.".escalas 
+
+                    $rs1 = pg_query($Conec, "SELECT TO_CHAR(AGE(horafim1, horaini1), 'HH24'), TO_CHAR(AGE(horafim1, horaini1), 'MI'), TO_CHAR(horafim1 - horaini1, 'HH24:MI')
+                    FROM ".$xProj.".quadrohor LEFT JOIN ".$xProj.".quadroins ON ".$xProj.".quadrohor.id = ".$xProj.".quadroins.quadrohor_id 
                     WHERE turno1_id = $Cod And grupo_id = $NumGrupo And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                     $row1 = pg_num_rows($rs1);
                     if($row1 > 0){
                         while($tbl1 = pg_fetch_row($rs1)){
-                            $Carga1 = $Carga1+$tbl1[0];
-                            $Carga1Min = $Carga1Min+$tbl1[1];
-                        }
-                    }
-                    $rs2 = pg_query($Conec, "SELECT TO_CHAR(AGE(horafim2, horaini2), 'HH24'), TO_CHAR(AGE(horafim2, horaini2), 'MI') FROM ".$xProj.".escalas 
-                    WHERE turno2_id = $Cod And grupo_id = $NumGrupo And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
-                    $row2 = pg_num_rows($rs2);
-                    if($row2 > 0){
-                        while($tbl2 = pg_fetch_row($rs2)){
-                            $Carga2 = $Carga2+$tbl2[0];
-                            $Carga2Min = $Carga2Min+$tbl2[1];
-                        }
-                    }
-                    $rs3 = pg_query($Conec, "SELECT TO_CHAR(AGE(horafim3, horaini3), 'HH24'), TO_CHAR(AGE(horafim3, horaini3), 'MI') FROM ".$xProj.".escalas 
-                    WHERE turno3_id = $Cod And grupo_id = $NumGrupo And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
-                    $row3 = pg_num_rows($rs3);
-                    if($row3 > 0){
-                        while($tbl3 = pg_fetch_row($rs3)){
-                            $Carga3 = $Carga3+$tbl3[0];
-                            $Carga3Min = $Carga3Min+$tbl3[1];
-                        }
-                    }
-                    $rs4 = pg_query($Conec, "SELECT TO_CHAR(AGE(horafim4, horaini4), 'HH24'), TO_CHAR(AGE(horafim4, horaini4), 'MI') FROM ".$xProj.".escalas 
-                    WHERE turno4_id = $Cod And grupo_id = $NumGrupo And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
-                    $row4 = pg_num_rows($rs4);
-                    if($row4 > 0){
-                        while($tbl4 = pg_fetch_row($rs4)){
-                            $Carga4 = $Carga4+$tbl4[0];
-                            $Carga4Min = $Carga4Min+$tbl4[1];
-                        }
-                    }
+                            $CargaCor =  $tbl1[0]; 
+                            if($tbl1[2] >= "08:00"){
+                                $CargaCor = ($tbl1[0]-1); // carga corrigida
+                            }
+                            $CargaMinCor = $tbl1[1];
+                            if($tbl1[2] > "06:00" && $tbl1[2] < "08:00"){
+                                $CargaMinCor = ($tbl1[1]-15);
+                            }
 
-                    $Carga = $Carga+$Carga1+$Carga2+$Carga3+$Carga4;
-                    $CargaMin = $CargaMin+$Carga1Min+$Carga2Min+$Carga3Min+$Carga4Min;
+//                            $Carga1 = $Carga1+$tbl1[0];
+//                            $Carga1Min = $Carga1Min+$tbl1[1];
+                            $Carga1 = $Carga1+$CargaCor;
+                            $Carga1Min = $Carga1Min+$CargaMinCor;
+                        }
+                    }
+                    
+                    $Carga = $Carga+$Carga1;
+                    $CargaMin = $CargaMin+$Carga1Min;
                     $CargaHoraria = SomaCarga($Carga, $CargaMin);
-
-//                    if($Carga > 0 || $CargaMin > 0){
-                        ?>
-                        <tr>
-                            <td style="text-align: left; font-size: 90%;"><?php echo $Nome; ?></td>
-                            <td style="text-align: right; font-size: 90%; padding-left: 10px;"><?php echo $CargaHoraria; ?></td>
-                        </tr>
-                        <?php
-//                    }
+                    ?>
+                    <tr>
+                        <td style="text-align: left; font-size: 90%;"><?php echo $Nome; ?></td>
+                        <td style="text-align: right; font-size: 90%; padding-left: 10px;"><?php echo $CargaHoraria; ?></td>
+                    </tr>
+                    <?php
                 }
             }
             ?>
@@ -158,7 +139,6 @@ $Mes_Extract = array(
                 <td colspan="2"><hr></td>
             </tr>
         </table>
-        
 
         <!-- Semanal -->
         <table style="margin: 0 auto;">
@@ -208,55 +188,31 @@ $Mes_Extract = array(
 
                         $CargaHora1 = 0;
                         $CargaMin1 = 0;
-                        $CargaHora2 = 0;
-                        $CargaMin2 = 0;
-                        $CargaHora3 = 0;
-                        $CargaMin3 = 0;
-                        $CargaHora4 = 0;
-                        $CargaMin4 = 0;
+
                         //Carga Semanal turno1
-                        $rs1 = pg_query($Conec, "SELECT TO_CHAR(AGE(horafim1, horaini1), 'HH24'), TO_CHAR(AGE(horafim1, horaini1), 'MI') FROM ".$xProj.".escalas 
+                        $rs1 = pg_query($Conec, "SELECT TO_CHAR(AGE(horafim1, horaini1), 'HH24'), TO_CHAR(AGE(horafim1, horaini1), 'MI'), TO_CHAR(horafim1 - horaini1, 'HH24:MI') 
+                        FROM ".$xProj.".quadrohor LEFT JOIN ".$xProj.".quadroins ON ".$xProj.".quadrohor.id = ".$xProj.".quadroins.quadrohor_id 
                         WHERE turno1_id = $Cod1 And grupo_id = $NumGrupo And TO_CHAR(dataescala, 'WW') = '$SemanaNum' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $row1 = pg_num_rows($rs1);
                         if($row1 > 0){
                             while($tbl1 = pg_fetch_row($rs1)){
-                                $CargaHora1 = $CargaHora1+$tbl1[0];
-                                $CargaMin1 = $CargaMin1+$tbl1[1];
-                            }
-                        }
-                        //Carga Semanal turno2
-                        $rs2 = pg_query($Conec, "SELECT TO_CHAR(AGE(horafim2, horaini2), 'HH24'), TO_CHAR(AGE(horafim2, horaini2), 'MI') FROM ".$xProj.".escalas 
-                        WHERE turno2_id = $Cod1 And grupo_id = $NumGrupo And TO_CHAR(dataescala, 'WW') = '$SemanaNum' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
-                        $row2 = pg_num_rows($rs2);
-                        if($row2 > 0){
-                            while($tbl2 = pg_fetch_row($rs2)){
-                                $CargaHora2 = $CargaHora2+$tbl2[0];
-                                $CargaMin2 = $CargaMin2+$tbl2[1];
-                            }
-                        }
-                        //Carga Semanal turno3
-                        $rs3 = pg_query($Conec, "SELECT TO_CHAR(AGE(horafim3, horaini3), 'HH24'), TO_CHAR(AGE(horafim3, horaini3), 'MI') FROM ".$xProj.".escalas 
-                        WHERE turno3_id = $Cod1 And grupo_id = $NumGrupo And TO_CHAR(dataescala, 'WW') = '$SemanaNum' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
-                        $row3 = pg_num_rows($rs3);
-                        if($row3 > 0){
-                            while($tbl3 = pg_fetch_row($rs3)){
-                                $CargaHora3 = $CargaHora3+$tbl3[0];
-                                $CargaMin3 = $CargaMin3+$tbl3[1];
-                            }
-                        }
-                        //Carga Semanal turno4
-                        $rs4 = pg_query($Conec, "SELECT TO_CHAR(AGE(horafim4, horaini4), 'HH24'), TO_CHAR(AGE(horafim4, horaini4), 'MI') FROM ".$xProj.".escalas 
-                        WHERE turno4_id = $Cod1 And grupo_id = $NumGrupo And TO_CHAR(dataescala, 'WW') = '$SemanaNum' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
-                        $row4 = pg_num_rows($rs4);
-                        if($row4 > 0){
-                            while($tbl4 = pg_fetch_row($rs4)){
-                                $CargaHora4 = $CargaHora4+$tbl4[0];
-                                $CargaMin4 = $CargaMin4+$tbl4[1];
-                            }
-                        }
+                                $CargaHoraCor =  $tbl1[0]; 
+                                if($tbl1[2] >= "08:00"){
+                                    $CargaHoraCor = ($tbl1[0]-1); // carga corrigida
+                                }
+                                $CargaMinCor = $tbl1[1];
+                                if($tbl1[2] > "06:00" && $tbl1[2] < "08:00"){
+                                    $CargaMinCor = ($tbl1[1]-15); // carga minutos corrigida
+                                }
 
-                        $CargaSemanalHora = $CargaSemanalHora+$CargaHora1+$CargaHora2+$CargaHora3+$CargaHora4;
-                        $CargaSemanalMin = $CargaSemanalMin+$CargaMin1+$CargaMin2+$CargaMin3+$CargaMin4;
+                                $CargaHora1 = $CargaHora1+$CargaHoraCor;
+                                $CargaMin1 = $CargaMin1+$CargaMinCor;
+                            }
+                        }
+             
+
+                        $CargaSemanalHora = $CargaSemanalHora+$CargaHora1;
+                        $CargaSemanalMin = $CargaSemanalMin+$CargaMin1;
                         $CargaHorariaSemanal = SomaCarga($CargaSemanalHora, $CargaSemanalMin);
                     ?>        
                        <tr>

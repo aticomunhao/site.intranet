@@ -164,7 +164,7 @@ $Semana_Extract = array(
 
                             ?>
                             <td><div <?php if($Escalante == 1){echo "class='quadrinhoClick'";}else{echo "class='quadrinho'";} ?> style="text-align: left; font-weight: bold;" onclick="abreParticip(1, <?php echo $Cod; ?>, <?php echo $CodPartic1; ?>, '<?php echo $tbl[2]; ?>', '<?php echo $Nome1; ?>');" title="Clique aqui para escalar ou editar o escalado"> <?php echo $Nome1; ?> </div> </td>
-                            <td class="etiq" title="Horas do turno"><?php if(!is_null($tbl[16]) && $tbl[16] != 0){echo $tbl[16]."h";} ?></td>
+                            <td class="etiq60" title="Horas do turno"><?php if(!is_null($tbl[16]) && $tbl[16] != 0){echo $tbl[16]."h";} ?></td>
 
 
                             <?php
@@ -199,7 +199,7 @@ $Semana_Extract = array(
                             <?php
                             }
                             ?>
-                                <td class="etiq" title="Horas do turno"><?php if(!is_null($tbl[17]) && $tbl[17] != 0){echo $tbl[17]."h";} ?></td>
+                                <td class="etiq60" title="Horas do turno"><?php if(!is_null($tbl[17]) && $tbl[17] != 0){echo $tbl[17]."h";} ?></td>
                             <?php
                             }
                             ?>
@@ -238,7 +238,7 @@ $Semana_Extract = array(
                                 <?php
                             }
                             ?>
-                            <td class="etiq" title="Horas do turno"><?php if(!is_null($tbl[18]) && $tbl[18] != 0){echo $tbl[18]."h";} ?></td>
+                            <td class="etiq60" title="Horas do turno"><?php if(!is_null($tbl[18]) && $tbl[18] != 0){echo $tbl[18]."h";} ?></td>
                             <?php
                             }
                             ?>
@@ -277,7 +277,7 @@ $Semana_Extract = array(
                                 <?php
                             }
                             ?>
-                            <td class="etiq" title="Horas do turno"><?php if(!is_null($tbl[19]) && $tbl[19] != 0){echo $tbl[19]."h";} ?></td>
+                            <td class="etiq60" title="Horas do turno"><?php if(!is_null($tbl[19]) && $tbl[19] != 0){echo $tbl[19]."h";} ?></td>
                             <?php
                             }
                             ?>

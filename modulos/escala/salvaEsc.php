@@ -17,7 +17,7 @@ if(isset($_REQUEST["acao"])){
         $RevData = implode("/", array_reverse(explode("/", $Data)));
         $Turno = (int) filter_input(INPUT_GET, 'turno');
 
-        $rs0 = pg_query($Conec, "SELECT esc_horaini, esc_horafim FROM ".$xProj.".poslog WHERE pessoas_id = $CodPartic");
+        $rs0 = pg_query($Conec, "SELECT esc_horaini, esc_horafim, esc_grupo FROM ".$xProj.".poslog WHERE pessoas_id = $CodPartic");
         $tbl0 = pg_fetch_row($rs0);
         if(is_null($tbl0[0]) || is_null($tbl0[1])){
             $Erro = 2;
@@ -28,6 +28,7 @@ if(isset($_REQUEST["acao"])){
         }
         $HoraIni = $RevData." ".$tbl0[0];
         $HoraFim = $RevData." ".$tbl0[1];
+        $NumGrupo = $tbl0[2];
 
         //Caso do pernoite
         $HoraI = (int) $tbl0[0];
@@ -43,7 +44,26 @@ if(isset($_REQUEST["acao"])){
         if(!$rs){
             $Erro = 1;
         }
-        $var = array("coderro"=>$Erro, "horaini"=>$HoraIni, "horafim"=>$HoraFim);
+
+        //Procura se está em outra escala no mesmo dia
+        $SiglaGrupo = "";
+        $rs1 = pg_query($Conec, "SELECT id, grupo_id FROM ".$xProj.".escalas 
+        WHERE turno".$Turno."_id = $CodPartic And horaini".$Turno." = '$HoraIni' And grupo_id != $NumGrupo");
+        $row1 = pg_num_rows($rs1);
+        if($row1 > 0){
+            $tbl1 = pg_fetch_row($rs1);
+            $NumGrupo = $tbl1[1];
+            
+            $rs2 = pg_query($Conec, "SELECT siglagrupo FROM ".$xProj.".escalas_gr WHERE id = $NumGrupo");
+            $row2 = pg_num_rows($rs2);
+            if($row2 > 0){
+                $tbl2 = pg_fetch_row($rs2);
+                $SiglaGrupo = $tbl2[0];
+            }
+            $Erro = 3;
+
+        }
+        $var = array("coderro"=>$Erro, "horaini"=>$HoraIni, "horafim"=>$HoraFim, "temOutro"=>$row1, "siglagrupo"=>$SiglaGrupo);
         $responseText = json_encode($var);
         echo $responseText;
     }

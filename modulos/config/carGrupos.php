@@ -54,7 +54,7 @@ require_once("abrealas.php");
                 <?php 
                 while ($tbl0 = pg_fetch_row($rs0)){
                     $Cod = $tbl0[0]; // codocor
-                    $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE ativo = 1 And esc_grupo = $Cod");
+                    $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE esc_eft = 1 And ativo = 1 And esc_grupo = $Cod");
                     $row1 = pg_num_rows($rs1);
                     ?>
                     <tr>

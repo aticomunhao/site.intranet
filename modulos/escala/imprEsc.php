@@ -59,6 +59,16 @@ if(!isset($_SESSION['AdmUsu'])){
         '6' => 'Sab',
         'xª'=> ''
     );
+
+    function SomaCarga($Hora, $Min){
+        $M = $Min%60;
+        if($M == 0){
+            $M = "00";
+        }
+        $H = floor($Min/60);
+        $Hora = $Hora+$H;
+        return $Hora."h ".$M."min";
+    };
     class PDF extends FPDF{
         function Footer(){
            // Vai para 1.5 cm da parte inferior
@@ -128,8 +138,8 @@ if(!isset($_SESSION['AdmUsu'])){
         $pdf->SetDrawColor(200);
         $pdf->ln(2);
 
-        $rs = pg_query($Conec, "SELECT id, grupo_id, TO_CHAR(dataescala, 'DD/MM/YYYY'), turno1_id, horaini1, horafim1, turno2_id, horaini2, horafim2, turno3_id, horaini3, 
-        horafim3, turno4_id, horaini4, horafim4, turno5_id, horaini5, horafim5, turno6_id, horaini6, horafim6, date_part('dow', dataescala) 
+        $rs = pg_query($Conec, "SELECT id, grupo_id, TO_CHAR(dataescala, 'DD/MM/YYYY'), turno1_id, TO_CHAR(horaini1, 'HH24:MI'), TO_CHAR(horafim1, 'HH24:MI'), turno2_id, TO_CHAR(horaini2, 'HH24:MI'), TO_CHAR(horafim2, 'HH24:MI'), turno3_id, TO_CHAR(horaini3, 'HH24:MI'), 
+        TO_CHAR(horafim3, 'HH24:MI'), turno4_id, TO_CHAR(horaini4, 'HH24:MI'), TO_CHAR(horafim4, 'HH24:MI'), date_part('dow', dataescala), TO_CHAR(horafim1 - horaini1, 'HH24:MI'), TO_CHAR(horafim2 - horaini2, 'HH24:MI'), TO_CHAR(horafim3 - horaini3, 'HH24:MI'), TO_CHAR(horafim4 - horaini4, 'HH24:MI') 
         FROM ".$xProj.".escalas WHERE grupo_id = $NumGrupo And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ORDER BY dataescala");
         $row = pg_num_rows($rs);
         if($row > 0){
@@ -147,151 +157,250 @@ if(!isset($_SESSION['AdmUsu'])){
                 $Cod = $tbl[0]; // id de escalas
                 $CodPartic1 = $tbl[3]; // pessoas_id de poslog - salvo em salvaEsc.php
                 $pdf->Cell(25, 5, $tbl[2], 0, 0, 'C');
-                $pdf->Cell(10, 5, $Semana_Extract[$tbl[21]], 0, 0, 'L');
-                if($tbl[4] == 0 && $tbl[5] == 0){
+                $pdf->Cell(10, 5, $Semana_Extract[$tbl[15]], 0, 0, 'L');
+                if(is_null($tbl[4]) && is_null($tbl[5])){
                     $Ini = "";
                 }else{
-                    if($tbl[4] < 10){
-                        $Ini = "0".$tbl[4].":00";
-                    }else{
-                        $Ini = $tbl[4].":00";
-                    }
+                    $Ini = $tbl[4];
                 }
-                if($tbl[5] == 0){
+                if(is_null($tbl[5])){
                     $Fim = "";
                 }else{
-                    if($tbl[5] < 10){
-                        $Fim = "0".$tbl[5].":00";
-                    }else{
-                        $Fim = $tbl[5].":00";
-                    }
+                    $Fim = $tbl[5];
                 }
                 $pdf->Cell(15, 5, $Ini, 0, 0, 'C');
                 $pdf->Cell(15, 5, $Fim, 0, 0, 'C');
 
-                $rs1 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodPartic1;");
+                $rs1 = pg_query($Conec, "SELECT nomecompl, nomeusual FROM ".$xProj.".poslog WHERE pessoas_id = $CodPartic1;");
                 $row1 = pg_num_rows($rs1);
                 if($row1 > 0){
                     $tbl1 = pg_fetch_row($rs1);
-                    $Nome1 = $tbl1[0];
-                }else{
-                    $Nome1 = "";
-                }
+                    if(is_null($tbl1[0]) || $tbl1[0] == ""){
+                        $NomeCompl = "";
+                    }else{
+                        $NomeCompl = $tbl1[0];
+                    }
+                    if(is_null($tbl1[1]) || $tbl1[1] == ""){
+                        $NomeUsual = "";
+                    }else{
+                        $NomeUsual = $tbl1[1];
+                    }
 
-                $pdf->Cell(150, 5, $Nome1, 0, 1, 'L');
+                }else{
+                    $NomeCompl = "";
+                    $NomeUsual = "";
+                }
+                $pdf->Cell(50, 5, substr($NomeUsual, 0, 30), 0, 0, 'L');
+                $pdf->SetFont('Arial', 'I' , 8);
+                $pdf->Cell(150, 5, $NomeCompl, 0, 1, 'L');
+                $pdf->SetFont('Arial', '' , 10);
+
+
+
 
                 if($tbl[6] != 0){
                     if($Turnos >= 2){
                         $pdf->SetX(60); 
                         $CodPartic2 = $tbl[6]; // pessoas_id de poslog - salvo em salvaEsc.php
-                        if($tbl[7] == 0 && $tbl[8] == 0){
+                        if(is_null($tbl[7]) && is_null($tbl[8])){
                             $Ini = "";
                         }else{
-                            if($tbl[7] < 10){
-                                $Ini = "0".$tbl[7].":00";
-                            }else{
-                                $Ini = $tbl[7].":00";
-                            }
+                            $Ini = $tbl[7];
                         }
-
-                        if($tbl[8] == 0){
+                        if(is_null($tbl[8])){
                             $Fim = "";
                         }else{
-                            if($tbl[8] < 10){
-                                $Fim = "0".$tbl[8].":00";
-                            }else{
-                                $Fim = $tbl[8].":00";
-                            }
+                            $Fim = $tbl[8];
                         }
+
                         $pdf->Cell(15, 5, $Ini, 0, 0, 'C');
                         $pdf->Cell(15, 5, $Fim, 0, 0, 'C');
 
-                        $rs2 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodPartic2;");
+                        $rs2 = pg_query($Conec, "SELECT nomecompl, nomeusual FROM ".$xProj.".poslog WHERE pessoas_id = $CodPartic2;");
                         $row2 = pg_num_rows($rs2);
                         if($row2 > 0){
                             $tbl2 = pg_fetch_row($rs2);
-                            $Nome2 = $tbl2[0];
+                            if(is_null($tbl2[0]) || $tbl2[0] == ""){
+                                $NomeCompl = "";
+                            }else{
+                                $NomeCompl = $tbl2[0];
+                            }
+                            if(is_null($tbl2[1]) || $tbl2[1] == ""){
+                                $NomeUsual = "";
+                            }else{
+                                $NomeUsual = $tbl2[1];
+                            }
                         }else{
-                            $Nome2 = "";
+                            $NomeCompl = "";
+                            $NomeUsual = "";
                         }
-                        $pdf->Cell(150, 5, $Nome2, 0, 1, 'L');
+                        $pdf->Cell(50, 5, $NomeUsual, 0, 0, 'L');
+                        $pdf->SetFont('Arial', 'I' , 8);
+                        $pdf->Cell(150, 5, $NomeCompl, 0, 1, 'L');
+                        $pdf->SetFont('Arial', '' , 10);
                     }
+
                 }
 
                 if($tbl[9] != 0){
                     if($Turnos >= 3){
                         $pdf->SetX(60); 
                         $CodPartic3 = $tbl[9];
-                        if($tbl[10] == 0 && $tbl[11] == 0){
+                        if(is_null($tbl[10]) && is_null($tbl[11])){
                             $Ini = "";
                         }else{
-                            if($tbl[10] < 10){
-                                $Ini = "0".$tbl[10].":00";
-                            }else{
-                                $Ini = $tbl[10].":00";
-                            }
+                            $Ini = $tbl[10];
                         }
-                        if($tbl[11] == 0){
+                        if(is_null($tbl[11])){
                             $Fim = "";
                         }else{
-                            if($tbl[11] < 10){
-                                $Fim = "0".$tbl[11].":00";
-                            }else{
-                                $Fim = $tbl[11].":00";
-                            }
+                            $Fim = $tbl[11];
                         }
                         $pdf->Cell(15, 5, $Ini, 0, 0, 'C');
                         $pdf->Cell(15, 5, $Fim, 0, 0, 'C');
 
-                        $rs3 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodPartic3;");
+                        $rs3 = pg_query($Conec, "SELECT nomecompl, nomeusual FROM ".$xProj.".poslog WHERE pessoas_id = $CodPartic3;");
                         $row3 = pg_num_rows($rs3);
                         if($row3 > 0){
                             $tbl3 = pg_fetch_row($rs3);
-                            $Nome3 = $tbl3[0];
+                            if(is_null($tbl3[0]) || $tbl3[0] == ""){
+                                $NomeCompl = "";
+                            }else{
+                                $NomeCompl = $tbl3[0];
+                            }
+                            if(is_null($tbl3[1]) || $tbl3[1] == ""){
+                                $NomeUsual = "";
+                            }else{
+                                $NomeUsual = $tbl3[1];
+                            }
                         }else{
-                            $Nome3 = "";
+                            $NomeCompl = "";
+                            $NomeUsual = "";
                         }
-                        $pdf->Cell(150, 5, $Nome3, 0, 1, 'L');
+                        $pdf->Cell(50, 5, $NomeUsual, 0, 0, 'L');
+                        $pdf->SetFont('Arial', 'I' , 8);
+                        $pdf->Cell(150, 5, $NomeCompl, 0, 1, 'L');
+                        $pdf->SetFont('Arial', '' , 10);
                     }
                 }
                 if($tbl[12] != 0){
                     if($Turnos >= 4){
                         $pdf->SetX(60); 
                         $CodPartic4 = $tbl[12];
-                        if($tbl[13] == 0 && $tbl[14] == 0){
+                        if(is_null($tbl[13]) && is_null($tbl[14])){
                             $Ini = "";
                         }else{
-                            if($tbl[13] < 10){
-                                $Ini = "0".$tbl[13].":00";
-                            }else{
-                                $Ini = $tbl[13].":00";
-                            }
+                            $Ini = $tbl[13];
                         }
-                        if($tbl[14] == 0){
+                        if(is_null($tbl[14])){
                             $Fim = "";
                         }else{
-                            if($tbl[14] < 10){
-                                $Fim = "0".$tbl[14].":00";
-                            }else{
-                                $Fim = $tbl[14].":00";
-                            }
+                            $Fim = $tbl[14];
                         }
                         $pdf->Cell(15, 5, $Ini, 0, 0, 'C');
                         $pdf->Cell(15, 5, $Fim, 0, 0, 'C');
 
-                        $rs4 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodPartic4;");
+                        $rs4 = pg_query($Conec, "SELECT nomecompl, nomeusual FROM ".$xProj.".poslog WHERE pessoas_id = $CodPartic4;");
                         $row4 = pg_num_rows($rs4);
                         if($row4 > 0){
                             $tbl4 = pg_fetch_row($rs4);
-                            $Nome4 = $tbl4[0];
+                            if(is_null($tbl4[0]) || $tbl4[0] == ""){
+                                $NomeCompl = "";
+                            }else{
+                                $NomeCompl = $tbl4[0];
+                            }
+                            if(is_null($tbl4[1]) || $tbl4[1] == ""){
+                                $NomeUsual = "";
+                            }else{
+                                $NomeUsual = $tbl4[1];
+                            }
+        
                         }else{
-                            $Nome4 = "";
+                            $NomeCompl = "";
+                            $NomeUsual = "";
                         }
-                        $pdf->Cell(150, 5, $Nome4, 0, 1, 'L');
+                        $pdf->Cell(50, 5, $NomeUsual, 0, 0, 'L');
+                        $pdf->SetFont('Arial', 'I' , 8);
+                        $pdf->Cell(150, 5, $NomeCompl, 0, 1, 'L');
+                        $pdf->SetFont('Arial', '' , 10);
                     }
                 }
                 $lin = $pdf->GetY();
                 $pdf->Line(10, $lin, 200, $lin);
+            } // fim while
+
+            $pdf->ln(10);
+            $lin = $pdf->GetY();
+            $pdf->Line(10, $lin, 200, $lin);
+            $pdf->SetFont('Arial', 'I' , 10);
+            $pdf->Cell(150, 5, 'Carga Horária Mensal', 0, 1, 'L');
+
+            $rs = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE esc_eft = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl"); 
+            $row = pg_num_rows($rs);
+            if($row > 0){
+                while($tbl = pg_fetch_row($rs)){
+                    $Cod = $tbl[0];
+                    $Nome = $tbl[2];
+                    if(is_null($tbl[2]) || $tbl[2] == ""){
+                        $Nome = $tbl[1];
+                    }
+                    $Carga = 0;
+                    $Carga1 = 0;
+                    $Carga2 = 0;
+                    $Carga3 = 0;
+                    $Carga4 = 0;
+                    $CargaMin = 0;
+                    $Carga1Min = 0;
+                    $Carga2Min = 0;
+                    $Carga3Min = 0;
+                    $Carga4Min = 0;
+                    $rs1 = pg_query($Conec, "SELECT TO_CHAR(AGE(horafim1, horaini1), 'HH24'), TO_CHAR(AGE(horafim1, horaini1), 'MI') FROM ".$xProj.".escalas 
+                    WHERE turno1_id = $Cod And grupo_id = $NumGrupo And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
+                    $row1 = pg_num_rows($rs1);
+                    if($row1 > 0){
+                        while($tbl1 = pg_fetch_row($rs1)){
+                            $Carga1 = $Carga1+$tbl1[0];
+                            $Carga1Min = $Carga1Min+$tbl1[1];
+                        }
+                    }
+                    $rs2 = pg_query($Conec, "SELECT TO_CHAR(AGE(horafim2, horaini2), 'HH24'), TO_CHAR(AGE(horafim2, horaini2), 'MI') FROM ".$xProj.".escalas 
+                    WHERE turno2_id = $Cod And grupo_id = $NumGrupo And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
+                    $row2 = pg_num_rows($rs2);
+                    if($row2 > 0){
+                        while($tbl2 = pg_fetch_row($rs2)){
+                            $Carga2 = $Carga2+$tbl2[0];
+                            $Carga2Min = $Carga2Min+$tbl2[1];
+                        }
+                    }
+                    $rs3 = pg_query($Conec, "SELECT TO_CHAR(AGE(horafim3, horaini3), 'HH24'), TO_CHAR(AGE(horafim3, horaini3), 'MI') FROM ".$xProj.".escalas 
+                    WHERE turno3_id = $Cod And grupo_id = $NumGrupo And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
+                    $row3 = pg_num_rows($rs3);
+                    if($row3 > 0){
+                        while($tbl3 = pg_fetch_row($rs3)){
+                            $Carga3 = $Carga3+$tbl3[0];
+                            $Carga3Min = $Carga3Min+$tbl3[1];
+                        }
+                    }
+                    $rs4 = pg_query($Conec, "SELECT TO_CHAR(AGE(horafim4, horaini4), 'HH24'), TO_CHAR(AGE(horafim4, horaini4), 'MI') FROM ".$xProj.".escalas 
+                    WHERE turno4_id = $Cod And grupo_id = $NumGrupo And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
+                    $row4 = pg_num_rows($rs4);
+                    if($row4 > 0){
+                        while($tbl4 = pg_fetch_row($rs4)){
+                            $Carga4 = $Carga4+$tbl4[0];
+                            $Carga4Min = $Carga4Min+$tbl4[1];
+                        }
+                    }
+
+                    $Carga = $Carga+$Carga1+$Carga2+$Carga3+$Carga4;
+                    $CargaMin = $CargaMin+$Carga1Min+$Carga2Min+$Carga3Min+$Carga4Min;
+                    $CargaHoraria = SomaCarga($Carga, $CargaMin);
+
+                    $pdf->SetX(40); 
+                    $pdf->Cell(40, 5, $Nome, 0, 0, 'L');
+                    $pdf->Cell(50, 5, $CargaHoraria, 0, 1, 'R');
+
+
+                }
             }
         }else{
             $pdf->SetFont('Arial', '' , 10);

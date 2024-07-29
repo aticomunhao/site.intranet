@@ -86,32 +86,23 @@ if(!isset($_SESSION["usuarioID"])){
             }
             $(document).ready(function(){
                 document.getElementById("selecMesAno").value = document.getElementById("guardames").value;
-                $("#faixacentral").load("modulos/escala/jEscala.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
-                $("#estat").load("modulos/escala/jEstat.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
+                $("#faixacentral").load("modulos/quadroHorario/jQuadro.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
+                $("#estat").load("modulos/quadroHorario/jCarga.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
                 document.getElementById("etiqgrupo").style.visibility = "hidden";
                 document.getElementById("selecGrupo").style.visibility = "hidden";
 
-                if(parseInt(document.getElementById("guardafiscalescala").value) === 1){
-                    document.getElementById("selecGrupo").style.visibility = "visible";
-                    document.getElementById("etiqgrupo").style.visibility = "visible";
-//                    document.getElementById("selecGrupo").value = 1;
-                }
                 $("#selecMesAno").change(function(){
                     if(parseInt(document.getElementById("selecMesAno").value) > 0){
-                        $("#faixacentral").load("modulos/escala/jEscala.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
-                        $("#estat").load("modulos/escala/jEstat.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
-                    }
-                });
-
-                // só Ficais de Escala
-                $("#selecGrupo").change(function(){
-                    if(parseInt(document.getElementById("selecGrupo").value) > 0){
-                        $('#container3').load('modulos/escala/escala.php?numgrupo='+document.getElementById("selecGrupo").value);
+                        $("#faixacentral").load("modulos/quadroHorario/jQuadro.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
+                        $("#estat").load("modulos/quadroHorario/jCarga.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
                     }
                 });
                 $("#horainiedit").mask("99:99");
                 $("#horafimedit").mask("99:99");
             }); // fim do ready
+
+
+
 
 
             function abreParticip(Turno, Cod, CodPartic, Data, Nome){
@@ -124,11 +115,11 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("guardaCodParticip").value = CodPartic;
                 document.getElementById("titulomodal").innerHTML = Data;
                 if(parseInt(document.getElementById("guardaQuantTurnos").value) > 1){
-                    document.getElementById("turnotitmodal").innerHTML = "Turno "+Turno;
+//                    document.getElementById("turnotitmodal").innerHTML = "Turno "+Turno;
                 }
                 if(parseInt(Nome.length) > 1){
                     document.getElementById("nometitmodal").innerHTML = " - "+Nome;
-                    document.getElementById("retiranomemodal").innerHTML = "Retirar";
+//                    document.getElementById("retiranomemodal").innerHTML = "Retirar";
                 }else{
                     document.getElementById("nometitmodal").innerHTML = " ";
                     document.getElementById("retiranomemodal").innerHTML = " ";                   
@@ -141,26 +132,131 @@ if(!isset($_SESSION["usuarioID"])){
                         draggable: true,
                         buttons: {
                             Sim: function () {
-                                $("#relacaoParticip").load("modulos/escala/carEquipe.php?codigo="+document.getElementById("guardanumgrupo").value);
+                                $("#relacaoParticip").load("modulos/quadroHorario/jEquipes.php?codigo="+document.getElementById("guardanumgrupo").value);
                                 document.getElementById("relacParticip").style.display = "block";
                             },
                             Não: function () {}
                         }
                     });
                 }else{
-                    $("#relacaoParticip").load("modulos/escala/carEquipe.php?codigo="+document.getElementById("guardanumgrupo").value);
+                    $("#relacaoParticip").load("modulos/quadroHorario/jEquipes.php?codigo="+document.getElementById("guardanumgrupo").value);
                     document.getElementById("relacParticip").style.display = "block";
                 }
             }
 
+            function MarcaPartic(Cod){ // vem de jEquipes
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/quadroHorario/salvaQuadro.php?acao=marcaPartic&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
 
-            function insParticip(Cod){
+            function editaParticip(Cod){
+                //Cod = pessoas_id
+                document.getElementById("guardaEditCod").value = Cod;
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/quadroHorario/salvaQuadro.php?acao=buscaParticip&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{;
+                                    document.getElementById("nomecompletoedit").innerHTML = Resp.nomecompl;
+                                    if(Resp.nome != "" && Resp.nome != null){
+                                        document.getElementById("nomecompletoedit").innerHTML = Resp.nome+" - "+Resp.nomecompl;
+                                    }
+                                    document.getElementById("horainiedit").value = Resp.horaini;
+                                    document.getElementById("horafimedit").value = Resp.horafim;
+                                    document.getElementById("editaModalParticip").style.display = "block";
+                                    document.getElementById("horainiedit").focus();
+                               }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+            function salvaEditEscalado(){
+                TamIni = document.getElementById("horainiedit").value;
+                if(TamIni.length < 5){
+                    document.getElementById("horainiedit").focus();
+                    return false;
+                }
+                TamFim = document.getElementById("horafimedit").value;
+                if(TamFim.length < 5){
+                    document.getElementById("horafimedit").focus();
+                    return false;
+                }
+
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/quadroHorario/salvaQuadro.php?acao=salvaParticip&codigo="+document.getElementById("guardaEditCod").value
+                    +"&horaini="+encodeURIComponent(document.getElementById("horainiedit").value)
+                    +"&horafim="+encodeURIComponent(document.getElementById("horafimedit").value), true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    $("#relacaoParticip").load("modulos/quadroHorario/jEquipes.php?codigo="+document.getElementById("guardanumgrupo").value);
+                                    document.getElementById("editaModalParticip").style.display = "none";
+                               }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function buscaTurno(CodPartic, CodTurno){
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/quadroHorario/salvaQuadro.php?acao=insTurno&codpartic="+CodPartic+"&codturno="+CodTurno, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    $("#relacaoParticip").load("modulos/quadroHorario/jEquipes.php?codigo="+document.getElementById("guardanumgrupo").value);
+                               }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+
+            }
+
+            function insParticipante(){
                 //Cod = pessoas_id de poslog
                 //GuardaCod = id de escalas
                 //GuardaTurno =  1 a 4 de onde clica
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/escala/salvaEsc.php?acao=insParticip&codigo="+Cod
+                    ajax.open("POST", "modulos/quadroHorario/salvaQuadro.php?acao=insParticipante&numgrupo="+document.getElementById("guardanumgrupo").value
                     +"&data="+encodeURIComponent(document.getElementById("guardaData").value)
                     +"&codid="+document.getElementById("guardaCod").value
                     +"&turno="+document.getElementById("guardaTurno").value
@@ -192,12 +288,12 @@ if(!isset($_SESSION["usuarioID"])){
                                             OK: function(){}
                                         }
                                     });
-                                    $("#faixacentral").load("modulos/escala/jEscala.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
-                                    $("#estat").load("modulos/escala/jEstat.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
+                                    $("#faixacentral").load("modulos/QuadroHorario/jQuadro.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
+                                    $("#estat").load("modulos/quadroHorario/jCarga.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
                                     document.getElementById("relacParticip").style.display = "none";
                                 }else{
-                                    $("#faixacentral").load("modulos/escala/jEscala.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
-                                    $("#estat").load("modulos/escala/jEstat.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
+                                    $("#faixacentral").load("modulos/quadroHorario/jQuadro.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
+                                    $("#estat").load("modulos/quadroHorario/jCarga.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
                                     document.getElementById("relacParticip").style.display = "none";
                                 }
                             }
@@ -207,128 +303,15 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-
-            function editaParticip(Cod){
-                //Cod = pessoas_id
-                document.getElementById("guardaEditCod").value = Cod;
-                ajaxIni();
-                if(ajax){
-                    ajax.open("POST", "modulos/escala/salvaEsc.php?acao=buscaParticip&codigo="+Cod, true);
-                    ajax.onreadystatechange = function(){
-                        if(ajax.readyState === 4 ){
-                            if(ajax.responseText){
-//alert(ajax.responseText);
-                                Resp = eval("(" + ajax.responseText + ")");
-                                if(parseInt(Resp.coderro) === 1){
-                                    alert("Houve um erro no servidor.");
-                                }else{;
-                                    document.getElementById("nomecompletoedit").innerHTML = Resp.nomecompl;
-                                    if(Resp.nome != "" && Resp.nome != null){
-                                        document.getElementById("nomecompletoedit").innerHTML = Resp.nome+" - "+Resp.nomecompl;
-                                    }
-                                    document.getElementById("horainiedit").value = Resp.horaini;
-                                    document.getElementById("horafimedit").value = Resp.horafim;
-                                    document.getElementById("editaModalParticip").style.display = "block";
-                                    document.getElementById("horainiedit").focus();
-                               }
-                            }
-                        }
-                    };
-                    ajax.send(null);
-                }
-            }
-
-            function salvaEditEscalado(){
-                TamIni = document.getElementById("horainiedit").value;
-                if(TamIni.length < 5){
-                    document.getElementById("horainiedit").focus();
-                    return false;
-                }
-                TamFim = document.getElementById("horafimedit").value;
-                if(TamFim.length < 5){
-                    document.getElementById("horafimedit").focus();
-                    return false;
-                }
-
-                ajaxIni();
-                if(ajax){
-                    ajax.open("POST", "modulos/escala/salvaEsc.php?acao=salvaParticip&codigo="+document.getElementById("guardaEditCod").value
-                    +"&horaini="+encodeURIComponent(document.getElementById("horainiedit").value)
-                    +"&horafim="+encodeURIComponent(document.getElementById("horafimedit").value), true);
-                    ajax.onreadystatechange = function(){
-                        if(ajax.readyState === 4 ){
-                            if(ajax.responseText){
-//alert(ajax.responseText);
-                                Resp = eval("(" + ajax.responseText + ")");
-                                if(parseInt(Resp.coderro) === 1){
-                                    alert("Houve um erro no servidor.");
-                                }else{
-                                    $("#relacaoParticip").load("modulos/escala/carEquipe.php?codigo="+document.getElementById("guardanumgrupo").value);
-                                    document.getElementById("editaModalParticip").style.display = "none";
-                               }
-                            }
-                        }
-                    };
-                    ajax.send(null);
-                }
-            }
-
-            function apagaEscalado(){
-                $.confirm({
-                    title: 'Confirmação!',
-                    content: 'Confirma retirar da escala?',
-                    autoClose: 'Não|10000',
-                    draggable: true,
-                    buttons: {
-                        Sim: function () {
-                            ajaxIni();
-                            if(ajax){
-                                ajax.open("POST", "modulos/escala/salvaEsc.php?acao=apagaEscala&codigo="+document.getElementById("guardaCod").value
-                                +"&turno="+document.getElementById("guardaTurno").value, true);
-                                ajax.onreadystatechange = function(){
-                                    if(ajax.readyState === 4 ){
-                                        if(ajax.responseText){
-//alert(ajax.responseText);
-                                            Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
-                                            if(parseInt(Resp.coderro) === 0){
-                                                document.getElementById("relacParticip").style.display = "none";
-                                                $("#faixacentral").load("modulos/escala/jEscala.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
-                                                $("#estat").load("modulos/escala/jEstat.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
-                                            }else{
-                                                alert("Houve um erro no servidor.")
-                                            }
-                                        }
-                                    }
-                                };
-                                ajax.send(null);
-                            }
-                        },
-                        Não: function () {}
-                    }
-                });
-            }
-
-            function mudaHora(IniFim, Cod, Valor){
-                alert(Valor);
-
-            }
-
-
-            function imprEscala(){
-                window.open("modulos/escala/imprEsc.php?acao=imprEscala&numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), document.getElementById("selecMesAno").value);
-            }
-            function carregaHelpEscala(){
-                document.getElementById("relacHelpEscala").style.display = "block";
-            }
-            function fechaHelpEscala(){
-                document.getElementById("relacHelpEscala").style.display = "none";
+            function imprQuadro(){
+                window.open("modulos/quadroHorario/imprQuadro.php?acao=imprQuadro&numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), document.getElementById("selecMesAno").value);
             }
             function fechaRelaPart(){
                 document.getElementById("relacParticip").style.display = "none";
             }
             function fechaEditaPart(){
                 document.getElementById("editaModalParticip").style.display = "none";
-                $("#relacaoParticip").load("modulos/escala/carEquipe.php?codigo="+document.getElementById("guardanumgrupo").value);
+                $("#relacaoParticip").load("modulos/quadroHorario/jEquipes.php?codigo="+document.getElementById("guardanumgrupo").value);
             }
             function foco(id){
                 document.getElementById(id).focus();
@@ -344,32 +327,27 @@ if(!isset($_SESSION["usuarioID"])){
         }
         date_default_timezone_set('America/Sao_Paulo'); //Um dia = 86.400 seg
 
-
 //Provisório
-//Tabela antiga - apagar
-$rs = pg_query($Conec, "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'escalas' AND COLUMN_NAME = 'turno5_id'");
-$row = pg_num_rows($rs);
-if($row > 0){
-   pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escalas");
-}
-
-//pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escalas");
-pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escalas (
+//pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".quadrohor");
+pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".quadrohor (
     id SERIAL PRIMARY KEY, 
-    grupo_id integer NOT NULL DEFAULT 0,
     dataescala date DEFAULT '3000-12-31',
+    grupo_id integer NOT NULL DEFAULT 0,
+    ativo smallint NOT NULL DEFAULT 1, 
+    usuins bigint NOT NULL DEFAULT 0,
+    datains timestamp without time zone DEFAULT '3000-12-31',
+    usuedit bigint NOT NULL DEFAULT 0,
+    dataedit timestamp without time zone DEFAULT '3000-12-31' 
+    ) 
+ ");
+
+ //pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".quadroins");
+ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".quadroins (
+    id SERIAL PRIMARY KEY, 
+    quadrohor_id bigint NOT NULL DEFAULT 0,
     turno1_id BIGINT NOT NULL DEFAULT 0,
     horaini1 timestamp without time zone, 
     horafim1 timestamp without time zone,
-    turno2_id BIGINT NOT NULL DEFAULT 0,
-    horaini2 timestamp without time zone, 
-    horafim2 timestamp without time zone,
-    turno3_id BIGINT NOT NULL DEFAULT 0,
-    horaini3 timestamp without time zone, 
-    horafim3 timestamp without time zone,
-    turno4_id BIGINT NOT NULL DEFAULT 0,
-    horaini4 timestamp without time zone, 
-    horafim4 timestamp without time zone,
     ativo smallint NOT NULL DEFAULT 1, 
     usuins bigint NOT NULL DEFAULT 0,
     datains timestamp without time zone DEFAULT '3000-12-31',
@@ -377,14 +355,11 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escalas (
     dataedit timestamp without time zone DEFAULT '3000-12-31' 
     ) 
  ");
-//pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escalas_gr");
-pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escalas_gr (
+ //pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".quadroturnos");
+ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".quadroturnos (
     id SERIAL PRIMARY KEY, 
-    siglagrupo VARCHAR(20),
-    descgrupo VARCHAR(100),
-    descescala VARCHAR(200),
-    guardaescala VARCHAR(20),
-    qtd_turno smallint NOT NULL DEFAULT 1,
+    horaini VARCHAR(10), 
+    horafim VARCHAR(10),
     ativo smallint NOT NULL DEFAULT 1, 
     usuins bigint NOT NULL DEFAULT 0,
     datains timestamp without time zone DEFAULT '3000-12-31',
@@ -392,6 +367,19 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escalas_gr (
     dataedit timestamp without time zone DEFAULT '3000-12-31' 
     ) 
  ");
+ $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".quadroturnos LIMIT 3");
+ $row = pg_num_rows($rs);
+ if($row == 0){
+    pg_query($Conec, "INSERT INTO ".$xProj.".quadroturnos (id, horaini, horafim, usuins, datains) VALUES(1, '08:00', '17:00', 3, NOW() )");
+    pg_query($Conec, "INSERT INTO ".$xProj.".quadroturnos (id, horaini, horafim, usuins, datains) VALUES(2, '07:00', '16:00', 3, NOW() )");
+    pg_query($Conec, "INSERT INTO ".$xProj.".quadroturnos (id, horaini, horafim, usuins, datains) VALUES(3, '07:00', '17:00', 3, NOW() )");
+    pg_query($Conec, "INSERT INTO ".$xProj.".quadroturnos (id, horaini, horafim, usuins, datains) VALUES(4, '09:00', '18:00', 3, NOW() )");
+    pg_query($Conec, "INSERT INTO ".$xProj.".quadroturnos (id, horaini, horafim, usuins, datains) VALUES(5, '14:00', '18:00', 3, NOW() )");
+    pg_query($Conec, "INSERT INTO ".$xProj.".quadroturnos (id, horaini, horafim, usuins, datains) VALUES(6, '11:00', '15:00', 3, NOW() )");
+    pg_query($Conec, "INSERT INTO ".$xProj.".quadroturnos (id, horaini, horafim, usuins, datains) VALUES(7, '08:00', '14:15', 3, NOW() )");
+    pg_query($Conec, "INSERT INTO ".$xProj.".quadroturnos (id, horaini, horafim, usuins, datains) VALUES(8, '06:50', '15:50', 3, NOW() )");
+ }
+
 
         $Escalante = parEsc("esc_edit", $Conec, $xProj, $_SESSION["usuarioID"]); // escalante do grupo
         $FiscEscala = parEsc("esc_fisc", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de escala
@@ -424,39 +412,40 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escalas_gr (
             $Turnos = 1;
         }
         
+        $Turnos = 1;
+
         $Ini = strtotime(date('Y/m/01')); // número - para começar com o dia 1
         $DiaIni = strtotime("-1 day", $Ini); // para começar com o dia 1 no loop for
+
 
         //Mantem a tabela meses à frente
         for($i = 0; $i < 180; $i++){
             $Amanha = strtotime("+1 day", $DiaIni);
             $DiaIni = $Amanha;
             $Data = date("Y/m/d", $Amanha); // data legível
-            $rs0 = pg_query($Conec, "SELECT id FROM ".$xProj.".escalas WHERE dataescala = '$Data' And grupo_id = $NumGrupo ");
+            $rs0 = pg_query($Conec, "SELECT id FROM ".$xProj.".quadrohor WHERE dataescala = '$Data' And grupo_id = $NumGrupo ");
             $row0 = pg_num_rows($rs0);
             if($row0 == 0){
-                pg_query($Conec, "INSERT INTO ".$xProj.".escalas (dataescala, grupo_id, usuins, datains) VALUES ('$Data', $NumGrupo, ".$_SESSION["usuarioID"].", NOW())");
+                pg_query($Conec, "INSERT INTO ".$xProj.".quadrohor (dataescala, grupo_id, usuins, datains) VALUES ('$Data', $NumGrupo, ".$_SESSION["usuarioID"].", NOW())");
             }
         }
 
         $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataescala, 'MM'), '/', TO_CHAR(dataescala, 'YYYY')) 
-        FROM ".$xProj.".escalas GROUP BY TO_CHAR(dataescala, 'MM'), TO_CHAR(dataescala, 'YYYY') ORDER BY TO_CHAR(dataescala, 'YYYY'), TO_CHAR(dataescala, 'MM') DESC ");
+        FROM ".$xProj.".quadrohor GROUP BY TO_CHAR(dataescala, 'MM'), TO_CHAR(dataescala, 'YYYY') ORDER BY TO_CHAR(dataescala, 'YYYY'), TO_CHAR(dataescala, 'MM') DESC ");
         $OpcoesGrupo = pg_query($Conec, "SELECT id, siglagrupo FROM ".$xProj.".escalas_gr ORDER BY siglagrupo");
-        $OpNomes = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomecompl");
 
         ?>
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
         <input type="hidden" id="mudou" value = "0" />
         <input type="hidden" id="guardanumgrupo" value = "<?php echo $NumGrupo; ?>" />
         <input type="hidden" id="guardames" value = "<?php echo $MesSalvo; ?>" />
+        <input type="hidden" id="guardaescalante" value = "<?php echo $Escalante; ?>" />
+        <input type="hidden" id="guardaQuantTurnos" value = "<?php echo $Turnos; ?>" />
         <input type="hidden" id="guardaCod" value = "" />
         <input type="hidden" id="guardaEditCod" value = "" />
         <input type="hidden" id="guardaCodParticip" value = "" />
         <input type="hidden" id="guardaData" value = "" />
         <input type="hidden" id="guardaTurno" value = "" />
-        <input type="hidden" id="guardaQuantTurnos" value = "<?php echo $Turnos; ?>" />
-        <input type="hidden" id="guardaescalante" value = "<?php echo $Escalante; ?>" />
-        <input type="hidden" id="guardafiscalescala" value = "<?php echo $FiscEscala; ?>" />
 
         <div style="margin: 20px; padding: 5px;">
             <!-- div três colunas -->
@@ -493,7 +482,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escalas_gr (
                     </select>
 
                     <label style="padding-left: 30px;"></label>
-                    <button class="botpadrred" id="botimprEsc" style="font-size: 80%;" onclick="imprEscala();">Gerar PDF</button>
+                    <button class="botpadrred" id="botimprEsc" style="font-size: 80%;" onclick="imprQuadro();">Gerar PDF</button>
                     <label style="padding-left: 30px;"></label>
                     <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpEscala();" title="Guia rápido">
                 </div>
@@ -509,6 +498,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escalas_gr (
             </div>     
 
 
+
         <!-- div modal relacionar escalado -->
         <div id="relacParticip" class="relacmodal">
             <div class="modal-content-relacParticip">
@@ -520,13 +510,15 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escalas_gr (
 
                 <!-- lista dos participantes da escala do grupo -->
                 <div id="relacaoParticip" style="border: 2px solid #C6E2FF; border-radius: 10px;"></div>
+
+                <button class="botpadrblue" style="font-size: 80%;" onclick="insParticipante();">Inserir Marcados</button>
             </div>
         </div> <!-- Fim Modal-->
 
         <div id="editaModalParticip" class="relacmodal">
             <div class="modal-content-relacParticip">
                 <span class="close" onclick="fechaEditaPart();">&times;</span>
-                <label style="color: #666;">Edição de horários:</label>
+                <label style="color: #666;">Edição de horários preferenciais:</label>
                 <table style="margin: 0 auto; width: 85%;">
                     <tr>
                         <td class="etiq" style="padding-bottom: 7px;">Nome: </td>
@@ -548,21 +540,5 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escalas_gr (
         </div> <!-- Fim Modal-->
 
 
-        <!-- div modal para leitura instruções -->
-        <div id="relacHelpEscala" class="relacmodal">
-            <div class="modalMsg-content-Escala">
-                <span class="close" onclick="fechaHelpEscala();">&times;</span>
-                <h4 style="text-align: center; color: #666;">Informações</h4>
-                <h5 style="text-align: center; color: #666;">Montagem das Escalas dos Grupos</h5>
-                <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
-                    Regras inseridas:
-                    <ul>
-                        <li>1 - A Escala pode conter de um a quatro turnos.</li>
-                        <li>2 - O número de turnos de cada grupo é inserido pela ATI ao criar o grupo e pode ser modificado a qualquer momento a pedido.</li>
-                        <li>3 - Quando houver mais de um turno, preencha primeiro os turnos mais à esquerda, mantendo a sequência nos horários.</li>
-                    </ul>
-                </div>
-            </div>
-        </div>  <!-- Fim Modal Help-->
     </body>
 </html>

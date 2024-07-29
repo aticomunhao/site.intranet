@@ -6,7 +6,9 @@
  .etiq80{
     text-align: right; color: #9C9C9C; font-size: 80%; padding-right: 1px; padding-bottom: 1px;
  }
-
+ .etiq60{
+    text-align: right; color: #9C9C9C; font-size: 60%; font-weight: bold;
+ }
  .etiqAzul{
     text-align: right; color: #036; font-style: italic; font-size: 80%; padding-right: 1px; padding-bottom: 1px;
  }

@@ -16,7 +16,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
          <!-- Apresenta os usuários do grupo -->
         <div style="padding: 10px;">
             <?php
-                $rs3 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual, esc_horaini, esc_horafim FROM ".$xProj.".poslog WHERE ativo = 1 And esc_grupo = $Cod ORDER BY nomeusual, nomecompl ");
+                $rs3 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual, esc_horaini, esc_horafim FROM ".$xProj.".poslog WHERE esc_eft = 1 And ativo = 1 And esc_grupo = $Cod ORDER BY nomeusual, nomecompl ");
             ?>
             <table class="display" style="margin: 0 auto; width:85%">
                 <?php 
@@ -30,11 +30,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <td><div class="quadrgrupo"><?php if(is_null($tbl3[3]) || $tbl3[3] == ""){echo "&nbsp;";}else{echo $tbl3[3];} ?></td>
                         <td><div class="quadrgrupo"><?php if(is_null($tbl3[4]) || $tbl3[4] == ""){echo "&nbsp;";}else{echo $tbl3[4];} ?></div></td>
                         <td><div class="quadrgrupo" onclick="editaParticip(<?php echo $Cod; ?>);">
-
                         <label style="font-family: arial, verdana, sans-serif; font-size: 80%; color: blue; cursor: pointer;" onclick="editaParticip(<?php echo $Cod; ?>)" title="Clique para editar">Editar</label>
-
                         </div></td>
-
                     </tr>
                 <?php
                 }
