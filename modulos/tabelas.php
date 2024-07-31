@@ -199,7 +199,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
       if($row1 == 0){
          pg_query($Conec, "INSERT INTO ".$xProj.".livroturnos (id, codturno, descturno) VALUES 
          (1,1,'07h00/13h30'),
-         (2,2,'13h15/19h00'),
+         (2,2,'13h30/19h00'),
          (3,3,'19h00/07h00')
          ");       
       }

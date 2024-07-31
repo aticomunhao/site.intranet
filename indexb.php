@@ -198,7 +198,7 @@
             function carregaBens(){
                 $('#container3').load('modulos/bensEncont/pagBens.php');
             }
-            function fechaModal(){
+            function fechaComemorat(){
                 document.getElementById("modalComemorat").style.display = "none";
             }
             function checaLogFim(){
@@ -383,7 +383,7 @@
             <!-- div modal comemorat  -->
             <div id="modalComemorat" class="relacmodal">
                 <div class="modal-content-matrix">
-                    <span class="closeB" style="font-size: 5em; padding-right: 20px;" onclick="fechaModal();">&times;</span>
+                    <span class="closeB" style="font-size: 5em; padding-right: 20px;" onclick="fechaComemorat();">&times;</span>
                     <br><br><br>
                     <h1 id="frase1" style="text-align: center; color: #F9F9FF; font-family: tahoma, arial, cursive, sans-serif; font-variant: small-caps; padding-left: 50px;"> Parabéns</h1>
                     <h1 id="frase2" style="text-align: center; color: #F9F9FF; font-family: tahoma, arial, cursive, sans-serif; font-variant: small-caps;"> </h1>

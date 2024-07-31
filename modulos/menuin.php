@@ -22,78 +22,75 @@
 				$diaSemana = 1;
 			}
 			//Provisório
-			if(strtotime('2024/07/30') > strtotime(date('Y/m/d'))){
+			if(strtotime('2024/08/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//0026
-				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS guardaescala character varying(10);");
 
-				 //0029
-				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS elev smallint NOT NULL DEFAULT 0;");
-				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fiscelev smallint NOT NULL DEFAULT 0;");
+				 //0035
+				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".livroreg ADD COLUMN IF NOT EXISTS dataenviado timestamp without time zone DEFAULT '3000-12-31';");
+				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".livroreg ADD COLUMN IF NOT EXISTS relsubstit text;");
+				 pg_query($Conec, "UPDATE ".$xProj.".livroturnos SET descturno = '13h30/19h00' WHERE codturno = 2;");
+				 pg_query($Conec, "UPDATE ".$xProj.".livroreg SET descturno = '13h30/19h00' WHERE descturno = '13h15/19h00';");
 
-				//0030
-				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escalas_gr ADD COLUMN IF NOT EXISTS qtd_turno smallint NOT NULL DEFAULT 1;");
-				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escalas_gr ADD COLUMN IF NOT EXISTS ativo smallint NOT NULL DEFAULT 1;");
-				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escalas_gr ADD COLUMN IF NOT EXISTS usuins bigint NOT NULL DEFAULT 0;");
-				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escalas_gr ADD COLUMN IF NOT EXISTS datains timestamp without time zone DEFAULT '3000-12-31';");
-				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escalas_gr ADD COLUMN IF NOT EXISTS usuedit bigint NOT NULL DEFAULT 0;");
-				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escalas_gr ADD COLUMN IF NOT EXISTS dataedit timestamp without time zone DEFAULT '3000-12-31';");
+				//pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".livrocheck");
+				pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livrocheck (
+					id SERIAL PRIMARY KEY, 
+					setor smallint NOT NULL DEFAULT 0,
+					itemverif VARCHAR(250),
+					ativo smallint NOT NULL DEFAULT 1, 
+					usuins bigint NOT NULL DEFAULT 0,
+					datains timestamp without time zone DEFAULT '3000-12-31',
+					usuedit bigint NOT NULL DEFAULT 0,
+					dataedit timestamp without time zone DEFAULT '3000-12-31' 
+					)
+				");
+				$rs = pg_query($Conec, "SELECT id FROM ".$xProj.".livrocheck LIMIT 3");
+				$row = pg_num_rows($rs);
+				if($row == 0){
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (1, 1, 'Bebedouro com Garrafão', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (2, 1, 'Cadeira', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (3, 1, 'Câmera', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (4, 1, 'Chaves do Claviculário', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (5, 1, 'Carregador dos Rádiocomunicadores', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (6, 1, 'Chaves lacradas do claviculário', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (7, 1, 'Computador', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (8, 1, 'Correspondências ou encomendas entregues para a Casa', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (9, 1, 'Doações recebidas dentro da Guarita', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (10, 1, 'Extintor de incêndio', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (11, 1, 'Formulário de Achados e Perdidos', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (12, 1, 'Formulário de Controle do Claviculário', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (13, 1, 'Formulário de Controle dos Rádiocomunicadores', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (14, 1, 'Formulário de Controle de viaturas - pernoite', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (15, 1, 'Formulário de Utilização de Vagas', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (16, 1, 'Formulário de Utilização de Vagas no Estacionamento', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (17, 1, 'LRO - Formulários', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (18, 1, 'Monitor Câmera', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (19, 1, 'Objetos Perdidos', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (20, 1, 'Pasta com Normas', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (21, 1, 'Problemas com elevadores', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (22, 1, 'Problemas nas instalações - Portas, janelas, etc.', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (23, 1, 'Rádiocomunicadores', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (24, 1, 'Relógio de parede', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (25, 1, 'Telefone Celular', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (26, 1, 'Telefone Ramal 1804', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (27, 1, 'Veículos e moto da Comunhão pernoitando na Casa', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (28, 1, 'Veículos particulares pernoitando na casa', 1, 3, NOW()); ");
+					pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) VALUES (29, 1, 'Ventilador', 1, 3, NOW()); ");
+				}
+				//pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".coletnomes");
+				pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".coletnomes (
+					id SERIAL PRIMARY KEY, 
+					setor smallint NOT NULL DEFAULT 0,
+					nomecolet VARCHAR(100),
+					ativo smallint NOT NULL DEFAULT 1, 
+					usuins bigint NOT NULL DEFAULT 0,
+					datains timestamp without time zone DEFAULT '3000-12-31',
+					usuedit bigint NOT NULL DEFAULT 0,
+					dataedit timestamp without time zone DEFAULT '3000-12-31' 
+					)
+				");
 
-				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_eft smallint NOT NULL DEFAULT 0;");
-				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_edit smallint NOT NULL DEFAULT 0;");
-				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_grupo smallint NOT NULL DEFAULT 0;");
-				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_fisc smallint NOT NULL DEFAULT 0;");
 
-
-				 //Escala antiga
-				 pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escala_adm");
-				 pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escala_eft");
-				 pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".setores_ant");
-
-				 pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escalas (
-					    id SERIAL PRIMARY KEY, 
-    grupo_id integer NOT NULL DEFAULT 0,
-    dataescala date DEFAULT '3000-12-31',
-    turno1_id BIGINT NOT NULL DEFAULT 0,
-    horaini1 timestamp without time zone, 
-    horafim1 timestamp without time zone,
-    turno2_id BIGINT NOT NULL DEFAULT 0,
-    horaini2 timestamp without time zone, 
-    horafim2 timestamp without time zone,
-    turno3_id BIGINT NOT NULL DEFAULT 0,
-    horaini3 timestamp without time zone, 
-    horafim3 timestamp without time zone,
-    turno4_id BIGINT NOT NULL DEFAULT 0,
-    horaini4 timestamp without time zone, 
-    horafim4 timestamp without time zone,
-    ativo smallint NOT NULL DEFAULT 1, 
-    usuins bigint NOT NULL DEFAULT 0,
-    datains timestamp without time zone DEFAULT '3000-12-31',
-    usuedit bigint NOT NULL DEFAULT 0,
-    dataedit timestamp without time zone DEFAULT '3000-12-31' 
-					) 
-				 ");
-				 pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escalas_gr (
-    id SERIAL PRIMARY KEY, 
-    siglagrupo VARCHAR(20),
-    descgrupo VARCHAR(100),
-    descescala VARCHAR(200),
-    guardaescala VARCHAR(20),
-    qtd_turno smallint NOT NULL DEFAULT 1,
-    ativo smallint NOT NULL DEFAULT 1, 
-    usuins bigint NOT NULL DEFAULT 0,
-    datains timestamp without time zone DEFAULT '3000-12-31',
-    usuedit bigint NOT NULL DEFAULT 0,
-    dataedit timestamp without time zone DEFAULT '3000-12-31' 
-					) 
-				 ");
-
-				 //0033
-				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_horaini VARCHAR(10) DEFAULT '08:00';");
-				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_horafim VARCHAR(10) DEFAULT '17:00';");
-				//0034
-				 pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_marca smallint NOT NULL DEFAULT 1;");
-
+				
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

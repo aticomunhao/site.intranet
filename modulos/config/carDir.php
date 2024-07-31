@@ -24,15 +24,11 @@ require_once("abrealas.php");
                     carregaModal($id);
                 }
             });
-            $(document).ready(function(){
-                
-            });
-
         </script>
     </head>
     <body> 
         <input type="hidden" id="guardacodsetor" value="0" /> <!-- quando carrega o modal -->
-        <div style="border: 2px solid; border-radius: 15px; padding: 10px;">
+        <div style="border: 2px solid; border-radius: 15px; padding: 10px; background: linear-gradient(180deg, white, #FFF8DC)">
             <div style="text-align: center;"><h4>Diretorias e Assessorias</h4></div>
             <div style="text-align: center;">Clique para editar<br>
             <label class="etiqAzul">As modificações feitas aqui são passadas para o menu das Diretorias e Assessorias</label><br> 

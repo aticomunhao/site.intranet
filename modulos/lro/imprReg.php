@@ -63,10 +63,8 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->ln();
     $lin = $pdf->GetY();
     $pdf->Line(10, $lin, 200, $lin);
-
-//    $rs = pg_query($Conec, "SELECT usuins, TO_CHAR(datains, 'DD/MM/YYYY'), TO_CHAR(dataocor, 'DD/MM/YYYY'), codsetor, ocorrencia, numocor FROM ".$xProj.".ocorrencias WHERE codocor = $Num ");
-    
-    $rs = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, to_char(".$xProj.".livroreg.datains, 'DD/MM/YYYY'), turno, descturno, numrelato, nomecompl, usuant, relato, ocor 
+   
+    $rs = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), turno, descturno, numrelato, nomecompl, usuant, relato, ocor, nomeusual, relsubstit 
     FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id
     WHERE ".$xProj.".livroreg.ativo = 1 And ".$xProj.".livroreg.id =  $Num");
 
@@ -82,15 +80,15 @@ if(!isset($_SESSION['AdmUsu'])){
     }else{
         $NomeAnt = "";
     }
-
-    $rs1 = pg_query($Conec, "SELECT descturno FROM ".$xProj.".livroturnos WHERE codturno = $tbl[2] ");
-    $tbl1 = pg_fetch_row($rs1);
-    $row1 = pg_num_rows($rs1);
-    if($row1 > 0){
-        $DescTurno = $tbl1[0];
-    }else{
-        $DescTurno = "";
-    }
+    $DescTurno = $tbl[3];
+//    $rs1 = pg_query($Conec, "SELECT descturno FROM ".$xProj.".livroturnos WHERE codturno = $tbl[2] ");
+//    $tbl1 = pg_fetch_row($rs1);
+//    $row1 = pg_num_rows($rs1);
+//    if($row1 > 0){
+//        $DescTurno = $tbl1[0];
+//    }else{
+//        $DescTurno = "";
+//    }
 
     $pdf->SetFont('Arial', 'B', 9);
     $pdf->ln(7);
@@ -102,7 +100,7 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->Cell(16, 4, "- Registro: ", 0, 0, 'L');
     $pdf->SetFont('Arial', 'B', 9);
 
-    $Tam = $pdf->GetStringWidth($tbl[4]); // calcula o tamanho ocupado pq pvaria com o complemento
+    $Tam = $pdf->GetStringWidth($tbl[4]); // calcula o tamanho ocupado pq varia com o complemento
     $pdf->Cell($Tam, 4, $tbl[4], 0, 0, 'L');
     $pdf->SetFont('Arial', '', 9);
     $pdf->Cell(6, 4, " de ", 0, 0, 'L');
@@ -122,11 +120,24 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->SetFont('Arial', '', 10);
     $pdf->ln(3);
     $pdf->SetX(15); 
+    $RelSubst = $tbl[10];
 
     if($tbl[8] == 0){
         $pdf->Cell(0, 4, "Não houve ocorrências", 0, 1, 'L');
+        if($RelSubst != ""){
+            $pdf->SetFont('Arial', '', 7);
+            $pdf->SetX(15);
+            $pdf->MultiCell(0, 4, "Observações: ".$RelSubst, 0, 'J', false); //relato
+            $pdf->SetFont('Arial', '', 8);
+        }
     }else{
         $pdf->MultiCell(0, 5, $tbl[7], 0, 'J', false); //relato
+        if($RelSubst != ""){
+            $pdf->SetFont('Arial', '', 7);
+            $pdf->SetX(15);
+            $pdf->MultiCell(0, 4, "Observações: ".$RelSubst, 0, 'J', false); //relato
+            $pdf->SetFont('Arial', '', 8);
+        }
     }
 
     $pdf->ln(3);

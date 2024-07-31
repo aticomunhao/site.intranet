@@ -24,19 +24,15 @@ require_once("abrealas.php");
                     carregaModalGrupos($Cod);
                 }
             });
-            $(document).ready(function(){
-                
-            });
-
         </script>
     </head>
     <body> 
         <input type="hidden" id="guardacodsetor" value="0" /> <!-- quando carrega o modal -->
-        <div style="border: 2px solid; border-radius: 15px; padding: 10px;">
+        <div style="border: 2px solid; border-radius: 15px; padding: 10px; background: linear-gradient(180deg, white, #99CCFF);">
             <div style="text-align: center;"><h4>Grupos que usam Escalas</h4></div>
             <div style="text-align: center;">Clique para editar<br>
-            <label class="etiqAzul">As modificações feitas aqui são passadas para o módulo Escalas</label><br> 
-        </div>
+                <label class="etiqAzul">As modificações feitas aqui são passadas para o módulo Escalas</label><br> 
+            </div>
             <?php
                 $rs0 = pg_query($Conec, "SELECT id, siglagrupo, descgrupo, qtd_turno, ativo FROM ".$xProj.".escalas_gr WHERE ativo = 1 ORDER BY siglagrupo");
             ?>

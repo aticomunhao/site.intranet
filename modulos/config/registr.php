@@ -14,7 +14,7 @@ if(isset($_REQUEST["acao"])){
 }
 
 require_once("gUtils.php"); // Classe para Normatizar nomes próprios
-
+$UsuIns = $_SESSION['usuarioID'];
 if($Acao =="loglog"){
     $Cpf = filter_input(INPUT_GET, 'usuario'); 
     $Cpf1 = addslashes($Cpf);
@@ -840,6 +840,45 @@ if($Acao =="salvaAtivDir"){
     $Valor = filter_input(INPUT_GET, 'valor');
     $Erro = 0;
     $rs = pg_query($Conec, "UPDATE ".$xProj.".setores SET ativo = $Valor WHERE codset = $Cod");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="buscackList"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Erro = 0;
+    $rs = pg_query($Conec, "SELECT itemverif, ativo FROM ".$xProj.".livrocheck WHERE id = $Cod");
+    $row = pg_num_rows($rs);
+    if($row > 0){
+        $tbl = pg_fetch_row($rs);
+        
+    }else{
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro, "itemcklist"=>$tbl[0], "ativo"=> $tbl[1]);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="salvaCkList"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $DescItem = filter_input(INPUT_GET, 'descitem');
+    $Ativo = (int) filter_input(INPUT_GET, 'ativo');
+    $Erro = 0;
+    if($Cod == 0){
+        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".livrocheck");
+        $tblCod = pg_fetch_row($rsCod);
+        $Codigo = $tblCod[0];
+        $CodigoNovo = ($Codigo+1); 
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) 
+        VALUES ($CodigoNovo, 1, '$DescItem', $Ativo, $UsuIns, NOW() )");
+    }else{
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".livrocheck SET ITEMVERIF = '$DescItem', ativo = $Ativo WHERE id = $Cod");
+    }
     if(!$rs){
         $Erro = 1;
     }

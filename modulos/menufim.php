@@ -242,25 +242,18 @@
 							$NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]); // procurar a que grupo de escala pertence
 						}
 						if($NumGrupo > 0 || $FiscEscala > 0 || $Escalante > 0){
-							if($_SESSION['usuarioCPF'] == "13652176049"){
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(72);'>Escala</a>";
 							echo "</li>";
-							}
 						}
 
 						if($_SESSION["AdmUsu"] > 6){ // superusuário
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(31);'>Parâmetros do Sistema</a>";
 							echo "</li>";
-
-							if($_SESSION['usuarioCPF'] == "13652176049"){
-								echo "<li>";
-									echo "<a href='#' onclick='openhref(74);'>Quadro Horário</a>";
-								echo "</li>";
-							}
-
-
+							echo "<li>";
+								echo "<a href='#' onclick='openhref(74);'>Quadro Horário</a>";
+							echo "</li>";
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(33);'>Registro de Ocorrências</a>";
 							echo "</li>";

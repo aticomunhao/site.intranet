@@ -53,6 +53,7 @@
                     $("#cardiretoria").load("modulos/config/carDir.php");
                     $("#relmenu").load("modulos/config/relMenu.php"); // para editar menu
                     $("#carGruposEscala").load("modulos/config/carGrupos.php");
+                    $("#carCheckListLRO").load("modulos/config/carckListLRO.php");
                 });
 
                 function salvaParam(Valor, Param){
@@ -354,6 +355,7 @@
             }
             function carregaModal(Cod){
                 document.getElementById("guardacodsetor").value = Cod;
+                document.getElementById("mudou").value = "0";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/config/registr.php?acao=buscadir&codigo="+Cod, true);
@@ -514,6 +516,72 @@
                 }
             }
 
+            function carregaCheckList(Cod){
+                document.getElementById("guardacod").value = Cod;
+                document.getElementById("mudou").value = "0";
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/config/registr.php?acao=buscackList&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) > 0){
+                                    alert("Houve erro ao salvar");
+                                }else{
+                                    document.getElementById("descitem").value = Resp.itemcklist;
+                                    if(parseInt(Resp.ativo) === 1){
+                                        document.getElementById("atividadecklist1").checked = true;
+                                    }else{
+                                        document.getElementById("atividadecklist2").checked = true;
+                                    }
+                                    document.getElementById("guardaAtivCkList").value = Resp.ativo;
+
+                                    document.getElementById("relacmodalCkList").style.display = "block"; // está em carDir.php
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function salvaModalCkList(){
+                if(parseInt(document.getElementById("mudou").value) === 1){
+                    if(document.getElementById("descitem").value === ""){
+                        $('#mensagemDir').fadeIn("slow");
+                        document.getElementById("mensagemCkList").innerHTML = "Preencha o campo acima";
+                        $('#mensagemDir').fadeOut(3000);
+                        return false;
+                    }
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/config/registr.php?acao=salvaCkList&codigo="+document.getElementById("guardacod").value
+                        +"&descitem="+document.getElementById("descitem").value
+                        +"&ativo="+document.getElementById("guardaAtivCkList").value
+                        , true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");
+                                    if(parseInt(Resp.coderro) > 0){
+                                        alert("Houve erro ao salvar");
+                                    }else{
+                                        $("#carCheckListLRO").load("modulos/config/carckListLRO.php");
+                                        document.getElementById("relacmodalCkList").style.display = "none";
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                }else{
+                    document.getElementById("relacmodalDir").style.display = "none";
+                }
+            }
+
             function abreEditMenu(Cod){
                 document.getElementById("mudou").value = 0;
                 document.getElementById("guardaItemMenu").value = Cod;
@@ -565,9 +633,15 @@
                 document.getElementById("guardaAtiv").value = Valor;
                 document.getElementById("mudou").value = "1";
             }
-
+            function salvaAtivCkList(Valor){
+                document.getElementById("guardaAtivCkList").value = Valor;
+                document.getElementById("mudou").value = "1";
+            }
             function fechaModalDir(){
                 document.getElementById("relacmodalDir").style.display = "none";
+            }
+            function fechaModalckList(){
+                document.getElementById("relacmodalCkList").style.display = "none";
             }
             function fechaEditMenuOpr(){
                 document.getElementById("relacEditMenuOpr").style.display = "none";
@@ -787,49 +861,51 @@
             $VerArquivos = $ProcSis[33];  // parâmetro para liberar a visualização dos arquivos carregados em cada diretoria
 
 
-            $OpAdmInsEv = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
-            $OpAdmEditEv = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            $OpAdmInsEv = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
+            $OpAdmEditEv = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
             
-            $OpAdmInsAgua = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
-            $OpAdmEditAgua = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            $OpAdmInsAgua = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
+            $OpAdmEditAgua = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
 
-            $OpAdmInsEletric = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
-            $OpAdmEditEletric = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            $OpAdmInsEletric = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
+            $OpAdmEditEletric = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
 
-            $OpAdmInsTar = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
-            $OpAdmEditTar = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            $OpAdmInsTar = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
+            $OpAdmEditTar = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
 
-            $OpAdmInsRamais = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
-            $OpAdmEditRamais = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            $OpAdmInsRamais = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
+            $OpAdmEditRamais = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
 
-            $OpAdmInsTelef = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
-            $OpAdmEditTelef = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            $OpAdmInsTelef = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
+            $OpAdmEditTelef = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
 
-            $OpAdmEditPag = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
-            $OpAdmInsArq = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            $OpAdmEditPag = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
+            $OpAdmInsArq = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
 
-            $OpAdmEditPagIni = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            $OpAdmEditPagIni = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
 
-            $OpAdmInsTroca = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
-            $OpAdmEditTroca = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            $OpAdmInsTroca = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
+            $OpAdmEditTroca = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
 
-            $OpAdmInsOcor = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
-            $OpAdmEditOcor = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            $OpAdmInsOcor = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
+            $OpAdmEditOcor = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
 
-            $OpAdmInsLro = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
-            $OpAdmEditLro = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            $OpAdmInsLro = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
+            $OpAdmEditLro = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
 
-            $OpAdmInsBens = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
-            $OpAdmEditBens = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+            $OpAdmInsBens = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
+            $OpAdmEditBens = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
 
         ?>
         <input type="hidden" id="guardacod" value="0" /> <!-- id ocorrência -->
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
         <input type="hidden" id="guardaAtiv" value="0" />
+        <input type="hidden" id="guardaAtivCkList" value="0" />
         <input type="hidden" id="guardaData" value="0" />
         <input type="hidden" id="guardaItemMenu" value="0" />
         <input type="hidden" id="guardaPrazoDel" value="<?php echo $PrazoDel; ?>" />
         <input type="hidden" id="guardacodgrupo" value="0" />
+
         <div style="margin: 0 auto; margin-top: 40px; padding: 20px; border: 2px solid blue; border-radius: 15px; width: 70%; min-height: 200px;">
             <div style="text-align: center;">
                 <h4>Parâmetros do Sistema</h4>
@@ -1367,6 +1443,12 @@
 
     <!-- Mostra os grupos para escalas mais os seus usuários  -->
             <div id="carGruposEscala"></div>
+
+    <!-- Mostra checklist para serviço nas portarias  -->
+            <div id="carCheckListLRO"></div>
+
+
+
 
 
         </div> <!-- Fim-->

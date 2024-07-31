@@ -68,9 +68,9 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->SetFont('Arial', 'B', 9);
     $pdf->ln(7);
 
-    $rs = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, numrelato, to_char(".$xProj.".livroreg.datains, 'DD/MM/YYYY'), turno, descturno, nomecompl, usuant, relato, ocor, nomeusual 
+    $rs = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, numrelato, to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), turno, descturno, nomecompl, usuant, relato, ocor, nomeusual, relsubstit 
     FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id
-    WHERE ".$xProj.".livroreg.ativo = 1 ORDER BY ".$xProj.".livroreg.dataocor DESC, ".$xProj.".livroreg.turno DESC, ".$xProj.".livroreg.datains DESC ");
+    WHERE ".$xProj.".livroreg.ativo = 1 ORDER BY ".$xProj.".livroreg.dataocor DESC, ".$xProj.".livroreg.turno DESC, ".$xProj.".livroreg.dataocor DESC ");
     $row = pg_num_rows($rs);
 
     if($row > 0){
@@ -98,6 +98,7 @@ if(!isset($_SESSION['AdmUsu'])){
             $CodAnt = $tbl[6];
             $Relato = $tbl[7];
             $Ocor = $tbl[8];
+            $RelSubst = $tbl[10];
 
             $rs0 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodAnt ");
             $tbl0 = pg_fetch_row($rs0);
@@ -107,14 +108,15 @@ if(!isset($_SESSION['AdmUsu'])){
             }else{
                 $NomeAnt = "";
             }
-            $rs1 = pg_query($Conec, "SELECT descturno FROM ".$xProj.".livroturnos WHERE codturno = $CodTurno ");
-            $tbl1 = pg_fetch_row($rs1);
-            $row1 = pg_num_rows($rs1);
-            if($row1 > 0){
-                $DescTurno = $tbl1[0];
-            }else{
-                $DescTurno = "";
-            }
+            $DescTurno = $tbl[4];
+//            $rs1 = pg_query($Conec, "SELECT descturno FROM ".$xProj.".livroturnos WHERE codturno = $CodTurno ");
+//            $tbl1 = pg_fetch_row($rs1);
+//            $row1 = pg_num_rows($rs1);
+//            if($row1 > 0){
+//                $DescTurno = $tbl1[0];
+//            }else{
+//                $DescTurno = "";
+//            }
 
             $pdf->SetX(15);
             if(strlen($NumRelat) > 9){
@@ -130,12 +132,26 @@ if(!isset($_SESSION['AdmUsu'])){
             if($Ocor == 0){
                 $pdf->Cell(80, 5, substr($NomeUsu, 0, 80), 0, 0, 'L');
                 $pdf->Cell(30, 5, "Não houve.", 0, 1, 'L');
+                if($RelSubst != ""){
+                    $pdf->SetFont('Arial', '', 7);
+                    $pdf->SetX(80);
+                    $pdf->MultiCell(0, 4, "Observações: ".$RelSubst, 0, 'J', false); //relato
+                    $pdf->SetFont('Arial', '', 9);
+                }
             }else{
                 $pdf->Cell(80, 5, $NomeUsu, 0, 0, 'L');
                 $pdf->Cell(30, 5, "", 0, 1, 'L');
                 $pdf->SetX(80);
                 $pdf->SetFont('Arial', '', 8);
                 $pdf->MultiCell(0, 4, "-Relato: ".$Relato, 0, 'J', false); //relato
+                if($RelSubst != ""){
+                    $pdf->SetFont('Arial', '', 7);
+                    $pdf->SetX(80);
+                    $pdf->MultiCell(0, 4, "Observações: ".$RelSubst, 0, 'J', false); //relato
+                    $pdf->SetFont('Arial', '', 9);
+                }
+
+
                 $pdf->SetFont('Arial', '', 9);
             }
             $lin = $pdf->GetY();

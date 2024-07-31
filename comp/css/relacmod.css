@@ -142,6 +142,14 @@
     border-radius: 15px;
     width: 40%;
 }
+.modal-content-ckListLRO{
+    background: linear-gradient(180deg, white, #9eecb9);
+    margin: 12% auto;
+    padding: 10px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 40%;
+}
 .modal-content-UsuAdmDir{
     background: linear-gradient(180deg, white, #FFF8DC);
     margin: 12% auto;
@@ -183,7 +191,7 @@
     width: 60%;
 }
 .modal-content-editGrupos{
-    background: linear-gradient(180deg, white, #FFF8DC);
+    background: linear-gradient(180deg, white, #99CCFF);
     margin: 12% auto;
     padding: 10px;
     border: 1px solid #888;
