@@ -13,6 +13,7 @@ session_start();
         <script src="class/dataTable/datatables.min.js"></script>
         <script src="class/superfish/js/jquery.js"></script><!-- versão 1.12.1 veio com o superfish - Tem que usar esta, a versão 3.6 não recarrega a página-->
         <script src="comp/js/jquery-confirm.min.js"></script> <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
+        <script src="comp/js/jquery.mask.js"></script>
         <script>
             //Config do DataTable
             new DataTable('#idTabela', {
@@ -96,6 +97,8 @@ session_start();
                         modalEdit.style.display = "none";
                     }
                 };
+
+                $("#TelefoneCel").mask("(99) 99999-9999");
             });
 
             function carregaModal(id){
@@ -325,25 +328,25 @@ session_start();
                 <table style="margin: 0 auto;">
                     <tr>
                         <td id="etiqNome" class="etiq">Sigla/Nome</td>
-                        <td><input type="text" id="SiglaEmpresa" name="SiglaEmpresa" style="width: 99%;" placeholder="Sigla/Nome" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('NomeEmpresa');return false;}"></td>
+                        <td><input type="text" id="SiglaEmpresa" style="width: 99%;" placeholder="Sigla/Nome" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('NomeEmpresa');return false;}"></td>
                         <td></td>
                         <td></td>
                     </tr>
                     <tr>
                         <td id="etiqNomeCompl" class="etiq">Nome Compl</td>
-                        <td colspan="3"><input type="text" id="NomeEmpresa" name="NomeEmpresa" style="width: 99%;" placeholder="Nome" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('TelefoneFixo');return false;}"></td>
+                        <td colspan="3"><input type="text" id="NomeEmpresa" style="width: 99%;" placeholder="Nome" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('TelefoneFixo');return false;}"></td>
                     </tr>
                     <tr>
                         <td id="etiqRamal" class="etiq">Telefone</td>
-                        <td><input type="tel" id="TelefoneFixo" name="TelefoneFixo" style="width: 99%;" placeholder="Telefone" onkeyup="handlePhone(event);" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('TelefoneCel');return false;}"></td>
+                        <td><input type="tel" id="TelefoneFixo" style="width: 99%;" placeholder="Telefone" onkeyup="handlePhone(event);" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('TelefoneCel');return false;}"></td>
                         <td id="etiqCelular" class="etiq">Celular</td>
-                        <td><input type="tel" id="TelefoneCel" name="TelefoneCel" style="width: 99%;" placeholder="Celular" onkeyup="handlePhone(event);" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('Setor');return false;}"></td>
+                        <td><input type="tel" id="TelefoneCel" style="width: 99%;" placeholder="Celular" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('Setor');return false;}"></td>
                     </tr>
                     <tr>
                         <td id="etiqSetor" class="etiq">Setor</td>
                         <td><input type="text" id="Setor" name="Setor" style="width: 99%;" placeholder="Setor" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('ContatoNome');return false;}"></td>
                         <td id="etiqContato" class="etiq">Contato</td>
-                        <td><input type="text" id="ContatoNome" name="ContatoNome" style="width: 99%;" placeholder="Nome" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('SiglaEmpresa');return false;}"></td>
+                        <td><input type="text" id="ContatoNome" style="width: 99%;" placeholder="Nome" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('SiglaEmpresa');return false;}"></td>
                     </tr>
                     <tr>
                         <td colspan="4" style="text-align: center;"><div id="mensagem" style="color: red; font-weight: bold;"></div></td>

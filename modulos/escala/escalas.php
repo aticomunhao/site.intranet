@@ -435,7 +435,10 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escalas_gr (
             $rs0 = pg_query($Conec, "SELECT id FROM ".$xProj.".escalas WHERE dataescala = '$Data' And grupo_id = $NumGrupo ");
             $row0 = pg_num_rows($rs0);
             if($row0 == 0){
-                pg_query($Conec, "INSERT INTO ".$xProj.".escalas (dataescala, grupo_id, usuins, datains) VALUES ('$Data', $NumGrupo, ".$_SESSION["usuarioID"].", NOW())");
+                $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escalas");
+                $tblCod = pg_fetch_row($rsCod);
+                $CodigoNovo = $tblCod[0]+1;
+                pg_query($Conec, "INSERT INTO ".$xProj.".escalas (id, dataescala, grupo_id, usuins, datains) VALUES ($CodigoNovo, '$Data', $NumGrupo, ".$_SESSION["usuarioID"].", NOW())");
             }
         }
 

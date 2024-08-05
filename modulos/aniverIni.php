@@ -24,13 +24,25 @@
         return false;
     }
     require_once("config/gUtils.php");
+    if(strtotime('2024/08/07') > strtotime(date('Y/m/d'))){
     //usando a data de nascimento na tabela pessoas
     function pegaAniver($param, $mdate, $ddate, $ConecPes, $xPes, $ProxMes) {
-        $rs0 = pg_query($ConecPes, "SELECT nome_completo, nome_completo, TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') 
+        $rs0 = pg_query($ConecPes, "SELECT nome_completo, nome_resumido, TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') 
         FROM ".$xPes.".pessoas 
         WHERE status = 1 And TO_CHAR(dt_nascimento, 'MM') = '$mdate' And TO_CHAR(dt_nascimento, 'DD') $param '$ddate' Or status = 1 And TO_CHAR(dt_nascimento, 'MM') = '$ProxMes' 
         ORDER BY TO_CHAR(dt_nascimento, 'MM'), TO_CHAR(dt_nascimento, 'DD'), nome_completo LIMIT 20");
         return $rs0;
+    }
+    }
+    if(strtotime('2024/08/07') <= strtotime(date('Y/m/d'))){
+    function pegaAniver($param, $mdate, $ddate, $Conec, $xProj, $ProxMes) {
+        $rs0 = pg_query($Conec, "SELECT nomecompl, nomeusual, TO_CHAR(datanasc, 'DD'), TO_CHAR(datanasc, 'MM') 
+        FROM ".$xProj.".poslog  
+        WHERE ativo = 1 And TO_CHAR(datanasc, 'YYYY') != '1500' And TO_CHAR(datanasc, 'MM') = '$mdate' And TO_CHAR(datanasc, 'DD') $param '$ddate' 
+        Or ativo = 1 And TO_CHAR(datanasc, 'YYYY') != '1500' And TO_CHAR(datanasc, 'MM') = '$ProxMes' 
+        ORDER BY TO_CHAR(datanasc, 'MM'), TO_CHAR(datanasc, 'DD'), nomecompl LIMIT 20");
+        return $rs0;
+    }
     }
     $NiverHoje = 0;
     echo "<div style='text-align: center;'>";
@@ -40,7 +52,12 @@
                 echo "<td><td>";
             echo "</tr>";
             //aniversariantes de hoje
-            $aniver = pegaAniver('=', $mdate, $ddate, $ConecPes, $xPes, 0);
+            if(strtotime('2024/08/07') > strtotime(date('Y/m/d'))){
+                $aniver = pegaAniver('=', $mdate, $ddate, $ConecPes, $xPes, 0);
+            }
+            if(strtotime('2024/08/07') <= strtotime(date('Y/m/d'))){
+            $aniver = pegaAniver('=', $mdate, $ddate, $Conec, $xProj, 0);
+            }
                 if($aniver){
                     $row = pg_num_rows($aniver);
                     if($row >0){
@@ -50,7 +67,7 @@
                             echo $tbl[2]."/". $tbl[3];
                             echo "</td>";
                             echo "<td style='color: red; text-align: left; padding-left: 5px; font-size: 80%;'>";
-                                echo "<div style='border: 1px solid #FF5580; border-radius: 5px; padding-left: 3px; padding-right: 3px;'>"."<b>" . GUtils::normalizarNome($tbl[1]) . "</b>"."</div>";
+                                echo "<div style='border: 1px solid #FF5580; border-radius: 5px; padding-left: 3px; padding-right: 3px;' title='$tbl[1]' >"."<b>" . GUtils::normalizarNome($tbl[0]) . "</b>"."</div>";
                             echo "</td>";
                             echo "</tr>";
                         }
@@ -63,7 +80,12 @@
                 }
 
             //aniversariantes do mês seguinte:
+            if(strtotime('2024/08/07') > strtotime(date('Y/m/d'))){
             $aniver = pegaAniver('>', $mdate, $ddate, $ConecPes, $xPes, $ProxMes);
+            }
+            if(strtotime('2024/08/07') <= strtotime(date('Y/m/d'))){
+            $aniver = pegaAniver('>', $mdate, $ddate, $Conec, $xProj, $ProxMes);
+            }
                 if($aniver){
                     $row = pg_num_rows($aniver);
                     if($row >0){
@@ -73,7 +95,7 @@
                                 echo $tbl[2]."/". $tbl[3];
                             echo "</td>";
                             echo "<td style='color: blue; text-align: left; padding-left: 5px; font-size: 80%;'>";
-                                echo "<div style='border: 1px solid #5C88C4; border-radius: 5px; padding-left: 3px; padding-right: 3px;'>"."<b>" . GUtils::normalizarNome($tbl[1]) . "</b>"."</div>";
+                                echo "<div style='border: 1px solid #5C88C4; border-radius: 5px; padding-left: 3px; padding-right: 3px;' title='$tbl[1]'>"."<b>" . GUtils::normalizarNome($tbl[0]) . "</b>"."</div>";
                             echo "</td>";
                         }
                     }else{

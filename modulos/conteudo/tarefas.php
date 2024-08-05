@@ -246,14 +246,20 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function drop(ev, col) {
-                if(parseInt(document.getElementById("guardaUsuExec").value) != document.getElementById("usu_Logado_id").value){ // só o executante pode arrastar os quadros
-                    $('#container3').load('modulos/conteudo/tarefas.php');
-                    return false;
-                }
+                // Procura no arquivo tarefas_gr se o usu logado ($UsuModif) pode agir pelo executante ($UsuExec)  -> salvaTarefa.php
+
+//                if(parseInt(document.getElementById("guardaUsuExec").value) != document.getElementById("usu_Logado_id").value){ // só o executante pode arrastar os quadros
+//                    $('#container3').load('modulos/conteudo/tarefas.php');
+//                    return false;
+//                }
                 if(parseInt(col) > 0){
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/conteudo/salvaTarefa.php?acao=mudaStatus&numero="+document.getElementById("guardaid").value+"&novoStatus="+col+"&usumodif="+document.getElementById("usu_Logado_id").value+"&guardaativ="+document.getElementById("guardaAtiv").value, true);
+                        ajax.open("POST", "modulos/conteudo/salvaTarefa.php?acao=mudaStatus&numero="+document.getElementById("guardaid").value
+                        +"&novoStatus="+col
+                        +"&usumodif="+document.getElementById("usu_Logado_id").value
+                        +"&guardaativ="+document.getElementById("guardaAtiv").value
+                        +"&usuexec="+document.getElementById("guardaUsuExec").value, true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -574,6 +580,8 @@ if(!isset($_SESSION["usuarioID"])){
         $admEdit = parAdm("edittarefa", $Conec, $xProj); // nível para editar
         $VerTarefas = parAdm("vertarefa", $Conec, $xProj); // ver tarefas   1: todos - 2: só mandante e executante
 
+        $CodSetorUsu = $_SESSION["CodSetorUsu"]; //para a visualização das tarefas por setores
+
         //Relacionar usuários - adm <= $Adm - só paga tarefa para nível adm menor ou igual
         $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm <= $Adm ORDER BY nomeusual, nomecompl");
         $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm >= $admIns And pessoas_id != $UsuLogadoId ORDER BY nomeusual, nomecompl");
@@ -599,6 +607,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
         <input type="hidden" id="guardaAtiv" value="1" /> <!-- Guarda se a tarefa foi finalizada-->
         <input type="hidden" id="guardaUsuExec" value="0" />
+        <input type="hidden" id="grupotarefa" value="1" />
 
         <!-- div três colunas -->
         <div class="container" style="margin: 0 auto;">
@@ -631,23 +640,29 @@ if(!isset($_SESSION["usuarioID"])){
 
         <div style='margin: 20px; border: 3px solid green; border-radius: 10px;'>
             <?php
-          if($Adm > 6){ // Superusuários
-//            if($Adm >= $admEdit){
+          if($Adm > 7){ // Superusuários
                 $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI')  
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
                 WHERE ".$xProj.".tarefas.ativo > 0 
                 ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
             }else{
-                if($VerTarefas == 1){
+                if($VerTarefas == 1){ // 1 = Todos 
                     //Liberar a visualização das tarefas para todos
                     $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
-                    WHERE ".$xProj.".tarefas.ativo > 0  
+                    WHERE ".$xProj.".tarefas.ativo > 0 
                     ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
-                }else{ // visualização só mandante e executante
+                }
+                if($VerTarefas == 2){  // visualização só mandante e executante
                     $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
                     WHERE ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.usuexec = $UsuLogadoId Or ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.usuins = $UsuLogadoId
+                    ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
+                }
+                if($VerTarefas == 3){  // visualização por setor 
+                    $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
+                    FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
+                    WHERE ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.setorins = $CodSetorUsu Or ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.setorexec = $CodSetorUsu
                     ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
                 }
             }
@@ -1104,7 +1119,7 @@ if(!isset($_SESSION["usuarioID"])){
                     Regras inseridas:
                     <ul>
                         <li>1 - Um usuário pode emitir tarefa para outros usuários do seu nível administrativo ou inferior, observado o nível administrativo mínimo adequado.</li>
-                        <li>2 - Uma tarefa só aparece para o usuário que a inseriu e para o usuário designado para executá-la.</li>
+                        <li>2 - Uma tarefa só aparece para o usuário que a inseriu e para o usuário designado para executá-la, ou para todos, ou para os usuários do setor, a depender da configuração adotada.</li>
                         <li>3 - Apenas o usuário designado para a execução pode arrastar os quadros.</li>
                         <li>4 - Uma vez arrastados para a direita, os quadros não voltam. Mas o usuário que inseriu a tarefa, se tiver o nível administrativo adequado, pode editá-la e reposicioná-la nos quadros, mesmo se já estiver concluída.</li>
                         <li>5 - Mensagens podem ser trocadas entre os usuários. Elas são relativas a uma tarefa. Um ícone pisca para indicar que há mensagem não lida naquela tarefa.</li>

@@ -28,42 +28,56 @@ if($Acao=="mudaStatus"){
     }else{
         $UsuModif = 0;
     }
+    if(isset($_REQUEST["usuexec"])){
+        $UsuExec = $_REQUEST["usuexec"];
+    }else{
+        $UsuExec = 0;
+    }
 
-    //procura a situação Sit no bd
-    $rs0 = pg_query($Conec, "SELECT sit, to_char(datasit2, 'YYYY/MM/DD'), to_char(datasit3, 'YYYY/MM/DD') FROM ".$xProj.".tarefas WHERE idtar = $Num");
-    $tbl = pg_fetch_row($rs0);
-    $SitOrig = $tbl[0];
-    $DataSit2 = $tbl[1];
-    $DataSit3 = $tbl[2];
+    // Procura no arquivo tarefas_gr se o usu logado ($UsuModif) pode agir pelo executante ($UsuExec)
+    $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".tarefas_gr WHERE usuindiv = $UsuModif And usugrupo = $UsuExec ");
+    $row1 = pg_num_rows($rs1);
+    if($row1 > 0){
+        $UsuModif = $UsuExec;
+    }
 
-    $Erro = 0;
-    if($Sit > $SitOrig){ // Não deixa voltar a tarefa
-        if($Num > 0){
-            if($Sit == 4){
-                $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET sit = $Sit, datasit".$Sit." = NOW(), usumodifsit = $UsuModif, ativo = 2 WHERE idtar = $Num");
-                if($DataSit2 == '3000/12/31'){ // passou direto para Terminada
-                    $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit2 = NOW() WHERE idtar = $Num");
+    if($UsuModif == $UsuExec){
+        //procura a situação Sit no bd
+        $rs0 = pg_query($Conec, "SELECT sit, to_char(datasit2, 'YYYY/MM/DD'), to_char(datasit3, 'YYYY/MM/DD') FROM ".$xProj.".tarefas WHERE idtar = $Num");
+        $tbl = pg_fetch_row($rs0);
+        $SitOrig = $tbl[0];
+        $DataSit2 = $tbl[1];
+        $DataSit3 = $tbl[2];
+
+        $Erro = 0;
+        if($Sit > $SitOrig){ // Não deixa voltar a tarefa
+            if($Num > 0){
+                if($Sit == 4){
+                    $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET sit = $Sit, datasit".$Sit." = NOW(), usumodifsit = $UsuModif, ativo = 2 WHERE idtar = $Num");
+                    if($DataSit2 == '3000/12/31'){ // passou direto para Terminada
+                        $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit2 = NOW() WHERE idtar = $Num");
+                    }
+                    if($DataSit3 == '3000/12/31'){ // passou direto para Terminada
+                        $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit3 = NOW() WHERE idtar = $Num");
+                    }
+                    //Salva na coluna tempototal: anos;meses;dias;horas;minutos
+                    $rs = pg_query($Conec, "SELECT EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)) FROM ".$xProj.".tarefas WHERE idtar = $Num");
+                    $tbl = pg_fetch_row($rs);
+                    $ValorFinal = $tbl[0].";".$tbl[1].";".$tbl[2].";".$tbl[3].";".$tbl[4]; //anos;meses;dias;horas;minutos
+                    pg_query($Conec, "UPDATE ".$xProj.".tarefas SET tempototal = '$ValorFinal' WHERE idtar = $Num");                
+                }else{
+                    $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET sit = $Sit, datasit".$Sit." = NOW(), usumodifsit = $UsuModif, ativo = $Ativo WHERE idtar = $Num");
+                    if($Sit == 3 && $DataSit2 == '3000/12/31'){ // passou direto para Em andamento
+                        $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit2 = NOW() WHERE idtar = $Num");
+                    }
                 }
-                if($DataSit3 == '3000/12/31'){ // passou direto para Terminada
-                    $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit3 = NOW() WHERE idtar = $Num");
+                if(!$Sql){
+                    $Erro = 1;
                 }
-                //Salva na coluna tempototal: anos;meses;dias;horas;minutos
-                $rs = pg_query($Conec, "SELECT EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)) FROM ".$xProj.".tarefas WHERE idtar = $Num");
-                $tbl = pg_fetch_row($rs);
-                $ValorFinal = $tbl[0].";".$tbl[1].";".$tbl[2].";".$tbl[3].";".$tbl[4]; //anos;meses;dias;horas;minutos
-                pg_query($Conec, "UPDATE ".$xProj.".tarefas SET tempototal = '$ValorFinal' WHERE idtar = $Num");                
-            }else{
-                $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET sit = $Sit, datasit".$Sit." = NOW(), usumodifsit = $UsuModif, ativo = $Ativo WHERE idtar = $Num");
-                if($Sit == 3 && $DataSit2 == '3000/12/31'){ // passou direto para Em andamento
-                    $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit2 = NOW() WHERE idtar = $Num");
-                }
-            }
-            if(!$Sql){
-                $Erro = 1;
             }
         }
     }
-    $var = array("coderro"=>$Erro);
+    $var = array("coderro"=>$Erro, "modif"=>$UsuModif, "exec"=>$UsuExec);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -103,6 +117,8 @@ if($Acao=="salvaTarefa"){
     $textoExt = filter_input(INPUT_GET, 'textoExt');
     $Status = filter_input(INPUT_GET, 'selectStatus'); // adminstr pode mudar
     $Priorid = filter_input(INPUT_GET, 'priorid');
+    $SetorIns = $_SESSION["CodSetorUsu"];
+    $SetorExec = 0;
     $Erro = 0;
     $row = 0;
 
@@ -124,11 +140,19 @@ if($Acao=="salvaTarefa"){
         if($row0 > 0){
             $Erro = 2; // tarefa já foi dada para o mesmo usuário
         }else{
+            $rs1 = pg_query($Conec, "SELECT codsetor FROM ".$xProj.".poslog WHERE pessoas_id = $usuExec");
+            $row1 = pg_num_rows($rs1);
+            if($row1 == 1){
+                $tbl1 = pg_fetch_row($rs1);
+                $SetorExec = $tbl1[0];
+            }
+
             $rsCod = pg_query($Conec, "SELECT MAX(idtar) FROM ".$xProj.".tarefas");
             $tblCod = pg_fetch_row($rsCod);
             $Codigo = $tblCod[0];
             $CodigoNovo = ($Codigo+1); //usuinsorig para possib transferir tarefa para outro mandante
-            $Sql = pg_query($Conec, "INSERT INTO ".$xProj.".tarefas (idtar, usuins, usuexec, tittarefa, textotarefa, datains, sit, prio) VALUES($CodigoNovo, $usuLogado, $usuExec, '$textoEvid', '$textoExt', NOW(), 1, $Priorid)"); 
+            $Sql = pg_query($Conec, "INSERT INTO ".$xProj.".tarefas (idtar, usuins, usuexec, tittarefa, textotarefa, datains, sit, prio, setorins, setorexec) 
+            VALUES($CodigoNovo, $usuLogado, $usuExec, '$textoEvid', '$textoExt', NOW(), 1, $Priorid, $SetorIns, $SetorExec)"); 
             if(!$Sql){
                 $Erro = 1;
             }

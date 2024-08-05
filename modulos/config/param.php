@@ -550,17 +550,16 @@
             function salvaModalCkList(){
                 if(parseInt(document.getElementById("mudou").value) === 1){
                     if(document.getElementById("descitem").value === ""){
-                        $('#mensagemDir').fadeIn("slow");
+                        $('#mensagemCkList').fadeIn("slow");
                         document.getElementById("mensagemCkList").innerHTML = "Preencha o campo acima";
-                        $('#mensagemDir').fadeOut(3000);
+                        $('#mensagemCkList').fadeOut(3000);
                         return false;
                     }
                     ajaxIni();
                     if(ajax){
                         ajax.open("POST", "modulos/config/registr.php?acao=salvaCkList&codigo="+document.getElementById("guardacod").value
                         +"&descitem="+document.getElementById("descitem").value
-                        +"&ativo="+document.getElementById("guardaAtivCkList").value
-                        , true);
+                        +"&ativo="+document.getElementById("guardaAtivCkList").value, true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -578,7 +577,7 @@
                         ajax.send(null);
                     }
                 }else{
-                    document.getElementById("relacmodalDir").style.display = "none";
+                    document.getElementById("relacmodalCkList").style.display = "none";
                 }
             }
 
@@ -1335,8 +1334,9 @@
                     <tr>
                         <td style="font-size: 80%; padding-top: 5px;">Quem pode ver as tarefas designadas:</td>
                         <td style="text-align: right; padding-top: 5px;">
-                            <input type="radio" name="vertarefa" id="vertarefa1" value="1" <?php if($VerTarefa == 1){echo "CHECKED";} ?> title="Todos podem ver as tarefas" onclick="salvaParam(value, 'vertarefa');"><label for="vertarefa1" style="font-size: 12px; padding-left: 3px;"> Todos</label>
-                            <input type="radio" name="vertarefa" id="vertarefa2" value="2" <?php if($VerTarefa == 2){echo "CHECKED";} ?> title="Só o mandante e o executante" onclick="salvaParam(value, 'vertarefa');"><label for="vertarefa2" style="font-size: 12px; padding-left: 3px;"> Só Mandante e Executante</label>
+                            <input type="radio" name="vertarefa" id="vertarefa1" value="1" <?php if($VerTarefa == 1){echo "CHECKED";} ?> title="Todos os usuários podem ver as tarefas" onclick="salvaParam(value, 'vertarefa');"><label for="vertarefa1" style="font-size: 12px; padding-left: 3px;" title="Todos os usuários podem ver as tarefas"> Todos</label>
+                            <input type="radio" name="vertarefa" id="vertarefa3" value="3" <?php if($VerTarefa == 3){echo "CHECKED";} ?> title="Visualização separada por setor. Pode inserir tarefa para usuários de outros setores" onclick="salvaParam(value, 'vertarefa');"><label for="vertarefa3" style="font-size: 12px; padding-left: 3px;" title="Visualização separada por setor. Pode inserir tarefa para usuários de outros setores"> Setores</label>
+                            <input type="radio" name="vertarefa" id="vertarefa2" value="2" <?php if($VerTarefa == 2){echo "CHECKED";} ?> title="Só o mandante e o executante podem ver as tarefas" onclick="salvaParam(value, 'vertarefa');"><label for="vertarefa2" style="font-size: 12px; padding-left: 3px;" title="Só o mandante e o executante podem ver as tarefas"> Só Mandante e Executante</label>
                         </td>
                     </tr>
                 </table>

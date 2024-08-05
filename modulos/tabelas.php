@@ -370,7 +370,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
    ) 
 ");
 
-
+   //guarda os nomes das empresas de manutenção
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".empresas_ar (
       id SERIAL PRIMARY KEY, 
       empresa VARCHAR(150),
@@ -384,7 +384,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
       pg_query($Conec, "INSERT INTO ".$xProj.".empresas_ar (empresa, ativo) VALUES ('Empresa Contratada', 1)");
    }
 
-   
+   //guarda os nomes para o menu Controle Ar Cond e Eletricidade
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".cesbmenu (
       id SERIAL PRIMARY KEY, 
       descr VARCHAR(100), 
@@ -404,4 +404,167 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
       pg_query($Conec, "INSERT INTO ".$xProj.".cesbmenu (id, descr) VALUES (6, 'Controle Ar Cond 3') ");
    }
    
+   //coleciona o checklist para LRO (setor 1)
+   //pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".livrocheck");
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livrocheck (
+      id SERIAL PRIMARY KEY, 
+      setor smallint NOT NULL DEFAULT 0,
+      itemverif VARCHAR(250),
+      ativo smallint NOT NULL DEFAULT 1, 
+      usuins bigint NOT NULL DEFAULT 0,
+      datains timestamp without time zone DEFAULT '3000-12-31',
+      usuedit bigint NOT NULL DEFAULT 0,
+      dataedit timestamp without time zone DEFAULT '3000-12-31' 
+      )
+   ");
+   
+   // coleta nomes para uso como substituto temporário no LRO (setor 1)
+   //pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".coletnomes");
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".coletnomes ( 
+      id SERIAL PRIMARY KEY, 
+      setor smallint NOT NULL DEFAULT 0,
+      nomecolet VARCHAR(100),
+      ativo smallint NOT NULL DEFAULT 1, 
+      usuins bigint NOT NULL DEFAULT 0,
+      datains timestamp without time zone DEFAULT '3000-12-31',
+      usuedit bigint NOT NULL DEFAULT 0,
+      dataedit timestamp without time zone DEFAULT '3000-12-31' 
+      )
+   ");
+   
+   //controle elevadores
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_el (
+      id SERIAL PRIMARY KEY, 
+      num_ap integer NOT NULL DEFAULT 0,
+      localap VARCHAR(50),
+      empresa_id smallint DEFAULT 0 NOT NULL,
+      ativo smallint DEFAULT 1 NOT NULL, 
+      usuins integer DEFAULT 0 NOT NULL,
+      datains timestamp without time zone DEFAULT '3000-12-31',
+      usuedit integer DEFAULT 0 NOT NULL,
+      dataedit timestamp without time zone DEFAULT '3000-12-31' 
+      ) 
+   ");
+  
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_el (
+      id SERIAL PRIMARY KEY, 
+      controle_id integer NOT NULL DEFAULT 0,
+      datavis date,
+      tipovis smallint DEFAULT 1 NOT NULL,
+      nometec VARCHAR(100),
+      empresa_id smallint DEFAULT 0 NOT NULL,
+      ativo smallint DEFAULT 1 NOT NULL,
+      acionam timestamp without time zone DEFAULT '3000-12-31',
+      atendim timestamp without time zone DEFAULT '3000-12-31',
+      conclus timestamp without time zone DEFAULT '3000-12-31',
+      contato VARCHAR(100),
+      acompanh VARCHAR(100),
+      defeito text,
+      diagtec text,
+      svcrealizado text,
+      usuins integer DEFAULT 0 NOT NULL,
+      datains timestamp without time zone DEFAULT '3000-12-31',
+      usuedit integer DEFAULT 0 NOT NULL,
+      dataedit timestamp without time zone DEFAULT '3000-12-31',
+      usudel integer DEFAULT 0 NOT NULL,
+      datadel timestamp without time zone DEFAULT '3000-12-31'
+      ) 
+   ");
+  
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".empresas_el (
+      id SERIAL PRIMARY KEY, 
+      empresa VARCHAR(150),
+      ativo smallint DEFAULT 1 NOT NULL,
+      valorvisita double precision NOT NULL DEFAULT 0
+      ) 
+   ");
+  
+   $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".empresas_el LIMIT 3");
+   $row = pg_num_rows($rs);
+   if($row == 0){
+      pg_query($Conec, "INSERT INTO ".$xProj.".empresas_el (empresa, ativo) VALUES ('Empresa Contratada', 1)");
+   }
+
+
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar2 (
+      id SERIAL PRIMARY KEY, 
+      num_ap integer NOT NULL DEFAULT 0,
+      localap VARCHAR(50),
+      empresa_id smallint DEFAULT 0 NOT NULL,
+      ativo smallint DEFAULT 1 NOT NULL, 
+      usuins integer DEFAULT 0 NOT NULL,
+      datains timestamp without time zone DEFAULT '3000-12-31',
+      usuedit integer DEFAULT 0 NOT NULL,
+      dataedit timestamp without time zone DEFAULT '3000-12-31' 
+      ) 
+   ");
+  
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar2 (
+      id SERIAL PRIMARY KEY, 
+      controle_id integer NOT NULL DEFAULT 0,
+      datavis date,
+      tipovis smallint DEFAULT 1 NOT NULL,
+      nometec VARCHAR(100),
+      empresa_id smallint DEFAULT 0 NOT NULL,
+      ativo smallint DEFAULT 1 NOT NULL,
+      acionam timestamp without time zone DEFAULT '3000-12-31',
+      atendim timestamp without time zone DEFAULT '3000-12-31',
+      conclus timestamp without time zone DEFAULT '3000-12-31',
+      contato VARCHAR(100),
+      acompanh VARCHAR(100),
+      defeito text,
+      diagtec text,
+      svcrealizado text,
+      usuins integer DEFAULT 0 NOT NULL,
+      datains timestamp without time zone DEFAULT '3000-12-31',
+      usuedit integer DEFAULT 0 NOT NULL,
+      dataedit timestamp without time zone DEFAULT '3000-12-31',
+      usudel integer DEFAULT 0 NOT NULL,
+      datadel timestamp without time zone DEFAULT '3000-12-31'
+      ) 
+   ");
+  
+   
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar3 (
+      id SERIAL PRIMARY KEY, 
+      num_ap integer NOT NULL DEFAULT 0,
+      localap VARCHAR(50),
+      empresa_id smallint DEFAULT 0 NOT NULL,
+      ativo smallint DEFAULT 1 NOT NULL, 
+      usuins integer DEFAULT 0 NOT NULL,
+      datains timestamp without time zone DEFAULT '3000-12-31',
+      usuedit integer DEFAULT 0 NOT NULL,
+      dataedit timestamp without time zone DEFAULT '3000-12-31' 
+      ) 
+   ");
+  
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar3 (
+      id SERIAL PRIMARY KEY, 
+      controle_id integer NOT NULL DEFAULT 0,
+      datavis date,
+      tipovis smallint DEFAULT 1 NOT NULL,
+      nometec VARCHAR(100),
+      empresa_id smallint DEFAULT 0 NOT NULL,
+      ativo smallint DEFAULT 1 NOT NULL,
+      acionam timestamp without time zone DEFAULT '3000-12-31',
+      atendim timestamp without time zone DEFAULT '3000-12-31',
+      conclus timestamp without time zone DEFAULT '3000-12-31',
+      contato VARCHAR(100),
+      acompanh VARCHAR(100),
+      defeito text,
+      diagtec text,
+      svcrealizado text,
+      usuins integer DEFAULT 0 NOT NULL,
+      datains timestamp without time zone DEFAULT '3000-12-31',
+      usuedit integer DEFAULT 0 NOT NULL,
+      dataedit timestamp without time zone DEFAULT '3000-12-31',
+      usudel integer DEFAULT 0 NOT NULL,
+      datadel timestamp without time zone DEFAULT '3000-12-31'
+      ) 
+   ");
+
+   
+   
    echo "<br><br>";
+
+   

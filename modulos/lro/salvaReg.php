@@ -360,31 +360,9 @@ if($Acao=="buscaTurno"){
     echo $responseText;
 }
 
-if($Acao=="insSubstit"){
-    $Codigo = (int) filter_input(INPUT_GET, 'codigo');
-    $Erro = 0;
-    $Nome = "";
-    $NomeCompl = "";
-
-    $rs = pg_query($Conec, "SELECT nomecompl, nomeusual FROM ".$xProj.".poslog WHERE pessoas_id = $Codigo");
-    $row =  pg_num_rows($rs);
-    if($row > 0){
-        $tbl = pg_fetch_row($rs);
-        $Nome = $tbl[1];
-        $NomeCompl = $tbl[0];
-    }
-    if(!$rs){
-        $Erro = 1;
-    }
-    $var = array("coderro"=>$Erro, "nome"=>$Nome, "nomecompl"=>$NomeCompl);
-    $responseText = json_encode($var);
-    echo $responseText;
-}
-
 if($Acao=="incluirnome"){
     $Nome = ucfirst(addslashes(filter_input(INPUT_GET, 'nome')));
     $Erro = 0;
-
     $rs = pg_query($Conec, "SELECT nomecolet FROM ".$xProj.".coletnomes WHERE nomecolet = '$Nome'");
     $row =  pg_num_rows($rs);
     if($row == 0){

@@ -28,8 +28,8 @@
         <script>
             new DataTable('#idTabela', {
                 lengthMenu: [
-                    [100, 200, 500, 1000],
-                    [100, 200, 500, 1000]
+                    [100, 200, 500],
+                    [100, 200, 500]
                 ],
                 language: {
                     info: 'Mostrando Página _PAGE_ of _PAGES_',
@@ -58,7 +58,8 @@
         <?php
         require_once("config/abrealas.php");
         require_once("config/gUtils.php");
-        $rs0 = pg_query($ConecPes, "SELECT id, nome_completo, TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM'), nome_resumido FROM ".$xPes.".pessoas WHERE nome_completo != '' ORDER BY nome_completo ");
+//        $rs0 = pg_query($ConecPes, "SELECT id, nome_completo, TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM'), nome_resumido FROM ".$xPes.".pessoas WHERE nome_completo != '' ORDER BY nome_completo ");
+        $rs0 = pg_query($Conec, "SELECT id, nomecompl, TO_CHAR(datanasc, 'DD'), TO_CHAR(datanasc , 'MM'), nomeusual FROM ".$xProj.".poslog WHERE nomecompl != '' ORDER BY nomecompl ");
         $row0 = pg_num_rows($rs0);
         ?>
         <div style="margin: 20px; border: 2px solid blue; border-radius: 15px; padding: 20px;">

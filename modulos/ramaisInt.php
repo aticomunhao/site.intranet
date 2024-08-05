@@ -31,8 +31,8 @@ session_start();
                 }
                 ],
                 lengthMenu: [
-                    [50, 100, 200, 500],
-                    [50, 100, 200, 500]
+                    [100, 200, 500],
+                    [100, 200, 500]
                 ],
                 language: {
                     info: 'Mostrando Página _PAGE_ of _PAGES_',

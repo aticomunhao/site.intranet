@@ -94,6 +94,9 @@ function openhref(Num){
         $('#container3').load('modulos/quadroHorario/quadro1.php');
     }
 
+    if(parseInt(Num) === 75){
+        $('#container3').load('modulos/claviculario/clavic1.php');
+    }
 
 
     if(parseInt(Num) === 30){

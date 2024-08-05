@@ -170,6 +170,18 @@
 							?>
 						</ul>
 					</li>
+
+					<?php
+					$Clav = parEsc("clav", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
+//					$Chave = parEsc("chave", $Conec, $xProj, $_SESSION["usuarioID"]); // pode pegar chaves
+					$FiscClav = parEsc("fisc_clav", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
+
+					if($Clav == 1 || $FiscClav == 1 || $_SESSION["AdmUsu"] > 6){
+						echo "<li>";
+							echo "<a href='#' onclick='openhref(75);'>Chaves</a>";
+						echo "</li>";
+					}
+					?>
 					<li>
 						<a href='#'>Eletricidade</a>
 						<ul>

@@ -708,60 +708,6 @@ if(!isset($_SESSION["usuarioID"])){
     <body>
         <?php
 
-//Provisório
-pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
-    id SERIAL PRIMARY KEY, 
-    num_ap integer NOT NULL DEFAULT 0,
-    localap VARCHAR(50),
-    empresa_id smallint DEFAULT 0 NOT NULL,
-    ativo smallint DEFAULT 1 NOT NULL, 
-    usuins integer DEFAULT 0 NOT NULL,
-    datains timestamp without time zone DEFAULT '3000-12-31',
-    usuedit integer DEFAULT 0 NOT NULL,
-    dataedit timestamp without time zone DEFAULT '3000-12-31' 
-    ) 
- ");
-
- pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
-    id SERIAL PRIMARY KEY, 
-    controle_id integer NOT NULL DEFAULT 0,
-    datavis date,
-    tipovis smallint DEFAULT 1 NOT NULL,
-    nometec VARCHAR(100),
-    empresa_id smallint DEFAULT 0 NOT NULL,
-    ativo smallint DEFAULT 1 NOT NULL,
-    acionam timestamp without time zone DEFAULT '3000-12-31',
-    atendim timestamp without time zone DEFAULT '3000-12-31',
-    conclus timestamp without time zone DEFAULT '3000-12-31',
-    contato VARCHAR(100),
-    acompanh VARCHAR(100),
-    defeito text,
-    diagtec text,
-    svcrealizado text,
-    usuins integer DEFAULT 0 NOT NULL,
-    datains timestamp without time zone DEFAULT '3000-12-31',
-    usuedit integer DEFAULT 0 NOT NULL,
-    dataedit timestamp without time zone DEFAULT '3000-12-31',
-    usudel integer DEFAULT 0 NOT NULL,
-    datadel timestamp without time zone DEFAULT '3000-12-31'
-    ) 
- ");
-
- pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".empresas_ar (
-    id SERIAL PRIMARY KEY, 
-    empresa VARCHAR(150),
-    ativo smallint DEFAULT 1 NOT NULL,
-    valorvisita double precision NOT NULL DEFAULT 0
-    ) 
- ");
-
- $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".empresas_ar LIMIT 3");
- $row = pg_num_rows($rs);
- if($row == 0){
-    pg_query($Conec, "INSERT INTO ".$xProj.".empresas_ar (empresa, ativo) VALUES ('Empresa Contratada', 1)");
- }
-
-//------------------
         date_default_timezone_set('America/Sao_Paulo');
         $rsEmpr = pg_query($Conec, "SELECT id, empresa FROM ".$xProj.".empresas_ar WHERE ativo = 1");
         $rsEmprLocal = pg_query($Conec, "SELECT id, empresa FROM ".$xProj.".empresas_ar WHERE ativo = 1");

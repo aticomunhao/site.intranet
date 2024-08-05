@@ -193,7 +193,7 @@ if($Acao =="loglog"){
                                         }else{
                                             $NomeUsual = "";
                                         }
-                                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET nomecompl = '$NomeCompl', ativo = $Ativo, sexo = $Sexo WHERE pessoas_id = $Cod");
+                                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET nomecompl = '$NomeCompl', nomeusual = '$NomeUsual', ativo = $Ativo, sexo = $Sexo, datanasc = '$DNasc' WHERE pessoas_id = $Cod");
                                         pg_query($Conec, "UPDATE ".$xProj.".pessoas SET nome_completo = '$NomeCompl', nome_resumido = '$NomeUsual', status = $Ativo, dt_nascimento = '$DNasc', sexo = $Sexo WHERE pessoas_id = $Cod");
                                     }else{ // se não estiver mais em pessoas
                                         pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 0 WHERE pessoas_id = $Cod ");
@@ -326,7 +326,8 @@ if($Acao =="buscausu"){
 
     $rs = pg_query($Conec, "SELECT adm, codsetor, ativo, to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, lro, bens, fisclro, agua, eletric, arcond, 
     arfisc, nomeusual, eletric2, eletric3, fiscbens, soinsbens, arcond2, arcond3, elev, fiscelev, 
-    esc_eft, esc_edit, esc_grupo, esc_fisc FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf' ");  //pessoas_id = $Usu ");
+    esc_eft, esc_edit, esc_grupo, esc_fisc, clav, chave, fisc_clav 
+    FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf' ");  //pessoas_id = $Usu ");
     $row = pg_num_rows($rs);
     if($row == 0){
         $Erro = 1;
@@ -343,7 +344,7 @@ if($Acao =="buscausu"){
         if($Proc[3] == "01/01/1500 00:00"){
             $UltLog = "";
         }
-        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$UltLog, "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "bens"=>$Proc[6], "lroFiscaliza"=>$Proc[7], "leituraAgua"=>$Proc[8], "leituraEletric"=>$Proc[9], "regarcond"=>$Proc[10], "regarcond2"=>$Proc[17], "regarcond3"=>$Proc[18], "regelev"=>$Proc[19], "fiscelev"=>$Proc[20], "escala"=>$Proc[21], "editaescala"=>$Proc[22], "grupoescala"=>$Proc[23], "fiscescala"=>$Proc[24],
+        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$UltLog, "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "bens"=>$Proc[6], "lroFiscaliza"=>$Proc[7], "leituraAgua"=>$Proc[8], "leituraEletric"=>$Proc[9], "regarcond"=>$Proc[10], "regarcond2"=>$Proc[17], "regarcond3"=>$Proc[18], "regelev"=>$Proc[19], "fiscelev"=>$Proc[20], "escala"=>$Proc[21], "editaescala"=>$Proc[22], "grupoescala"=>$Proc[23], "fiscescala"=>$Proc[24], "claviculario"=>$Proc[25], "pegachave"=>$Proc[26], "fiscchaves"=>$Proc[27],
         "fiscarcond"=>$Proc[11], "usuarioNome"=>$Proc[12], "leituraEletric2"=>$Proc[13], "leituraEletric3"=>$Proc[14], "fiscbens"=>$Proc[15], "soinsbens"=>$Proc[16], "diaAniv"=>$Proc0[2], "mesAniv"=>$Proc0[3], "cpf"=>$GuardaCpf);
     }
     $responseText = json_encode($var);
@@ -386,6 +387,10 @@ if($Acao =="salvaUsu"){
     $Escalante = (int) filter_input(INPUT_GET, 'escalante');
     $FiscEscala = (int) filter_input(INPUT_GET, 'fiscalescala');
 
+    $Clavic = (int) filter_input(INPUT_GET, 'clavic');
+    $PegaChave = (int) filter_input(INPUT_GET, 'pegachave');
+    $FiscChaves = (int) filter_input(INPUT_GET, 'fiscchaves');
+
     $Cpf1 = addslashes($Cpf);
     $Cpf2 = str_replace(".", "", $Cpf1);
     $Cpf = str_replace("-", "", $Cpf2);
@@ -406,7 +411,7 @@ if($Acao =="salvaUsu"){
     }
 
     if($Usu > 0){  // salvar não atualiza o campo logfim - logfim conta tempo para apagar (5 anos)
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET codsetor = $Setor, adm = $Adm, ativo = $Ativo, usumodif = $UsuLogado, datamodif = NOW(), nomeusual = '$NomeUsual', nomecompl = '$NomeCompl', lro = $Lro, fisclro = $FiscLro, bens = $Bens, fiscbens =  $FiscBens, soinsbens = $SoInsBens, agua = $Agua, eletric = $Eletric, eletric2 = $Eletric2, eletric3 = $Eletric3, arcond = $ArCond, arcond2 = $ArCond2, arcond3 = $ArCond3, arfisc = $FiscAr, elev = $Elev, fiscelev = $FiscElev, esc_eft = $Escala, esc_grupo = $GrupoEsc, esc_edit = $Escalante, esc_fisc = $FiscEscala WHERE cpf = '$Cpf'"); 
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET codsetor = $Setor, adm = $Adm, ativo = $Ativo, usumodif = $UsuLogado, datamodif = NOW(), nomeusual = '$NomeUsual', nomecompl = '$NomeCompl', lro = $Lro, fisclro = $FiscLro, bens = $Bens, fiscbens =  $FiscBens, soinsbens = $SoInsBens, agua = $Agua, eletric = $Eletric, eletric2 = $Eletric2, eletric3 = $Eletric3, arcond = $ArCond, arcond2 = $ArCond2, arcond3 = $ArCond3, arfisc = $FiscAr, elev = $Elev, fiscelev = $FiscElev, esc_eft = $Escala, esc_grupo = $GrupoEsc, esc_edit = $Escalante, esc_fisc = $FiscEscala, clav = $Clavic, chave = $PegaChave, fisc_clav = $FiscChaves WHERE cpf = '$Cpf'"); 
         pg_query($Conec, "UPDATE ".$xProj.".pessoas SET pessoas_id = $Usu, nome_completo = '$NomeCompl', sexo = $Sexo, status = $Ativo WHERE cpf = '$Cpf' "); //coleção
 
         if(!is_null($DNasc)){
@@ -431,8 +436,8 @@ if($Acao =="salvaUsu"){
             $Codigo = $tblCod[0];
             $CodigoNovo = ($Codigo+1);
             $Senha = password_hash($Cpf, PASSWORD_DEFAULT);
-            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, codsetor, adm, usuins, datains, cpf, nomecompl, senha, ativo, lro, fisclro, bens, fiscbens, soinsbens, agua, eletric, eletric2, eletric3, arcond, arcond2, arcond3, arfisc, elev, fiscelev, esc_eft, esc_grupo, esc_edit, esc_fisc, logini, logfim, datamodif, datainat, nomeusual, avhoje) 
-            VALUES ($CodigoNovo, $GuardaId, $Setor, $Adm, $UsuLogado, NOW(), '$Cpf', '$NomeCompl', '$Senha', 1, $Lro, $FiscLro, $Bens, $FiscBens, $SoInsBens, $Agua, $Eletric, $Eletric2, $Eletric3, $ArCond, $ArCond2, $ArCond3, $FiscAr, $Elev, $FiscElev, $Escala, $GrupoEsc, $Escalante, $FiscEscala, '3000-12-31', '$HoraAnt', '3000-12-31', '3000-12-31', '$NomeUsual', (CURRENT_DATE - 1) )"); // logfim conta tempo para apagar usuário (5 anos)
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, codsetor, adm, usuins, datains, cpf, nomecompl, senha, ativo, lro, fisclro, bens, fiscbens, soinsbens, agua, eletric, eletric2, eletric3, arcond, arcond2, arcond3, arfisc, elev, fiscelev, esc_eft, esc_grupo, esc_edit, esc_fisc, clav, chave, fisc_clav, logini, logfim, datamodif, datainat, nomeusual, avhoje) 
+            VALUES ($CodigoNovo, $GuardaId, $Setor, $Adm, $UsuLogado, NOW(), '$Cpf', '$NomeCompl', '$Senha', 1, $Lro, $FiscLro, $Bens, $FiscBens, $SoInsBens, $Agua, $Eletric, $Eletric2, $Eletric3, $ArCond, $ArCond2, $ArCond3, $FiscAr, $Elev, $FiscElev, $Escala, $GrupoEsc, $Escalante, $FiscEscala, $Clavic, $PegaChave, $FiscChaves, '3000-12-31', '$HoraAnt', '3000-12-31', '3000-12-31', '$NomeUsual', (CURRENT_DATE - 1) )"); // logfim conta tempo para apagar usuário (5 anos)
             if(!$rs){
                 $Erro = 12;
             }
@@ -959,6 +964,29 @@ if($Acao =="salvamenuOpr"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
+if($Acao =="insexectarefa"){
+    $UsuIndiv = (int) filter_input(INPUT_GET, 'usuindiv');
+    $UsuGrupo = (int) filter_input(INPUT_GET, 'usugrupo');
+    $Erro = 0;
+
+    $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".tarefas_gr WHERE usuindiv = $UsuIndiv And usugrupo = $UsuGrupo");
+    $row = pg_num_rows($rs);
+    if($row == 0){
+        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".tarefas_gr");
+        $tblCod = pg_fetch_row($rsCod);
+        $Codigo = $tblCod[0];
+        $CodigoNovo = ($Codigo+1);
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".tarefas_gr (id, usuindiv, usugrupo) VALUES ($CodigoNovo, $UsuIndiv, $UsuGrupo); ");
+    }
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
 
 function removeInj($VemDePost){  // função para remover injeções SQL
     $VemDePost = addslashes($VemDePost);

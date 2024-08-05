@@ -198,6 +198,31 @@
     border-radius: 15px;
     width: 40%;
 }
+.modal-content-relacChave{
+    background: linear-gradient(180deg, white, #99CCFF);
+    margin: 12% auto;
+    padding: 10px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 40%;
+}
+.modal-content-registroChave{
+/*    background: linear-gradient(180deg, white, #89e9eb);  */
+    background: transparent;
+    margin: 12% auto;
+    padding: 10px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 50%;
+}
+.modal-content-tarjaVerm{
+    background: linear-gradient(180deg, white, #c40505);
+    margin: 12% auto;
+    padding: 10px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 40%;
+}
 
 .modal-content-matrix{
     background-color: #fefefe;

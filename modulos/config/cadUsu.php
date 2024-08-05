@@ -207,6 +207,22 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                                         document.getElementById("fiscalEscalas").checked = false;
                                     }
 
+                                    if(parseInt(Resp.claviculario) === 1){
+                                        document.getElementById("registroChaves").checked = true;
+                                    }else{
+                                        document.getElementById("registroChaves").checked = false;
+                                    }
+                                    if(parseInt(Resp.pegachave) === 1){
+                                        document.getElementById("retiraChave").checked = true;
+                                    }else{
+                                        document.getElementById("retiraChave").checked = false;
+                                    }
+                                    if(parseInt(Resp.fiscchaves) === 1){
+                                        document.getElementById("fiscalChaves").checked = true;
+                                    }else{
+                                        document.getElementById("fiscalChaves").checked = false;
+                                    }
+
                                     document.getElementById("titulomodal").innerHTML = "Edição de Usuários";
                                     document.getElementById("ressetsenha").disabled = false;
                                     document.getElementById("mudou").value = "0";
@@ -340,6 +356,19 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     FiscEscala = 1;
                 }
 
+                Clavic = 0;
+                if(document.getElementById("registroChaves").checked === true){
+                    Clavic = 1;
+                }
+                PegaChave = 0;
+                if(document.getElementById("retiraChave").checked === true){
+                    PegaChave = 1;
+                }
+                FiscChaves = 0;
+                if(document.getElementById("fiscalChaves").checked === true){
+                    FiscChaves = 1;
+                }
+
 
                 if(parseInt(document.getElementById("mudou").value) === 1){
                     ajaxIni();
@@ -371,6 +400,9 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                         +"&grupoesc="+document.getElementById("grupoEscala").value
                         +"&escalante="+Escalante
                         +"&fiscalescala="+FiscEscala
+                        +"&clavic="+Clavic
+                        +"&pegachave="+PegaChave
+                        +"&fiscchaves="+FiscChaves
                         , true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
@@ -542,7 +574,6 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                                     }else{
                                         document.getElementById("mudou").value = "0";
                                         document.getElementById("relacmodalUsu").style.display = "none";
-//                                        $('#container3').load('modulos/config/cadUsu.php');
                                         $("#faixacentral").load("modulos/config/jUsu.php?acao=todos");
                                     }
                                 }
@@ -603,12 +634,43 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
             function mudaSetor(){ // Qdo muda de setor desmarca 
                 document.getElementById("mudou").value = "1";
                 document.getElementById("preencheLro").checked = false;
+                document.getElementById("registroChaves").checked = false;
+                document.getElementById("fiscalChaves").checked = false;
                 document.getElementById("preencheBens").checked = false;
                 document.getElementById("leituraAgua").checked = false;
                 document.getElementById("leituraEletric").checked = false;
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/config/registr.php?acao=checaBoxes&param="+Valor+"&numero="+encodeURIComponent(document.getElementById("guardaid_cpf").value), true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                } 
+            }
+
+            function acertaMarca(){
+                if(document.getElementById("preencheLro").checked == false){
+                    document.getElementById("registroChaves").checked = false;
+                }
+                if(document.getElementById("preencheLro").checked == true){
+                    document.getElementById("registroChaves").checked = true;
+                }
+            }
+
+            function insExecTarefa(){ // inserir quem pode executar tarefas de outro
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/config/registr.php?acao=insexectarefa&usuindiv="+document.getElementById("guardaid_click").value
+                    +"&usugrupo="+encodeURIComponent(document.getElementById("exectarefa").value), true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -703,6 +765,19 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     Texto = "Esta marca permite o acesso a todas as escalas de serviço, para verificação. Não permite a edição.";
                 }
 
+                if(parseInt(Cod) === 11){
+                    Titulo = "Claviculário da Portaria";
+                    Texto = "Esta marca permite registrar a entrega e a devolução das chaves do claviculário da Portaria.";
+                }
+                if(parseInt(Cod) === 12){
+                    Titulo = "Claviculário da Portaria";
+                    Texto = "Esta marca dá acesso aos usuários para retirar chaves do claviculário da Portaria. <br>É preciso estar marcado aqui para ser encontrado no cadastro.";
+                }
+                if(parseInt(Cod) === 13){
+                    Titulo = "Claviculário da Portaria";
+                    Texto = "Esta marca permite a edição do claviculário e dá acesso aos registros de entrega e devolução de chaves do claviculário da Portaria.";
+                }
+
                 document.getElementById("textoInfo").innerHTML = Texto;
                 document.getElementById("textoTitulo").innerHTML = Titulo;
                 document.getElementById("infomensagem").style.display = "block"; // está em modais.php
@@ -741,13 +816,13 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
             $Menu5 = escMenu($Conec, $xProj, 5);
             $Menu6 = escMenu($Conec, $xProj, 6); 
             if($_SESSION["AdmUsu"] == 7){
-                $OpcoesAdm = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 Or adm_fl = 7 ORDER BY adm_fl");
+                $OpcoesAdm = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 Or adm_fl = 7 ORDER BY adm_fl");
             }else{
-                $OpcoesAdm = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE Ativo = 1 ORDER BY adm_fl");
+                $OpcoesAdm = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
             }
-            $OpcoesSetor = pg_query($Conec, "SELECT CodSet, SiglaSetor FROM ".$xProj.".setores ORDER BY SiglaSetor");
-            $OpcoesEscala = pg_query($Conec, "SELECT id, SiglaGrupo FROM ".$xProj.".escalas_gr ORDER BY SiglaGrupo");
-            
+            $OpcoesSetor = pg_query($Conec, "SELECT CodSet, siglasetor FROM ".$xProj.".setores ORDER BY siglasetor");
+            $OpcoesEscala = pg_query($Conec, "SELECT id, siglagrupo FROM ".$xProj.".escalas_gr ORDER BY siglagrupo");
+            $OpExecTarefa = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
         ?>
 
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
@@ -777,6 +852,7 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
             <div class="box" style="position: relative; float: left; width: 33%; text-align: left;"></div>
 
             <div id="faixacentral"></div>
+
         </div>
 
         <!-- div modal para edição  -->
@@ -868,7 +944,7 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     <tr>
                         <td class="etiq80" title="Pode registrar ocorrências no LRO">Preenchar o LRO:</td>
                         <td colspan="4">
-                            <input type="checkbox" id="preencheLro" title="Registrar ocorrências no LRO" onchange="modif();" >
+                            <input type="checkbox" id="preencheLro" title="Registrar ocorrências no LRO" onchange="modif();" onclick="acertaMarca()" >
                             <label for="preencheLro" title="Registrar ocorrências no LRO">preencher o Livro de Registro de Ocorrências</label>
                         </td>
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(1);" title="Guia rápido"></td>
@@ -1029,6 +1105,57 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                         </td>
                         <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(10);" title="Guia rápido"></td>
                     </tr>
+
+                    <tr>
+                        <td class="etiq80" title="Registrar a entrega e devolução das chaves do claviculário da Portaria">Claviculário Portaria: </td>
+                        <td colspan="4">
+                            <input type="checkbox" id="registroChaves" title="Registrar a entrega e devolução das chaves do claviculário da Portaria" onchange="modif();" >
+                            <label for="registroChaves" title="Registrar a entrega e devolução das chaves do claviculário da Portaria">registrar a entrega e devolução das chaves do claviculário da Portaria</label>
+                        </td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(11);" title="Guia rápido"></td>
+                    </tr>
+                    <tr>
+                        <td class="etiq80" style="border-bottom: 1px solid;" title="Fiscalizar a entrega e devolução das chaves do claviculário da Portaria">Claviculário Portaria:</td>
+                        <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
+                            <input type="checkbox" id="fiscalChaves" title="Fiscalizar a entrega e devolução das chaves do claviculário da Portaria" onchange="modif();" >
+                            <label for="fiscalChaves" title="Fiscalizar e editar as chaves do claviculário da Portaria">editar e fiscalizar as chaves do claviculário da Portaria</label>
+                        </td>
+                        <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(13);" title="Guia rápido"></td>
+                    </tr>
+                    <tr>
+                        <td class="etiq80" style="border-bottom: 1px solid;" title="Autorizado a retirar chaves do claviculário da Portaria">Claviculário Portaria</td>
+                        <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
+                            <input type="checkbox" id="retiraChave" title="Fiscalizar a entrega e devolução das chaves do claviculário da Portaria" onchange="modif();" >
+                            <label for="retiraChave" title="Autorizado a retirar chaves do claviculário da Portaria">autorizado a retirar chaves do claviculário da Portaria</label>
+                        </td>
+                        <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(12);" title="Guia rápido"></td>
+                    </tr>
+
+                    <?php
+                    if($_SESSION["usuarioCPF"] == "13652176049"){
+                        ?>
+                    <tr>
+                        <td class="etiq80" style="border-bottom: 1px solid;" title="Pode resolver as tarefas">Tarefas</td>
+                        <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
+                            <label for="retiraChave">Pode executar as tarefas: </label>
+                            <select id="exectarefa" style="font-size: 1rem;" title="Selecione um usuário." onchange="insExecTarefa();">
+                            <option value="0"></option>
+                            <?php 
+                            if($OpExecTarefa){
+                                while ($Opcoes = pg_fetch_row($OpExecTarefa)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                <?php 
+                                }
+                            }
+                            ?>
+                            </select>
+                        </td>
+                        <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(12);" title="Guia rápido"></td>
+                    </tr>
+
+                    <?php
+                    }
+                    ?>
 
 
 
