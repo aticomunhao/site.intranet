@@ -178,7 +178,7 @@
 
 					if($Clav == 1 || $FiscClav == 1 || $_SESSION["AdmUsu"] > 6){
 						echo "<li>";
-							echo "<a href='#' onclick='openhref(75);'>Chaves</a>";
+							echo "<a href='#' onclick='openhref(75);'>Chaves Portaria</a>";
 						echo "</li>";
 					}
 					?>
@@ -253,12 +253,13 @@
 						if($Efet == 1){
 							$NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]); // procurar a que grupo de escala pertence
 						}
-						if($NumGrupo > 0 || $FiscEscala > 0 || $Escalante > 0){
-							echo "<li>";
-								echo "<a href='#' onclick='openhref(72);'>Escala</a>";
-							echo "</li>";
+						if($_SESSION["AdmUsu"] > 6){ // superusuário
+							if($NumGrupo > 0 || $FiscEscala > 0 || $Escalante > 0){
+								echo "<li>";
+									echo "<a href='#' onclick='openhref(72);'>Escala</a>";
+								echo "</li>";
+							}
 						}
-
 						if($_SESSION["AdmUsu"] > 6){ // superusuário
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(31);'>Parâmetros do Sistema</a>";

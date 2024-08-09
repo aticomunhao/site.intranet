@@ -341,8 +341,10 @@ if(!isset($_SESSION["usuarioID"])){
             $InsAgua = parEsc("agua", $Conec, $xProj, $_SESSION["usuarioID"]); // procura agua em poslog 
 
             // Preenche caixa de escolha mes/ano para impressão
-            $OpcoesEscMes = pg_query($Conec, "SELECT EXTRACT(MONTH FROM ".$xProj.".leitura_agua.dataleitura)::text ||'/'|| EXTRACT(YEAR FROM ".$xProj.".leitura_agua.dataleitura)::text 
-            FROM ".$xProj.".leitura_agua GROUP BY 1 ORDER BY 1 DESC ");
+//            $OpcoesEscMes = pg_query($Conec, "SELECT EXTRACT(MONTH FROM ".$xProj.".leitura_agua.dataleitura)::text ||'/'|| EXTRACT(YEAR FROM ".$xProj.".leitura_agua.dataleitura)::text 
+//            FROM ".$xProj.".leitura_agua GROUP BY 1 ORDER BY 1 DESC ");
+            $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataleitura, 'MM'), '/', TO_CHAR(dataleitura, 'YYYY')) 
+            FROM ".$xProj.".leitura_agua GROUP BY TO_CHAR(dataleitura, 'MM'), TO_CHAR(dataleitura, 'YYYY') ORDER BY TO_CHAR(dataleitura, 'YYYY') DESC, TO_CHAR(dataleitura, 'MM') DESC ");
             $OpcoesEscAno = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".leitura_agua.dataleitura)::text 
             FROM ".$xProj.".leitura_agua GROUP BY 1 ORDER BY 1 DESC ");
         ?>

@@ -4,22 +4,19 @@
         session_destroy();
         header("Location: ../../index.php");
     }
-
     require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     date_default_timezone_set('America/Sao_Paulo'); 
 
     $Clav = parEsc("clav", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
     $Chave = parEsc("chave", $Conec, $xProj, $_SESSION["usuarioID"]); // pode pegar chaves
 	$FiscClav = parEsc("fisc_clav", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
-
 ?>
     <div style="text-align: center; margin: 10px;">
         <h5>Chaves da Portaria</h5>
         <?php 
         $rs = pg_query($Conec, "SELECT id, chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente 
-        FROM ".$xProj.".chaves WHERE ativo = 1 ORDER BY chavenum ");
+        FROM ".$xProj.".chaves WHERE ativo = 1 ORDER BY chavenum, chavenumcompl ");
         $row = pg_num_rows($rs);
-
         ?>
         <table style="margin: 0 auto;">
             <tr>
@@ -50,7 +47,6 @@
                                     <?php
                                 }
                                 ?>
-                                
                             </td>
                             <td><div class="quadrinho"> <?php echo $tbl[2]; ?></div></td>
                             <td><div class="quadrinho"> <?php echo $tbl[3]; ?></div></td>
@@ -61,14 +57,12 @@
                                 if($tbl[6] == 1){
                                     echo "<img src='imagens/ChaveAzul.png' height='20px;' style='cursor: pointer;' onclick='saidaChave($Cod);' title='Chave presente'>";
                                 }else{
-//                                    echo "<img src='imagens/ChaveVerm.png' height='20px;' style='cursor: pointer;' onclick='voltaChave($Cod);' title='Chave ausente'>";
-                                    echo "<img src='imagens/ChaveVerm.png' height='20px;' style='cursor: pointer;' title='Chave ausente'>";
+                                    echo "<img src='imagens/ChaveVerm.png' height='20px;' style='cursor: pointer;' onclick='retornoChave1($Cod);' title='Chave ausente'>";
                                 }
                                 ?>
                             </td>
                         </tr>
                         <?php
-
                     }
                 }
             ?>

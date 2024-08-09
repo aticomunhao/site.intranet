@@ -14,7 +14,7 @@ if(isset($_REQUEST["acao"])){
 }
 
 require_once("gUtils.php"); // Classe para Normatizar nomes próprios
-$UsuIns = $_SESSION['usuarioID'];
+
 if($Acao =="loglog"){
     $Cpf = filter_input(INPUT_GET, 'usuario'); 
     $Cpf1 = addslashes($Cpf);
@@ -873,6 +873,7 @@ if($Acao =="salvaCkList"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $DescItem = filter_input(INPUT_GET, 'descitem');
     $Ativo = (int) filter_input(INPUT_GET, 'ativo');
+    $UsuIns = $_SESSION['usuarioID'];
     $Erro = 0;
     if($Cod == 0){
         $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".livrocheck");

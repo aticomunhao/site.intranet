@@ -1115,8 +1115,8 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(11);" title="Guia rápido"></td>
                     </tr>
                     <tr>
-                        <td class="etiq80" style="border-bottom: 1px solid;" title="Fiscalizar a entrega e devolução das chaves do claviculário da Portaria">Claviculário Portaria:</td>
-                        <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
+                        <td class="etiq80" title="Fiscalizar a entrega e devolução das chaves do claviculário da Portaria">Claviculário Portaria:</td>
+                        <td colspan="4" style="padding-left: 20px;">
                             <input type="checkbox" id="fiscalChaves" title="Fiscalizar a entrega e devolução das chaves do claviculário da Portaria" onchange="modif();" >
                             <label for="fiscalChaves" title="Fiscalizar e editar as chaves do claviculário da Portaria">editar e fiscalizar as chaves do claviculário da Portaria</label>
                         </td>
@@ -1125,7 +1125,7 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     <tr>
                         <td class="etiq80" style="border-bottom: 1px solid;" title="Autorizado a retirar chaves do claviculário da Portaria">Claviculário Portaria</td>
                         <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
-                            <input type="checkbox" id="retiraChave" title="Fiscalizar a entrega e devolução das chaves do claviculário da Portaria" onchange="modif();" >
+                            <input type="checkbox" id="retiraChave" title="Autorizado a retirar chaves do claviculário da Portaria" onchange="modif();" >
                             <label for="retiraChave" title="Autorizado a retirar chaves do claviculário da Portaria">autorizado a retirar chaves do claviculário da Portaria</label>
                         </td>
                         <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(12);" title="Guia rápido"></td>
@@ -1137,7 +1137,7 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     <tr>
                         <td class="etiq80" style="border-bottom: 1px solid;" title="Pode resolver as tarefas">Tarefas</td>
                         <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
-                            <label for="retiraChave">Pode executar as tarefas: </label>
+                            <label for="retiraChave">Pode executar minhas tarefas: </label>
                             <select id="exectarefa" style="font-size: 1rem;" title="Selecione um usuário." onchange="insExecTarefa();">
                             <option value="0"></option>
                             <?php 

@@ -209,15 +209,13 @@ $Mes_Extract = array(
                                 $CargaMin1 = $CargaMin1+$CargaMinCor;
                             }
                         }
-             
-
                         $CargaSemanalHora = $CargaSemanalHora+$CargaHora1;
                         $CargaSemanalMin = $CargaSemanalMin+$CargaMin1;
                         $CargaHorariaSemanal = SomaCarga($CargaSemanalHora, $CargaSemanalMin);
                     ?>        
                        <tr>
                             <td style="text-align: left; font-size: 90%;"><?php echo $Nome; ?></td>
-                            <td style="text-align: right; padding-left: 10px; font-size: 90%;"><?php echo $CargaHorariaSemanal; ?></td>
+                            <td style="text-align: right; padding-left: 3px; font-size: 80%;"><?php echo $CargaHorariaSemanal; ?></td>
                         </tr>
                     <?php
                 }

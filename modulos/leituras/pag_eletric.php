@@ -334,8 +334,10 @@ if(!isset($_SESSION["usuarioID"])){
             $Menu1 = escMenu($Conec, $xProj, 1);
 
             // Preenche caixa de escolha mes/ano para impressão
-            $OpcoesEscMes = pg_query($Conec, "SELECT EXTRACT(MONTH FROM ".$xProj.".leitura_eletric.dataleitura1)::text ||'/'|| EXTRACT(YEAR FROM ".$xProj.".leitura_eletric.dataleitura1)::text 
-            FROM ".$xProj.".leitura_eletric WHERE colec = 1 GROUP BY 1 ORDER BY 1 DESC ");
+//            $OpcoesEscMes = pg_query($Conec, "SELECT EXTRACT(MONTH FROM ".$xProj.".leitura_eletric.dataleitura1)::text ||'/'|| EXTRACT(YEAR FROM ".$xProj.".leitura_eletric.dataleitura1)::text 
+//            FROM ".$xProj.".leitura_eletric WHERE colec = 1 GROUP BY 1 ORDER BY 1 DESC ");
+            $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataleitura1, 'MM'), '/', TO_CHAR(dataleitura1, 'YYYY')) 
+            FROM ".$xProj.".leitura_eletric WHERE colec = 1 GROUP BY TO_CHAR(dataleitura1, 'MM'), TO_CHAR(dataleitura1, 'YYYY') ORDER BY TO_CHAR(dataleitura1, 'YYYY') DESC, TO_CHAR(dataleitura1, 'MM') DESC ");
             $OpcoesEscAno = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".leitura_eletric.dataleitura1)::text 
             FROM ".$xProj.".leitura_eletric WHERE colec = 1 GROUP BY 1 ORDER BY 1 DESC ");
         ?>

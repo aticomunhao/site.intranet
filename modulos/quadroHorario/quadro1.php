@@ -380,7 +380,6 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".quadrohor (
     pg_query($Conec, "INSERT INTO ".$xProj.".quadroturnos (id, horaini, horafim, usuins, datains) VALUES(8, '06:50', '15:50', 3, NOW() )");
  }
 
-
         $Escalante = parEsc("esc_edit", $Conec, $xProj, $_SESSION["usuarioID"]); // escalante do grupo
         $FiscEscala = parEsc("esc_fisc", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de escala
         $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
@@ -431,14 +430,14 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".quadrohor (
         }
 
         $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataescala, 'MM'), '/', TO_CHAR(dataescala, 'YYYY')) 
-        FROM ".$xProj.".quadrohor GROUP BY TO_CHAR(dataescala, 'MM'), TO_CHAR(dataescala, 'YYYY') ORDER BY TO_CHAR(dataescala, 'YYYY'), TO_CHAR(dataescala, 'MM') DESC ");
+        FROM ".$xProj.".quadrohor GROUP BY TO_CHAR(dataescala, 'MM'), TO_CHAR(dataescala, 'YYYY') ORDER BY TO_CHAR(dataescala, 'YYYY') DESC, TO_CHAR(dataescala, 'MM') DESC ");
         $OpcoesGrupo = pg_query($Conec, "SELECT id, siglagrupo FROM ".$xProj.".escalas_gr ORDER BY siglagrupo");
 
         ?>
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
         <input type="hidden" id="mudou" value = "0" />
         <input type="hidden" id="guardanumgrupo" value = "<?php echo $NumGrupo; ?>" />
-        <input type="hidden" id="guardames" value = "<?php echo $MesSalvo; ?>" />
+        <input type="hidden" id="guardames" value = "<?php echo addslashes($MesSalvo); ?>" />
         <input type="hidden" id="guardaescalante" value = "<?php echo $Escalante; ?>" />
         <input type="hidden" id="guardaQuantTurnos" value = "<?php echo $Turnos; ?>" />
         <input type="hidden" id="guardaCod" value = "" />
@@ -492,12 +491,10 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".quadrohor (
 
             <!-- div três colunas -->
             <div style="margin: 0 auto;">
-                <div style="position: relative; float: left; text-align: center; width: 79%; border: 1px solid; border-radius: 10px;"><div id="faixacentral"></div></div>
+                <div style="position: relative; float: left; text-align: center; width: 70%; border: 1px solid; border-radius: 10px;"><div id="faixacentral"></div></div>
                 <div style="position: relative; float: left; text-align: center; width: 1%;">&nbsp;</div>
-                <div style="position: relative; float: left; text-align: center; width: 20%; border: 1px solid; border-radius: 10px;"><div id="estat"></div></div>
-            </div>     
-
-
+                <div style="position: relative; float: left; text-align: center; width: 27%; border: 1px solid; border-radius: 10px;"><div id="estat"></div></div>
+            </div>
 
         <!-- div modal relacionar escalado -->
         <div id="relacParticip" class="relacmodal">

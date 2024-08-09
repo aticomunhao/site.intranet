@@ -22,6 +22,15 @@ if(!isset($_SESSION["usuarioID"])){
         <script src="comp/js/jquery.mask.js"></script>
         <script src="class/gijgo/js/messages/messages.pt-br.js"></script>
         <style>
+            .modal-content-BensControle{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 10% auto; /* 10% do topo e centrado */
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 60%; /* acertar de acordo com a tela */
+                max-width: 900px;
+            }
             .quadro{
                 position: relative; float: left; text-align: center; margin: 5px; width: 95%; padding: 2px; padding-top: 5px;
             }
@@ -57,6 +66,15 @@ if(!isset($_SESSION["usuarioID"])){
                    }
                 }
             }
+            function format_CnpjCpf(value){
+                //https://gist.github.com/davidalves1/3c98ef866bad4aba3987e7671e404c1e
+                const CPF_LENGTH = 11;
+                const cnpjCpf = value.replace(/\D/g, '');
+                if (cnpjCpf.length === CPF_LENGTH) {
+                    return cnpjCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/g, "\$1.\$2.\$3-\$4");
+                } 
+                  return cnpjCpf.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g, "\$1.\$2.\$3/\$4-\$5");
+            }
             $(document).ready(function(){
                 $("#carregaBens").load("modulos/bensEncont/relBens.php");
 
@@ -70,21 +88,117 @@ if(!isset($_SESSION["usuarioID"])){
                 $('#dataachado').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
 
                 $("#cpfproprietario").mask("999.999.999-99");
+                $("#configCpfBens").mask("999.999.999-99");
+
                 document.getElementById("botimprReg").style.visibility = "hidden"; 
                 document.getElementById("botInsReg").style.visibility = "hidden"; 
                 document.getElementById("botApagaBem").style.visibility = "hidden";
+                document.getElementById("imgBensconfig").style.visibility = "hidden";
                 if(parseInt(document.getElementById("guardaescEdit").value) === 1){ // tem que estar autorizado no cadastro de usuários
                     if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
                         document.getElementById("botInsReg").style.visibility = "visible"; 
+                        document.getElementById("imgBensconfig").style.visibility = "visible";
                     }
                     if(parseInt(document.getElementById("UsuAdm").value) > 6){
                         document.getElementById("botInsReg").style.visibility = "visible";
                         document.getElementById("botApagaBem").style.visibility = "visible";
+                        document.getElementById("imgBensconfig").style.visibility = "visible";
                     }
                 }
                 if(parseInt(document.getElementById("guardaInsBens").value) === 1){ // Para pessoal da portaria registrar nos fins de semana
                     document.getElementById("botInsReg").style.visibility = "visible";
                 }
+
+                $("#configSelecBens").change(function(){
+                    if(document.getElementById("configSelecBens").value == ""){
+                        document.getElementById("configCpfBens").value = "";
+                        return false;
+                    }
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=buscausuario&codigo="+document.getElementById("configSelecBens").value, true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 0){
+                                        document.getElementById("configCpfBens").value = format_CnpjCpf(Resp.cpf);
+                                        if(parseInt(Resp.bens) === 1){
+                                            document.getElementById("preencheBens").checked = true;
+                                        }else{
+                                            document.getElementById("preencheBens").checked = false;
+                                        }
+                                        if(parseInt(Resp.fiscbens) === 1){
+                                            document.getElementById("fiscBens").checked = true;
+                                        }else{
+                                            document.getElementById("fiscBens").checked = false;
+                                        }
+                                        if(parseInt(Resp.soinsbens) === 1){
+                                            document.getElementById("soPreencheBens").checked = true;
+                                        }else{
+                                            document.getElementById("soPreencheBens").checked = false;
+                                        }
+                                    }else{
+                                        alert("Houve um erro no servidor.")
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                });
+
+                $("#configCpfBens").click(function(){
+                    document.getElementById("configSelecBens").value = "";
+                });
+                $("#configCpfBens").change(function(){
+                    document.getElementById("configSelecBens").value = "";
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=buscacpf&cpf="+encodeURIComponent(document.getElementById("configCpfBens").value), true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 0){
+                                        document.getElementById("configSelecBens").value = Resp.PosCod;
+                                        if(parseInt(Resp.bens) === 1){
+                                            document.getElementById("preencheBens").checked = true;
+                                        }else{
+                                            document.getElementById("preencheBens").checked = false;
+                                        }
+                                        if(parseInt(Resp.fiscbens) === 1){
+                                            document.getElementById("fiscBens").checked = true;
+                                        }else{
+                                            document.getElementById("fiscBens").checked = false;
+                                        }
+                                        if(parseInt(Resp.soinsbens) === 1){
+                                            document.getElementById("soPreencheBens").checked = true;
+                                        }else{
+                                            document.getElementById("soPreencheBens").checked = false;
+                                        }
+                                    }
+                                    if(parseInt(Resp.coderro) === 1){
+                                        alert("Houve um erro no servidor.");
+                                    }
+                                    if(parseInt(Resp.coderro) === 2){
+                                        document.getElementById("preencheBens").checked = false;
+                                        document.getElementById("fiscBens").checked = false;
+                                        document.getElementById("soPreencheBens").checked = false;
+                                        $('#mensagemConfig').fadeIn("slow");
+                                        document.getElementById("mensagemConfig").innerHTML = "Não encontrado";
+                                        $('#mensagemConfig').fadeOut(2000);
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                });
+
+
             });
 
             function abreRegistro(){
@@ -99,8 +213,6 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("telefachou").value = "";
                 document.getElementById("relacmodalRegistro").style.display = "block";
             }
-
-//alert(dataAtualFormatada());
 
             function dataAtualFormatada(){
                 var data = new Date(),
@@ -652,6 +764,9 @@ if(!isset($_SESSION["usuarioID"])){
             function imprProcesso(Cod){
                 window.open("modulos/bensEncont/imprReg.php?acao=imprProcesso&codigo="+Cod, Cod);
             }
+            function resumoUsuBens(){
+                window.open("modulos/bensEncont/imprUsuBens.php?acao=listaUsuarios", "BensUsu");
+            }
             function imprRestit(){
                 if(document.getElementById("nomeproprietario").value === ""){
                     $.confirm({
@@ -673,6 +788,73 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
+            function marcaBem(obj, Campo){
+                if(obj.checked === true){
+                    Valor = 1;
+                }else{
+                    Valor = 0;
+                }
+                if(document.getElementById("configSelecBens").value == ""){
+                    if(obj.checked === true){
+                        obj.checked = false;
+                    }else{
+                        obj.checked = true;
+                    }
+                    $('#mensagemConfig').fadeIn("slow");
+                    document.getElementById("mensagemConfig").innerHTML = "Selecione um usuário.";
+                    $('#mensagemConfig').fadeOut(2000);
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=configMarcafBem&codigo="+document.getElementById("configSelecBens").value
+                    +"&campo="+Campo
+                    +"&valor="+Valor
+                    , true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    if(parseInt(Resp.coderro) === 2){
+                                        obj.checked = true;
+                                        $.confirm({
+                                            title: 'Ação Suspensa!',
+                                            content: 'Não restaria outro marcado para gerenciar os bens encontrados.',
+                                            draggable: true,
+                                            buttons: {
+                                                OK: function(){}
+                                            }
+                                        });
+                                        return false;
+                                    }else{
+                                        $('#mensagemConfig').fadeIn("slow");
+                                        document.getElementById("mensagemConfig").innerHTML = "Valor salvo.";
+                                        $('#mensagemConfig').fadeOut(1000);
+                                    }
+                                }
+
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function abreBensConfig(){
+                document.getElementById("preencheBens").checked = false;
+                document.getElementById("fiscBens").checked = false;
+                document.getElementById("soPreencheBens").checked = false;
+                document.getElementById("configCpfBens").value = "";
+                document.getElementById("configSelecBens").value = "";
+                document.getElementById("modalBensConfig").style.display = "block";
+            }
+            function fechaBensConfig(){
+                document.getElementById("modalBensConfig").style.display = "none";
+            }
             function fechaModalTransf(){
                 document.getElementById("relacmodalTransfGuarda").style.display = "none";
             }
@@ -682,14 +864,12 @@ if(!isset($_SESSION["usuarioID"])){
             function fechaModalDest(){
                 document.getElementById("relacmodalDest").style.display = "none";
             }
-
             function foco(id){
                 document.getElementById(id).focus();
             }
             function fechaModalEncam(){
                 document.getElementById("relacmodalEncam").style.display = "none";
             }
-
             function carregaHelpBens(){
                 document.getElementById("relacHelpBens").style.display = "block";
             }
@@ -795,11 +975,14 @@ if(!isset($_SESSION["usuarioID"])){
         $SoInsBens = parEsc("soinsbens", $Conec, $xProj, $_SESSION["usuarioID"]); // está marcado no cadastro de usuários
 
         $OpDestBens = pg_query($Conec, "SELECT numdest, descdest FROM ".$xProj.".bensdestinos ORDER BY descdest");
+        $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
         ?>
         <!-- div três colunas -->
         <div class="container" style="margin: 0 auto;">
             <div class="row">
-                <div class="col quadro"><button class="botpadrGr fundoAmarelo" id="botInsReg" onclick="abreRegistro();" >Novo Registro</button></div>
+                <div class="col quadro" style="text-align: left;"><button class="botpadrGr fundoAmarelo" id="botInsReg" onclick="abreRegistro();" >Novo Registro</button>
+                <img src="imagens/settings.png" height="20px;" id="imgBensconfig" style="cursor: pointer; padding-left: 30px;" onclick="abreBensConfig();" title="Configurar o acesso ao processamento de bens encontrados">
+            </div>
                 <div class="col quadro"><h5>Registro de Bens Encontrados</h5></div> <!-- Central - espaçamento entre colunas  -->
                 <div class="col quadro"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpBens();" title="Guia rápido"></div> 
             </div>
@@ -1143,6 +1326,85 @@ if(!isset($_SESSION["usuarioID"])){
                 </div>
            </div>
         </div> <!-- Fim Modal-->
+
+
+         <!-- Modal configuração-->
+         <div id="modalBensConfig" class="relacmodal">
+            <div class="modal-content-BensControle">
+                <span class="close" onclick="fechaBensConfig();">&times;</span>
+
+                <!-- div três colunas -->
+                <div class="container" style="margin: 0 auto;">
+                    <div class="row">
+                        <div class="col quadro" style="margin: 0 auto;"></div>
+                        <div class="col quadro"><h5 id="titulomodal" style="text-align: center; color: #666;">Configuração <br>Bens Encontrados</h5></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col quadro" style="margin: 0 auto; text-align: center;"><button class="botpadrred" style="font-size: 70%;" onclick="resumoUsuBens();">Resumo em PDF</button></div> 
+                    </div>
+                </div>
+                <label class="etiqAzul">Selecione um usuário para ver a configuração:</label>
+                <div style="position: relative; float: right; color: red; font-weight: bold; padding-right: 200px;" id="mensagemConfig"></div>
+                <table style="margin: 0 auto; width: 85%;">
+                    <tr>
+                        <td colspan="4" style="text-align: center;"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="text-align: center;">Busca Nome ou CPF do Solicitante</td>
+                    </tr>
+                    <tr>
+                        <td class="etiqAzul">Procura nome: </td>
+                        <td style="width: 100px;">
+                            <select id="configSelecBens" style="max-width: 230px;" onchange="modif();" title="Selecione um usuário.">
+                                <option value=""></option>
+                                <?php 
+                                if($OpConfig){
+                                    while ($Opcoes = pg_fetch_row($OpConfig)){ ?>
+                                        <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; if($Opcoes[2] != ""){echo " - ".$Opcoes[2];} ?></option>
+                                    <?php 
+                                    }
+                                }
+                                ?>
+                            </select>
+                        </td>
+                        <td class="etiqAzul"><label class="etiqAzul">ou CPF:</label></td>
+                        <td>
+                            <input type="text" id="configCpfBens" style="width: 130px; text-align: center; border: 1px solid #666; border-radius: 5px;" onkeypress="if(event.keyCode===13){javascript:foco('configSelecBens');return false;}" title="Procura por CPF. Digite o CPF."/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding-top: 10px;"></td>
+                    </tr>
+                </table>
+
+                <table style="margin: 0 auto; width: 85%;">
+                    <tr>
+                        <td class="etiq80" title="Registrar recebimento e destino de bens encontrados">DAF:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="preencheBens" title="Administrar, prover a guarda e dar destino aos bens encontrados." onchange="marcaBem(this, 'bens');" >
+                            <label for="preencheBens" title="Administrar, prover a guarda e dar destino aos bens encontrados.">administrar, prover a guarda e dar destino aos Bens Encontrados.</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="etiq80" title="Apenas registrar o recebimento de bens encontrados. Apropriado para os funcionários da Portaria.">Portaria:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="soPreencheBens" title="Apenas registrar recebimento de bens encontrados. Apropriado para os funcionários da Portaria." onchange="marcaBem(this, 'soinsbens');" >
+                            <label for="soPreencheBens" title="Apenas registrar recebimento de bens encontrados. Apropriado para os funcionários da Portaria.">apenas registrar Bens Encontrados</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="etiq80" style="border-bottom: 1px solid;" title="Fiscalizar os registros de bens encontrados - Só fiscaliza. Não pode registrar os bens encontrados.">Administração:</td>
+                        <td colspan="4" style="border-bottom: 1px solid;">
+                            <input type="checkbox" id="fiscBens" title="Fiscalizar os registros de bens encontrados - Só fiscaliza. Não pode registrar os bens encontrados." onchange="marcaBem(this, 'fiscbens');" >
+                            <label for="fiscBens" title="Fiscalizar os registros de bens encontrados - Só fiscaliza. Não pode registrar os bens encontrados.">fiscalizar os registros de Bens Encontrados</label>
+                        </td>
+                    </tr>
+
+
+                </table>
+            </div>
+        </div> <!-- Fim Modal-->
+
+
+
         <!-- div modal para leitura instruções -->
         <div id="relacHelpBens" class="relacmodal">
             <div class="modalMsg-content">

@@ -215,6 +215,14 @@
     border-radius: 15px;
     width: 50%;
 }
+.modal-content-tarjaAzul{
+    background: linear-gradient(180deg, white, #5512d3);
+    margin: 12% auto;
+    padding: 10px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 40%;
+}
 .modal-content-tarjaVerm{
     background: linear-gradient(180deg, white, #c40505);
     margin: 12% auto;
@@ -223,7 +231,6 @@
     border-radius: 15px;
     width: 40%;
 }
-
 .modal-content-matrix{
     background-color: #fefefe;
     margin: .5% auto;
@@ -367,7 +374,18 @@
     color: white;
     background-color: #8B2500;
  }
- .botpadr:hover, .botpadrred:hover, .botpadrblue:hover, .botpadrTijolo:hover {
+ .botpadramarelo{
+    text-align: center;
+    padding: 2px; 
+    padding-left: 15px;
+    padding-right: 15px; 
+    border-radius: 5px;
+    font-size: 80%;
+    font-weight: bold;
+    color: black;
+    background-color: #FFFF00;
+ }
+ .botpadr:hover, .botpadrred:hover, .botpadrblue:hover, .botpadrTijolo:hover, .botpadramarelo:hover {
     border-radius: 10px;
 }
 

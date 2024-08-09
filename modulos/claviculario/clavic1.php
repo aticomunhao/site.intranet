@@ -10,12 +10,29 @@ if(!isset($_SESSION["usuarioID"])){
 <html lang="pt-BR">
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title></title>
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/relacmod.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-ui.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
+        <script src="comp/js/jquery.min.js"></script> <!-- versão 3.6.3 -->
+        <script src="comp/js/jquery-ui.min.js"></script>
         <script src="comp/js/jquery-confirm.min.js"></script> <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
         <script src="comp/js/jquery.mask.js"></script>
+        <link rel="stylesheet" type="text/css" media="screen" href="class/gijgo/css/gijgo.css" />
+        <script src="class/gijgo/js/gijgo.js"></script>
+        <script src="class/gijgo/js/messages/messages.pt-br.js"></script>
+
         <style>
+            .modal-content-ChavesControle{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 10% auto; /* 10% do topo e centrado */
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 60%; /* acertar de acordo com a tela */
+                max-width: 900px;
+            }
             .quadrinho {
                 font-size: 90%;
                 min-width: 40px;
@@ -95,12 +112,20 @@ if(!isset($_SESSION["usuarioID"])){
             $(document).ready(function(){
                 document.getElementById("botinserir").style.visibility = "hidden";
                 document.getElementById("botimpr").style.visibility = "hidden";
+                document.getElementById("botagenda1").style.visibility = "hidden";
+                document.getElementById("botagenda2").style.visibility = "hidden";
+                document.getElementById("imgChavesconfig").style.visibility = "hidden";
+                
                 if(parseInt(document.getElementById("registrachaves").value) === 1 || parseInt(document.getElementById("editachaves").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
                     $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
                     $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");
+                    $("#faixaagenda").load("modulos/claviculario/agChave1.php?acao=todos");
                     if(parseInt(document.getElementById("editachaves").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ 
                         document.getElementById("botinserir").style.visibility = "visible";
                         document.getElementById("botimpr").style.visibility = "visible";
+                        document.getElementById("botagenda1").style.visibility = "visible";
+                        document.getElementById("botagenda2").style.visibility = "visible";
+                        document.getElementById("imgChavesconfig").style.visibility = "visible";
                     }
                 }else{
                     document.getElementById("faixaMensagem").style.display = "block";
@@ -108,9 +133,13 @@ if(!isset($_SESSION["usuarioID"])){
 
                 $("#cpfsolicitante").mask("999.999.999-99");
                 $("#cpfentregador").mask("999.999.999-99");
+                $("#agendacpfsolicitante").mask("999.999.999-99");
+                $("#configcpfsolicitante").mask("999.999.999-99");
                 $("#resulttelef").mask("(61) 9 9999-9999");
                 $("#voltatelef").mask("(61) 9 9999-9999");
-
+                $("#agendatelef").mask("(61) 9 9999-9999");
+                $("#agendadata").mask("99/99/9999");
+                $('#agendadata').datepicker({ uiLibrary: 'bootstrap4', locale: 'pt-br', format: 'dd/mm/yyyy' });
 
                 $("#selecSolicitante").change(function(){
                     document.getElementById("cpfsolicitante").value = "";
@@ -265,7 +294,173 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
 
-            });
+                $("#agendaselecSolicitante").change(function(){
+                    document.getElementById("agendacpfsolicitante").value = "";
+                    document.getElementById("guardaCPF").value = "";
+                    document.getElementById("guardaPosCod").value = document.getElementById("agendaselecSolicitante").value;
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscalog&codigo="+document.getElementById("agendaselecSolicitante").value, true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 0){
+
+                                        document.getElementById("agendasolicitante").innerHTML = Resp.nomecompl;
+                                        document.getElementById("guardaCPF").value = Resp.cpf;
+                                        document.getElementById("agendacpf").innerHTML = format_CnpjCpf(Resp.cpf);
+                                        document.getElementById("agendasetor").innerHTML = Resp.siglasetor;
+                                        document.getElementById("agendatelef").value = Resp.telef;
+                                    }else{
+                                        alert("Houve um erro no servidor.")
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                });
+
+                $("#agendacpfsolicitante").click(function(){
+                    document.getElementById("agendaselecSolicitante").value = "";
+                    document.getElementById("agendasolicitante").innerHTML = "";
+                    document.getElementById("guardaCPF").value = "";
+                    document.getElementById("agendacpf").innerHTML = "";
+                    document.getElementById("agendasetor").innerHTML = "";
+                    document.getElementById("agendatelef").value = "";
+                    document.getElementById("guardaPosCod").value = "";
+                });
+                $("#agendacpfsolicitante").change(function(){
+                    document.getElementById("agendaselecSolicitante").value = "";
+                    document.getElementById("guardaCPF").value = "";
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscacpf&cpf="+encodeURIComponent(document.getElementById("agendacpfsolicitante").value), true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 0){
+                                        document.getElementById("agendasolicitante").innerHTML = Resp.nomecompl;
+                                        document.getElementById("guardaCPF").value = Resp.cpf;
+                                        document.getElementById("agendacpf").innerHTML = format_CnpjCpf(Resp.cpf);
+                                        document.getElementById("agendasetor").innerHTML = Resp.siglasetor;
+                                        document.getElementById("agendatelef").value = Resp.telef;
+                                        document.getElementById("guardaPosCod").value = Resp.PosCod;
+
+                                    }
+                                    if(parseInt(Resp.coderro) === 3){
+                                        document.getElementById("agendasolicitante").innerHTML = "Usuário não está autorizado a retirar chaves.";
+                                        document.getElementById("agendacpfsolicitante").focus();
+                                    }
+                                    if(parseInt(Resp.coderro) === 2){
+                                        document.getElementById("agendasolicitante").innerHTML = "Nada foi encontrado.";
+                                        document.getElementById("agendacpfsolicitante").focus();
+                                    }
+                                    if(parseInt(Resp.coderro) === 1){
+                                        alert("Houve um erro no servidor.")
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                });
+
+                $("#configselecSolicitante").change(function(){
+                    if(document.getElementById("configselecSolicitante").value == ""){
+                        document.getElementById("configcpfsolicitante").value = "";
+                        return false;
+                    }
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscausuario&codigo="+document.getElementById("configselecSolicitante").value, true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 0){
+                                        document.getElementById("configcpfsolicitante").value = format_CnpjCpf(Resp.cpf);
+                                        if(parseInt(Resp.claviculario) === 1){
+                                            document.getElementById("registroChaves").checked = true;
+                                        }else{
+                                            document.getElementById("registroChaves").checked = false;
+                                        }
+                                        if(parseInt(Resp.pegachave) === 1){
+                                            document.getElementById("retiraChave").checked = true;
+                                        }else{
+                                            document.getElementById("retiraChave").checked = false;
+                                        }
+                                        if(parseInt(Resp.fiscchaves) === 1){
+                                            document.getElementById("fiscalChaves").checked = true;
+                                        }else{
+                                            document.getElementById("fiscalChaves").checked = false;
+                                        }
+                                    }else{
+                                        alert("Houve um erro no servidor.")
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                });
+
+                $("#configcpfsolicitante").click(function(){
+                    document.getElementById("configselecSolicitante").value = "";
+                });
+                $("#configcpfsolicitante").change(function(){
+                    document.getElementById("configselecSolicitante").value = "";
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscacpfusuario&cpf="+encodeURIComponent(document.getElementById("configcpfsolicitante").value), true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 0){
+                                        document.getElementById("configselecSolicitante").value = Resp.PosCod;
+                                        if(parseInt(Resp.claviculario) === 1){
+                                            document.getElementById("registroChaves").checked = true;
+                                        }else{
+                                            document.getElementById("registroChaves").checked = false;
+                                        }
+                                        if(parseInt(Resp.pegachave) === 1){
+                                            document.getElementById("retiraChave").checked = true;
+                                        }else{
+                                            document.getElementById("retiraChave").checked = false;
+                                        }
+                                        if(parseInt(Resp.fiscchaves) === 1){
+                                            document.getElementById("fiscalChaves").checked = true;
+                                        }else{
+                                            document.getElementById("fiscalChaves").checked = false;
+                                        }
+                                    }
+                                    if(parseInt(Resp.coderro) === 2){
+                                        document.getElementById("registroChaves").checked = false;
+                                        document.getElementById("retiraChave").checked = false;
+                                        document.getElementById("fiscalChaves").checked = false;
+                                        $('#mensagemConfig').fadeIn("slow");
+                                        document.getElementById("mensagemConfig").innerHTML = "Não encontrado";
+                                        $('#mensagemConfig').fadeOut(2000);
+                                    }
+                                    if(parseInt(Resp.coderro) === 1){
+                                        alert("Houve um erro no servidor.")
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                });
+
+            }); // fim do ready
+
             function insChave(){
                 document.getElementById("guardaCod").value = 0;
                 ajaxIni();
@@ -343,6 +538,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("editaModalChave").style.display = "none";
                                         $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
                                         $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");
+                                        $("#faixaagenda").load("modulos/claviculario/agChave1.php?acao=todos");
                                     }
                                 }
                             }
@@ -354,8 +550,9 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-            function saidaChave(Cod){
+            function saidaChave(Cod){ // id de chaves
                 document.getElementById("guardaCod").value = Cod;
+                document.getElementById("CodidChave").value = Cod;
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscaChave&codigo="+Cod, true);
@@ -367,20 +564,49 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
                                 }else{
-                                    document.getElementById("sainumchave").value = Resp.chavenum;
-                                    document.getElementById("sailocalchave").value = Resp.chavelocal;
-                                    document.getElementById("saisalachave").value = Resp.chavesala;
-                                    document.getElementById("saicomplemchave").value = Resp.chavenumcompl;
-                                    document.getElementById("saiobschave").value = Resp.chaveobs;
-                                    document.getElementById("registroRetiradaChave").style.display = "block";
 
-                                    document.getElementById("selecSolicitante").value = "";
-                                    document.getElementById("cpfsolicitante").value = "";
-                                    document.getElementById("resultsolicitante").innerHTML = "";
-                                    document.getElementById("resulttelef").value = "";
-                                    document.getElementById("guardaCPF").value = "";
-                                    document.getElementById("resultcpf").innerHTML = "";
-                                    document.getElementById("resultsetor").innerHTML = "";
+                                    if(parseInt(Resp.coderro) === 2){
+                                        $.confirm({
+                                            title: 'Confirmação!',
+                                            content: 'Esta chave está agendada para entregar hoje <br>para <b>'+Resp.nomeagendado+'</b><br><br>Se a entrega for para ele(a), clique em <br><b>Registrar Entrega</b> na agenda.<br><br>Continua mesmo assim?',
+                                            autoClose: 'Não|30000',
+                                            draggable: true,
+                                            buttons: {
+                                                Sim: function () {
+                                                    document.getElementById("sainumchave").value = Resp.chavenum;
+                                                    document.getElementById("sailocalchave").value = Resp.chavelocal;
+                                                    document.getElementById("saisalachave").value = Resp.chavesala;
+                                                    document.getElementById("saicomplemchave").value = Resp.chavenumcompl;
+                                                    document.getElementById("saiobschave").value = Resp.chaveobs;
+                                                    document.getElementById("registroRetiradaChave").style.display = "block";
+                                                    document.getElementById("selecSolicitante").value = "";
+                                                    document.getElementById("cpfsolicitante").value = "";
+                                                    document.getElementById("resultsolicitante").innerHTML = "";
+                                                    document.getElementById("resulttelef").value = "";
+                                                    document.getElementById("guardaCPF").value = "";
+                                                    document.getElementById("resultcpf").innerHTML = "";
+                                                    document.getElementById("resultsetor").innerHTML = "";
+                                                    document.getElementById("codagenda").value = 0; // também é usado na funação entregaChave
+                                                },
+                                                Não: function () {}
+                                            }
+                                        });
+                                    }else{
+                                        document.getElementById("sainumchave").value = Resp.chavenum;
+                                        document.getElementById("sailocalchave").value = Resp.chavelocal;
+                                        document.getElementById("saisalachave").value = Resp.chavesala;
+                                        document.getElementById("saicomplemchave").value = Resp.chavenumcompl;
+                                        document.getElementById("saiobschave").value = Resp.chaveobs;
+                                        document.getElementById("registroRetiradaChave").style.display = "block";
+                                        document.getElementById("selecSolicitante").value = "";
+                                        document.getElementById("cpfsolicitante").value = "";
+                                        document.getElementById("resultsolicitante").innerHTML = "";
+                                        document.getElementById("resulttelef").value = "";
+                                        document.getElementById("guardaCPF").value = "";
+                                        document.getElementById("resultcpf").innerHTML = "";
+                                        document.getElementById("resultsetor").innerHTML = "";
+                                        document.getElementById("codagenda").value = 0; // também é usado na funação entregaChave
+                                    }
                                 }
                             }
                         }
@@ -399,6 +625,7 @@ if(!isset($_SESSION["usuarioID"])){
                     +"&cpf="+document.getElementById("resultcpf").innerHTML 
                     +"&celular="+document.getElementById("resulttelef").value 
                     +"&poscod="+document.getElementById("guardaPosCod").value 
+                    +"&idagenda="+document.getElementById("codagenda").value 
                     , true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
@@ -410,7 +637,177 @@ if(!isset($_SESSION["usuarioID"])){
                                 }else{
                                     document.getElementById("registroRetiradaChave").style.display = "none";  
                                     $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
-                                    $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");                                 
+                                    $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");  
+                                    $("#faixaagenda").load("modulos/claviculario/agChave1.php?acao=todos"); 
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function abreAgendaChave1(){
+                document.getElementById("guardaPosCod").value = 0; // solicitante
+                document.getElementById("agendaselecSolicitante").value = "";
+                document.getElementById("agendanumchave").value = document.getElementById("sainumchave").value+document.getElementById("saicomplemchave").value;
+                document.getElementById("agendalocalchave").value = document.getElementById("sailocalchave").value;
+                document.getElementById("agendasalachave").value = document.getElementById("saisalachave").value;
+                document.getElementById("agendasolicitante").innerHTML = "";
+                document.getElementById("agendacpf").innerHTML = ""; 
+                document.getElementById("agendasetor").innerHTML = ""; 
+                document.getElementById("agendatelef").value = ""; 
+                document.getElementById("agendadata").value = ""; 
+                document.getElementById("registroRetiradaChave").style.display = "none";  
+                document.getElementById("registroAgendaChave").style.display = "block";  
+            }
+
+            function abreAgendaChave2(){
+                document.getElementById("guardaPosCod").value = 0; // solicitante
+                document.getElementById("agendaselecSolicitante").value = "";
+                document.getElementById("agendanumchave").value = document.getElementById("voltanumchave").value+document.getElementById("saicomplemchave").value;
+                document.getElementById("agendalocalchave").value = document.getElementById("voltalocalchave").value;
+                document.getElementById("agendasalachave").value = document.getElementById("voltasalachave").value;
+                document.getElementById("agendasolicitante").innerHTML = "";
+                document.getElementById("agendacpf").innerHTML = ""; 
+                document.getElementById("agendasetor").innerHTML = ""; 
+                document.getElementById("agendatelef").value = ""; 
+                document.getElementById("agendadata").value = ""; 
+                document.getElementById("registroAgendaChave").style.display = "block";
+                document.getElementById("registroRetornoChave").style.display = "none";  
+            }
+
+
+            function salvaAgenda(){
+                if(parseInt(document.getElementById("CodidChave").value) === 0){
+                    $('#mensagem').fadeIn("slow");
+                    document.getElementById("mensagem").innerHTML = "Erro na seleção da chave.";
+                    $('#mensagem').fadeOut(3000);
+                    return false;
+                }
+                if(parseInt(document.getElementById("guardaPosCod").value) === 0){
+                    $('#mensagem').fadeIn("slow");
+                    document.getElementById("mensagem").innerHTML = "Selecione o usuário solicitante.";
+                    $('#mensagem').fadeOut(3000);
+                    return false;
+                }
+                if(document.getElementById("agendadata").value == ""){
+                    $('#mensagem').fadeIn("slow");
+                    document.getElementById("mensagem").innerHTML = "Defina a data da retirada da chave.";
+                    $('#mensagem').fadeOut(3000);
+                    return false;
+                }
+                $.confirm({
+                    title: 'Confirmação!',
+                    content: 'Confirma agendar a entrega desta chave?',
+                    autoClose: 'Não|15000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=agendaChave&codigo="+document.getElementById("CodidChave").value
+                                +"&poscod="+document.getElementById("guardaPosCod").value
+                                +"&dataagenda="+encodeURIComponent(document.getElementById("agendadata").value)
+                                +"&cpf="+document.getElementById("agendacpf").innerHTML 
+                                +"&celular="+document.getElementById("agendatelef").value 
+                                , true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp2 = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                            if(parseInt(Resp.coderro) === 0){
+                                                $("#faixaagenda").load("modulos/claviculario/agChave1.php?acao=todos");
+                                                document.getElementById("registroAgendaChave").style.display = "none";
+                                            }else{
+                                                alert("Houve um erro no servidor.")
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {}
+                    }
+                });
+            }
+
+            function saidaChaveAgenda(CodAg, CodChaves, CodUsu, DataSai){ // id de chaves
+                document.getElementById("guardaCod").value = CodChaves;
+                document.getElementById("CodidChave").value = CodChaves;
+                document.getElementById("guardaPosCod").value = CodUsu;
+                document.getElementById("codagenda").value = CodAg;
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscaChaveAgenda&codigo="+CodChaves
+                    +"&codagenda="+CodAg
+                    +"&codusu="+CodUsu
+                    +"&dataagenda="+encodeURIComponent(DataSai)
+                    , true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    if(parseInt(Resp.presente) === 0){
+                                        document.getElementById("msgAlerta2").innerHTML = "Verifique com: "+Resp.nomeretirou;
+                                        document.getElementById("msgAlerta3").innerHTML = "CPF: "+format_CnpjCpf(Resp.cpfretirou);
+                                        document.getElementById("msgAlerta4").innerHTML = "Telefone: "+Resp.telefretirou;
+                                        document.getElementById("modalAlerta").style.display = "block";
+                                    }else{
+                                    document.getElementById("sainumchave").value = Resp.chavenum;
+                                    document.getElementById("sailocalchave").value = Resp.chavelocal;
+                                    document.getElementById("saisalachave").value = Resp.chavesala;
+                                    document.getElementById("saicomplemchave").value = Resp.chavenumcompl;
+                                    document.getElementById("saiobschave").value = Resp.chaveobs;
+                                    document.getElementById("registroRetiradaChave").style.display = "block";
+
+                                    document.getElementById("selecSolicitante").value = CodUsu;
+                                    document.getElementById("cpfsolicitante").value = Resp.cpf;
+                                    document.getElementById("resultsolicitante").innerHTML = Resp.nomecompl;
+                                    document.getElementById("resulttelef").value = Resp.telef;
+                                    document.getElementById("guardaCPF").value = Resp.cpf;
+                                    document.getElementById("resultcpf").innerHTML = format_CnpjCpf(Resp.cpf);
+                                    document.getElementById("resultsetor").innerHTML = Resp.siglasetor;
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function retornoChave1(Cod){  // Cod = id de chaves  
+                document.getElementById("CodidChave").value = Cod;
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=retornoChave1&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    document.getElementById("guardaCod").value = Resp.codidctl; // id de chaves_ctl
+                                    document.getElementById("voltanumchave").value = Resp.chavenum;
+                                    document.getElementById("voltacomplemchave").value = Resp.chavenumcompl;
+                                    document.getElementById("voltalocalchave").value = Resp.chavelocal;
+                                    document.getElementById("voltasalachave").value = Resp.chavesala;
+                                    document.getElementById("voltatelef").value = Resp.telef;
+                                    document.getElementById("voltasolicitante").innerHTML = Resp.nomecompl;
+                                    document.getElementById("guardaPosCod").value = Resp.codusuretirou;
+                                    document.getElementById("voltacpf").innerHTML = format_CnpjCpf(Resp.cpfretirou);
+                                    document.getElementById("registroRetornoChave").style.display = "block";
+                                    document.getElementById("selecEntregador").value = "";
+                                    document.getElementById("cpfentregador").value = "";
                                 }
                             }
                         }
@@ -451,42 +848,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-            function voltaChave___(Cod){
-                document.getElementById("guardaCod").value = Cod; // id de chaves
-                ajaxIni();
-                if(ajax){
-                    ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=voltaChave&codigo="+Cod, true);
-                    ajax.onreadystatechange = function(){
-                        if(ajax.readyState === 4 ){
-                            if(ajax.responseText){
-//alert(ajax.responseText);
-                                Resp = eval("(" + ajax.responseText + ")");
-                                if(parseInt(Resp.coderro) === 1){
-                                    alert("Houve um erro no servidor.");
-                                }else{
-                                    document.getElementById("voltanumchave").value = Resp.chavenum;
-                                    document.getElementById("voltacomplemchave").value = Resp.chavenumcompl;
-                                    document.getElementById("voltalocalchave").value = Resp.chavelocal;
-                                    document.getElementById("voltasalachave").value = Resp.chavesala;
-                                    document.getElementById("voltatelef").value = Resp.telef;
-                                    document.getElementById("voltasolicitante").innerHTML = Resp.nomecompl;
-                                    document.getElementById("guardaCod").value = Resp.guardaCod; // para a func devolveChave
-                                    document.getElementById("guardaPosCod").value = Resp.codusuretirou;
-                                    document.getElementById("voltacpf").innerHTML = format_CnpjCpf(Resp.cpfretirou);
-                                    document.getElementById("registroRetornoChave").style.display = "block";
-                                }
-                            }
-                        }
-                    };
-                    ajax.send(null);
-                }
-            }
-
             function devolveChave(){
-alert(document.getElementById("guardaCod").value);
-alert(document.getElementById("voltacpf").value);
-alert(document.getElementById("guardaPosCod").value);
-
                 if(document.getElementById("guardaPosCod").value == ""){
                     return false;
                 }
@@ -498,31 +860,51 @@ alert(document.getElementById("guardaPosCod").value);
                     ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=devolveChave&codigo="+document.getElementById("guardaCod").value 
                     +"&cpfdevolve="+encodeURIComponent(document.getElementById("voltacpf").innerHTML)
                     +"&codusudevolve="+document.getElementById("guardaPosCod").value, true);
-                                ajax.onreadystatechange = function(){
-                                    if(ajax.readyState === 4 ){
-                                        if(ajax.responseText){
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
 //alert(ajax.responseText);
-                                            Resp2 = eval("(" + ajax.responseText + ")");  //Lê o array que vem
-                                            if(parseInt(Resp.coderro) === 0){
-                                                document.getElementById("registroRetornoChave").style.display = "none";
-                                                document.getElementById("msgdevolv").innerHTML = "Chave "+Resp2.numchave+" DEVOLVIDA";
-                                                document.getElementById("modalDevolvida").style.display = "block";
-                                                $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
-                                                $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");
-                                            }else{
-                                                alert("Houve um erro no servidor.")
-                                            }
-                                        }
-                                    }
-                                };
-                                ajax.send(null);
+                                Resp2 = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    document.getElementById("registroRetornoChave").style.display = "none";
+                                    document.getElementById("msgdevolv").innerHTML = "Chave "+Resp2.numchave+" DEVOLVIDA";
+                                    document.getElementById("modalDevolvida").style.display = "block";
+                                    $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
+                                    $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");
+                                    $("#faixaagenda").load("modulos/claviculario/agChave1.php?acao=todos");
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
                             }
+                        }
+                    };
+                    ajax.send(null);
+                }
             }
 
-            function retornoChave__(Cod){
+            function marcaChave(obj, Campo){
+                if(obj.checked === true){
+                    Valor = 1;
+                }else{
+                    Valor = 0;
+                }
+                if(document.getElementById("configselecSolicitante").value == ""){
+                    if(obj.checked === true){
+                        obj.checked = false;
+                    }else{
+                        obj.checked = true;
+                    }
+                    $('#mensagemConfig').fadeIn("slow");
+                    document.getElementById("mensagemConfig").innerHTML = "Selecione um usuário.";
+                    $('#mensagemConfig').fadeOut(2000);
+                    return false;
+                }
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscaChave&codigo="+Cod, true);
+                    ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=configMarcaChave&codigo="+document.getElementById("configselecSolicitante").value
+                    +"&campo="+Campo
+                    +"&valor="+Valor
+                    , true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -531,31 +913,48 @@ alert(document.getElementById("guardaPosCod").value);
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
                                 }else{
-                                    if(Resp.chavelocal == null){
-                                        Local = "";
+                                    if(parseInt(Resp.coderro) === 2){
+                                        obj.checked = true;
+                                        $.confirm({
+                                            title: 'Ação Suspensa!',
+                                            content: 'Não restaria outro marcado para gerenciar o claviculário.',
+                                            draggable: true,
+                                            buttons: {
+                                                OK: function(){}
+                                            }
+                                        });
+                                        return false;
                                     }else{
-                                        Local = ' - '+Resp.chavelocal;
+                                        $('#mensagemConfig').fadeIn("slow");
+                                        document.getElementById("mensagemConfig").innerHTML = "Valor salvo.";
+                                        $('#mensagemConfig').fadeOut(1000);
                                     }
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
 
-                                    $.confirm({
+            function apagaAgendaChaves(Cod){ // põe ativo = 2
+                $.confirm({
                     title: 'Confirmação!',
-                    content: 'Confirma a devolução da Chave '+Resp.chavenum+Local+'?',
+                    content: 'Confirma apagar este agendamento?',
                     autoClose: 'Não|15000',
                     draggable: true,
                     buttons: {
                         Sim: function () {
                             ajaxIni();
                             if(ajax){
-                                ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=devolveChave&codigo="+Cod, true);
+                                ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=apagaagendaChave&codigo="+Cod, true);
                                 ajax.onreadystatechange = function(){
                                     if(ajax.readyState === 4 ){
                                         if(ajax.responseText){
 //alert(ajax.responseText);
-                                            Resp2 = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                            Resp2 = eval("(" + ajax.responseText + ")"); 
                                             if(parseInt(Resp.coderro) === 0){
-                                                document.getElementById("msgdevolv").innerHTML = "Chave "+Resp2.numchave+" DEVOLVIDA";
-                                                document.getElementById("modalDevolvida").style.display = "block";
-                                                $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
+                                                $("#faixaagenda").load("modulos/claviculario/agChave1.php?acao=todos");
                                             }else{
                                                 alert("Houve um erro no servidor.")
                                             }
@@ -568,15 +967,24 @@ alert(document.getElementById("guardaPosCod").value);
                         Não: function () {}
                     }
                 });
-
-                               }
-                            }
-                        }
-                    };
-                    ajax.send(null);
-                }
             }
-
+            function imprResumoChave(){
+                window.open("modulos/claviculario/imprChave1.php?acao=listaUsuarios", "ResumoChaves");
+            }
+            function resumoUsuChaves(){
+                window.open("modulos/claviculario/imprUsuCh1.php?acao=listaUsuarios", "ChavesUsu");
+            }
+            function abreChavesConfig(){
+                document.getElementById("registroChaves").checked = false;
+                document.getElementById("retiraChave").checked = false;
+                document.getElementById("fiscalChaves").checked = false;
+                document.getElementById("configcpfsolicitante").value = "";
+                document.getElementById("configselecSolicitante").value = "";
+                document.getElementById("modalChavesConfig").style.display = "block";
+            }
+            function fechaModalConfig(){
+                document.getElementById("modalChavesConfig").style.display = "none";
+            }
             function fechaEditaChave(){
                 document.getElementById("editaModalChave").style.display = "none";
             }
@@ -586,8 +994,14 @@ alert(document.getElementById("guardaPosCod").value);
             function fechaRetornoChave(){
                 document.getElementById("registroRetornoChave").style.display = "none";
             }
+            function fechaAgendaChave(){
+                document.getElementById("registroAgendaChave").style.display = "none";
+            }
             function fechaDevolv(){
                 document.getElementById("modalDevolvida").style.display = "none";
+            }
+            function fechaAlerta(){
+                document.getElementById("modalAlerta").style.display = "none";
             }
             function modif(){
                 document.getElementById("mudou").value = "1";
@@ -596,6 +1010,30 @@ alert(document.getElementById("guardaPosCod").value);
             function foco(id){
                 document.getElementById(id).focus();
             }
+            
+            
+            /* Brazilian initialisation for the jQuery UI date picker plugin. */
+            /* Written by Leonildo Costa Silva (leocsilva@gmail.com). */
+            jQuery(function($){
+                $.datepicker.regional['pt-BR'] = {
+                    closeText: 'Fechar',
+                    prevText: '< Anterior',
+                    nextText: 'Próximo >',
+                    currentText: 'Hoje',
+                    monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+                    monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+                    dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sabado'],
+                    dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                    dayNamesMin: ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'],
+                    weekHeader: 'Sm',
+                    dateFormat: 'dd/mm/yy',
+                    firstDay: 1,
+                    isRTL: false,
+                    showMonthAfterYear: false,
+                    yearSuffix: ''
+                };
+                $.datepicker.setDefaults($.datepicker.regional['pt-BR']);
+            });
 
         </script>
     </head>
@@ -654,6 +1092,21 @@ if($row == 0){ // não tinha a coluna chaves_id
             )
         ");
 
+//        pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".chaves_agd");
+        pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".chaves_agd (
+            id SERIAL PRIMARY KEY, 
+            chaves_id integer NOT NULL DEFAULT 0,
+            datasaida timestamp without time zone DEFAULT '3000-12-31',
+            usuretira bigint NOT NULL DEFAULT 0,
+            cpfretira VARCHAR(20),
+            telef VARCHAR(20),
+            ativo smallint NOT NULL DEFAULT 1, 
+            usuins bigint NOT NULL DEFAULT 0,
+            datains timestamp without time zone DEFAULT '3000-12-31'
+            )
+        ");
+
+
         $rs = pg_query($Conec, "SELECT chavenum FROM ".$xProj.".chaves LIMIT 3 ");
         $row = pg_num_rows($rs);
         if($row == 0){
@@ -675,20 +1128,22 @@ if($row == 0){ // não tinha a coluna chaves_id
         $FiscClav = parEsc("fisc_clav", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
 
         $OpUsuSolic = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave = 1 And ativo = 1 ORDER BY nomeusual, nomecompl");
+        $OpUsuAgenda = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave = 1 And ativo = 1 ORDER BY nomeusual, nomecompl");
         $OpUsuEntreg = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave = 1 And ativo = 1 ORDER BY nomeusual, nomecompl");
-
+        $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
         ?>
          <div style="margin: 20px; ">
             <div class="box" style="position: relative; float: left; width: 33%;">
                 <input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Inserir Nova Chave" onclick="insChave();">
+                <img src="imagens/settings.png" height="20px;" id="imgChavesconfig" style="cursor: pointer; padding-left: 30px;" onclick="abreChavesConfig();" title="Configurar o acesso às chaves no claviculário da Portaria">
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <h5><img src="imagens/Chave.png" height="40px;" style="padding-right: 20px; padding-bottom: 10px;" title="Controle de Chaves na Portaria">Controle de Chaves <img src="imagens/Chave.png" height="40px;" style="padding-left: 20px; padding-bottom: 10px;" title="Controle de Chaves na Portaria"></h5>
                 
             </div>
-            <div class="box" style="position: relative; float: left; width: 33%; text-align: left;">
+            <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <label style="padding-left: 20px;"></label>
-                <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprAr();">PDF</button>
+                <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprResumoChave();">PDF</button>
             </div>
 
             <div id="faixaMensagem" style="display: none; position: relative; margin: 70px; padding: 20px; text-align: center;">
@@ -696,23 +1151,23 @@ if($row == 0){ // não tinha a coluna chaves_id
             </div>
         </div>
 
-
+        <br><br><br>
         <!-- div três colunas -->
-        <div style="margin: 0 auto;">
-            <div style="position: relative; float: left; margin: 5px; text-align: center; width: 65%; border: 1px solid; border-radius: 10px;"><div id="faixacentral"></div></div>
-            <div style="position: relative; float: left; text-align: center; width: 1%;">&nbsp;</div>
-            <div style="position: relative; float: left; margin: 5px; text-align: center; width: 29%; border: 1px solid; border-radius: 10px;"><div id="faixamostra"></div></div>
+        <div style="margin: 0 auto; text-align: center;">
+            <div style="position: relative; float: left; margin: 5px; text-align: center; width: 16%; border: 1px solid; border-radius: 10px;"><div id="faixaagenda"></div></div>
+            <div style="position: relative; float: left; margin: 5px; text-align: center; width: 55%; border: 1px solid; border-radius: 10px;"><div id="faixacentral"></div></div>
+            <div style="position: relative; float: left; margin: 5px; text-align: center; width: 25%; border: 1px solid; border-radius: 10px;"><div id="faixamostra"></div></div>
         </div>
 
         <input type="hidden" id="guardaCod" value="0" />
         <input type="hidden" id="guardaCPF" value="" />
         <input type="hidden" id="guardaPosCod" value="" />
-
+        <input type="hidden" id="CodidChave" value="0" />
         <input type="hidden" id="mudou" value="0" />
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>" />
         <input type="hidden" id="editachaves" value="<?php echo $FiscClav; ?>" />
         <input type="hidden" id="registrachaves" value="<?php echo $Clav; ?>" />
-
+        <input type="hidden" id="codagenda" value="0" />
         
         <div id="editaModalChave" class="relacmodal">
             <div class="modal-content-relacChave">
@@ -753,9 +1208,8 @@ if($row == 0){ // não tinha a coluna chaves_id
         <div id="registroRetiradaChave" class="relacmodal">
             <div class="modal-content-registroChave"> <!-- background transparent-->
                 <span class="close" style="font-size: 250%; color: black;" onclick="fechaRetiradaChave();">&times;</span>
-                <label style="color: #666; padding-bottom: 10px;">Registro de Retirada:</label>
 
-                <div style="border: 2px solid red; border-radius: 10px; background: linear-gradient(180deg, white, #f5a7a2)">
+                <div style="border: 2px solid red; border-radius: 10px; background: linear-gradient(180deg, white, #fce8e7)">
                 <table style="margin: 0 auto; width: 85%;">
                     <tr>
                         <td colspan="4" style="text-align: center; font-weight: bold;">Registro de Retirada</td>
@@ -791,7 +1245,7 @@ if($row == 0){ // não tinha a coluna chaves_id
                 </table>
                 </div>
 
-                <div style="border: 2px solid red; border-radius: 10px; margin-top: 10px; background: linear-gradient(180deg, white, #f5a7a2)">
+                <div style="border: 2px solid red; border-radius: 10px; margin-top: 10px; background: linear-gradient(180deg, white, #fce8e7)">
                     <table style="margin: 0 auto; width: 85%;">
                         <tr>
                             <td colspan="4" style="text-align: center;"></td>
@@ -825,22 +1279,23 @@ if($row == 0){ // não tinha a coluna chaves_id
                     </table>
                 </div>
 
-                <div style="border: 2px solid red; border-radius: 10px; margin-top: 10px; text-align: left; background: linear-gradient(180deg, white, #f5a7a2)">
+                <div style="border: 2px solid red; border-radius: 10px; margin-top: 10px; text-align: left; background: linear-gradient(180deg, white, #fce8e7)">
                     <table style="margin: 0 auto; width: 85%;">
                         <tr>
-                            <td colspan="4" style="text-align: center; padding-top: 10px;"></td>
+                            <td colspan="2" style="text-align: center; padding-top: 10px; min-width: 150px;"></td>
+                            <td colspan="2" style="text-align: center; padding-top: 10px;"></td>
                         </tr>
                         <tr>
                             <td colspan="4" style="text-align: center; font-weight: bold;">Solicitante</td>
                         </tr>
                         <tr>
-                            <td class="etiqAzul">Nome:</td>
-                            <td colspan="3"><label id="resultsolicitante" style="min-width: 200px; padding-left: 3px; font-size: 120%;"></label></td>
+                            <td class="etiqAzul" style="width: 150px;">Nome:</td>
+                            <td colspan="3" style="min-width: 200px;"><label id="resultsolicitante" style="min-width: 200px; padding-left: 3px; font-size: 120%;"></label></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">CPF:</td>
                             <td><label id="resultcpf" style="padding-left: 3px;"></label></td>
-                            <td class="etiqAzul">Setor:</td>
+                            <td class="etiqAzul" style="width: 100px;">Setor:</td>
                             <td><label id="resultsetor" style="padding-left: 3px;"></label></td>
                         </tr>
                         <tr>
@@ -851,7 +1306,8 @@ if($row == 0){ // não tinha a coluna chaves_id
                             <td colspan="4" style="text-align: center; padding-top: 10px;"></td>
                         </tr>
                         <tr>
-                            <td colspan="4" style="text-align: center; padding-top: 10px;"><button class="botpadrred" style="font-size: 80%;" onclick="entregaChave();">Registrar Saída</button></td>
+                            <td colspan="2" style="text-align: left; padding-top: 10px;"><button class="botpadramarelo" id="botagenda1" style="font-size: 80%;" onclick="abreAgendaChave1();">Agendar retirada desta Chave</button></td>
+                            <td colspan="2" style="text-align: left; padding-top: 10px;"><button class="botpadrred" style="font-size: 80%;" onclick="entregaChave();">Registrar Saída</button></td>
                         </tr>
 
                         <tr>
@@ -929,7 +1385,8 @@ if($row == 0){ // não tinha a coluna chaves_id
                             <td colspan="4" style="text-align: center; padding-top: 10px;"></td>
                         </tr>
                         <tr>
-                            <td colspan="4" style="text-align: center; padding-top: 10px;"><button class="botpadrred" style="font-size: 80%;" onclick="devolveChave();">Registrar Retorno</button></td>
+                            <td colspan="2" style="text-align: left; padding-top: 10px;"><button class="botpadramarelo" id="botagenda2" style="font-size: 80%;" onclick="abreAgendaChave2();">Agendar retirada desta Chave</button></td>
+                            <td colspan="2" style="text-align: center; padding-top: 10px;"><button class="botpadrred" style="font-size: 80%;" onclick="devolveChave();">Registrar Retorno</button></td>
                         </tr>
 
                         <tr>
@@ -944,7 +1401,7 @@ if($row == 0){ // não tinha a coluna chaves_id
                             <td colspan="4" style="text-align: center;"></td>
                         </tr>
                         <tr>
-                            <td colspan="4" style="text-align: center;">Busca Nome ou CPF do Entregador</td>
+                            <td colspan="4" style="text-align: center;">Busca Nome ou CPF de outro Entregador</td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Procura nome: </td>
@@ -977,16 +1434,231 @@ if($row == 0){ // não tinha a coluna chaves_id
         </div> <!-- Fim Modal-->
 
 
+<!-- Agenda Chave -->
+        <div id="registroAgendaChave" class="relacmodal">
+            <div class="modal-content-registroChave">
+                <span class="close" style="font-size: 250%; color: black;" onclick="fechaAgendaChave();">&times;</span>
+                <label style="color: #666; padding-bottom: 10px;">Agendamento de Retirada:</label>
+
+                <div style="border: 2px solid blue; border-radius: 10px; background: linear-gradient(180deg, white, #FFFF00)">
+                    <br>
+                    <table style="margin: 0 auto; width: 85%;">
+                        <tr>
+                            <td colspan="4" style="text-align: center; font-weight: bold;">Agendamento de Retirada</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding-top: 5px;"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="padding-top: 10px;"></td>
+                        </tr>
+                        <tr>
+                            <td class="etiq" style="padding-bottom: 7px;">Chave: </td>
+                            <td><input disabled type="text" id="agendanumchave" style="width: 70px; text-align: center; border: 1px solid #666; border-radius: 5px;" />
+                                <input disabled type="text" id="agendacomplemchave" style="width: 70px; text-align: center; border: 1px solid #666; border-radius: 5px;" />
+                            </td>
+                            <td colspan="2" style="padding-bottom: 10px;"></td>
+                        </tr>
+                        <tr>
+                            <td class="etiq">Local: </td>
+                            <td colspan="3"><input disabled type="text" id="agendalocalchave" style="width: 300px; text-align: left; border: 1px solid #666; border-radius: 5px;" /></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                        <td class="etiq">Sala: </td>
+                            <td colspan="3"><input disabled type="text" id="agendasalachave" style="width: 100px; text-align: center; border: 1px solid #666; border-radius: 5px;"/></td>
+                        <td></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding-top: 10px;"></td>
+                        </tr>
+                    </table>
+                </div>
 
 
+                <div style="border: 2px solid red; border-radius: 10px; margin-top: 10px; background: linear-gradient(180deg, white, #FFFF00)">
+                    <table style="margin: 0 auto; width: 85%;">
+                        <tr>
+                            <td colspan="4" style="text-align: center;"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="text-align: center;">Busca Nome ou CPF do Solicitante</td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul">Procura nome: </td>
+                            <td style="width: 100px;">
+                                <select id="agendaselecSolicitante" style="max-width: 230px;" onchange="modif();" title="Selecione um usuário.">
+                                    <option value=""></option>
+                                    <?php 
+                                    if($OpUsuAgenda){
+                                        while ($Opcoes = pg_fetch_row($OpUsuAgenda)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; if($Opcoes[2] != ""){echo " - ".$Opcoes[2];} ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                            <td class="etiqAzul"><label class="etiqAzul">ou CPF:</label></td>
+                            <td>
+                                <input type="text" id="agendacpfsolicitante" style="width: 130px; text-align: center; border: 1px solid #666; border-radius: 5px;" onkeypress="if(event.keyCode===13){javascript:foco('agendatelef');return false;}" title="Procura por CPF. Digite o CPF do solicitante."/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding-top: 10px;"></td>
+                        </tr>
+                    </table>
+                </div>
 
 
+                <div style="border: 2px solid red; border-radius: 10px; margin-top: 10px; background: linear-gradient(180deg, white, #FFFF00)">
+                    <table style="margin: 0 auto; width: 85%;">
+                        <tr>
+                            <td colspan="6"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" style="text-align: center; font-weight: bold;">Solicitante</td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul">Nome:</td>
+                            <td colspan="5"><label id="agendasolicitante" style="min-width: 200px; padding-left: 3px; font-size: 120%;"></label></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul">CPF:</td>
+                            <td colspan="2"><label id="agendacpf" style="padding-left: 5px;"></label></td>
+                            <td class="etiqAzul">Setor:</td>
+                            <td colspan="2"><label id="agendasetor" style="padding-left: 3px;"></label></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul">Telefone Celular:</td>
+                            <td colspan="5"><input type="text" id="agendatelef" style="width: 200px; text-align: center; border: 1px solid #666; border-radius: 5px;" onchange="modif();" /></td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding-top: 10px;"></td>
+                        </tr>
+                    </table>
+                    <br>
+                </div>
+
+                <div style="border: 2px solid red; border-radius: 10px; margin-top: 10px; background: linear-gradient(180deg, white, #FFFF00)">
+                    <br>
+                    <table style="margin: 0 auto; width: 85%;">
+                        <tr>
+                            <td colspan="6" style="text-align: center; font-weight: bold;">Retirada</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: right;"><label class="etiqAzul">Autorizar entrega da chave em: </label></td>
+                            <td colspan="3" style="text-align: left;"><input type="text" style="text-align: center; border: 1px solid; border-radius: 5px;" id="agendadata" width="150" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('botsalvadata');return false;}"/></td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding-top: 10px;"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding-top: 10px;"><button class="botpadrred" id="botsalvadata" onclick="salvaAgenda();">Salvar</button></td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding-top: 10px;"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding-top: 5px;"><div id="mensagem" style="color: red; font-weight: bold;"></div></td>
+                        <tr>
+                    </table>
+                    <br>
+                </div>
+            </div>
+        </div> <!-- Fim Modal-->
+
+         <!-- Modal configuração-->
+        <div id="modalChavesConfig" class="relacmodal">
+            <div class="modal-content-ChavesControle">
+                <span class="close" onclick="fechaModalConfig();">&times;</span>
+
+                <!-- div três colunas -->
+                <div class="container" style="margin: 0 auto;">
+                    <div class="row">
+                        <div class="col quadro" style="margin: 0 auto;"></div>
+                        <div class="col quadro"><h5 id="titulomodal" style="text-align: center; color: #666;">Configuração Claviculário Portaria</h5></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col quadro" style="margin: 0 auto; text-align: center;"><button class="botpadrred" style="font-size: 70%;" onclick="resumoUsuChaves();">Resumo em PDF</button></div> 
+                    </div>
+                </div>
+                <label class="etiqAzul">Selecione um usuário para ver a configuração:</label>
+                <div style="position: relative; float: right; color: red; font-weight: bold; padding-right: 200px;" id="mensagemConfig"></div>
+                <table style="margin: 0 auto; width: 85%;">
+                    <tr>
+                        <td colspan="4" style="text-align: center;"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="text-align: center;">Busca Nome ou CPF do Solicitante</td>
+                    </tr>
+                    <tr>
+                        <td class="etiqAzul">Procura nome: </td>
+                        <td style="width: 100px;">
+                            <select id="configselecSolicitante" style="max-width: 230px;" onchange="modif();" title="Selecione um usuário.">
+                                <option value=""></option>
+                                <?php 
+                                if($OpConfig){
+                                    while ($Opcoes = pg_fetch_row($OpConfig)){ ?>
+                                        <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; if($Opcoes[2] != ""){echo " - ".$Opcoes[2];} ?></option>
+                                    <?php 
+                                    }
+                                }
+                                ?>
+                            </select>
+                        </td>
+                        <td class="etiqAzul"><label class="etiqAzul">ou CPF:</label></td>
+                        <td>
+                            <input type="text" id="configcpfsolicitante" style="width: 130px; text-align: center; border: 1px solid #666; border-radius: 5px;" onkeypress="if(event.keyCode===13){javascript:foco('configselecSolicitante');return false;}" title="Procura por CPF. Digite o CPF do solicitante."/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding-top: 10px;"></td>
+                    </tr>
+                </table>
+
+                <table style="margin: 0 auto; width: 85%;">
+                    <tr>
+                        <td class="etiq80" title="Fiscalizar a entrega e devolução das chaves do claviculário da Portaria">DAF:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="fiscalChaves" title="BGerenciar, fiscalizar a entrega e devolução das chaves do claviculário da Portaria" onchange="marcaChave(this, 'fisc_clav');" >
+                            <label for="fiscalChaves" title="Gereciar, fiscalizar e editar as chaves do claviculário da Portaria">gerenciar, editar e fiscalizar as chaves do claviculário da Portaria</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="etiq80" title="Registrar a entrega e devolução das chaves do claviculário da Portaria">Portaria: </td>
+                        <td colspan="4">
+                            <input type="checkbox" id="registroChaves" title="Registrar a entrega e devolução das chaves do claviculário da Portaria" onchange="marcaChave(this, 'clav');" >
+                            <label for="registroChaves" title="Registrar a entrega e devolução das chaves do claviculário da Portaria">registrar a entrega e devolução das chaves do claviculário da Portaria</label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq80" style="border-bottom: 1px solid;" title="Autorizado a retirar chaves do claviculário da Portaria">Usuário</td>
+                        <td colspan="4" style="border-bottom: 1px solid;">
+                            <input type="checkbox" id="retiraChave" title="Autorizado a retirar chaves do claviculário da Portaria" onchange="marcaChave(this, 'chave');" >
+                            <label for="retiraChave" title="Autorizado a retirar chaves do claviculário da Portaria">usuário autorizado a retirar chaves do claviculário da Portaria</label>
+                        </td>
+                    </tr>
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding-top: 5px;"><div id="mensagemConfig__" style="color: red; font-weight: bold;"></div></td>
+                        <tr>
+                </table>
+            </div>
+        </div> <!-- Fim Modal-->
 
 
         <div id="modalDevolvida" class="relacmodal">
-            <div class="modal-content-tarjaVerm">
+            <div class="modal-content-tarjaAzul">
                 <span class="close" onclick="fechaDevolv();">&times;</span>
                 <div id="msgdevolv" style="color: white; font-size: 300%; text-align: center;">Chave DEVOLVIDA</div>
+            </div>
+        </div> <!-- Fim Modal-->
+        <div id="modalAlerta" class="relacmodal">
+            <div class="modal-content-tarjaVerm">
+                <span class="close" onclick="fechaAlerta();">&times;</span>
+                <div id="msgAlerta1" style="color: white; font-size: 300%; text-align: center;">Chave AUSENTE</div>
+                <div id="msgAlerta2" style="color: white; font-size: 150%; text-align: center;"></div>
+                <div id="msgAlerta3" style="color: white; font-size: 150%; text-align: center;"></div>
+                <div id="msgAlerta4" style="color: white; font-size: 150%; text-align: center;"></div>
             </div>
         </div> <!-- Fim Modal-->
 

@@ -91,7 +91,7 @@ function openhref(Num){
         $('#container3').load('modulos/elevadores/controleEl.php');
     }
     if(parseInt(Num) === 74){
-        $('#container3').load('modulos/quadroHorario/quadro1.php');
+        $('#container3').load('modulos/quadroHorario/quadro1.php?numgrupo=1');
     }
 
     if(parseInt(Num) === 75){

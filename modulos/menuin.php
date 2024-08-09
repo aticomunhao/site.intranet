@@ -67,7 +67,15 @@
 					dataedit timestamp without time zone DEFAULT '3000-12-31' 
 					)
 				");
-//				pg_query($Conec, "INSERT INTO ".$xProj.".tarefas_gr (id, usuindiv, usugrupo) VALUES (1, 143, 6) ");
+				//0037
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET fisc_clav = 0 WHERE fisc_clav = 1");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET fisc_clav = 1 WHERE pessoas_id = 3");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET fisc_clav = 1 WHERE pessoas_id = 83");
+
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET bens = 0, fiscbens = 0");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET bens = 1, fiscbens = 1 WHERE fiscbens = 3");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET bens = 1, fiscbens = 1 WHERE fiscbens = 83");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET soinsbens = 1 WHERE lro = 1");
 
 			} // fim data limite
         ?>

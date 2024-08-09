@@ -130,7 +130,7 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->Cell(20, 5, $DataIns, 0, 0, 'L');
             $pdf->Cell(25, 5, $DescTurno, 0, 0, 'L');
             if($Ocor == 0){
-                $pdf->Cell(80, 5, substr($NomeUsu, 0, 80), 0, 0, 'L');
+                $pdf->Cell(80, 5, substr($NomeUsu, 0, 52), 0, 0, 'L');
                 $pdf->Cell(30, 5, "Não houve.", 0, 1, 'L');
                 if($RelSubst != ""){
                     $pdf->SetFont('Arial', '', 7);

@@ -136,7 +136,7 @@ if(!isset($_SESSION['AdmUsu'])){
         $Busca = addslashes(filter_input(INPUT_GET, 'mesano')); 
         $Proc = explode("/", $Busca);
         $Mes = $Proc[0];
-        if($Mes < 10){
+        if(strLen($Mes) < 2){
             $Mes = "0".$Mes;
         }
         $Ano = $Proc[1];
@@ -460,7 +460,7 @@ if(!isset($_SESSION['AdmUsu'])){
 		$pdf->SetTitle('Relação Mensal Eletricidade', $isUTF8=TRUE);
         $Proc = explode("/", $Busca);
         $Mes = $Proc[0];
-        if($Mes < 10){
+        if(strLen($Mes) < 2){
             $Mes = "0".$Mes;
         }
         $Ano = $Proc[1];
