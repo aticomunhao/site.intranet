@@ -18,7 +18,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             <?php
                 $rs3 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual, esc_horaini, esc_horafim, esc_marca FROM ".$xProj.".poslog WHERE esc_eft = 1 And ativo = 1 And esc_grupo = $Cod ORDER BY nomeusual, nomecompl ");
             ?>
-            <table class="display" style="margin: 0 auto; width:85%">
+            <table class="display" style="margin: 0 auto; width:85%;">
                 <?php 
                 while($tbl3 = pg_fetch_row($rs3)){
                     $Cod = $tbl3[0];

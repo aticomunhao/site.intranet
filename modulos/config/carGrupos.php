@@ -36,7 +36,7 @@ require_once("abrealas.php");
             <?php
                 $rs0 = pg_query($Conec, "SELECT id, siglagrupo, descgrupo, qtd_turno, ativo FROM ".$xProj.".escalas_gr WHERE ativo = 1 ORDER BY siglagrupo");
             ?>
-            <table id="idTabelaGr" class="display" style="width:85%">
+            <table id="idTabelaGr" class="display" style="width:85%;">
                 <thead>
                     <tr>
                         <th style="display: none;"></th>

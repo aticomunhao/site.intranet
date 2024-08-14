@@ -1020,7 +1020,7 @@ if(!isset($_SESSION["usuarioID"])){
                     </div>
                 </div>
                 <div style="border: 2px solid blue; border-radius: 10px; padding: 10px;">
-                    <table style="margin: 0 auto; width:85%">
+                    <table style="margin: 0 auto; width:85%;">
                         <tr>
                             <td class="etiqAzul">Data do recebimento: </td>
                             <td>
@@ -1075,7 +1075,7 @@ if(!isset($_SESSION["usuarioID"])){
                     </div>
                 </div>
                 <div style="border: 2px solid blue; border-radius: 10px; padding: 10px;">
-                    <table style="margin: 0 auto; width:85%">
+                    <table style="margin: 0 auto; width:85%;">
                         <tr>
                             <td class="etiqAzul">Processo: </td>
                             <td>
@@ -1129,7 +1129,7 @@ if(!isset($_SESSION["usuarioID"])){
                     </div>
                 </div>
                 <div style="border: 2px solid blue; border-radius: 10px; padding: 10px;">
-                    <table style="margin: 0 auto; width:85%">
+                    <table style="margin: 0 auto; width:85%;">
                         <tr>
                             <td class="etiqAzul">Processo: </td>
                             <td>
@@ -1193,7 +1193,7 @@ if(!isset($_SESSION["usuarioID"])){
                     </div>
                 </div>
                 <div style="border: 2px solid blue; border-radius: 10px; padding: 10px;">
-                    <table style="margin: 0 auto; width:85%">
+                    <table style="margin: 0 auto; width:85%;">
                         <tr>
                             <td class="etiqAzul">Processo: </td>
                             <td>
@@ -1253,7 +1253,7 @@ if(!isset($_SESSION["usuarioID"])){
                     </div>
                 </div>
                 <div style="border: 2px solid blue; border-radius: 10px; padding: 10px;">
-                    <table style="margin: 0 auto; width:85%">
+                    <table style="margin: 0 auto; width:85%;">
                         <tr>
                             <td class="etiqAzul">Processo: </td>
                             <td>

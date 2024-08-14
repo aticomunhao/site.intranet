@@ -34,6 +34,19 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     </head>
     <body> 
         <?php
+            //numeração do dia da semana da função extract() (DOW) é diferente da função to_char() (D)
+            //Função para Extract no postgres
+            $Semana_Extract = array(
+                '0' => 'Dom',
+                '1' => 'Seg',
+                '2' => 'Ter',
+                '3' => 'Qua',
+                '4' => 'Qui',
+                '5' => 'Sex',
+                '6' => 'Sab',
+                'xª'=> ''
+            );
+
             $Cod = (int) filter_input(INPUT_GET, 'codigo');
             $rs = pg_query($Conec, "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'bensachados'");
             $row = pg_num_rows($rs);
@@ -45,7 +58,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
          <!-- Apresenta os usuários do setor com o nível administrativo -->
         <div style="padding: 10px;">
             <?php
-            $rs0 = pg_query($Conec, "SELECT ".$xProj.".bensachados.id, to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, usuguarda, usurestit, usucsg, usuarquivou, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, usudestino, CURRENT_DATE-datareceb, codusuins 
+            $rs0 = pg_query($Conec, "SELECT ".$xProj.".bensachados.id, to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, usuguarda, usurestit, usucsg, usuarquivou, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, usudestino, CURRENT_DATE-datareceb, codusuins, date_part('dow', datareceb)  
             FROM ".$xProj.".bensachados INNER JOIN ".$xProj.".poslog ON ".$xProj.".bensachados.codusuins = ".$xProj.".poslog.pessoas_id
             WHERE ".$xProj.".bensachados.ativo = 1 And AGE(".$xProj.".bensachados.datareceb, CURRENT_DATE) <= '1 YEAR' 
             ORDER BY ".$xProj.".bensachados.datareceb DESC");
@@ -66,19 +79,20 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             $Impr = 1; // relatório liberado 
 
             if($Marca == 0 && $SoInsBens == 1){ // só para registrar (portaria nos fins de semana) - Só mostra os do dia
-                $rs0 = pg_query($Conec, "SELECT ".$xProj.".bensachados.id, to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, usuguarda, usurestit, usucsg, usuarquivou, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, usudestino, CURRENT_DATE-datareceb, codusuins 
+                $rs0 = pg_query($Conec, "SELECT ".$xProj.".bensachados.id, to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, usuguarda, usurestit, usucsg, usuarquivou, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, usudestino, CURRENT_DATE-datareceb, codusuins, date_part('dow', datareceb) 
                 FROM ".$xProj.".bensachados INNER JOIN ".$xProj.".poslog ON ".$xProj.".bensachados.codusuins = ".$xProj.".poslog.pessoas_id
                 WHERE ".$xProj.".bensachados.ativo = 1 And usucsg = 0 And ".$xProj.".bensachados.datareceb = CURRENT_DATE 
                 ORDER BY ".$xProj.".bensachados.datareceb DESC");
             }
 
             ?>
-            <table id="idTabela" class="display" style="width:85%">
+            <table id="idTabela" class="display" style="width:85%;">
                 <thead>
                     <tr>
                         <th style="display: none;"></th>
                         <th style="display: none;"></th>
                         <th>Data</th>
+                        <th>Sem</th>
                         <th style="text-align: center;">Nº Processo</th>
                         <th style="text-align: center;">Descrição do Bem</th>
                         <th style="text-align: center;" title="Dias decorridos desde o registro">Dias</th>
@@ -100,6 +114,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td style="display: none;"></td>
                             <td style="display: none;"><?php echo $tbl0[0]; ?></td>
                             <td><?php echo $tbl0[1]; ?></td> <!-- data -->
+                            <td><?php echo $Semana_Extract[$tbl0[12]]; ?></td> <!-- dia semana -->
                             <td style="text-align: center;"><?php echo $tbl0[2]; ?></td> <!-- num processo -->
                             <td><?php echo nl2br($tbl0[3]); ?>
                             <hr style="margin: 0; padding: 0px;">

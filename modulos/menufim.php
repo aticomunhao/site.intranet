@@ -181,6 +181,13 @@
 							echo "<a href='#' onclick='openhref(75);'>Chaves Portaria</a>";
 						echo "</li>";
 					}
+					$Contr = parEsc("contr", $Conec, $xProj, $_SESSION["usuarioID"]);
+					$FiscContr = parEsc("fisc_contr", $Conec, $xProj, $_SESSION["usuarioID"]);
+					if($Contr == 1 || $FiscContr == 1 || $_SESSION["AdmUsu"] > 6){
+						echo "<li>";
+							echo "<a href='#' onclick='openhref(76);'>Contratos</a>";
+						echo "</li>";
+					}
 					?>
 					<li>
 						<a href='#'>Eletricidade</a>

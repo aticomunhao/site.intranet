@@ -285,7 +285,7 @@ session_start();
                 <h3>Telefones Úteis</h3>
             </div>
 
-            <table id="idTabela" class="display" style="width:85%">
+            <table id="idTabela" class="display" style="width:85%;">
                 <thead>
 	                <tr>
                         <th style="display:none;">-</th> <!--Para não indexar pelo campo seguinte, que pode aparecer ou não, conforme a OM do usuário  -->

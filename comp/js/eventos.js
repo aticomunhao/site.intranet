@@ -93,10 +93,13 @@ function openhref(Num){
     if(parseInt(Num) === 74){
         $('#container3').load('modulos/quadroHorario/quadro1.php?numgrupo=1');
     }
-
     if(parseInt(Num) === 75){
         $('#container3').load('modulos/claviculario/clavic1.php');
     }
+    if(parseInt(Num) === 76){
+        $('#container3').load('modulos/contratos/contratos1.php');
+    }
+
 
 
     if(parseInt(Num) === 30){

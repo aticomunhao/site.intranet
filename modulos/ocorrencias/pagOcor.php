@@ -359,7 +359,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
             $row0 = pg_num_rows($rs0);
             ?>
-                <table id="idTabela" class="display" style="width:85%">
+                <table id="idTabela" class="display" style="width:85%;">
                 <thead>
                     <tr>
                         <th style="display: none;">-</th>

@@ -134,7 +134,7 @@ require_once("abrealas.php");
                     </tr>
                 </table>
             </div>
-            <table id="idTabelaUsu" class="display" style="width:85%">
+            <table id="idTabelaUsu" class="display" style="width:85%;">
                 <thead>
                     <tr>
                         <th style="display: none;"></th>

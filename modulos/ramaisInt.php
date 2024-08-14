@@ -318,7 +318,7 @@ session_start();
                 <h3>Ramais Telefônicos Internos</h3>
             </div>
 
-            <table id="idTabela" class="display" style="width:85%">
+            <table id="idTabela" class="display" style="width:85%;">
                 <thead>
                     <tr>
                         <th>Nome Usual</th>

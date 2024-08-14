@@ -1619,7 +1619,7 @@ if($row == 0){ // não tinha a coluna chaves_id
                     <tr>
                         <td class="etiq80" title="Fiscalizar a entrega e devolução das chaves do claviculário da Portaria">DAF:</td>
                         <td colspan="4">
-                            <input type="checkbox" id="fiscalChaves" title="BGerenciar, fiscalizar a entrega e devolução das chaves do claviculário da Portaria" onchange="marcaChave(this, 'fisc_clav');" >
+                            <input type="checkbox" id="fiscalChaves" title="Gerenciar, fiscalizar a entrega e devolução das chaves do claviculário da Portaria" onchange="marcaChave(this, 'fisc_clav');" >
                             <label for="fiscalChaves" title="Gereciar, fiscalizar e editar as chaves do claviculário da Portaria">gerenciar, editar e fiscalizar as chaves do claviculário da Portaria</label>
                         </td>
                     </tr>

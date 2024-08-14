@@ -223,6 +223,17 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                                         document.getElementById("fiscalChaves").checked = false;
                                     }
 
+                                    if(parseInt(Resp.contrato) === 1){
+                                        document.getElementById("insContrato").checked = true;
+                                    }else{
+                                        document.getElementById("insContrato").checked = false;
+                                    }
+                                    if(parseInt(Resp.fisccontrato) === 1){
+                                        document.getElementById("fiscalContrato").checked = true;
+                                    }else{
+                                        document.getElementById("fiscalContrato").checked = false;
+                                    }
+                                    
                                     document.getElementById("titulomodal").innerHTML = "Edição de Usuários";
                                     document.getElementById("ressetsenha").disabled = false;
                                     document.getElementById("mudou").value = "0";
@@ -369,6 +380,14 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     FiscChaves = 1;
                 }
 
+                Contr = 0;
+                if(document.getElementById("insContrato").checked === true){
+                    Contr = 1;
+                }
+                FiscContr = 0;
+                if(document.getElementById("fiscalContrato").checked === true){
+                    FiscContr = 1;
+                }
 
                 if(parseInt(document.getElementById("mudou").value) === 1){
                     ajaxIni();
@@ -403,6 +422,8 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                         +"&clavic="+Clavic
                         +"&pegachave="+PegaChave
                         +"&fiscchaves="+FiscChaves
+                        +"&contrato="+Contr
+                        +"&fisccontrato="+FiscContr
                         , true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
@@ -777,6 +798,14 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     Titulo = "Claviculário da Portaria";
                     Texto = "Esta marca permite a edição do claviculário e dá acesso aos registros de entrega e devolução de chaves do claviculário da Portaria.";
                 }
+                if(parseInt(Cod) === 14){
+                    Titulo = "Contratos DAF";
+                    Texto = "Esta marca permite colecionar e editar os contratos da casa como Contratante e Contratada.";
+                }
+                if(parseInt(Cod) === 15){
+                    Titulo = "Contratos DAF";
+                    Texto = "Esta marca permite apenas verificar e fiscalizar os contratos da casa como Contratante e Contratada. Não pode editar ou modificar.";
+                }
 
                 document.getElementById("textoInfo").innerHTML = Texto;
                 document.getElementById("textoTitulo").innerHTML = Titulo;
@@ -1120,7 +1149,7 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                             <input type="checkbox" id="fiscalChaves" title="Fiscalizar a entrega e devolução das chaves do claviculário da Portaria" onchange="modif();" >
                             <label for="fiscalChaves" title="Fiscalizar e editar as chaves do claviculário da Portaria">editar e fiscalizar as chaves do claviculário da Portaria</label>
                         </td>
-                        <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(13);" title="Guia rápido"></td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(13);" title="Guia rápido"></td>
                     </tr>
                     <tr>
                         <td class="etiq80" style="border-bottom: 1px solid;" title="Autorizado a retirar chaves do claviculário da Portaria">Claviculário Portaria</td>
@@ -1150,12 +1179,29 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                             ?>
                             </select>
                         </td>
-                        <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(12);" title="Guia rápido"></td>
+                        <td style="text-align: center; border-bottom: 1px solid;"></td>
                     </tr>
 
                     <?php
                     }
                     ?>
+
+                    <tr>
+                        <td class="etiq80" title="Acompanhar e colecionar contratos da casa como Contratado ou Contratante.">Contratos DAF</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="insContrato" title="Acompanhar e colecionar contratos da casa como Contratado ou Contratante." onchange="modif();" >
+                            <label for="insContrato" title="Acompanhar e colecionar contratos da casa como Contratado ou Contratante.">registrar, colecionar e acompanhar os contratos da casa</label>
+                        </td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(14);" title="Guia rápido"></td>
+                    </tr>
+                    <tr>
+                        <td class="etiq80" title="Acompanhar e fiscalizar os contratos da casa como Contratante ou Contratada.">Contratos DAF:</td>
+                        <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
+                            <input type="checkbox" id="fiscalContrato" title="Acompanhar e fiscalizar os contratos da casa como Contratante ou Contratada." onchange="modif();" >
+                            <label for="fiscalContrato" title="Acompanhar e fiscalizar os contratos da casa como Contratante ou Contratada.">fiscalizar e acompanhar os contratos da casa</label>
+                        </td>
+                        <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(15);" title="Guia rápido"></td>
+                    </tr>
 
 
 

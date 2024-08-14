@@ -69,13 +69,24 @@
 				");
 				//0037
 				pg_query($Conec, "UPDATE ".$xProj.".poslog SET fisc_clav = 0 WHERE fisc_clav = 1");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET fisc_clav = 1 WHERE pessoas_id = 2");
 				pg_query($Conec, "UPDATE ".$xProj.".poslog SET fisc_clav = 1 WHERE pessoas_id = 3");
 				pg_query($Conec, "UPDATE ".$xProj.".poslog SET fisc_clav = 1 WHERE pessoas_id = 83");
 
 				pg_query($Conec, "UPDATE ".$xProj.".poslog SET bens = 0, fiscbens = 0");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET bens = 1, fiscbens = 1 WHERE fiscbens = 3");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET bens = 1, fiscbens = 1 WHERE fiscbens = 83");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET bens = 1, fiscbens = 1 WHERE pessoas_id = 2");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET bens = 1, fiscbens = 1 WHERE pessoas_id = 3");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET bens = 1, fiscbens = 1 WHERE pessoas_id = 83");
 				pg_query($Conec, "UPDATE ".$xProj.".poslog SET soinsbens = 1 WHERE lro = 1");
+
+				//0038
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS contr smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisc_contr smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS calcdata1 date DEFAULT '3000-12-31' ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS calcdata2 date DEFAULT '3000-12-31' ;");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET contr = 1, fisc_contr = 1 WHERE pessoas_id = 2");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET contr = 1, fisc_contr = 1 WHERE pessoas_id = 3");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET contr = 1, fisc_contr = 1 WHERE pessoas_id = 83");
 
 			} // fim data limite
         ?>

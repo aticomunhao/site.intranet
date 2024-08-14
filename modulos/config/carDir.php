@@ -37,7 +37,7 @@ require_once("abrealas.php");
             <?php
                 $rs0 = pg_query($Conec, "SELECT codset, siglasetor, descsetor, ativo FROM ".$xProj.".setores WHERE codset > 1 ORDER BY codset");
             ?>
-            <table id="idTabela" class="display" style="width:85%">
+            <table id="idTabela" class="display" style="width:85%;">
                 <thead>
                     <tr>
                         <th style="display: none;"></th>

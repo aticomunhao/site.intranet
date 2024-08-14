@@ -60,3 +60,29 @@ function escMenu($Conec, $xProj, $Cod){
    }
    return $escSis;
 }
+
+function calcRecuaPrazoDias($DataFut, $Dias){
+   list($dia, $mes, $ano) = explode('/', $DataFut);
+   $DataUnix = mktime( 0, 0, 0, $mes, $dia, $ano);
+   $DiasUnix = ($Dias*86400); // valor de 1 dia
+   $Data = date('d/m/Y', $DataUnix-$DiasUnix);
+   return $Data;
+}
+
+function calculaDifDias($DataAnt, $DataFut){
+   list($dia, $mes, $ano) = explode('/', $DataAnt);  // Separa em dia, mês e ano
+   $DataUnix1 = mktime( 0, 0, 0, $mes, $dia, $ano);
+   list($dia, $mes, $ano) = explode('/', $DataFut);  // Separa em dia, mês e ano
+   $DataUnix2 = mktime( 0, 0, 0, $mes, $dia, $ano);
+   $Dias = floor((((($DataUnix1 - $DataUnix2) / 60) / 60) / 24)); // Dias decorridos
+   $Dias = $Dias*-1;
+   return $Dias;
+}
+
+function calculaDiasDecorridos($Data1){
+   list($dia, $mes, $ano) = explode('/', $Data1);  // Separa em dia, mês e ano
+   $DataUnix = mktime( 0, 0, 0, $mes, $dia, $ano);
+   $HojeUnix = mktime(0, 0, 0, date('m'), date('d'), date('Y'));
+   $Dias = floor((((($HojeUnix - $DataUnix) / 60) / 60) / 24)); // Dias decorridos
+   return $Dias;
+}

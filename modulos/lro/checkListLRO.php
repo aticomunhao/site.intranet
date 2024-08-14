@@ -16,7 +16,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <?php
             $rs0 = pg_query($Conec, "SELECT id, itemverif FROM ".$xProj.".livrocheck WHERE setor = 1 And ativo = 1 ORDER BY itemverif ");
         ?>
-            <table style="width:85%">
+            <table style="width:85%;">
                 <?php 
                 $Item = 1;
                 while ($tbl0 = pg_fetch_row($rs0)){

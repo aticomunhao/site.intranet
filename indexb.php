@@ -61,6 +61,15 @@
                 background-color: #000080; text-align: center; padding: 10px; border-radius: 10px;
                 cursor: pointer;
             }
+            .divTemContrato{
+                display: none; 
+                margin-bottom: 0px; 
+                color: white; font-weight: bold; 
+                background-color: #363636; /* grey21 */
+                text-align: center; padding: 10px; border: 2px solid; border-radius: 10px;
+                cursor: pointer;
+            }
+
             .blink{
                 animation: blink 1.2s infinite;
             }
@@ -100,6 +109,8 @@
                 document.getElementById("tarefa").style.display = "none";
                 document.getElementById("temBens").style.display = "none";
                 document.getElementById("temBensPrazo").style.display = "none";
+                document.getElementById("temContrato").style.display = "none";
+                
                 $('#container1').load('modulos/cabec.php');
                 $('#container2').load('modulos/menufim.php?diasemana='+document.getElementById('guardadiasemana').value);
                 $('#container4').load('modulos/rodape.php');
@@ -134,6 +145,10 @@
                                     if(parseInt(Resp.bensdestinar) > 0){
                                         document.getElementById("temBensPrazo").innerHTML = "Há registro em Bens Encontrados superando o prazo de 90 dias.";
                                         document.getElementById("temBensPrazo").style.display = "block";
+                                    }
+                                    if(parseInt(Resp.contrato1) > 0 || parseInt(Resp.contrato2) > 0){
+                                        document.getElementById("temContrato").innerHTML = "Há contrato com prazo para notificação.";
+                                        document.getElementById("temContrato").style.display = "block";
                                     }
                                 }else{
                                     alert("Houve erro ao salvar");
@@ -197,6 +212,9 @@
             }
             function carregaBens(){
                 $('#container3').load('modulos/bensEncont/pagBens.php');
+            }
+            function carregaContrato(){
+                $('#container3').load('modulos/contratos/contratos1.php');
             }
             function fechaComemorat(){
                 document.getElementById("modalComemorat").style.display = "none";
@@ -351,6 +369,7 @@
                     <div id="temTarefa" class="divTemTarefa" onclick="carregaPag();"></div>
                     <div id="temBens" class="divTemBens" onclick="carregaBens();"></div>
                     <div id="temBensPrazo" class="divTemBensPrazo" onclick="carregaBens();"></div>
+                    <div id="temContrato" class="divTemContrato" onclick="carregaContrato();"></div>
 
                     <!-- texto da página inicial  -->
                     <div id="container7" style="padding-left: 10px; padding-right: 10px;"></div>

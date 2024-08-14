@@ -21,7 +21,7 @@ require_once("abrealas.php");
                 WHERE ".$xProj.".poslog.ativo = 1 And ".$xProj.".poslog.codsetor = $Cod 
                 ORDER BY ".$xProj.".poslog.adm DESC, ".$xProj.".poslog.nomecompl ASC ");
             ?>
-            <table class="display" style="width:85%">
+            <table class="display" style="width:85%;">
                 <?php 
                 while($tbl3 = pg_fetch_row($rs3)){
                     ?>

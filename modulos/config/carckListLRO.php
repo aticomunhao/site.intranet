@@ -35,7 +35,7 @@ require_once("abrealas.php");
             <?php
                 $rs0 = pg_query($Conec, "SELECT id, setor, itemverif, ativo FROM ".$xProj.".livrocheck WHERE setor = 1 ORDER BY itemverif ");
             ?>
-            <table id="idTabelaLRO" class="display" style="width:85%">
+            <table id="idTabelaLRO" class="display" style="width:85%;">
                 <thead>
                     <tr>
                         <th style="display: none;"></th>
