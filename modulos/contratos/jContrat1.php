@@ -38,27 +38,40 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         </script>
     </head>
     <body>
+        <?php
+        $Contr = parEsc("contr", $Conec, $xProj, $_SESSION["usuarioID"]);
+        ?>
         <div style="margin: 20px;">
             <div class="box" style="position: relative; float: left; width: 33%; text-align: left;">
+                <?php
+                if($Contr == 1){
+                ?>
                 <input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Novo" title="Inserir novo contrato onde a Comunhão é contratante." onclick="insContrato(1);">
+                <?php
+                }else{
+                    echo "&nbsp;";
+                }
+                ?>
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <h5>Contratadas</h5>
             </div>
-            <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
-                <label style="padding-left: 10px;"></label>
+            <div class="box" style="position: relative; float: left; width: 33%; text-align: right;">
+                <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprContratadas();" title="Gera um arquivo pdf com a relação dos contratados.">PDF</button>
+                <label style="padding-left: 5px;"></label>
             </div>
         </div>
 
          <!-- Empresas contratadas da comunhão -->
         <?php
         $rs0 = pg_query($Conec, "SELECT id, numcontrato, TO_CHAR(dataassinat, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), codsetor, codempresa, vigencia, notific, objetocontr,
-        CASE WHEN dataaviso <= CURRENT_DATE THEN true And datavencim >= CURRENT_DATE ELSE false END 
+        CASE WHEN dataaviso <= CURRENT_DATE AND datavencim >= CURRENT_DATE THEN 'aviso' END 
         FROM ".$xProj.".contratos1 WHERE ativo = 1 ORDER BY dataassinat DESC");
         $row0 = pg_num_rows($rs0);
+        //CASE WHEN dataaviso <= CURRENT_DATE THEN true And datavencim >= CURRENT_DATE ELSE false END 
         ?>
         <div style="padding: 10px;">
-            <table id="idTabela1" class="display" style="width:75%;">
+            <table id="idTabela1" class="display" style="width:95%;">
                 <thead>
                     <tr>
                         <th style="display: none;"></th>
@@ -74,16 +87,29 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     </tr>
                 </thead>
                 <tbody>
-                <?php 
+                    <?php 
                     while ($tbl = pg_fetch_row($rs0)) {
                         $Cod = $tbl[0];
                     ?>
                     <tr>
-                        <th style="display: none;"></th>
+                        <td style="display: none;"></td>
                         <td style="display: none;"><?php echo $tbl[0]; ?></td>
+                        <?php
+                            if($Contr == 1){
+                        ?>
                         <td><div class="quadrinhoClick" onclick="editContrato(1, <?php echo $Cod; ?>);" title="Data Assinatura"><?php echo $tbl[2]; ?></div></td>
                         <td><div class="quadrinhoClick" style="font-size: 70%;" onclick="editContrato(1, <?php echo $Cod; ?>);" title="Número do contrato"><?php echo $tbl[1]; ?></div></td>
-                        <td><div class="quadrinhoClick" style="<?php if($tbl[10] == 't'){echo 'color: red;';}else{echo 'color: black;';} ?>" onclick="editContrato(1, <?php echo $Cod; ?>);" title="Data Vencimento"><?php echo $tbl[3]; ?></div></td>
+                        <td><div class="quadrinhoClick" style="<?php if($tbl[10] == 'aviso'){echo 'color: red;';}else{echo 'color: black;';} ?>" onclick="editContrato(1, <?php echo $Cod; ?>);" title="Data Vencimento"><?php echo $tbl[3]; ?></div></td>
+                        <?php
+                            }else{
+                            ?>
+                        <td><div class="quadrinho" title="Data Assinatura"><?php echo $tbl[2]; ?></div></td>
+                        <td><div class="quadrinho" style="font-size: 70%;" title="Número do contrato"><?php echo $tbl[1]; ?></div></td>
+                        <td><div class="quadrinho" style="<?php if($tbl[10] == 't'){echo 'color: red;';}else{echo 'color: black;';} ?>" title="Data Vencimento"><?php echo $tbl[3]; ?></div></td>
+
+                            <?php
+                            }
+                        ?>
                         <td>
                             <?php
                                 $rs1 = pg_query($Conec, "SELECT empresa FROM ".$xProj.".contrato_empr WHERE id = $tbl[6]");

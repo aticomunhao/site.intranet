@@ -47,7 +47,6 @@ if(isset($_REQUEST["acao"])){
         $Erro = 0;
         $DataVenc = addslashes(filter_input(INPUT_GET, 'vencim')); 
         $DiasAntec = (int) filter_input(INPUT_GET, 'diasanteced'); 
-
         
         if($DiasAntec > 0){
             $DataAviso = calcRecuaPrazoDias($DataVenc, $DiasAntec); // (vencimento - dias de antecedência - abrealas.php)
@@ -63,12 +62,13 @@ if(isset($_REQUEST["acao"])){
         $DataV = implode("/", array_reverse(explode("/", $DataVenc)));
         pg_query($Conec, "UPDATE ".$xProj.".poslog SET calcdata1 = '$DataV', calcdata2 = '$DataAss' WHERE pessoas_id = $UsuIns");
 
-        $rs = pg_query($Conec, "SELECT CAST(TO_CHAR(AGE(calcdata1, calcdata2), 'MM') AS INTEGER), CAST(TO_CHAR(AGE(calcdata1, calcdata2), 'DD') AS INTEGER) FROM ".$xProj.".poslog WHERE pessoas_id = $UsuIns");
+        $rs = pg_query($Conec, "SELECT extract('Year' FROM AGE(calcdata1, calcdata2)), extract('Month' FROM AGE(calcdata1, calcdata2)), extract('Day' FROM AGE(calcdata1, calcdata2)) 
+        FROM ".$xProj.".poslog WHERE pessoas_id = $UsuIns ");
         $row = pg_num_rows($rs);
         if($row > 0){
             $tbl = pg_fetch_row($rs);
-            $PrazoM = $tbl[0];
-            $PrazoD = $tbl[1];
+            $PrazoM = ($tbl[0]*12)+$tbl[1]; // prazo em meses - $tbl[0] * 12 + $tbl[1]
+            $PrazoD = $tbl[2];
         }
 
         $var = array("coderro"=>$Erro, "dataaviso"=>$DataAviso, "dataassinat"=>$DataA, "antecip"=>$DiasAntec, "prazom"=>$PrazoM, "prazod"=>$PrazoD);
@@ -115,6 +115,8 @@ if(isset($_REQUEST["acao"])){
         $Objeto = addslashes(filter_input(INPUT_GET, 'objeto')); 
         $Obs = addslashes(filter_input(INPUT_GET, 'observ')); 
         $Prazo = (int) filter_input(INPUT_GET, 'prazo');
+        $guardaPrazo = filter_input(INPUT_GET, 'guardaPrazo');
+
         if($Prazo == 0){
             $Prazo = "";
         }else{
@@ -124,7 +126,10 @@ if(isset($_REQUEST["acao"])){
                 $Prazo = $Prazo." mês";
             }
         }
-        
+        if($guardaPrazo != ""){
+            $Prazo = $guardaPrazo;
+        }
+
         $DataA = addslashes(filter_input(INPUT_GET, 'assinat')); 
         $DataAssinat = implode("/", array_reverse(explode("/", $DataA))); // inverte o formato da data para y/m/d
 
@@ -161,7 +166,7 @@ if(isset($_REQUEST["acao"])){
         }else{  // atualizar
             $rs = pg_query($Conec, "UPDATE ".$xProj.".contratos".$Tipo." SET dataassinat = '$DataAssinat', datavencim = '$DataVenc', vigencia = '$Prazo', 
             dataaviso = '$DataAviso', numcontrato = '$NumContrato', codsetor = $Setor, codempresa = $NumEmpresa, 
-            objetocontr = '$Objeto', observ = '$Obs', notific = $Notif, pararaviso = $ParaAv, diasnotific = $DiasAntec, ativo = 1, usuins =  $UsuIns, datains = NOW() WHERE id = $Cod");
+            objetocontr = '$Objeto', observ = '$Obs', notific = $Notif, pararaviso = $ParaAv, diasnotific = $DiasAntec, ativo = 1, usuedit =  $UsuIns, dataedit = NOW() WHERE id = $Cod");
             if($Prazo == "" || $Prazo == 0){
                 $PrazoDias = calculaDifDias($DataA, $DataV);
                 if($PrazoDias < 60){
@@ -197,8 +202,8 @@ if(isset($_REQUEST["acao"])){
         $Campo = filter_input(INPUT_GET, 'campo');
         $Valor = (int) filter_input(INPUT_GET, 'valor');
 
-        if($Campo == "fisc_contr" && $Valor == 0){
-            $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE fisc_contr = 1");
+        if($Campo == "contr" && $Valor == 0){
+            $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE contr = 1");
             $row = pg_num_rows($rs);
             if($row == 1){
                 $Erro = 2;
@@ -241,5 +246,19 @@ if(isset($_REQUEST["acao"])){
         $responseText = json_encode($var);
         echo $responseText;
     }
+
+    if($Acao == "apagaContrato"){
+        $Erro = 0;
+        $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de polog
+        $Tipo = (int) filter_input(INPUT_GET, 'tipo');
+        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".contratos".$Tipo." SET ativo = 0 WHERE id = $Cod");
+        if(!$rs1){
+            $Erro = 1;
+        }
+        $var = array("coderro"=>$Erro);
+        $responseText = json_encode($var);
+        echo $responseText;
+    }
+
 
 }

@@ -1190,7 +1190,7 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                         <td class="etiq80" title="Acompanhar e colecionar contratos da casa como Contratado ou Contratante.">Contratos DAF</td>
                         <td colspan="4">
                             <input type="checkbox" id="insContrato" title="Acompanhar e colecionar contratos da casa como Contratado ou Contratante." onchange="modif();" >
-                            <label for="insContrato" title="Acompanhar e colecionar contratos da casa como Contratado ou Contratante.">registrar, colecionar e acompanhar os contratos da casa</label>
+                            <label for="insContrato" title="Acompanhar e colecionar contratos da casa como Contratado ou Contratante.">registrar, editar e acompanhar os contratos da casa</label>
                         </td>
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(14);" title="Guia rápido"></td>
                     </tr>

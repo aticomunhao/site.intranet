@@ -157,7 +157,7 @@ if(isset($_REQUEST["acao"])){
         $row0 = pg_num_rows($rs0);
         $pdf->ln(3);
         $pdf->SetFont('Arial', 'I', 11);
-        $pdf->MultiCell(0, 3, "Usuários autorizados apenas registrar os Bens Encontrados:", 0, 'L', false);
+        $pdf->MultiCell(0, 3, "Usuários autorizados somente para registrar os Bens Encontrados:", 0, 'L', false);
         $pdf->ln(5);
         if($row0 > 0){
             $pdf->SetFont('Arial', 'I', 8);

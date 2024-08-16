@@ -103,6 +103,7 @@ if(isset($_REQUEST["acao"])){
     $Mes = "08";
 
     if($Acao == "listaContratos"){
+//Contratadas
         $pdf->ln(5);
         $pdf->SetFont('Arial', '', 11);
         $pdf->MultiCell(0, 5, "Empresas Contratadas pela Comunhão", 0, 'C', false);
@@ -118,9 +119,10 @@ if(isset($_REQUEST["acao"])){
             $pdf->Cell(30, 3, "Número", 0, 0, 'C');
             $pdf->Cell(20, 3, "Vencimento", 0, 0, 'C');
             $pdf->Cell(65, 3, "Empresa", 0, 0, 'L');
-            $pdf->Cell(90, 3, "Objeto", 0, 0, 'L');
+            
             $pdf->Cell(20, 3, "Setor", 0, 0, 'L');
             $pdf->Cell(20, 3, "Vigência", 0, 0, 'L');
+            $pdf->Cell(90, 3, "Objeto", 0, 0, 'L');
             $pdf->ln(4);
             $lin = $pdf->GetY();
             $pdf->Line(25, $lin, 282, $lin);
@@ -143,9 +145,7 @@ if(isset($_REQUEST["acao"])){
                 }
 
                 $pdf->SetFont('Arial', '', 8);
-//                $pdf->MultiCell(150, 4, $DescEmpr, 0, 'L', false);
                 $pdf->Cell(65, 5, substr($DescEmpr, 0, 65), 0, 0, 'L');
-                $pdf->Cell(90, 5, substr($tbl0[9], 0, 90), 0, 0, 'L');
 
                 $rs2 = pg_query($ConecPes, "SELECT sigla FROM ".$xPes.".setor WHERE id = $tbl0[5]");
                 $row2 = pg_num_rows($rs2);
@@ -157,10 +157,11 @@ if(isset($_REQUEST["acao"])){
                 }
                 $pdf->Cell(20, 5, $DescSetor, 0, 0, 'L');
                 $pdf->Cell(20, 5, $tbl0[7], 0, 0, 'L');
+                $pdf->MultiCell(100, 4, $tbl0[9], 0, 'L', false);
+
                 $pdf->SetFont('Arial', '', 10);
                 $lin = $pdf->GetY();
                 $pdf->Line(25, $lin, 282, $lin);
-                $pdf->ln(5);
             }
             $lin = $pdf->GetY();               
             $pdf->Line(10, $lin, 290, $lin);
@@ -172,10 +173,7 @@ if(isset($_REQUEST["acao"])){
             $pdf->Cell(40, 5, 'Nenhum contrato encontrado.', 0, 1, 'L');
         }
 
-
-
-
-
+//Contratantes
         $pdf->ln(10);
         $pdf->SetFont('Arial', '', 11);
         $pdf->MultiCell(0, 5, "Empresas Contratantes", 0, 'C', false);
@@ -191,9 +189,10 @@ if(isset($_REQUEST["acao"])){
             $pdf->Cell(30, 3, "Número", 0, 0, 'C');
             $pdf->Cell(20, 3, "Vencimento", 0, 0, 'C');
             $pdf->Cell(65, 3, "Empresa", 0, 0, 'L');
-            $pdf->Cell(90, 3, "Objeto", 0, 0, 'L');
+            
             $pdf->Cell(20, 3, "Setor", 0, 0, 'L');
             $pdf->Cell(20, 3, "Vigência", 0, 0, 'L');
+            $pdf->Cell(90, 3, "Objeto", 0, 0, 'L');
             $pdf->ln(4);
             $lin = $pdf->GetY();
             $pdf->Line(25, $lin, 282, $lin);
@@ -216,9 +215,7 @@ if(isset($_REQUEST["acao"])){
                 }
 
                 $pdf->SetFont('Arial', '', 8);
-//                $pdf->MultiCell(150, 4, $DescEmpr, 0, 'L', false);
                 $pdf->Cell(65, 5, substr($DescEmpr, 0, 65), 0, 0, 'L');
-                $pdf->Cell(90, 5, substr($tbl0[9], 0, 90), 0, 0, 'L');
 
                 $rs2 = pg_query($ConecPes, "SELECT sigla FROM ".$xPes.".setor WHERE id = $tbl0[5]");
                 $row2 = pg_num_rows($rs2);
@@ -230,10 +227,11 @@ if(isset($_REQUEST["acao"])){
                 }
                 $pdf->Cell(20, 5, $DescSetor, 0, 0, 'L');
                 $pdf->Cell(20, 5, $tbl0[7], 0, 0, 'L');
+                $pdf->MultiCell(100, 4, $tbl0[9], 0, 'L', false);
+
                 $pdf->SetFont('Arial', '', 10);
                 $lin = $pdf->GetY();
                 $pdf->Line(25, $lin, 282, $lin);
-                $pdf->ln(5);
             }
             $lin = $pdf->GetY();               
             $pdf->Line(10, $lin, 290, $lin);
@@ -244,7 +242,154 @@ if(isset($_REQUEST["acao"])){
             $pdf->SetX(50);
             $pdf->Cell(40, 5, 'Nenhum contrato encontrado.', 0, 1, 'L');
         }
-
     }
+
+
+    if($Acao == "listaContratadas"){
+//Contratadas
+        $pdf->ln(5);
+        $pdf->SetFont('Arial', '', 11);
+        $pdf->MultiCell(0, 5, "Empresas Contratadas pela Comunhão", 0, 'C', false);
+        $rs0 = pg_query($Conec, "SELECT id, numcontrato, TO_CHAR(dataassinat, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), codsetor, codempresa, vigencia, notific, objetocontr,
+        CASE WHEN dataaviso <= CURRENT_DATE THEN true And datavencim >= CURRENT_DATE ELSE false END 
+        FROM ".$xProj.".contratos1 WHERE ativo = 1 ORDER BY dataassinat DESC");
+        $row0 = pg_num_rows($rs0);
+        $pdf->ln(5);
+        if($row0 > 0){
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->SetX(25);
+            $pdf->Cell(20, 3, "Assinatura", 0, 0, 'C');
+            $pdf->Cell(30, 3, "Número", 0, 0, 'C');
+            $pdf->Cell(20, 3, "Vencimento", 0, 0, 'C');
+            $pdf->Cell(65, 3, "Empresa", 0, 0, 'L');
+            
+            $pdf->Cell(20, 3, "Setor", 0, 0, 'L');
+            $pdf->Cell(20, 3, "Vigência", 0, 0, 'L');
+            $pdf->Cell(90, 3, "Objeto", 0, 0, 'L');
+            $pdf->ln(4);
+            $lin = $pdf->GetY();
+            $pdf->Line(25, $lin, 282, $lin);
+            $pdf->SetFont('Arial', '', 10);
+
+            while($tbl0 = pg_fetch_row($rs0)){
+                $Cod = $tbl0[0];
+                $pdf->SetX(25); 
+                $pdf->Cell(20, 5, $tbl0[2], 0, 0, 'C');
+                $pdf->Cell(30, 5, $tbl0[1], 0, 0, 'C');
+                $pdf->Cell(20, 5, $tbl0[3], 0, 0, 'C');
+
+                $rs1 = pg_query($Conec, "SELECT empresa FROM ".$xProj.".contrato_empr WHERE id = $tbl0[6]");
+                $row1 = pg_num_rows($rs1);
+                if($row1 > 0){
+                    $tbl1 = pg_fetch_row($rs1);
+                    $DescEmpr = $tbl1[0];
+                }else{
+                    $DescEmpr = "";
+                }
+
+                $pdf->SetFont('Arial', '', 8);
+                $pdf->Cell(65, 5, substr($DescEmpr, 0, 65), 0, 0, 'L');
+
+                $rs2 = pg_query($ConecPes, "SELECT sigla FROM ".$xPes.".setor WHERE id = $tbl0[5]");
+                $row2 = pg_num_rows($rs2);
+                if($row2 > 0){
+                    $tbl2 = pg_fetch_row($rs2);
+                    $DescSetor = $tbl2[0];
+                }else{
+                    $DescSetor = "";
+                }
+                $pdf->Cell(20, 5, $DescSetor, 0, 0, 'L');
+                $pdf->Cell(20, 5, $tbl0[7], 0, 0, 'L');
+                $pdf->MultiCell(100, 4, $tbl0[9], 0, 'L', false);
+
+                $pdf->SetFont('Arial', '', 10);
+                $lin = $pdf->GetY();
+                $pdf->Line(25, $lin, 282, $lin);
+            }
+            $lin = $pdf->GetY();               
+            $pdf->Line(10, $lin, 290, $lin);
+            $pdf->ln(10);
+       
+        }else{
+            $pdf->SetFont('Arial', 'I', 11);
+            $pdf->SetX(50);
+            $pdf->Cell(40, 5, 'Nenhum contrato encontrado.', 0, 1, 'L');
+        }
+    }
+
+    if($Acao == "listaContratantes"){
+        //Contratantes
+        $pdf->ln(10);
+        $pdf->SetFont('Arial', '', 11);
+        $pdf->MultiCell(0, 5, "Empresas Contratantes", 0, 'C', false);
+        $rs0 = pg_query($Conec, "SELECT id, numcontrato, TO_CHAR(dataassinat, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), codsetor, codempresa, vigencia, notific, objetocontr,
+        CASE WHEN dataaviso <= CURRENT_DATE THEN true And datavencim >= CURRENT_DATE ELSE false END 
+        FROM ".$xProj.".contratos2 WHERE ativo = 1 ORDER BY dataassinat DESC");
+        $row0 = pg_num_rows($rs0);
+        $pdf->ln(5);
+        if($row0 > 0){
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->SetX(25);
+            $pdf->Cell(20, 3, "Assinatura", 0, 0, 'C');
+            $pdf->Cell(30, 3, "Número", 0, 0, 'C');
+            $pdf->Cell(20, 3, "Vencimento", 0, 0, 'C');
+            $pdf->Cell(65, 3, "Empresa", 0, 0, 'L');
+            
+            $pdf->Cell(20, 3, "Setor", 0, 0, 'L');
+            $pdf->Cell(20, 3, "Vigência", 0, 0, 'L');
+            $pdf->Cell(90, 3, "Objeto", 0, 0, 'L');
+            $pdf->ln(4);
+            $lin = $pdf->GetY();
+            $pdf->Line(25, $lin, 282, $lin);
+            $pdf->SetFont('Arial', '', 10);
+
+            while($tbl0 = pg_fetch_row($rs0)){
+                $Cod = $tbl0[0];
+                $pdf->SetX(25); 
+                $pdf->Cell(20, 5, $tbl0[2], 0, 0, 'C');
+                $pdf->Cell(30, 5, $tbl0[1], 0, 0, 'C');
+                $pdf->Cell(20, 5, $tbl0[3], 0, 0, 'C');
+
+                $rs1 = pg_query($Conec, "SELECT empresa FROM ".$xProj.".contrato_empr WHERE id = $tbl0[6]");
+                $row1 = pg_num_rows($rs1);
+                if($row1 > 0){
+                    $tbl1 = pg_fetch_row($rs1);
+                    $DescEmpr = $tbl1[0];
+                }else{
+                    $DescEmpr = "";
+                }
+
+                $pdf->SetFont('Arial', '', 8);
+                $pdf->Cell(65, 5, substr($DescEmpr, 0, 65), 0, 0, 'L');
+
+                $rs2 = pg_query($ConecPes, "SELECT sigla FROM ".$xPes.".setor WHERE id = $tbl0[5]");
+                $row2 = pg_num_rows($rs2);
+                if($row2 > 0){
+                    $tbl2 = pg_fetch_row($rs2);
+                    $DescSetor = $tbl2[0];
+                }else{
+                    $DescSetor = "";
+                }
+                $pdf->Cell(20, 5, $DescSetor, 0, 0, 'L');
+                $pdf->Cell(20, 5, $tbl0[7], 0, 0, 'L');
+                $pdf->MultiCell(100, 4, $tbl0[9], 0, 'L', false);
+
+                $pdf->SetFont('Arial', '', 10);
+                $lin = $pdf->GetY();
+                $pdf->Line(25, $lin, 282, $lin);
+            }
+            $lin = $pdf->GetY();               
+            $pdf->Line(10, $lin, 290, $lin);
+            $pdf->ln(10);
+       
+        }else{
+            $pdf->SetFont('Arial', 'I', 11);
+            $pdf->SetX(50);
+            $pdf->Cell(40, 5, 'Nenhum contrato encontrado.', 0, 1, 'L');
+        }
+    }
+
+
+
  }
  $pdf->Output();

@@ -94,7 +94,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
             
             $(document).ready(function(){
-                if(parseInt(document.getElementById("UsuAdm").value) > 6){
+                if(parseInt(document.getElementById("guardaContr").value) === 1 || parseInt(document.getElementById("guardaFiscContr").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
                     $("#faixacontatante").load("modulos/contratos/jContrat1.php");
                     $("#faixacontratada").load("modulos/contratos/jContrat2.php");
                 }else{
@@ -104,7 +104,6 @@ if(!isset($_SESSION["usuarioID"])){
                 $('#dataAssinat').datepicker({ uiLibrary: 'bootstrap4', locale: 'pt-br', format: 'dd/mm/yyyy' });
                 $("#dataVencim").mask("99/99/9999");
                 $("#configCpfUsuario").mask("999.999.999-99");
-
 
                 $("#configselecUsuario").change(function(){
                     if(document.getElementById("configselecUsuario").value == ""){
@@ -197,6 +196,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 document.getElementById("guardaCod").value = 0;
                 document.getElementById("guardaTipo").value = Tipo;
+                document.getElementById("guardaPrazo").value = "";
                 document.getElementById("diasAnteced").disabled = true;
                 document.getElementById("notifica2").checked = true;
                 document.getElementById("diasAnteced").value = "";
@@ -233,6 +233,7 @@ if(!isset($_SESSION["usuarioID"])){
             function editContrato(Tipo, Cod){
                 document.getElementById("guardaTipo").value = Tipo;
                 document.getElementById("guardaCod").value = Cod;
+                document.getElementById("guardaPrazo").value = "";
                 if(parseInt(Tipo) === 1){
                     document.getElementById("titmodaledit").innerHTML = "Empresas Contratadas";
                 }
@@ -401,6 +402,7 @@ if(!isset($_SESSION["usuarioID"])){
                     +"&pararaviso="+ParaAv
                     +"&anteced="+document.getElementById("diasAnteced").value
                     +"&prazo="+document.getElementById("selecPrazo").value
+                    +"&guardaPrazo="+document.getElementById("guardaPrazo").value
                     , true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
@@ -439,6 +441,7 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("dataVencim").value == ""){
                     return false;
                 }
+                document.getElementById("guardaPrazo").value = "";
                 if(compareDates(document.getElementById("dataAssinat").value, document.getElementById("dataVencim").value) == true){
                     document.getElementById("dataVencim").focus();
                     $.confirm({
@@ -480,6 +483,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     }
                                     if(parseInt(Resp.prazod) > 0){
                                         document.getElementById("selecPrazo").value = "";
+                                        document.getElementById("guardaPrazo").value = Resp.prazom+" meses "+Resp.prazod+" dias";
                                     }else{
                                         document.getElementById("selecPrazo").value = Resp.prazom;
                                     }
@@ -505,6 +509,7 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("dataAssinat").value == ""){
                     return false;
                 }
+                document.getElementById("guardaPrazo").value = "";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/contratos/salvaContrato.php?acao=calcprazo&assinat="+encodeURIComponent(document.getElementById("dataAssinat").value)
@@ -536,8 +541,6 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("configselecUsuario").value = "";
                 document.getElementById("modalContratosConfig").style.display = "block";
             }
-
-
 
             function marcaContrato(obj, Campo){
                 if(obj.checked === true){
@@ -594,12 +597,54 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
+            function apagarContrato(){
+                $.confirm({
+                    title: 'Confirmação',
+                    content: 'Confirma apagar este lançamento?<br>Não haverá possibilidade de recuperação.<br>Continua?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/contratos/salvaContrato.php?acao=apagaContrato&codigo="+document.getElementById("guardaCod").value
+                                +"&tipo="+document.getElementById("guardaTipo").value, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro no servidor.")
+                                            }else{
+                                                document.getElementById("editaModalContratos").style.display = "none";
+                                                $("#faixacontatante").load("modulos/contratos/jContrat1.php");
+                                                $("#faixacontratada").load("modulos/contratos/jContrat2.php");
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {}
+                    }
+                });
+            }
+
             function resumoUsuContratos(){
                 window.open("modulos/contratos/imprUsuContr1.php?acao=listaUsuarios", "ContrUsu");
             }
             function imprListaContratos(){
                 window.open("modulos/contratos/imprContr1.php?acao=listaContratos", "ListaContratos");
             }
+            function imprContratadas(){
+                window.open("modulos/contratos/imprContr1.php?acao=listaContratadas", "listaContratadas");
+            }
+            function imprContratantes(){
+                window.open("modulos/contratos/imprContr1.php?acao=listaContratantes", "listaContratantes");
+            }
+
             function fechaContratosConfig(){
                 document.getElementById("modalContratosConfig").style.display = "none";
             }
@@ -688,7 +733,7 @@ if(!isset($_SESSION["usuarioID"])){
     $row = pg_num_rows($rs);
     if($row == 0){
         pg_query($Conec, "INSERT INTO ".$xProj.".contratos1 (id, dataassinat, datavencim, dataaviso, numcontrato, codsetor, codempresa, objetocontr, vigencia, notific, diasnotific, ativo, usuins, datains ) 
-        VALUES (1, '2024/01/01', '2024/12/31', '3000-12-31', '1', 17, 1, 'Prestação de Serviços de Vigilância e Seguranda Desarmada', '12 meses', 0, 0, 1, 3, NOW()) ");
+        VALUES (1, '2024/01/01', '2024/12/31', '3000-12-31', '1', 17, 1, 'Prestação de Serviços de Vigilância e Segurança Desarmada', '12 meses', 0, 0, 1, 3, NOW()) ");
 
         pg_query($Conec, "INSERT INTO ".$xProj.".contratos1 (id, dataassinat, datavencim, dataaviso, numcontrato, codsetor, codempresa, objetocontr, vigencia, notific, diasnotific, ativo, usuins, datains ) 
         VALUES (2, '2024/02/23', '2025/02/22', '3000-12-31', '2', 4, 2, 'Fornecimento de uniformes para funcionários', '12 meses', 0, 0, 1, 3, NOW()) ");
@@ -704,6 +749,9 @@ if(!isset($_SESSION["usuarioID"])){
 
         pg_query($Conec, "INSERT INTO ".$xProj.".contratos1 (id, dataassinat, datavencim, dataaviso, numcontrato, codsetor, codempresa, objetocontr, vigencia, notific, diasnotific, ativo, usuins, datains ) 
         VALUES (6, '2023/01/06', '2024/03/01', '3000-12-31', '6', 5, 6, 'Prestação de serviços especializados em medicina do trabalho', '12 meses', 0, 0, 1, 3, NOW()) ");
+
+        pg_query($Conec, "INSERT INTO ".$xProj.".contratos1 (id, dataassinat, datavencim, dataaviso, numcontrato, codsetor, codempresa, objetocontr, vigencia, notific, diasnotific, ativo, usuins, datains ) 
+        VALUES (7, '2024/08/01', '2024/09/01', '2024-08-12', '7', 5, 1, 'Prestação de serviços aleatórios', '1 mês', 1, 20, 1, 3, NOW()) ");
     }
 
 
@@ -786,23 +834,31 @@ if(!isset($_SESSION["usuarioID"])){
         $OpDias = pg_query($Conec, "SELECT codesc FROM ".$xProj.".escolhas WHERE codesc <= 120 ORDER BY codesc");
         $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
         ?>
-
         <input type="hidden" id="UsuAdm" value = "<?php echo $_SESSION["AdmUsu"]; ?>" />
         <input type="hidden" id="guardaContr" value = "<?php echo $Contr; ?>" />
         <input type="hidden" id="guardaFiscContr" value = "<?php echo $FiscContr; ?>" />
         <input type="hidden" id="guardaCod" value = "0" />
         <input type="hidden" id="guardaTipo" value = "0" />
+        <input type="hidden" id="guardaPrazo" value = "" />
 
         <div style="margin: 20px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
-                <img src="imagens/settings.png" height="20px;" id="imgChavesconfig" style="cursor: pointer; padding-left: 30px;" onclick="abreContratosConfig();" title="Configurar o acesso aos contratos">
+                <?php
+                if($Contr == 1){
+                ?>
+                <img src="imagens/settings.png" height="20px;" style="cursor: pointer; padding-left: 30px;" onclick="abreContratosConfig();" title="Configurar o acesso aos contratos">
+                <?php
+                }else{
+                    echo "&nbsp;";
+                }
+                ?>
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <h4>Controle de Contratos</h4>
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <label style="padding-left: 20px;"></label>
-                <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprListaContratos();">PDF</button>
+                <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprListaContratos();" title="Gera um arquivo pdf com as duas relações.">PDF</button>
             </div>
 
             <br><br>
@@ -972,7 +1028,8 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="5" style="text-align: center; padding-top: 10px;"></td>
                         </tr>
                         <tr>
-                            <td colspan="5" style="text-align: center; padding-top: 10px;"><button class="botpadrblue" id="botSalvaContrato" onclick="salvaEditContrato();">Salvar</button></td>
+                            <td><button class="botpadrred" style="font-size: 60%;" id="botApagaBem" onclick="apagarContrato();">Apagar</button></td>
+                            <td colspan="4" style="text-align: center; padding-top: 10px;"><button class="botpadrblue" id="botSalvaContrato" onclick="salvaEditContrato();">Salvar</button></td>
                         </tr>
                         <tr>
                             <td colspan="5" style="text-align: center; padding-top: 5px;"><div id="mensagem" style="color: red; font-weight: bold;"></div></td>
