@@ -102,15 +102,36 @@ if(isset($_REQUEST["acao"])){
     $pdf->ln();
     $lin = $pdf->GetY();
     $pdf->Line(10, $lin, 290, $lin);
-    $pdf->SetDrawColor(200); // cinza claro  
+    $pdf->SetDrawColor(200); // cinza claro
+    $pdf->ln(7);  
 
-    $Mes = "08";
+    if($Acao == "listamesChaves"){
+        $Busca = addslashes(filter_input(INPUT_GET, 'mesano')); 
+        $Proc = explode("/", $Busca);
+        $Mes = $Proc[0];
+        if(strLen($Mes) < 2){
+            $Mes = "0".$Mes;
+        }
+        $Ano = $Proc[1];
+    }
+    if($Acao == "listaanoChaves"){
+        $Ano = filter_input(INPUT_GET, 'ano'); 
+    }
 
-    if($Acao == "listaUsuarios"){
+
+    if($Acao == "listamesChaves" || $Acao == "listaanoChaves"){
         $rs0 = pg_query($Conec, "SELECT ".$xProj.".chaves.id, chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente 
         FROM ".$xProj.".chaves  
         WHERE ativo = 1 And chavenum != 0 ORDER BY chavenum");
         $row0 = pg_num_rows($rs0);
+        $pdf->SetFont('Arial', 'I', 14);
+        if($Acao == "listamesChaves"){
+            $pdf->MultiCell(0, 5, $mes_extenso[$Mes]." / ".$Ano, 0, 'C', false);
+        }
+        if($Acao == "listaanoChaves"){
+            $pdf->MultiCell(0, 5, $Ano, 0, 'C', false);
+        }
+
         $pdf->ln(5);
         if($row0 > 0){
             $pdf->SetFont('Arial', 'I', 8);
@@ -138,8 +159,15 @@ if(isset($_REQUEST["acao"])){
                 $lin = $pdf->GetY();
                 $pdf->Line(25, $lin, 282, $lin);
 
-                $rs1 = pg_query($Conec, "SELECT TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datavolta, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datasaida, 'YYYY'), TO_CHAR(datavolta, 'YYYY'), usuretira, usudevolve, TO_CHAR(datavolta - datasaida, 'DD HH24:MI'), TO_CHAR(datavolta - datasaida, 'DD'), TO_CHAR(CURRENT_DATE - datasaida, 'DD'), telef FROM ".$xProj.".chaves_ctl 
-                WHERE chaves_id = $Cod ORDER BY datasaida");
+                if($Acao == "listamesChaves"){
+                    $rs1 = pg_query($Conec, "SELECT TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datavolta, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datasaida, 'YYYY'), TO_CHAR(datavolta, 'YYYY'), usuretira, usudevolve, TO_CHAR(datavolta - datasaida, 'DD HH24:MI'), TO_CHAR(datavolta - datasaida, 'DD'), TO_CHAR(CURRENT_DATE - datasaida, 'DD'), telef FROM ".$xProj.".chaves_ctl 
+                    WHERE chaves_id = $Cod And DATE_PART('MONTH', datasaida) = '$Mes' And DATE_PART('YEAR', datasaida) = '$Ano' ORDER BY datasaida");
+                }
+                if($Acao == "listaanoChaves"){
+                    $rs1 = pg_query($Conec, "SELECT TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datavolta, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datasaida, 'YYYY'), TO_CHAR(datavolta, 'YYYY'), usuretira, usudevolve, TO_CHAR(datavolta - datasaida, 'DD HH24:MI'), TO_CHAR(datavolta - datasaida, 'DD'), TO_CHAR(CURRENT_DATE - datasaida, 'DD'), telef FROM ".$xProj.".chaves_ctl 
+                    WHERE chaves_id = $Cod And DATE_PART('YEAR', datasaida) = '$Ano' ORDER BY datasaida");
+                }
+
                 $row1 = pg_num_rows($rs1);
                 if($row1 > 0){
                     $pdf->ln(1);

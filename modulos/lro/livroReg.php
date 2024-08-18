@@ -112,7 +112,8 @@ if(!isset($_SESSION["usuarioID"])){
                 if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) && parseInt(Resp.fiscalizaLro) === 1){
                     document.getElementById("botimprLRO").style.visibility = "visible";
                 }
-                if(parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
+
+                if(parseInt(document.getElementById("fiscalLRO").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
                     document.getElementById("botimprLRO").style.visibility = "visible";
                 }
 
@@ -133,7 +134,25 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 };
 
-            });
+                $("#selecMesAno").change(function(){
+                    document.getElementById("selecAno").value = "";
+                    if(document.getElementById("selecMesAno").value != ""){
+                        window.open("modulos/lro/imprLRO.php?acao=listamesLRO&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), document.getElementById("selecMesAno").value);
+                        document.getElementById("selecMesAno").value = "";
+                        document.getElementById("relacimprBens").style.display = "none";
+                    }
+                });
+                $("#selecAno").change(function(){
+                    document.getElementById("selecMesAno").value = "";
+                    if(document.getElementById("selecAno").value != ""){
+                        window.open("modulos/lro/imprLRO.php?acao=listaanoLRO&ano="+encodeURIComponent(document.getElementById("selecAno").value), document.getElementById("selecAno").value);
+                        document.getElementById("selecAno").value = "";
+                        document.getElementById("relacimprBens").style.display = "none";
+                    }
+                });
+
+
+            }); // fim ready
 
             function InsRegistro(){ // inserir novo registro
                 document.getElementById("jatem").value = "0";
@@ -245,6 +264,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             }
 
                                         }
+                                        document.getElementById("mostrarelatosubstit").value = Resp.substit;
                                         document.getElementById("relacMostramodalReg").style.display = "block";
                                     }
                                     //permissões
@@ -752,9 +772,13 @@ if(!isset($_SESSION["usuarioID"])){
                     window.open("modulos/lro/imprReg.php?acao=impr&codigo="+document.getElementById("guardacod").value, document.getElementById("guardacod").value);
                 }
             }
-            function imprLRO(){
-                window.open("modulos/lro/imprLRO.php?acao=impr", "imprLRO");
+            function abreimprLRO(){
+                document.getElementById("relacimprLRO").style.display = "block";
             }
+            function fechaImprLRO(){
+                document.getElementById("relacimprLRO").style.display = "none";
+            }
+
             function abreOcor(Valor){
                 document.getElementById("mudou").value = "1";
                 if(parseInt(Valor) === 0){
@@ -849,6 +873,10 @@ if(!isset($_SESSION["usuarioID"])){
         $OpUsuAnt4 = pg_query($Conec, "SELECT id, nomecolet FROM ".$xProj.".coletnomes WHERE ativo = 1 ORDER BY nomecolet");
         $OpTurnos = pg_query($Conec, "SELECT codturno, descturno FROM ".$xProj.".livroturnos WHERE descturno != '' ORDER BY codturno;"); 
         $OpTurnos2 = pg_query($Conec, "SELECT codturno, descturno FROM ".$xProj.".livroturnos WHERE descturno != '' ORDER BY codturno;"); 
+        $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataocor, 'MM'), '/', TO_CHAR(dataocor, 'YYYY')) 
+        FROM ".$xProj.".livroreg GROUP BY TO_CHAR(dataocor, 'MM'), TO_CHAR(dataocor, 'YYYY') ORDER BY TO_CHAR(dataocor, 'YYYY') DESC, TO_CHAR(dataocor, 'MM') DESC ");
+        $OpcoesEscAno = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".livroreg.dataocor)::text 
+        FROM ".$xProj.".livroreg GROUP BY 1 ORDER BY 1 DESC ");
 
         ?>
         <input type="hidden" id="UsuAdm" value = "<?php echo $_SESSION["AdmUsu"] ?>" />
@@ -878,7 +906,7 @@ if(!isset($_SESSION["usuarioID"])){
             <div class="box" style="position: relative; float: left; width: 33%; text-align: right;">
                 <img src="imagens/checkVerde.png" height="20px;" style="cursor: pointer;" onclick="abreCheckList();" title="Lista de Verificação (checklist)">
                 <label style="padding-left: 20px;"></label>
-                <button class="botpadrred" style="font-size: 80%;" id="botimprLRO" onclick="imprLRO();">Gerar PDF</button>
+                <button class="botpadrred" style="font-size: 80%;" id="botimprLRO" onclick="abreimprLRO();">Gerar PDF</button>
                 <label style="padding-left: 20px;"></label>
                 <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpLRO();" title="Guia rápido">
             </div>
@@ -947,20 +975,19 @@ if(!isset($_SESSION["usuarioID"])){
 
                     <div style="text-align: left;">
                         <label class="etiqAzul"> - Substituições temporárias: </label>
-                            <select id="selectsubstit" style="width: 25px;" onchange="insSubstit();" title="Selecione um nome.">
-                                <option value=""></option>
+                        <select id="selectsubstit" style="width: 25px;" onchange="insSubstit();" title="Selecione um nome.">
+                            <option value=""></option>
+                            <?php 
+                            if($OpUsuAnt3){
+                                while ($Opcoes = pg_fetch_row($OpUsuAnt3)){ ?>
+                                    <option value="<?php echo $Opcoes[1]; ?>"><?php echo $Opcoes[1]; ?></option>
                                 <?php 
-                                if($OpUsuAnt3){
-                                    while ($Opcoes = pg_fetch_row($OpUsuAnt3)){ ?>
-                                        <option value="<?php echo $Opcoes[1]; ?>"><?php echo $Opcoes[1]; ?></option>
-                                    <?php 
-                                    }
                                 }
-                                ?>
-                            </select>
-                            <input type="text" id="formanomes" value="" style="font-size: 80%;" onchange="incluiNome();"/> 
-                            <label class="etiqAzul"> <- Insira o nome do substituto aqui para formar um arquivo de nomes</label>
-
+                            }
+                            ?>
+                        </select>
+                        <input type="text" id="formanomes" value="" style="font-size: 80%;" onchange="incluiNome();"/> 
+                        <label class="etiqAzul"> <- Insira o nome do substituto aqui para formar um arquivo de nomes</label>
                     </div>
                     <div style="text-align: center; padding-bottom: 10px;">
                         <textarea id="relatosubstit" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="4" cols="80" onchange="modif();"></textarea>
@@ -1014,6 +1041,10 @@ if(!isset($_SESSION["usuarioID"])){
                             <br>
                             <textarea disabled id="mostrarelato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="10" cols="90"></textarea>
                         </div>
+                    </div>
+                    <div class="aEsq"><label class="etiqAzul"> - Substituições temporárias: </label></div>
+                    <div style="text-align: center; padding-bottom: 10px;">
+                        <textarea disabled id="mostrarelatosubstit" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="4" cols="80" ></textarea>
                     </div>
                     <div id="mostramensagem" style="color: red; font-weight: bold;"></div>
                     <div style="text-align: center; padding-bottom: 10px;">
@@ -1100,9 +1131,8 @@ if(!isset($_SESSION["usuarioID"])){
                             
                     </div>
                     <div style="text-align: center; padding-bottom: 10px;">
-                    <textarea id="complrelatosubstit" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="4" cols="80" onchange="modif();"></textarea>
+                        <textarea id="complrelatosubstit" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="4" cols="80" onchange="modif();"></textarea>
                     </div>
-
 
                     <div id="mensagemcompl2" style="color: red; font-weight: bold;"></div>
                     <div style="text-align: center; padding-bottom: 10px;">
@@ -1124,6 +1154,54 @@ if(!isset($_SESSION["usuarioID"])){
                 </div>
             </div>
         </div>  <!-- Fim Modal checklist-->
+
+
+        <!-- div modal para imprimir em pdf  -->
+        <div id="relacimprLRO" class="relacmodal">
+            <div class="modal-content-imprLRO">
+                <span class="close" onclick="fechaImprLRO();">&times;</span>
+                <h5 id="titulomodal" style="text-align: center;color: #666;">Controle de Bens Encontrados</h5>
+                <h6 id="titulomodal" style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
+                <div style="border: 2px solid #C6E2FF; border-radius: 10px;">
+                    <table style="margin: 0 auto; width: 95%;">
+                        <tr>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Mensal - Selecione o Mês/Ano: </label></td>
+                            <td>
+                                <select id="selecMesAno" style="font-size: 1rem; width: 90px;" title="Selecione o período.">
+                                    <option value=""></option>
+                                    <?php 
+                                    if($OpcoesEscMes){
+                                        while ($Opcoes = pg_fetch_row($OpcoesEscMes)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Anual - Selecione o Ano: </label></td>
+                            <td>
+                                <select id="selecAno" style="font-size: 1rem; width: 90px;" title="Selecione o Ano.">
+                                    <option value=""></option>
+                                    <?php 
+                                    if($OpcoesEscAno){
+                                        while ($Opcoes = pg_fetch_row($OpcoesEscAno)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="padding-bottom: 20px;"></div>
+           </div>
+        </div>
+
 
         <!-- div modal para instruções -->
         <div id="relacHelpLRO" class="relacmodal">

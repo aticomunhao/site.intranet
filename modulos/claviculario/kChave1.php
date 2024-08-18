@@ -73,6 +73,7 @@
                                     $SiglaSetor = $tbl1[2];
                                 }else{
                                     $Nome = "";
+                                    $SiglaSetor = "";
                                 }
                                 ?>
                                 <div class="quadrlista" style="text-align: left;"><label class="etiq">por: </label> <?php echo $Nome; ?></div>

@@ -75,11 +75,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <th style="display: none;"></th>
                             <th style="border-bottom: 1px solid gray; font-size: 70%; text-align: center;">Dia</th>
                             <th style="border-bottom: 1px solid gray; font-size: 70%; text-align: center;">Sem</th>
-
                             <th style="border-bottom: 1px solid gray; font-size: 70%; text-align: center;">Leitura Diária</th>
                             <th style="border-bottom: 1px solid gray; font-size: 70%; text-align: center;">Consumo</th>
-                                
-                            <th style="border-bottom: 1px solid gray; font-size: 70%; text-align: center;" title="Consumo Diário">Cons Diário</th>
+<!--                            <th style="border-bottom: 1px solid gray; font-size: 70%; text-align: center;" title="Consumo Diário">Cons Diário</th> -->
                         </tr>
                     </thead>
                     <tbody>
@@ -141,11 +139,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td style="display: none;"><?php echo $tbl0[0]; ?></td>
                             <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;"><?php echo $tbl0[1]; ?></td> <!-- Data -->
                             <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;"><?php echo $Sem; ?></td> <!-- dia da semana --> 
-
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;"><?php echo number_format($Leit07, 3, ",","."); ?></td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;"><?php echo number_format($Cons1, 3, ",","."); ?></td>
-
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo number_format(($ConsDia), 3, ",","."); ?></td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;"><?php echo $Leit07; ?></td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;"><?php echo $Cons1." kWh"; ?></td>
+<!--                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo number_format(($ConsDia), 3, ",","."); ?></td> -->
                         </tr>
                         <?php
                             $Cont = $Cont + $tbl0[3];

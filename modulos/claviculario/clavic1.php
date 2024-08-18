@@ -459,6 +459,25 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
 
+
+                $("#selecMesAno").change(function(){
+                    document.getElementById("selecAno").value = "";
+                    if(document.getElementById("selecMesAno").value != ""){
+                        window.open("modulos/claviculario/imprChave1.php?acao=listamesChaves&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), document.getElementById("selecMesAno").value);
+                        document.getElementById("selecMesAno").value = "";
+                        document.getElementById("relacimprBens").style.display = "none";
+                    }
+                });
+                $("#selecAno").change(function(){
+                    document.getElementById("selecMesAno").value = "";
+                    if(document.getElementById("selecAno").value != ""){
+                        window.open("modulos/claviculario/imprChave1.php?acao=listaanoChaves&ano="+encodeURIComponent(document.getElementById("selecAno").value), document.getElementById("selecAno").value);
+                        document.getElementById("selecAno").value = "";
+                        document.getElementById("relacimprBens").style.display = "none";
+                    }
+                });
+
+
             }); // fim do ready
 
             function insChave(){
@@ -969,7 +988,7 @@ if(!isset($_SESSION["usuarioID"])){
                 });
             }
             function imprResumoChave(){
-                window.open("modulos/claviculario/imprChave1.php?acao=listaUsuarios", "ResumoChaves");
+//                window.open("modulos/claviculario/imprChave1.php?acao=listaUsuarios", "ResumoChaves");
             }
             function resumoUsuChaves(){
                 window.open("modulos/claviculario/imprUsuCh1.php?acao=listaUsuarios", "ChavesUsu");
@@ -985,6 +1004,12 @@ if(!isset($_SESSION["usuarioID"])){
             function fechaModalConfig(){
                 document.getElementById("modalChavesConfig").style.display = "none";
             }
+            function abreImprChaves(){
+                document.getElementById("relacimprChaves").style.display = "block";
+            }
+            function fechaImprChaves(){
+                document.getElementById("relacimprChaves").style.display = "none";
+            }  
             function fechaEditaChave(){
                 document.getElementById("editaModalChave").style.display = "none";
             }
@@ -1131,6 +1156,11 @@ if($row == 0){ // não tinha a coluna chaves_id
         $OpUsuAgenda = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave = 1 And ativo = 1 ORDER BY nomeusual, nomecompl");
         $OpUsuEntreg = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave = 1 And ativo = 1 ORDER BY nomeusual, nomecompl");
         $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
+        $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(datasaida, 'MM'), '/', TO_CHAR(datasaida, 'YYYY')) 
+        FROM ".$xProj.".chaves_ctl GROUP BY TO_CHAR(datasaida, 'MM'), TO_CHAR(datasaida, 'YYYY') ORDER BY TO_CHAR(datasaida, 'YYYY') DESC, TO_CHAR(datasaida, 'MM') DESC ");
+        $OpcoesEscAno = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".chaves_ctl.datasaida)::text 
+        FROM ".$xProj.".chaves_ctl GROUP BY 1 ORDER BY 1 DESC ");
+
         ?>
          <div style="margin: 20px; ">
             <div class="box" style="position: relative; float: left; width: 33%;">
@@ -1143,7 +1173,7 @@ if($row == 0){ // não tinha a coluna chaves_id
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <label style="padding-left: 20px;"></label>
-                <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprResumoChave();">PDF</button>
+                <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="abreImprChaves();">PDF</button>
             </div>
 
             <div id="faixaMensagem" style="display: none; position: relative; margin: 70px; padding: 20px; text-align: center;">
@@ -1644,6 +1674,52 @@ if($row == 0){ // não tinha a coluna chaves_id
                 </table>
             </div>
         </div> <!-- Fim Modal-->
+
+        <!-- div modal para imprimir em pdf  -->
+        <div id="relacimprChaves" class="relacmodal">
+            <div class="modal-content-imprChaves">
+                <span class="close" onclick="fechaImprChaves();">&times;</span>
+                <h5 id="titulomodal" style="text-align: center;color: #666;">Controle de Chaves Portaria</h5>
+                <h6 id="titulomodal" style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
+                <div style="border: 2px solid #C6E2FF; border-radius: 10px;">
+                    <table style="margin: 0 auto; width: 95%;">
+                        <tr>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Mensal - Selecione o Mês/Ano: </label></td>
+                            <td>
+                                <select id="selecMesAno" style="font-size: 1rem; width: 90px;" title="Selecione o período.">
+                                    <option value=""></option>
+                                    <?php 
+                                    if($OpcoesEscMes){
+                                        while ($Opcoes = pg_fetch_row($OpcoesEscMes)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Anual - Selecione o Ano: </label></td>
+                            <td>
+                                <select id="selecAno" style="font-size: 1rem; width: 90px;" title="Selecione o Ano.">
+                                    <option value=""></option>
+                                    <?php 
+                                    if($OpcoesEscAno){
+                                        while ($Opcoes = pg_fetch_row($OpcoesEscAno)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="padding-bottom: 20px;"></div>
+           </div>
+        </div>
 
 
         <div id="modalDevolvida" class="relacmodal">

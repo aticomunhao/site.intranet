@@ -167,12 +167,11 @@ if($Acao =="loglog"){
                                         $NomeC = GUtils::normalizarNome($tbl7[0]);  // Normatizar nomes próprios
                                         $NomeComp = addslashes($NomeC);
                                         $NomeCompl = str_replace('"', "'", $NomeComp); // substitui aspas duplas por simples
-
-                                        if(!is_null($tbl7[1])){
+//                                        if(!is_null($tbl7[1])){
                                             $Ativo = $tbl7[1];
-                                        }else{
-                                            $Ativo = 0;
-                                        }
+//                                        }else{
+//                                            $Ativo = 0;
+//                                        }
                                         if(!is_null($tbl7[2])){
                                             $DNasc = $tbl7[2];
                                         }else{

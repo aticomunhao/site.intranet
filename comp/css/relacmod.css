@@ -142,6 +142,30 @@
     border-radius: 15px;
     width: 40%;
 }
+.modal-content-imprBens{
+    background: linear-gradient(180deg, white, #FFF8DC);
+    margin: 12% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 40%;
+}
+.modal-content-imprChaves{
+    background: linear-gradient(180deg, white, #1c2455);
+    margin: 12% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 40%;
+}
+.modal-content-imprLRO{
+    background: linear-gradient(180deg, white, #4109db);
+    margin: 12% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 40%;
+}
 .modal-content-ckListLRO{
     background: linear-gradient(180deg, white, #9eecb9);
     margin: 12% auto;

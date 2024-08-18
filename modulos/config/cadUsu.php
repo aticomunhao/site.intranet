@@ -755,7 +755,7 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                 }
                 if(parseInt(Cod) === 3){
                     Titulo = "Fiscalizar o Livro de Registro de Ocorrências";
-                    Texto = "Com esta marca o usuário tem acesso a todos os registros do LRO. Não precisa ter a marca para preencher o LRO. <br>Se o usuário tiver o nível administrativo para editar, apontado em Parâmetros do Sistema, poderá gerar PDF dos registros. <br>Nenhum registro pode ser editado.";
+                    Texto = "Com esta marca o usuário tem acesso a todos os registros do LRO. Não precisa ter a marca para preencher o LRO. <br>Se o usuário tiver esta marca poderá gerar PDF dos registros. <br>Nenhum registro pode ser editado.";
                 }
                 if(parseInt(Cod) === 4){
                     Titulo = "Acesso ao registro de Bens Encontrados";

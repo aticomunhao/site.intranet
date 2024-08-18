@@ -7,6 +7,22 @@ if(!isset($_SESSION['AdmUsu'])){
  }
 
  date_default_timezone_set('America/Sao_Paulo');
+
+ $mes_extenso = array(
+    '01' => 'Janeiro',
+    '02' => 'Fevereiro',
+    '03' => 'Março',
+    '04' => 'Abril',
+    '05' => 'Maio',
+    '06' => 'Junho',
+    '07' => 'Julho',
+    '08' => 'Agosto',
+    '09' => 'Novembro',
+    '10' => 'Setembro',
+    '11' => 'Outubro',
+    '12' => 'Dezembro'
+); 
+
  if(isset($_REQUEST["acao"])){
     $Acao = $_REQUEST["acao"];
     require_once('../../class/fpdf/fpdf.php'); // adaptado ao PHP 7.2 - 8.2
@@ -56,9 +72,8 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->Cell(150, 5, $Cabec3, 0, 2, 'C');
     $pdf->SetFont('Arial', '' , 10);
     $pdf->SetTextColor(25, 25, 112);
-    if($Acao == "impr" ){
-        $pdf->MultiCell(150, 3, "Livro de Registro de Ocorrências", 0, 'C', false);
-    }
+
+    $pdf->MultiCell(150, 3, "Livro de Registro de Ocorrências", 0, 'C', false);
 
     $pdf->SetTextColor(0, 0, 0);
     $pdf->SetFont('Arial', '', 6);
@@ -68,11 +83,37 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->SetFont('Arial', 'B', 9);
     $pdf->ln(7);
 
-    $rs = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, numrelato, to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), turno, descturno, nomecompl, usuant, relato, ocor, nomeusual, relsubstit 
-    FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id
-    WHERE ".$xProj.".livroreg.ativo = 1 ORDER BY ".$xProj.".livroreg.dataocor DESC, ".$xProj.".livroreg.turno DESC, ".$xProj.".livroreg.dataocor DESC ");
-    $row = pg_num_rows($rs);
+    if($Acao == "listamesLRO"){
+        $Busca = addslashes(filter_input(INPUT_GET, 'mesano')); 
+        $Proc = explode("/", $Busca);
+        $Mes = $Proc[0];
+        if(strLen($Mes) < 2){
+            $Mes = "0".$Mes;
+        }
+        $Ano = $Proc[1];
 
+        $rs = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, numrelato, to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), turno, descturno, nomecompl, usuant, relato, ocor, nomeusual, relsubstit 
+        FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id
+        WHERE ".$xProj.".livroreg.ativo = 1 And DATE_PART('MONTH', dataocor) = '$Mes' And DATE_PART('YEAR', dataocor) = '$Ano' ORDER BY ".$xProj.".livroreg.dataocor DESC, ".$xProj.".livroreg.turno DESC, ".$xProj.".livroreg.dataocor DESC ");
+
+    }
+
+    if($Acao == "listaanoLRO"){
+        $Ano = filter_input(INPUT_GET, 'ano'); 
+        $rs = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, numrelato, to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), turno, descturno, nomecompl, usuant, relato, ocor, nomeusual, relsubstit 
+        FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id
+        WHERE ".$xProj.".livroreg.ativo = 1 And DATE_PART('YEAR', dataocor) = '$Ano' ORDER BY ".$xProj.".livroreg.dataocor DESC, ".$xProj.".livroreg.turno DESC, ".$xProj.".livroreg.dataocor DESC ");
+    }
+
+    $row = pg_num_rows($rs);
+    $pdf->SetFont('Arial', 'I', 14);
+    if($Acao == "listamesLRO"){
+        $pdf->MultiCell(0, 5, $mes_extenso[$Mes]." / ".$Ano, 0, 'C', false);
+    }
+    if($Acao == "listaanoLRO"){
+        $pdf->MultiCell(0, 5, $Ano, 0, 'C', false);
+    }
+    $pdf->ln(5);
     if($row > 0){
         $pdf->SetFont('Arial', 'I', 8);
         $pdf->SetX(15);
@@ -158,7 +199,7 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->Line(10, $lin, 200, $lin);
         }
     }else{
-        $pdf->Cell(0, 4, "Nenhum registro encontado.", 0, 0, 'C');
+        $pdf->Cell(0, 4, "Nenhum registro encontrado.", 0, 0, 'C');
     }
     $pdf->Output();
  }

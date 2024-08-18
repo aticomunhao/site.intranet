@@ -28,8 +28,8 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 60%; /* acertar de acordo com a tela */
-                max-width: 900px;
+                width: 70%; /* acertar de acordo com a tela */
+/*                max-width: 900px;  */
             }
             .quadro{
                 position: relative; float: left; text-align: center; margin: 5px; width: 95%; padding: 2px; padding-top: 5px;
@@ -78,13 +78,13 @@ if(!isset($_SESSION["usuarioID"])){
             $(document).ready(function(){
                 $("#carregaBens").load("modulos/bensEncont/relBens.php");
 
-                //Impedir a mudança de data do registro de bem encontrado
-                DataPr = compareDates ("30/06/2024", dataAtualFormatada()); // se o prazo for maior que a data atual
-                if(DataPr == true){ // se for maior que a data atual
+                //Impedir a mudança de data do registro de bem encontrado -> liberado a pedido em 16/08/2024
+//                DataPr = compareDates ("30/06/2024", dataAtualFormatada()); // se o prazo for maior que a data atual
+//                if(DataPr == true){ // se for maior que a data atual
                     $('#dataregistro').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
-                }else{
-                    document.getElementById("dataregistro").disabled = true;
-                }
+//                }else{
+//                    document.getElementById("dataregistro").disabled = true;
+//                }
                 $('#dataachado').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
 
                 $("#cpfproprietario").mask("999.999.999-99");
@@ -198,20 +198,89 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
 
+                $("#selecMesAno").change(function(){
+                    document.getElementById("selecAno").value = "";
+                    if(document.getElementById("selecMesAno").value != ""){
+                        window.open("modulos/bensEncont/imprListaBens.php?acao=listamesBens&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), document.getElementById("selecMesAno").value);
+                        document.getElementById("selecMesAno").value = "";
+                        document.getElementById("relacimprBens").style.display = "none";
+                    }
+                });
+                $("#selecAno").change(function(){
+                    document.getElementById("selecMesAno").value = "";
+                    if(document.getElementById("selecAno").value != ""){
+                        window.open("modulos/bensEncont/imprListaBens.php?acao=listaanoBens&ano="+encodeURIComponent(document.getElementById("selecAno").value), document.getElementById("selecAno").value);
+                        document.getElementById("selecAno").value = "";
+                        document.getElementById("relacimprBens").style.display = "none";
+                    }
+                });
 
-            });
+            }); // fim do ready
 
             function abreRegistro(){
                 document.getElementById("guardacod").value = 0;
                 document.getElementById("botsalvareg").style.visibility = "visible"; 
                 document.getElementById("dataregistro").value = document.getElementById("guardahoje").value;
                 document.getElementById("dataachado").value = document.getElementById("guardahoje").value;
-                document.getElementById("numprocesso").innerHTML = "";
+//                document.getElementById("numprocesso").innerHTML = "";
                 document.getElementById("descdobem").value = "";
                 document.getElementById("localachado").value = "";
                 document.getElementById("nomeachou").value = "";
                 document.getElementById("telefachou").value = "";
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=buscanum&dataregistro="+encodeURIComponent(document.getElementById("dataregistro").value), true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    document.getElementById("numregistro").value = Resp.numprocesso;
+                                }
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
                 document.getElementById("relacmodalRegistro").style.display = "block";
+            }
+
+            function checaNumRegistro(){
+                document.getElementById("mudou").value = "1";
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=checaNumero&numero="+encodeURIComponent(document.getElementById("numregistro").value)+"&codigo="+document.getElementById("guardacod").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    if(parseInt(Resp.achou) > 0){
+                                        $.confirm({
+                                            title: 'Atenção!',
+                                            content: 'Este número de processo já existe. <br>Foi registrado em '+Resp.data+'.',
+                                            draggable: true,
+                                            buttons: {
+                                                OK: function(){}
+                                            }
+                                        });
+                                        return false;
+                                    }
+//                                    document.getElementById("numregistro").value = Resp.numprocesso;
+                                }
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
             }
 
             function dataAtualFormatada(){
@@ -329,7 +398,7 @@ if(!isset($_SESSION["usuarioID"])){
                     "&descdobem="+encodeURIComponent(document.getElementById("descdobem").value)+
                     "&localachado="+encodeURIComponent(document.getElementById("localachado").value)+
                     "&nomeachou="+encodeURIComponent(document.getElementById("nomeachou").value)+
-                    "&numrelato="+encodeURIComponent(document.getElementById("guardaNumRelat").value)+
+                    "&numrelato="+encodeURIComponent(document.getElementById("numregistro").value)+
                     "&telefachou="+encodeURIComponent(document.getElementById("telefachou").value)
                     , true);
                     ajax.onreadystatechange = function(){
@@ -374,8 +443,9 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("localachado").value = Resp.localachou;
                                     document.getElementById("nomeachou").value = Resp.nomeachou;
                                     document.getElementById("telefachou").value = Resp.telefachou;
+                                    document.getElementById("numregistro").value = Resp.numprocesso;
                                     document.getElementById("guardaNumRelat").value = Resp.numprocesso;
-                                    document.getElementById("numprocesso").innerHTML = "Registrado sob nº "+Resp.numprocesso;
+//                                    document.getElementById("numprocesso").innerHTML = "Registrado sob nº "+Resp.numprocesso;
                                     document.getElementById("botsalvareg").innerHTML = "Salvar";
                                     document.getElementById("relacmodalRegistro").style.display = "block";
                                 }
@@ -737,6 +807,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                 alert("Houve um erro no servidor.")
                                             }else{
                                                 document.getElementById("relacmodalRestit").style.display = "none";
+                                                document.getElementById("relacmodalRegistro").style.display = "none"; // mesma função em dois modais
                                                 $("#carregaBens").load("modulos/bensEncont/relBens.php");
                                             }
                                         }
@@ -753,6 +824,12 @@ if(!isset($_SESSION["usuarioID"])){
 
             function fechaModalReg(){
                 document.getElementById("relacmodalRegistro").style.display = "none";
+            }
+            function abreImprBens(){
+                document.getElementById("relacimprBens").style.display = "block";
+            }
+            function fechaImprBens(){
+                document.getElementById("relacimprBens").style.display = "none";
             }
             function modif(){ // assinala se houve qualquer modificação
                 document.getElementById("mudou").value = "1";
@@ -976,15 +1053,24 @@ if(!isset($_SESSION["usuarioID"])){
 
         $OpDestBens = pg_query($Conec, "SELECT numdest, descdest FROM ".$xProj.".bensdestinos ORDER BY descdest");
         $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
+        $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(datareceb, 'MM'), '/', TO_CHAR(datareceb, 'YYYY')) 
+        FROM ".$xProj.".bensachados GROUP BY TO_CHAR(datareceb, 'MM'), TO_CHAR(datareceb, 'YYYY') ORDER BY TO_CHAR(datareceb, 'YYYY') DESC, TO_CHAR(datareceb, 'MM') DESC ");
+        $OpcoesEscAno = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".bensachados.datareceb)::text 
+        FROM ".$xProj.".bensachados GROUP BY 1 ORDER BY 1 DESC ");
+
         ?>
         <!-- div três colunas -->
         <div class="container" style="margin: 0 auto;">
             <div class="row">
                 <div class="col quadro" style="text-align: left;"><button class="botpadrGr fundoAmarelo" id="botInsReg" onclick="abreRegistro();" >Novo Registro</button>
-                <img src="imagens/settings.png" height="20px;" id="imgBensconfig" style="cursor: pointer; padding-left: 30px;" onclick="abreBensConfig();" title="Configurar o acesso ao processamento de bens encontrados">
-            </div>
+                    <img src="imagens/settings.png" height="20px;" id="imgBensconfig" style="cursor: pointer; padding-left: 30px;" onclick="abreBensConfig();" title="Configurar o acesso ao processamento de bens encontrados">
+                </div>
                 <div class="col quadro"><h5>Registro de Bens Encontrados</h5></div> <!-- Central - espaçamento entre colunas  -->
-                <div class="col quadro"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpBens();" title="Guia rápido"></div> 
+                <div class="col quadro" style="text-align: right;">
+                    <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="abreImprBens();">PDF</button>
+                    <label style="padding-left: 20px;"></label>
+                    <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpBens();" title="Guia rápido">
+                </div> 
             </div>
         </div>
         <br>
@@ -1022,38 +1108,50 @@ if(!isset($_SESSION["usuarioID"])){
                 <div style="border: 2px solid blue; border-radius: 10px; padding: 10px;">
                     <table style="margin: 0 auto; width:85%;">
                         <tr>
-                            <td class="etiqAzul">Data do recebimento: </td>
+                            <td class="etiqAzul" style="min-width: 150px;">Data do recebimento: </td>
                             <td>
                                 <input type="text" id="dataregistro" width="150" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;">
-                                <label id="numprocesso" class="etiqAzul" style="padding-left: 30px; color: red;"></label>
+<!--                                <label id="numprocesso" class="etiqAzul" style="padding-left: 30px; color: red;"></label>  -->
                             </td>
+                            <td class="etiqAzul">Número do Processo: </td>
+                            <td><input type="text" id="numregistro" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="checaNumRegistro();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;"></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Descrição do bem encontrado: </td>
-                            <td>
-                                <textarea style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="3" cols="65" id="descdobem" onchange="modif();"></textarea>
+                            <td colspan="3">
+                                <textarea style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="3" cols="60" id="descdobem" onchange="modif();"></textarea>
                             </td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Data em que foi encontrado: </td>
                             <td><input type="text" id="dataachado" width="150" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;"></td>
+                            <td></td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Local em que foi encontrado: </td>
-                            <td><textarea style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="2" cols="65" id="localachado" onchange="modif();"></textarea></td>
+                            <td colspan="3"><textarea style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="2" cols="60" id="localachado" onchange="modif();"></textarea></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Nome do Colaborador que encontrou o bem: </td>
-                            <td><input type="text" id="nomeachou" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="Nome do colaborador que encontrou" style="font-size: .9em; width: 90%;"></td>
+                            <td colspan="3"><input type="text" id="nomeachou" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="Nome do colaborador que encontrou" style="font-size: .9em; width: 90%;"></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Telefone: </td>
-                            <td><input type="text" id="telefachou" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="Telefone do colaborador que encontrou" style="font-size: .9em; width: 90%;"></td>
+                            <td colspan="3"><input type="text" id="telefachou" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="Telefone do colaborador que encontrou" style="font-size: .9em; width: 90%;"></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul"></td>
+                            <td colspan="3"></td>
+                        </tr>
+                        <tr>
+                            <td><button class="botpadrTijolo" id="botApagaBem" onclick="ApagarBem();">Apagar</button></td>
+                            <td colspan="3"></td>
                         </tr>
                     </table>
 
                     <div id="mensagem" style="color: red; font-weight: bold; margin: 5px; text-align: center; padding-top: 10px;"></div>
-                    <br>
+                    
                     <div style="text-align: center; padding-bottom: 20px;">
                         <button class="botpadrblue" id="botsalvareg" onclick="salvaModalRegistro();">Registrar</button>
                     </div>
@@ -1403,7 +1501,51 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
         </div> <!-- Fim Modal-->
 
-
+        <!-- div modal para imprimir em pdf  -->
+        <div id="relacimprBens" class="relacmodal">
+            <div class="modal-content-imprBens">
+                <span class="close" onclick="fechaImprBens();">&times;</span>
+                <h5 id="titulomodal" style="text-align: center;color: #666;">Controle de Bens Encontrados</h5>
+                <h6 id="titulomodal" style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
+                <div style="border: 2px solid #C6E2FF; border-radius: 10px;">
+                    <table style="margin: 0 auto; width: 95%;">
+                        <tr>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Mensal - Selecione o Mês/Ano: </label></td>
+                            <td>
+                                <select id="selecMesAno" style="font-size: 1rem; width: 90px;" title="Selecione o período.">
+                                    <option value=""></option>
+                                    <?php 
+                                    if($OpcoesEscMes){
+                                        while ($Opcoes = pg_fetch_row($OpcoesEscMes)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Anual - Selecione o Ano: </label></td>
+                            <td>
+                                <select id="selecAno" style="font-size: 1rem; width: 90px;" title="Selecione o Ano.">
+                                    <option value=""></option>
+                                    <?php 
+                                    if($OpcoesEscAno){
+                                        while ($Opcoes = pg_fetch_row($OpcoesEscAno)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="padding-bottom: 20px;"></div>
+           </div>
+        </div>
 
         <!-- div modal para leitura instruções -->
         <div id="relacHelpBens" class="relacmodal">

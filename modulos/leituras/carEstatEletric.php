@@ -96,11 +96,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         </tr>
                         <tr>
                             <td style="border-bottom: 1px solid gray; font-size: 90%;">Consumo Mensal</td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo number_format($Cons1, 3, ",","."); ?> kWh</td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo $Cons1; ?> kWh</td>
                         </tr>
                         <tr>
                             <td style="border-bottom: 1px solid gray; font-size: 90%;">Consumo Médio Diário <?php if($QuantDias == 1){echo " (1 dia)";}else{echo "(".$QuantDias." dias)";} ?></td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo number_format(($Cons1/$QuantDias), 3, ",","."); ?> kWh</td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo ($Cons1/$QuantDias); ?> kWh</td>
                         </tr>
                         <tr>
                             <td colspan="3" style="font-size: 90%; text-align: right;"></td>

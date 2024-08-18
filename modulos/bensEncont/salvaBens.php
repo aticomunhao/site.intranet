@@ -18,7 +18,11 @@ if($Acao=="salvaRegBem"){
     $DataReg = implode("-", array_reverse(explode("/", $DataR)));
     $DataAchou = implode("-", array_reverse(explode("/", $DataAc)));
 
-    $DescBem = addslashes($_REQUEST['descdobem']);
+//    $DescBem = $_REQUEST['descdobem'];
+//    $DescBem = str_replace('"', "'", $_REQUEST['descdobem']);
+    $DescBem = str_replace("'","\"",$_REQUEST["descdobem"]); // substituir aspas simples por duplas
+//    $DescBem = str_replace("\'", "\"", $_REQUEST['descdobem']);
+
     $LocalAchou = addslashes($_REQUEST['localachado']);
     $NomeAchou = addslashes($_REQUEST['nomeachou']);
     $TelefAchou = addslashes($_REQUEST['telefachou']);
@@ -35,15 +39,14 @@ if($Acao=="salvaRegBem"){
 
     if($Codigo == 0){ // novo registro
         $CodSetor = $_SESSION['CodSetorUsu'];
-        $rs0 = pg_query($Conec, "SELECT id FROM ".$xProj.".bensachados WHERE to_char(datareceb, 'YYYY') = '$y'");
-        $row0 = pg_num_rows($rs0);
-        $Num = str_pad(($row0+1), 4, "0", STR_PAD_LEFT);
-        $NumRelat = $Num."/".$y;
-//        if($JaTem == 0){
-//            $NumRelat = $Num."/".$y;
-//        }else{
-//            $NumRelat = $NumRelAnt."-Compl";
-//        }
+//        $rs0 = pg_query($Conec, "SELECT id FROM ".$xProj.".bensachados WHERE to_char(datareceb, 'YYYY') = '$y'");
+//        $row0 = pg_num_rows($rs0);
+//        $Num = str_pad(($row0+1), 4, "0", STR_PAD_LEFT);
+//        $NumRelat = $Num."/".$y;
+//
+//  Virá da edição até novo aviso  16/08/2024
+
+
         $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".bensachados");
         $tblCod = pg_fetch_row($rsCod);
         $Codigo = $tblCod[0];
@@ -56,30 +59,9 @@ if($Acao=="salvaRegBem"){
         }
 
     }else{
-        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET datareceb = '$DataReg', dataachou = '$DataAchou', descdobem = '$DescBem', localachou = '$LocalAchou', nomeachou = '$NomeAchou', telefachou = '$TelefAchou', usumodif = $UsuIns, datamodif =  NOW() WHERE id = $Codigo ");
+        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET datareceb = '$DataReg', dataachou = '$DataAchou', descdobem = '$DescBem', localachou = '$LocalAchou', nomeachou = '$NomeAchou', telefachou = '$TelefAchou', numprocesso = '$NumRelat', usumodif = $UsuIns, datamodif =  NOW() WHERE id = $Codigo ");
 
     }
-
-//        testemunha1 VARCHAR(200),
-//        testemunha2 VARCHAR(200),
-//        nomerestituido VARCHAR(200),
-//        enderrestituido VARCHAR(200),
-//        telefarestituido VARCHAR(50),
-//        nomedafrestituiu VARCHAR(200),
-//        datarestituiu date, 
-//        dataencaminhoucsg date, 
-//        nomerecebeucsg VARCHAR(200), 
-//        datadestino date, 
-//        setordestino VARCHAR(200), 
-//        nomerecebeudestino VARCHAR(200), 
-//        destinonodestino VARCHAR(50),
-//        dataarquivou date,
-//        usuarquivou bigint NOT NULL DEFAULT 0,
-
-//        usumodif bigint NOT NULL DEFAULT 0,
-//        datamodif timestamp without time zone DEFAULT '3000-12-31 00:00:00',
-  
-
     $var = array("coderro"=>$Erro, "codigonovo"=>$CodigoNovo, "numrelat"=>$NumRelat);
     $responseText = json_encode($var);
     echo $responseText;
@@ -243,6 +225,61 @@ if($Acao == "buscacpf"){
         $tbl1 = pg_fetch_row($rs1);
         $var = array("coderro"=>$Erro, "bens"=>$tbl1[0], "fiscbens"=>$tbl1[1], "soinsbens"=>$tbl1[2], "cpf"=>$tbl1[3], "PosCod"=>$tbl1[4], "row1"=>$row1);
     } 
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao == "buscanum"){
+    $Erro = 0;
+    $Num = 0;
+    $DataR = addslashes($_REQUEST['dataregistro']);
+    $DataReg = implode("/", array_reverse(explode("/", $DataR)));
+
+    $rs = pg_query($Conec, "SELECT MAX(LEFT(numprocesso, 4)) FROM ".$xProj.".bensachados");
+    $tbl = pg_fetch_row($rs);
+    $Processo = $tbl[0];
+    $Num = $Processo+1; 
+    if(!$rs){
+        $Erro = 1;
+    }
+
+    if($Num == 1){
+        $Num = 234;
+    }
+    $Num = str_pad($Num, 4, "0", STR_PAD_LEFT);
+
+    $ProcAno = explode("/","$DataReg");
+    $d = $ProcAno[2];
+    $m = $ProcAno[1];
+    $y = $ProcAno[0];
+
+    $NumRelat = $Num."/".$y;
+
+    $var = array("coderro"=>$Erro, "numprocesso"=>$NumRelat);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao == "checaNumero"){
+    $Erro = 0;
+    $Num = 0;
+    $NumReg = addslashes($_REQUEST['numero']);
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+
+    $row = 0;
+    $Data = "";
+    $rs = pg_query($Conec, "SELECT id, TO_CHAR(datareceb, 'DD/MM/YYYY') FROM ".$xProj.".bensachados WHERE numprocesso = '$NumReg' And id != $Cod");
+    if(!$rs){
+        $Erro = 1;
+    }else{
+        $row = pg_num_rows($rs);
+        if($row > 0){
+            $tbl = pg_fetch_row($rs);
+            $Data = $tbl[1];
+        }
+    }
+
+    $var = array("coderro"=>$Erro, "achou"=>$row, "data"=>$Data);
     $responseText = json_encode($var);
     echo $responseText;
 }
