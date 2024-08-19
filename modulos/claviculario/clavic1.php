@@ -157,9 +157,17 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("resultsolicitante").innerHTML = Resp.nomecompl;
                                         document.getElementById("guardaCPF").value = Resp.cpf;
                                         document.getElementById("resultcpf").innerHTML = format_CnpjCpf(Resp.cpf);
+                                        document.getElementById("cpfsolicitante").value = format_CnpjCpf(Resp.cpf);
                                         document.getElementById("resultsetor").innerHTML = Resp.siglasetor;
                                         document.getElementById("resulttelef").value = Resp.telef;
                                     }else{
+                                        document.getElementById("selecSolicitante").value = "";
+                                        document.getElementById("resultsolicitante").innerHTML = "";
+                                        document.getElementById("guardaCPF").value = "";
+                                        document.getElementById("resultcpf").innerHTML = "";
+                                        document.getElementById("cpfsolicitante").value = "";
+                                        document.getElementById("resultsetor").innerHTML = "";
+                                        document.getElementById("resulttelef").value = "";
                                         alert("Houve um erro no servidor.")
                                     }
                                 }
@@ -170,6 +178,8 @@ if(!isset($_SESSION["usuarioID"])){
                 });
 
                 $("#cpfsolicitante").click(function(){
+                    document.getElementById("selecSolicitante").value = "";
+                    document.getElementById("cpfsolicitante").value = "";
                     document.getElementById("resultsolicitante").innerHTML = "";
                     document.getElementById("guardaCPF").value = "";
                     document.getElementById("resultcpf").innerHTML = "";
@@ -194,7 +204,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("resultcpf").innerHTML = format_CnpjCpf(Resp.cpf);
                                         document.getElementById("resultsetor").innerHTML = Resp.siglasetor;
                                         document.getElementById("guardaPosCod").value = Resp.PosCod;
-
+                                        document.getElementById("selecSolicitante").value = Resp.PosCod;
                                     }
                                     if(parseInt(Resp.coderro) === 3){
                                         document.getElementById("resultsolicitante").innerHTML = "Usuário não está autorizado a retirar chaves.";
@@ -230,9 +240,17 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("voltasolicitante").innerHTML = Resp.nomecompl;
                                         document.getElementById("guardaCPF").value = Resp.cpf;
                                         document.getElementById("voltacpf").innerHTML = format_CnpjCpf(Resp.cpf);
+                                        document.getElementById("cpfentregador").value = format_CnpjCpf(Resp.cpf);
                                         document.getElementById("voltasetor").innerHTML = Resp.siglasetor;
                                         document.getElementById("voltatelef").value = Resp.telef;
                                     }else{
+                                        document.getElementById("selecEntregador").value = "";
+                                        document.getElementById("guardaPosCod").value = "";
+                                        document.getElementById("voltasolicitante").innerHTML = "";
+                                        document.getElementById("guardaCPF").value = "";
+                                        document.getElementById("voltacpf").innerHTML = "";
+                                        document.getElementById("voltasetor").innerHTML = "";
+                                        document.getElementById("voltatelef").value = "";    
                                         alert("Houve um erro no servidor.")
                                     }
                                 }
@@ -243,6 +261,8 @@ if(!isset($_SESSION["usuarioID"])){
                 });
                 $("#cpfentregador").click(function(){
                     document.getElementById("voltasolicitante").innerHTML = "";
+                    document.getElementById("selecEntregador").value = "";
+                    document.getElementById("cpfentregador").value = "";
                     document.getElementById("guardaCPF").value = "";
                     document.getElementById("voltacpf").innerHTML = "";
                     document.getElementById("voltasetor").innerHTML = "";
@@ -264,6 +284,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("voltasolicitante").innerHTML = Resp.nomecompl;
                                         document.getElementById("guardaCPF").value = Resp.cpf;
                                         document.getElementById("voltacpf").innerHTML = format_CnpjCpf(Resp.cpf);
+                                        document.getElementById("selecEntregador").value = Resp.PosCod;
                                         document.getElementById("voltasetor").innerHTML = Resp.siglasetor;
                                         document.getElementById("voltatelef").value = Resp.telef;
                                         document.getElementById("guardaPosCod").value = Resp.PosCod;
@@ -285,6 +306,8 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("cpfentregador").focus();
                                     }
                                     if(parseInt(Resp.coderro) === 1){
+                                        document.getElementById("selecEntregador").value = "";
+                                        document.getElementById("guardaPosCod").value = "";
                                         alert("Houve um erro no servidor.")
                                     }
                                 }
@@ -307,13 +330,21 @@ if(!isset($_SESSION["usuarioID"])){
 //alert(ajax.responseText);
                                     Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                     if(parseInt(Resp.coderro) === 0){
-
                                         document.getElementById("agendasolicitante").innerHTML = Resp.nomecompl;
                                         document.getElementById("guardaCPF").value = Resp.cpf;
                                         document.getElementById("agendacpf").innerHTML = format_CnpjCpf(Resp.cpf);
+                                        document.getElementById("agendacpfsolicitante").value = format_CnpjCpf(Resp.cpf);
                                         document.getElementById("agendasetor").innerHTML = Resp.siglasetor;
                                         document.getElementById("agendatelef").value = Resp.telef;
                                     }else{
+                                        document.getElementById("agendaselecSolicitante").value = "";
+                                        document.getElementById("guardaPosCod").value = "";
+                                        document.getElementById("agendasolicitante").innerHTML = "";
+                                        document.getElementById("guardaCPF").value = "";
+                                        document.getElementById("agendacpf").innerHTML = "";
+                                        document.getElementById("agendacpfsolicitante").value = "";
+                                        document.getElementById("agendasetor").innerHTML = "";
+                                        document.getElementById("agendatelef").value = "";
                                         alert("Houve um erro no servidor.")
                                     }
                                 }
@@ -325,6 +356,7 @@ if(!isset($_SESSION["usuarioID"])){
 
                 $("#agendacpfsolicitante").click(function(){
                     document.getElementById("agendaselecSolicitante").value = "";
+                    document.getElementById("agendacpfsolicitante").value = "";
                     document.getElementById("agendasolicitante").innerHTML = "";
                     document.getElementById("guardaCPF").value = "";
                     document.getElementById("agendacpf").innerHTML = "";
@@ -350,7 +382,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("agendasetor").innerHTML = Resp.siglasetor;
                                         document.getElementById("agendatelef").value = Resp.telef;
                                         document.getElementById("guardaPosCod").value = Resp.PosCod;
-
+                                        document.getElementById("agendaselecSolicitante").value = Resp.PosCod;
                                     }
                                     if(parseInt(Resp.coderro) === 3){
                                         document.getElementById("agendasolicitante").innerHTML = "Usuário não está autorizado a retirar chaves.";
@@ -704,7 +736,7 @@ if(!isset($_SESSION["usuarioID"])){
                     $('#mensagem').fadeOut(3000);
                     return false;
                 }
-                if(parseInt(document.getElementById("guardaPosCod").value) === 0){
+                if(parseInt(document.getElementById("guardaPosCod").value) === 0 || document.getElementById("guardaPosCod").value == ""){
                     $('#mensagem').fadeIn("slow");
                     document.getElementById("mensagem").innerHTML = "Selecione o usuário solicitante.";
                     $('#mensagem').fadeOut(3000);
@@ -714,6 +746,17 @@ if(!isset($_SESSION["usuarioID"])){
                     $('#mensagem').fadeIn("slow");
                     document.getElementById("mensagem").innerHTML = "Defina a data da retirada da chave.";
                     $('#mensagem').fadeOut(3000);
+                    return false;
+                }
+                if(compareDates(document.getElementById("guardahoje").value, document.getElementById("agendadata").value) == true){
+                    $.confirm({
+                        title: 'Atenção!',
+                        content: 'A data do agendamento está no passado.',
+                        draggable: true,
+                        buttons: {
+                            OK: function(){}
+                        }
+                    });
                     return false;
                 }
                 $.confirm({
@@ -987,9 +1030,7 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
             }
-            function imprResumoChave(){
-//                window.open("modulos/claviculario/imprChave1.php?acao=listaUsuarios", "ResumoChaves");
-            }
+
             function resumoUsuChaves(){
                 window.open("modulos/claviculario/imprUsuCh1.php?acao=listaUsuarios", "ChavesUsu");
             }
@@ -1036,7 +1077,16 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById(id).focus();
             }
             
-            
+            function compareDates (date1, date2) {
+                let parts1 = date1.split('/') // separa a data pelo caracter '/'
+                date1 = new Date(parts1[2], parts1[1] - 1, parts1[0]) // formata 'date'
+
+                let parts2 = date2.split('/') // separa a data pelo caracter '/'
+                date2 = new Date(parts2[2], parts2[1] - 1, parts2[0]) // formata 'date'
+                  // compara se a data informada é maior que a data atual e retorna true ou false
+                return date1 > date2 ? true : false
+            }
+
             /* Brazilian initialisation for the jQuery UI date picker plugin. */
             /* Written by Leonildo Costa Silva (leocsilva@gmail.com). */
             jQuery(function($){
@@ -1069,6 +1119,7 @@ if(!isset($_SESSION["usuarioID"])){
             return false;
         }
         date_default_timezone_set('America/Sao_Paulo'); //Um dia = 86.400 seg
+        $Hoje = date('d/m/Y');
 
 
         //Provisório
@@ -1192,6 +1243,7 @@ if($row == 0){ // não tinha a coluna chaves_id
         <input type="hidden" id="guardaCod" value="0" />
         <input type="hidden" id="guardaCPF" value="" />
         <input type="hidden" id="guardaPosCod" value="" />
+        <input type="hidden" id="guardahoje" value="<?php echo $Hoje; ?>" />
         <input type="hidden" id="CodidChave" value="0" />
         <input type="hidden" id="mudou" value="0" />
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>" />

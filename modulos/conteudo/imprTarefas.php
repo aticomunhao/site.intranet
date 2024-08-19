@@ -214,11 +214,11 @@ if(!isset($_SESSION['AdmUsu'])){
         if($Acao == "listamesTarefa"){
             $Busca = addslashes(filter_input(INPUT_GET, 'mesano')); 
             $Proc = explode("/", $Busca);
-            $Mes = $Proc[1];
-            if($Mes < 10){
+            $Mes = $Proc[0];
+            if(strLen($Mes) < 2){
                 $Mes = "0".$Mes;
             }
-            $Ano = $Proc[0];
+            $Ano = $Proc[1];
             $pdf->SetTitle('Relação Mensal Tarefas', $isUTF8=TRUE);
 
             $pdf->MultiCell(0, 5, $mes_extenso[$Mes]." / ".$Ano, 0, 'C', false);

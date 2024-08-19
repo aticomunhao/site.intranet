@@ -128,7 +128,20 @@ if(isset($_REQUEST["acao"])){
         $rs = pg_query($Conec, "SELECT nomecompl, nomeusual, cpf, siglasetor 
         FROM ".$xProj.".poslog INNER JOIN ".$xProj.".setores ON ".$xProj.".poslog.codsetor = ".$xProj.".setores.codset 
         WHERE pessoas_id = $Cod");
-        $tbl = pg_fetch_row($rs);
+        if(!$rs){
+            $Erro = 1;
+        }else{
+            $row = pg_num_rows($rs);
+            if($row > 0){
+                $tbl = pg_fetch_row($rs);
+            }else{
+                $Erro = 1;
+                $var = array("coderro"=>$Erro);
+                $responseText = json_encode($var);
+                echo $responseText;
+                return false;
+            }
+        }
 
          $rs1 = pg_query($Conec, "SELECT telef FROM ".$xProj.".chaves_ctl WHERE usuretira = $Cod ORDER BY datasaida DESC");
          $row1 = pg_num_rows($rs1);

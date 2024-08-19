@@ -23,6 +23,14 @@
         die("<br>Faltam tabelas. Informe à ATI");
         return false;
     }
+    $rs = pg_query($Conec, "SELECT column_name, data_type FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'poslog'");
+    $row = pg_num_rows($rs);
+    if($row == 0){
+        $Erro = 1;
+        echo "<br>Faltam tabelas. Informe à ATI.";
+        return false;
+    }
+
     require_once("config/gUtils.php");
     if(strtotime('2024/08/07') > strtotime(date('Y/m/d'))){
     //usando a data de nascimento na tabela pessoas

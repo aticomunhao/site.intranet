@@ -706,6 +706,9 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     ajax.send(null);
                 } 
             }
+            function resumoUsu(){
+                window.open("modulos/config/imprUsu.php?acao=listaUsuarios", "ListaUsu");
+            }
 
             function validaCPF(cpf) {
                 var Soma = 0
@@ -870,6 +873,8 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
         <div style="margin: 20px; border: 2px solid blue; border-radius: 15px; padding: 20px; min-height: 200px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
                 <input type="button" id="botinserir" class="resetbot" value="Inserir Novo" onclick="insUsu();">
+                <label style="padding-left: 20px;"></label>
+                <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="resumoUsu();">PDF</button>
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <h3>Usuários Cadastrados</h3>

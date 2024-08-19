@@ -81,7 +81,7 @@ if(isset($_REQUEST["acao"])){
             }
         }
     }
-    $pdf->SetX(40); 
+//    $pdf->SetX(40); 
     $pdf->SetFont('Arial','' , 14); 
     $pdf->Cell(0, 5, $Cabec1, 0, 2, 'C');
     $pdf->SetFont('Arial','' , 12); 
@@ -163,6 +163,10 @@ if(isset($_REQUEST["acao"])){
                 $lin = $pdf->GetY();
                 $pdf->Line(25, $lin, 282, $lin);
             }
+            $pdf->SetX(50);
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->Cell(150, 5, "Total: ".$row0, 0, 1, 'L');
+            $pdf->SetFont('Arial', '', 10);
             $lin = $pdf->GetY();               
             $pdf->Line(10, $lin, 290, $lin);
             $pdf->ln(10);
@@ -233,6 +237,10 @@ if(isset($_REQUEST["acao"])){
                 $lin = $pdf->GetY();
                 $pdf->Line(25, $lin, 282, $lin);
             }
+            $pdf->SetX(50);
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->Cell(150, 5, "Total: ".$row0, 0, 1, 'L');
+            $pdf->SetFont('Arial', '', 10);
             $lin = $pdf->GetY();               
             $pdf->Line(10, $lin, 290, $lin);
             $pdf->ln(10);
@@ -306,6 +314,10 @@ if(isset($_REQUEST["acao"])){
                 $lin = $pdf->GetY();
                 $pdf->Line(25, $lin, 282, $lin);
             }
+            $pdf->SetX(50);
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->Cell(150, 5, "Total: ".$row0, 0, 1, 'L');
+            $pdf->SetFont('Arial', '', 10);
             $lin = $pdf->GetY();               
             $pdf->Line(10, $lin, 290, $lin);
             $pdf->ln(10);
@@ -378,6 +390,10 @@ if(isset($_REQUEST["acao"])){
                 $lin = $pdf->GetY();
                 $pdf->Line(25, $lin, 282, $lin);
             }
+            $pdf->SetX(50);
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->Cell(150, 5, "Total: ".$row0, 0, 1, 'L');
+            $pdf->SetFont('Arial', '', 10);
             $lin = $pdf->GetY();               
             $pdf->Line(10, $lin, 290, $lin);
             $pdf->ln(10);

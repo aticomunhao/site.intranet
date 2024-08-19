@@ -82,7 +82,6 @@ if(!isset($_SESSION['AdmUsu'])){
             }
         }
     }
-    $pdf->SetX(40); 
     $pdf->SetFont('Arial','' , 14); 
     $pdf->Cell(0, 5, $Cabec1, 0, 2, 'C');
     $pdf->SetFont('Arial','' , 12); 
@@ -102,8 +101,6 @@ if(!isset($_SESSION['AdmUsu'])){
     $lin = $pdf->GetY();
     $pdf->Line(10, $lin, 290, $lin);
 
-
-
     if($Acao == "listamesBens"){
         $Busca = addslashes(filter_input(INPUT_GET, 'mesano')); 
         $Proc = explode("/", $Busca);
@@ -112,11 +109,12 @@ if(!isset($_SESSION['AdmUsu'])){
             $Mes = "0".$Mes;
         }
         $Ano = $Proc[1];
-        $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(datareceb, 'DD/MM/YYYY'), date_part('dow', datareceb), numprocesso, descdobem, codusuins, usuguarda, usurestit, usucsg, usudestino, usuarquivou, CURRENT_DATE-datareceb, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, localachou, nomeachou, telefachou FROM ".$xProj.".bensachados WHERE ativo = 1 And DATE_PART('MONTH', datareceb) = '$Mes' And DATE_PART('YEAR', datareceb) = '$Ano' ORDER BY datareceb DESC ");
+        $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(datareceb, 'DD/MM/YYYY'), date_part('dow', datareceb), numprocesso, descdobem, codusuins, usuguarda, usurestit, usucsg, usudestino, usuarquivou, CURRENT_DATE-datareceb, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, localachou, nomeachou, telefachou FROM ".$xProj.".bensachados WHERE ativo = 1 And DATE_PART('MONTH', datareceb) = '$Mes' And DATE_PART('YEAR', datareceb) = '$Ano' ORDER BY datareceb DESC, id DESC ");
     }
+
     if($Acao == "listaanoBens"){
         $Ano = filter_input(INPUT_GET, 'ano'); 
-        $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(datareceb, 'DD/MM/YYYY'), date_part('dow', datareceb), numprocesso, descdobem, codusuins, usuguarda, usurestit, usucsg, usudestino, usuarquivou, CURRENT_DATE-datareceb, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, localachou, nomeachou, telefachou FROM ".$xProj.".bensachados WHERE ativo = 1 And DATE_PART('YEAR', datareceb) = '$Ano' ORDER BY datareceb DESC ");
+        $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(datareceb, 'DD/MM/YYYY'), date_part('dow', datareceb), numprocesso, descdobem, codusuins, usuguarda, usurestit, usucsg, usudestino, usuarquivou, CURRENT_DATE-datareceb, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, localachou, nomeachou, telefachou FROM ".$xProj.".bensachados WHERE ativo = 1 And DATE_PART('YEAR', datareceb) = '$Ano' ORDER BY datareceb DESC, id DESC ");
     }
 
     if($Acao == "listamesBens" || $Acao == "listaanoBens"){
@@ -134,9 +132,7 @@ if(!isset($_SESSION['AdmUsu'])){
                 $pdf->MultiCell(0, 5, $Ano, 0, 'C', false);
             }
             $pdf->ln(5);
-
             $pdf->SetFont('Arial', 'I', 8);
-
             $pdf->Cell(20, 4, "Data", 0, 0, 'C');
             $pdf->Cell(10, 4, "Sem", 0, 0, 'L');
             $pdf->Cell(20, 4, "Processo", 0, 0, 'C');
@@ -225,7 +221,10 @@ if(!isset($_SESSION['AdmUsu'])){
                 $lin = $pdf->GetY();
                 $pdf->Line(20, $lin, 290, $lin);
             }
-            }else{
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->Cell(150, 5, "Total: ".$row0." registros", 0, 1, 'L');
+            $pdf->SetFont('Arial', '', 10);
+        }else{
             $pdf->SetFont('Arial', '', 10);
             $pdf->ln(10);
             $pdf->Cell(20, 4, "Nenhum registro encontrado. Informe à ATI,", 0, 1, 'L');

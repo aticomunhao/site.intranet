@@ -60,12 +60,8 @@ if(isset($_REQUEST["acao"])){
 
     class PDF extends FPDF{
         function Footer(){
-           // Vai para 1.5 cm da parte inferior
            $this->SetY(-15);
-           // Seleciona a fonte Arial itálico 8
            $this->SetFont('Arial','I',8);
-           // Imprime o número da página corrente e o total de páginas
-//           $this->Cell(0,10,'Pag '.$this->PageNo().'/{nb}',0,0,'R');
            $this->Cell(0, 10, 'Impresso: '.date("d/m/Y H:i").'                   Pag '.$this->PageNo().'/{nb}', 0, 0, 'R');
          }
     }
@@ -85,7 +81,7 @@ if(isset($_REQUEST["acao"])){
             }
         }
     }
-    $pdf->SetX(40); 
+//    $pdf->SetX(40); 
     $pdf->SetFont('Arial','' , 14); 
     $pdf->Cell(0, 5, $Cabec1, 0, 2, 'C');
     $pdf->SetFont('Arial','' , 12); 
@@ -161,11 +157,11 @@ if(isset($_REQUEST["acao"])){
 
                 if($Acao == "listamesChaves"){
                     $rs1 = pg_query($Conec, "SELECT TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datavolta, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datasaida, 'YYYY'), TO_CHAR(datavolta, 'YYYY'), usuretira, usudevolve, TO_CHAR(datavolta - datasaida, 'DD HH24:MI'), TO_CHAR(datavolta - datasaida, 'DD'), TO_CHAR(CURRENT_DATE - datasaida, 'DD'), telef FROM ".$xProj.".chaves_ctl 
-                    WHERE chaves_id = $Cod And DATE_PART('MONTH', datasaida) = '$Mes' And DATE_PART('YEAR', datasaida) = '$Ano' ORDER BY datasaida");
+                    WHERE chaves_id = $Cod And DATE_PART('MONTH', datasaida) = '$Mes' And DATE_PART('YEAR', datasaida) = '$Ano' ORDER BY datasaida DESC");
                 }
                 if($Acao == "listaanoChaves"){
                     $rs1 = pg_query($Conec, "SELECT TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datavolta, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datasaida, 'YYYY'), TO_CHAR(datavolta, 'YYYY'), usuretira, usudevolve, TO_CHAR(datavolta - datasaida, 'DD HH24:MI'), TO_CHAR(datavolta - datasaida, 'DD'), TO_CHAR(CURRENT_DATE - datasaida, 'DD'), telef FROM ".$xProj.".chaves_ctl 
-                    WHERE chaves_id = $Cod And DATE_PART('YEAR', datasaida) = '$Ano' ORDER BY datasaida");
+                    WHERE chaves_id = $Cod And DATE_PART('YEAR', datasaida) = '$Ano' ORDER BY datasaida DESC ");
                 }
 
                 $row1 = pg_num_rows($rs1);
@@ -231,6 +227,7 @@ if(isset($_REQUEST["acao"])){
                 }
                 $pdf->ln(5);
             }
+            
             $lin = $pdf->GetY();               
             $pdf->Line(10, $lin, 290, $lin);
             $pdf->ln(10);
@@ -241,5 +238,84 @@ if(isset($_REQUEST["acao"])){
             $pdf->Cell(40, 5, 'Nenhum usuário encontrado.', 0, 1, 'L');
         }
     }
+
+
+    $pdf->AddPage();
+    $pdf->ln(10);
+    if($Acao == "listamesChaves"){
+        $rs0 = pg_query($Conec, "SELECT id, chavenum, chavenumcompl, chavelocal, chavesala FROM ".$xProj.".chaves  
+        WHERE ativo = 1 And chavenum != 0 ORDER BY chavenum");
+        $row0 = pg_num_rows($rs0);
+
+        $pdf->SetFont('Arial', 'I', 14);
+        if($Acao == "listamesChaves"){
+            $pdf->MultiCell(0, 5, "Uso das chaves em ".$mes_extenso[$Mes]." / ".$Ano, 0, 'C', false);
+        }
+        $pdf->ln(4);
+        if($row0 > 0){
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->SetX(40);
+            $pdf->Cell(20, 3, "Chave", 0, 0, 'L');
+            $pdf->Cell(20, 3, "nº de retiradas", 0, 0, 'R');
+            $pdf->Cell(20, 3, "Local da Chave", 0, 0, 'L');
+            $pdf->ln(4);
+
+            $lin = $pdf->GetY();
+            $pdf->Line(40, $lin, 180, $lin);
+            $pdf->SetFont('Arial', '', 10);
+
+            while($tbl0 = pg_fetch_row($rs0)){
+                $Cod = $tbl0[0];
+                $pdf->SetX(40); 
+                $pdf->SetFont('Arial', 'B', 10);
+                $pdf->Cell(20, 5, str_pad($tbl0[1], 3, 0, STR_PAD_LEFT).$tbl0[2], 0, 0, 'L');
+                $pdf->SetFont('Arial', '', 10);
+
+                $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_ctl WHERE ativo = 1 And chaves_id = $Cod And DATE_PART('MONTH', datasaida) = '$Mes' And DATE_PART('YEAR', datasaida) = '$Ano'");
+                $row1 = pg_num_rows($rs1);
+                $pdf->Cell(20, 5, $row1, 0, 0, 'R');
+                $pdf->Cell(80, 5, $tbl0[3], 0, 1, 'L');
+            }
+        }       
+    }
+
+    $pdf->ln(10);
+    if($Acao == "listaanoChaves"){
+        $rs0 = pg_query($Conec, "SELECT id, chavenum, chavenumcompl, chavelocal, chavesala FROM ".$xProj.".chaves  
+        WHERE ativo = 1 And chavenum != 0 ORDER BY chavenum");
+        $row0 = pg_num_rows($rs0);
+
+        $pdf->SetFont('Arial', 'I', 14);
+        $pdf->MultiCell(0, 5, "Uso das chaves em ".$Ano, 0, 'C', false);
+        
+        $pdf->ln(4);
+        if($row0 > 0){
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->SetX(40);
+            $pdf->Cell(20, 3, "Chave", 0, 0, 'L');
+            $pdf->Cell(20, 3, "nº de retiradas", 0, 0, 'R');
+            $pdf->Cell(20, 3, "Local da Chave", 0, 0, 'L');
+            $pdf->ln(4);
+
+            $lin = $pdf->GetY();
+            $pdf->Line(40, $lin, 180, $lin);
+            $pdf->SetFont('Arial', '', 10);
+
+            while($tbl0 = pg_fetch_row($rs0)){
+                $Cod = $tbl0[0];
+                $pdf->SetX(40); 
+                $pdf->SetFont('Arial', 'B', 10);
+                $pdf->Cell(20, 5, str_pad($tbl0[1], 3, 0, STR_PAD_LEFT).$tbl0[2], 0, 0, 'L');
+                $pdf->SetFont('Arial', '', 10);
+
+                $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_ctl WHERE ativo = 1 And chaves_id = $Cod And DATE_PART('YEAR', datasaida) = '$Ano'");
+                $row1 = pg_num_rows($rs1);
+                $pdf->Cell(20, 5, $row1, 0, 0, 'R');
+                $pdf->Cell(80, 5, $tbl0[3], 0, 1, 'L');
+            }
+        }       
+    }
+
+
  }
  $pdf->Output();

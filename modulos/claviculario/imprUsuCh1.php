@@ -57,7 +57,6 @@ if(isset($_REQUEST["acao"])){
             }
         }
     }
-    $pdf->SetX(40); 
     $pdf->SetFont('Arial','' , 14); 
     $pdf->Cell(0, 5, $Cabec1, 0, 2, 'C');
     $pdf->SetFont('Arial','' , 12); 
@@ -105,6 +104,11 @@ if(isset($_REQUEST["acao"])){
                 $lin = $pdf->GetY();
                 $pdf->Line(50, $lin, 200, $lin);
             }
+            $pdf->SetX(50);
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->Cell(150, 5, "Total: ".$row0, 0, 1, 'L');
+            $pdf->SetFont('Arial', '', 10);
+
             $lin = $pdf->GetY();               
             $pdf->Line(20, $lin, 200, $lin);
             $pdf->ln(10);
@@ -147,6 +151,10 @@ if(isset($_REQUEST["acao"])){
                 $lin = $pdf->GetY();
                 $pdf->Line(50, $lin, 200, $lin);
             }
+            $pdf->SetX(50);
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->Cell(150, 5, "Total: ".$row0, 0, 1, 'L');
+            $pdf->SetFont('Arial', '', 10);
             $lin = $pdf->GetY();               
             $pdf->Line(20, $lin, 200, $lin);
             $pdf->ln(10);
@@ -214,6 +222,11 @@ if(isset($_REQUEST["acao"])){
                 $lin = $pdf->GetY();
                 $pdf->Line(20, $lin, 200, $lin);
             }
+
+            $pdf->SetX(50);
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->Cell(150, 5, "Total: ".$row0, 0, 1, 'L');
+            $pdf->SetFont('Arial', '', 10);
             $lin = $pdf->GetY();               
             $pdf->Line(20, $lin, 200, $lin);
             $pdf->ln(10);

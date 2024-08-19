@@ -82,7 +82,6 @@ if(isset($_REQUEST["acao"])){
             }
         }
     }
-    $pdf->SetX(40); 
     $pdf->SetFont('Arial','' , 14); 
     $pdf->Cell(0, 5, $Cabec1, 0, 2, 'C');
     $pdf->SetFont('Arial','' , 12); 

@@ -40,6 +40,16 @@ if($Acao =="loglog"){
             echo $responseText;
             return;
         }
+        $rs = pg_query($Conec, "SELECT column_name, data_type FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'poslog'");
+        $row = pg_num_rows($rs);
+        if($row == 0){
+            $Erro = 6;
+            $Erro_Msg = "Faltam tabelas. Informe à ATI.";
+            $var = array("coderro"=>$Erro, "msg"=>$Erro_Msg);
+            $responseText = json_encode($var);
+            echo $responseText;
+            return false;
+        }
 
         $rs0 = pg_query($ConecPes, "SELECT nome_completo, sexo, cpf, dt_nascimento FROM ".$xPes.".pessoas WHERE cpf = '$Login' And status = 1");
         $row0 = pg_num_rows($rs0); 
@@ -154,6 +164,7 @@ if($Acao =="loglog"){
                                 pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar2 WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
                                 pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar3 WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
                                 pg_query($Conec, "DELETE FROM ".$xProj.".visitas_el WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
+                                pg_query($Conec, "DELETE FROM ".$xProj.".chaves_ctl WHERE datavolta < CURRENT_DATE - interval '$PrazoDel years'");
                             }
                             $rs6 = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog ");
                             $row6 = pg_num_rows($rs6); // atualiza nomes de poslog com pessoas

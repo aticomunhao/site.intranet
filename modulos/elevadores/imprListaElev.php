@@ -80,8 +80,7 @@ if(isset($_REQUEST["acao"])){
                 $pdf->Image('../../imagens/'.$Dom,12,8,16,20);
             }
         }
-    }
-    $pdf->SetX(40); 
+    } 
     $pdf->SetFont('Arial','' , 14); 
     $pdf->Cell(0, 5, $Cabec1, 0, 2, 'C');
     $pdf->SetFont('Arial','' , 12); 

@@ -199,6 +199,7 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->Line(10, $lin, 200, $lin);
         }
     }else{
+        $pdf->SetFont('Arial', '', 10);
         $pdf->Cell(0, 4, "Nenhum registro encontrado.", 0, 0, 'C');
     }
     $pdf->Output();

@@ -587,12 +587,12 @@ if(!isset($_SESSION["usuarioID"])){
         $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm >= $admIns And pessoas_id != $UsuLogadoId ORDER BY nomeusual, nomecompl");
 
         // Preenche caixa de escolha mes/ano para impressão - ano antes para indexar primeiro pelo ano
-        $OpcoesEscMes = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".tarefas.datains)::text ||'/'|| EXTRACT(MONTH FROM ".$xProj.".tarefas.datains)::text 
-        FROM ".$xProj.".tarefas GROUP BY 1 ORDER BY 1 DESC ");
+        $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(datains, 'MM'), '/', TO_CHAR(datains, 'YYYY')) 
+        FROM ".$xProj.".tarefas GROUP BY TO_CHAR(datains, 'MM'), TO_CHAR(datains, 'YYYY') ORDER BY TO_CHAR(datains, 'YYYY') DESC, TO_CHAR(datains, 'MM') DESC ");
         $OpcoesEscAno = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".tarefas.datains)::text 
         FROM ".$xProj.".tarefas GROUP BY 1 ORDER BY 1 DESC ");
-        $OpcoesUserMand = pg_query($Conec, "SELECT pessoas_id, nomecompl,nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomeusual, nomecompl");
-        $OpcoesUserExec = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomeusual, nomecompl");
+        $OpcoesUserMand = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
+        $OpcoesUserExec = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
 
         //marca que foi visualizado nesta data - dataSit1
         pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit1 = NOW() WHERE usuexec = ".$_SESSION["usuarioID"]." And datasit1 = '3000/12/31' And ativo = 1");
@@ -612,20 +612,10 @@ if(!isset($_SESSION["usuarioID"])){
         <!-- div três colunas -->
         <div class="container" style="margin: 0 auto;">
             <div class="row">
-                <div class="col quadro" style="margin: 0 auto;"> <input type="button" class="botpadr" id="botinserir" value="Inserir" onclick="abreModal();"></div>
+                <div class="col quadro" style="margin: 0 auto;"> <input type="button" class="botpadrblue" id="botinserir" value="Inserir Tarefa" onclick="abreModal();"></div>
 
                 <div class="col" style="text-align: center;">
-                    <?php
-                    if($VerTarefas == 1){
-                        echo "Mostrando todas as Tarefas";
-                    }else{
-                        echo "Visualização Estrita";
-                        if($_SESSION["AdmUsu"] > 6){
-                            echo "<br>Superusuário visualiza todas as tarefas";
-                        }    
-                    }
-                    ?>
-
+                    <h4>Tarefas</h4>
                 </div> <!-- Central - espaçamento entre colunas  -->
 
                 <div class="col quadro" style="margin: 0 auto; text-align: right;">
@@ -1058,7 +1048,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     <?php 
                                     if($OpcoesUserMand){
                                         while ($Opcoes = pg_fetch_row($OpcoesUserMand)){ ?>
-                                            <option value="<?php echo $Opcoes[0]; ?>"><?php if(!is_null($Opcoes[2]) && $Opcoes[2] != ""){ echo $Opcoes[2]." - ".$Opcoes[1];}else{echo $Opcoes[1];} ?></option>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; if($Opcoes[2] != ""){echo " - ".$Opcoes[2];} ?></option>
                                         <?php 
                                         }
                                     }
@@ -1075,7 +1065,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     <?php 
                                     if($OpcoesUserExec){
                                         while ($Opcoes = pg_fetch_row($OpcoesUserExec)){ ?>
-                                            <option value="<?php echo $Opcoes[0]; ?>"><?php if(!is_null($Opcoes[2]) && $Opcoes[2] != ""){ echo $Opcoes[2]." - ".$Opcoes[1];}else{echo $Opcoes[1];} ?></option>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; if($Opcoes[2] != ""){echo " - ".$Opcoes[2];} ?></option>
                                         <?php 
                                         }
                                     }

@@ -89,6 +89,8 @@ if(!isset($_SESSION["usuarioID"])){
 
                 $("#cpfproprietario").mask("999.999.999-99");
                 $("#configCpfBens").mask("999.999.999-99");
+                $("#dataregistro").mask("99/99/9999");
+                $("#dataachado").mask("99/99/9999");
 
                 document.getElementById("botimprReg").style.visibility = "hidden"; 
                 document.getElementById("botInsReg").style.visibility = "hidden"; 
