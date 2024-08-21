@@ -32,6 +32,14 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             '11' => 'Outubro',
             '12' => 'Dezembro'
         ); 
+
+
+        //Dia adotado pela neoenergia para calcular o consumo de um mês para outro
+        $DiaMedia = parAdm("dialeit_eletr", $Conec, $xProj);
+        if(strLen($DiaMedia) < 2){
+            $DiaMedia = "0".$DiaMedia;
+        }
+
         $rs = pg_query($Conec, "SELECT valorinieletric2, TO_CHAR(datainieletric2, 'YYYY/MM/DD') FROM ".$xProj.".paramsis WHERE idpar = 1 ");
         $row = pg_num_rows($rs);
         if($row > 0){
@@ -59,7 +67,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 $MediaDiaria = 0;
                 $SomaLeit1 = 0;
                 $SomaLeitAnt = 0;
-
                 $rs2 = pg_query($Conec, "SELECT dataleitura2, leitura2 FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura2) = $Mes And colec = 2 And ativo = 1 And leitura2 != 0 ");
                 $row2 = pg_num_rows($rs2);
                 if($row2 > 0){
@@ -83,6 +90,38 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         $MediaDiaria = $Cons1/$QuantDias;
                     }
                 }
+
+                $MesAnt = ($Mes-1);
+                if(strLen($MesAnt) < 2){
+                    $MesAnt = "0".$MesAnt;
+                }
+
+                $rsA = pg_query($Conec, "SELECT leitura2 FROM ".$xProj.".leitura_eletric 
+                WHERE TO_CHAR(dataleitura2, 'MM') = '$Mes' And TO_CHAR(dataleitura2, 'DD') = '$DiaMedia' ");
+                $rowA = pg_num_rows($rsA);
+                if($rowA > 0){
+                    $tblA = pg_fetch-row($rsA);
+                    $LeitMesAnt = $tblA[0];
+                }else{
+                    $LeitMesAnt = 0;
+                }
+                $rsB = pg_query($Conec, "SELECT leitura2 FROM ".$xProj.".leitura_eletric 
+                WHERE TO_CHAR(dataleitura2, 'MM') = '$MesAnt' And TO_CHAR(dataleitura2, 'DD') = '$DiaMedia' ");
+                $rowB = pg_num_rows($rsB);
+                if($rowB > 0){
+                    $tblB = pg_fetch-row($rsB);
+                    $LeitMesAtual = $tblB[0];
+                }else{
+                    $LeitMesAtual = 0;
+                }
+
+                if($LeitMesAtual == 0){ // ainda não chegou o dia
+                    $ConsCalc = "Aguardando o dia ".$DiaMedia."...";
+                }else{
+                    $ConsCalc = ($LeitMesAtual - $LeitMesAnt)." kWh";
+                }
+
+
                 ?>
                 <div style="border: 1px solid; border-radius: 10px">
                     <table style="margin: 0 auto; width: 95%;">
@@ -102,6 +141,12 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td style="border-bottom: 1px solid gray; font-size: 90%;">Consumo Médio Diário <?php if($QuantDias == 1){echo " (1 dia)";}else{echo "(".$QuantDias." dias)";} ?></td>
                             <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo ($Cons1/$QuantDias); ?> kWh</td>
                         </tr>
+                        <tr>
+                            <td style="border-bottom: 1px solid gray; font-size: 90%;">Consumo Mensal Calculado <?php echo "(Dia ".$DiaMedia.")"; ?> </td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo $ConsCalc; ?> </td>
+                        </tr>
+
+
                         <tr>
                             <td colspan="3" style="font-size: 90%; text-align: right;"></td>
                             <td style="text-align: center; color: red;"></td>

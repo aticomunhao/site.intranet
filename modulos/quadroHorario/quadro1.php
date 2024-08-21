@@ -306,6 +306,10 @@ if(!isset($_SESSION["usuarioID"])){
             function imprQuadro(){
                 window.open("modulos/quadroHorario/imprQuadro.php?acao=imprQuadro&numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), document.getElementById("selecMesAno").value);
             }
+            function imprPlanilha(){
+                window.open("modulos/quadroHorario/imprPlan.php?acao=imprPlan&numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), document.getElementById("selecMesAno").value);
+            }
+            
             function fechaRelaPart(){
                 document.getElementById("relacParticip").style.display = "none";
             }
@@ -482,7 +486,8 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".quadrohor (
 
                     <label style="padding-left: 30px;"></label>
                     <button class="botpadrred" id="botimprEsc" style="font-size: 80%;" onclick="imprQuadro();">Gerar PDF</button>
-                    <label style="padding-left: 30px;"></label>
+                    <button class="botpadrred" id="botimprPlanilha" style="font-size: 80%;" onclick="imprPlanilha();" title="Planilha">P</button>
+                    <label style="padding-left: 10px;"></label>
                     <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpEscala();" title="Guia rápido">
                 </div>
             </div>      

@@ -25,21 +25,11 @@
 			if(strtotime('2024/08/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
 
-				//0038
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS contr smallint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisc_contr smallint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS calcdata1 date DEFAULT '3000-12-31' ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS calcdata2 date DEFAULT '3000-12-31' ;");
+				//0043
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS dialeit_eletr VARCHAR(2) DEFAULT '08' ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS fatorcor_eletr VARCHAR(10) DEFAULT '40' ");
 
-				//0041
-//				pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 1");
-
-				$rs = pg_query($Conec, "SELECT id FROM ".$xProj.".bensachados WHERE LEFT(numprocesso, 4) = '0234' ");
-				$row = pg_num_rows($rs);
-				if($row == 0){ // é arquivo antigo
-					pg_query($Conec, "TRUNCATE TABLE ".$xProj.".bensachados");
-				}
-
+				
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

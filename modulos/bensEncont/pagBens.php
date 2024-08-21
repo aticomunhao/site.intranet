@@ -153,6 +153,10 @@ if(!isset($_SESSION["usuarioID"])){
 
                 $("#configCpfBens").click(function(){
                     document.getElementById("configSelecBens").value = "";
+                    document.getElementById("configCpfBens").value = "";
+                    document.getElementById("preencheBens").checked = false;
+                    document.getElementById("fiscBens").checked = false;
+                    document.getElementById("soPreencheBens").checked = false;
                 });
                 $("#configCpfBens").change(function(){
                     document.getElementById("configSelecBens").value = "";
@@ -1432,7 +1436,6 @@ if(!isset($_SESSION["usuarioID"])){
          <div id="modalBensConfig" class="relacmodal">
             <div class="modal-content-BensControle">
                 <span class="close" onclick="fechaBensConfig();">&times;</span>
-
                 <!-- div três colunas -->
                 <div class="container" style="margin: 0 auto;">
                     <div class="row">
@@ -1497,8 +1500,6 @@ if(!isset($_SESSION["usuarioID"])){
                             <label for="fiscBens" title="Fiscalizar os registros de bens encontrados - Só fiscaliza. Não pode registrar os bens encontrados.">fiscalizar os registros de Bens Encontrados</label>
                         </td>
                     </tr>
-
-
                 </table>
             </div>
         </div> <!-- Fim Modal-->

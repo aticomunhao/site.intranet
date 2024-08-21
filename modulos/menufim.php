@@ -260,13 +260,21 @@
 						if($Efet == 1){
 							$NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]); // procurar a que grupo de escala pertence
 						}
-						if($_SESSION["AdmUsu"] > 6){ // superusuário
+						if($_SESSION["usuarioID"] == 3){ // if($_SESSION["AdmUsu"] > 6){ // superusuário
 							if($NumGrupo > 0 || $FiscEscala > 0 || $Escalante > 0){
 								echo "<li>";
 									echo "<a href='#' onclick='openhref(72);'>Escala</a>";
 								echo "</li>";
 							}
 						}
+						if($_SESSION["usuarioID"] == 3){ // superusuário  
+//							if($NumGrupo > 0 || $FiscEscala > 0 || $Escalante > 0){
+								echo "<li>";
+									echo "<a href='#' onclick='openhref(77);'>Escala DAF</a>";
+								echo "</li>";
+//							}
+						}
+
 						if($_SESSION["AdmUsu"] > 6){ // superusuário
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(31);'>Parâmetros do Sistema</a>";

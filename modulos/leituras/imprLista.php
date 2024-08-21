@@ -6,7 +6,6 @@ if(!isset($_SESSION['AdmUsu'])){
     return false;
  }
 
-
  if(isset($_REQUEST["acao"])){
     $Acao = $_REQUEST["acao"];
     require_once('../../class/fpdf/fpdf.php'); // adaptado ao PHP 7.2 - 8.2
@@ -57,6 +56,9 @@ if(!isset($_SESSION['AdmUsu'])){
         '11' => 'Outubro',
         '12' => 'Dezembro'
     ); 
+
+     // fator a aplicar para acertar com o consumo de energia elétrica das antenas
+    $FatorCor = parAdm("fatorcor_eletr", $Conec, $xProj);
 
     class PDF extends FPDF{
         function Footer(){
@@ -116,7 +118,6 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->ln();
     $lin = $pdf->GetY();
     $pdf->Line(10, $lin, 200, $lin);
-
 
     $rs = pg_query($Conec, "SELECT valoriniagua, TO_CHAR(datainiagua, 'YYYY/MM/DD'), valorinieletric, TO_CHAR(datainieletric, 'YYYY/MM/DD'), valorinieletric2, TO_CHAR(datainieletric2, 'YYYY/MM/DD'), valorinieletric3, TO_CHAR(datainieletric3, 'YYYY/MM/DD') FROM ".$xProj.".paramsis WHERE idpar = 1 ");
     $row = pg_num_rows($rs);
@@ -456,7 +457,11 @@ if(!isset($_SESSION['AdmUsu'])){
 
     if($Acao == "listamesEletric"){
         $Busca = addslashes(filter_input(INPUT_GET, 'mesano')); 
-        $Colec = (int) filter_input(INPUT_GET, 'colec'); 
+        $Colec = (int) filter_input(INPUT_GET, 'colec');
+
+        //Dia adotado pela neoenergia para calcular o consumo de um mês para outro
+        $DiaMedia = parAdm("dialeit_eletr", $Conec, $xProj);
+
 		$pdf->SetTitle('Relação Mensal Eletricidade', $isUTF8=TRUE);
         $Proc = explode("/", $Busca);
         $Mes = $Proc[0];
@@ -464,6 +469,7 @@ if(!isset($_SESSION['AdmUsu'])){
             $Mes = "0".$Mes;
         }
         $Ano = $Proc[1];
+
         if($Colec == 2){
             $ValorIniEletric = $ValorIniEletric2; 
             $DataIniEletric = $DataIniEletric2;
@@ -472,6 +478,12 @@ if(!isset($_SESSION['AdmUsu'])){
             $ValorIniEletric = $ValorIniEletric3; 
             $DataIniEletric = $DataIniEletric3;
         }
+
+        if(strLen($DiaMedia) < 2){
+            $DiaMedia = "0".$DiaMedia;
+        }
+    
+
 
         if($ValorIniEletric > 0 && !is_null($DataIniEletric)){
             $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(dataleitura".$Colec.", 'DD/MM/YYYY'), date_part('dow', dataleitura".$Colec."), leitura".$Colec.", dataleitura".$Colec." 
@@ -530,15 +542,51 @@ if(!isset($_SESSION['AdmUsu'])){
                         $Cons1 = 0;
                     }
                     $pdf->SetX(80); 
-                    $pdf->Cell(20, 5, number_format($tbl0[3], 3, ",","."), 0, 0, 'R');
+                    $pdf->Cell(20, 5, $tbl0[3], 0, 0, 'R');
                     $pdf->SetX(140); 
-                    $pdf->Cell(20, 5, number_format($Cons1, 3, ",","."), 0, 1, 'R');
+                    $pdf->Cell(20, 5, $Cons1." kWh", 0, 1, 'R');
 
                     $lin = $pdf->GetY();
                     $pdf->Line(10, $lin, 200, $lin);
                 }
 
+
+
                 //Estatística
+                $MesAnt = ($Mes-1);
+                if(strLen($MesAnt) < 2){
+                    $MesAnt = "0".$MesAnt;
+                }
+
+                $rsA = pg_query($Conec, "SELECT leitura".$Colec." FROM ".$xProj.".leitura_eletric 
+                WHERE TO_CHAR(dataleitura".$Colec.", 'MM') = '$Mes' And TO_CHAR(dataleitura".$Colec.", 'DD') = '$DiaMedia' ");
+                $rowA = pg_num_rows($rsA);
+                if($rowA > 0){
+                    $tblA = pg_fetch-row($rsA);
+                    $LeitMesAnt = $tblA[0];
+                }else{
+                    $LeitMesAnt = 0;
+                }
+                $rsB = pg_query($Conec, "SELECT leitura".$Colec." FROM ".$xProj.".leitura_eletric 
+                WHERE TO_CHAR(dataleitura".$Colec.", 'MM') = '$MesAnt' And TO_CHAR(dataleitura".$Colec.", 'DD') = '$DiaMedia' ");
+                $rowB = pg_num_rows($rsB);
+                if($rowB > 0){
+                    $tblB = pg_fetch-row($rsB);
+                    $LeitMesAtual = $tblB[0];
+                }else{
+                    $LeitMesAtual = 0;
+                }
+
+                if($LeitMesAtual == 0){ // ainda não chegou o dia
+                    $ConsCalc = "Agd dia ".$DiaMedia;
+                }else{
+                    $ConsCalc = ($LeitMesAtual - $LeitMesAnt)." kWh";
+                }
+
+
+
+                
+                
                 $rs1 = pg_query($Conec, "SELECT DATE_PART('MONTH', dataleitura".$Colec."), COUNT(id), SUM(leitura".$Colec.") 
                 FROM ".$xProj.".leitura_eletric 
                 WHERE dataleitura".$Colec." IS NOT NULL And leitura".$Colec." != 0  And DATE_PART('MONTH', dataleitura".$Colec.") = '$Mes' And DATE_PART('YEAR', dataleitura".$Colec.") = '$Ano'
@@ -579,7 +627,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $pdf->Cell(25, 5, "Consumo Mensal:", 0, 0, 'R');
                             $pdf->SetX(155); 
                             $pdf->SetTextColor(255, 0, 0); // vermelho
-                            $pdf->Cell(27, 5, number_format($Cons1, 3, ",",".")." kWh", 0, 1, 'R');
+                            $pdf->Cell(27, 5, $Cons1." kWh", 0, 1, 'R');
                             $pdf->SetTextColor(0, 0, 0);
 
                             $pdf->SetX(125); 
@@ -587,7 +635,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
                             $pdf->SetX(155); 
                             $pdf->SetTextColor(255, 0, 0); // vermelho
-                            $pdf->Cell(27, 5, number_format($MediaDiaria, 3, ",",".")." kWh", 0, 0, 'R');
+                            $pdf->Cell(27, 5, $MediaDiaria." kWh", 0, 0, 'R');
                             $pdf->SetTextColor(0, 0, 0);
 
                             $pdf->SetX(185); 
@@ -598,6 +646,24 @@ if(!isset($_SESSION['AdmUsu'])){
                                 $pdf->Cell(20, 5, "(".$QuantDias." dias)", 0, 1, 'L');
                             }
                             
+                            $pdf->ln(2);
+
+                            $pdf->SetFont('Arial', 'I', 10);
+                            $pdf->SetX(125); 
+                            $pdf->Cell(25, 5, "Consumo Mensal Corrigido (Fator ".$FatorCor."):", 0, 0, 'R');
+                            $pdf->SetX(155); 
+                            $pdf->SetTextColor(255, 0, 0); // vermelho
+                            $pdf->Cell(27, 5, ($Cons1*$FatorCor)." kWh", 0, 1, 'R');
+                            $pdf->SetTextColor(0, 0, 0);
+
+                            $pdf->SetFont('Arial', 'I', 10);
+                            $pdf->SetX(125); 
+                            $pdf->Cell(25, 5, "Consumo Mensal Calculado (Dia ".$DiaMedia."):", 0, 0, 'R');
+                            $pdf->SetX(155); 
+                            $pdf->SetTextColor(255, 0, 0); // vermelho
+                            $pdf->Cell(27, 5, $ConsCalc, 0, 1, 'R');
+                            $pdf->SetTextColor(0, 0, 0);                           
+
                         }
                         $pdf->ln(20);
                     }
@@ -617,6 +683,13 @@ if(!isset($_SESSION['AdmUsu'])){
     if($Acao == "listaanoEletric"){
         $Ano = addslashes(filter_input(INPUT_GET, 'ano')); 
         $Colec = (int) filter_input(INPUT_GET, 'colec'); 
+
+        //Dia adotado pela neoenergia para calcular o consumo de um mês para outro
+        $DiaMedia = parAdm("dialeit_eletr", $Conec, $xProj);
+        if(strLen($DiaMedia) < 2){
+            $DiaMedia = "0".$DiaMedia;
+        }
+
 		$pdf->SetTitle('Relação Anual Eletricidade', $isUTF8=TRUE);
         if($Colec == 2){
             $ValorIniEletric = $ValorIniEletric2; 
@@ -638,8 +711,15 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->SetX(50); 
             $pdf->Cell(20, 4, "Mês", 0, 0, 'C');
 
-            $pdf->SetX(120); 
-            $pdf->Cell(20, 4, "Consumo", 0, 1, 'R');
+            $pdf->SetX(100); 
+//            $pdf->Cell(26, 4, "Consumo", 0, 1, 'R');
+            if($Colec == 1){
+                $pdf->Cell(26, 4, "Consumo", 0, 0, 'R');
+                $pdf->SetX(150);
+                $pdf->Cell(26, 4, "Cons Corrigido (*".$FatorCor.")", 0, 1, 'R');
+            }else{
+                $pdf->Cell(26, 4, "Consumo", 0, 1, 'R');
+            }
             $pdf->SetTextColor(0, 0, 0);
             $lin = $pdf->GetY();
             $pdf->SetDrawColor(200); // cinza claro                
@@ -666,8 +746,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             while($tbl2 = pg_fetch_row($rs2) ){
                                 $DataLinha = $tbl2[0]; // dataleitura
                                 $SomaLeit1 = $SomaLeit1+$tbl2[1];
-                                
-        
+
                                 if(strtotime($DataLinha) == strtotime($DataIniEletric)){ // "2024-03-01"
                                     $SomaLeitAnt = ($SomaLeitAnt+$ValorIniEletric);  //1696.485
                                 }
@@ -686,21 +765,38 @@ if(!isset($_SESSION['AdmUsu'])){
                             }
                             $pdf->SetX(50); 
                             $pdf->Cell(20, 5, $mesNum_extenso[$Mes], 0, 0, 'C');
-                            $pdf->SetX(120); 
-                            $pdf->Cell(26, 5, number_format($Cons1, 3, ",",".")." kWh", 0, 1, 'R');
+//                            $pdf->SetX(120); 
+//                            $pdf->Cell(26, 5, $Cons1." kWh", 0, 1, 'R');
                             $SomaAno = $SomaAno+$Cons1;
+
+                            if($Colec == 1){
+                                $pdf->SetX(100); 
+                                $pdf->Cell(26, 5, $Cons1." kWh", 0, 0, 'R');
+                                $pdf->SetX(150); 
+                                $pdf->Cell(26, 5, ($Cons1*$FatorCor)." kWh", 0, 1, 'R');
+                            }else{
+                                $pdf->SetX(100); 
+                                $pdf->Cell(26, 5, $Cons1." kWh", 0, 1, 'R');
+                            }
 
                             $lin = $pdf->GetY();
                             $pdf->SetDrawColor(200); // cinza claro                
                             $pdf->Line(10, $lin, 200, $lin);
                         }
+                    }
+                    $pdf->ln(5);
+                    $pdf->SetFont('Arial', 'I', 10);
+                    $pdf->SetX(95); 
+                    $pdf->Cell(26, 5, "Consumo Anual: ", 0, 0, 'R');
+                    $pdf->SetX(122); 
+                    $pdf->Cell(26, 5, $SomaAno." kWh", 0, 1, 'R');
 
-                        $pdf->ln(5);
+                    if($Colec == 1){
                         $pdf->SetFont('Arial', 'I', 10);
                         $pdf->SetX(95); 
-                        $pdf->Cell(26, 5, "Consumo Anual: ", 0, 0, 'R');
+                        $pdf->Cell(26, 5, "Consumo Anual Corrigido (Fator ".$FatorCor."):", 0, 0, 'R');
                         $pdf->SetX(122); 
-                        $pdf->Cell(26, 5, number_format($SomaAno, 3, ",",".")." kWh", 0, 1, 'R');
+                        $pdf->Cell(26, 5, ($SomaAno*$FatorCor)." kWh", 0, 1, 'R');
                     }
             }else{
                 $pdf->SetFont('Arial', '', 10);

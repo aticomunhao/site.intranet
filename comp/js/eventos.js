@@ -99,6 +99,9 @@ function openhref(Num){
     if(parseInt(Num) === 76){
         $('#container3').load('modulos/contratos/contratos1.php');
     }
+    if(parseInt(Num) === 77){
+        $('#container3').load('modulos/escaladaf/escala_daf.php');
+    }
 
 
 
