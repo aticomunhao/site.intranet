@@ -887,7 +887,7 @@ if($Acao =="salvaAtivDir"){
 if($Acao =="buscackList"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Erro = 0;
-    $rs = pg_query($Conec, "SELECT itemverif, ativo FROM ".$xProj.".livrocheck WHERE id = $Cod");
+    $rs = pg_query($Conec, "SELECT itemnum, itemverif, ativo FROM ".$xProj.".livrocheck WHERE id = $Cod");
     $row = pg_num_rows($rs);
     if($row > 0){
         $tbl = pg_fetch_row($rs);
@@ -895,13 +895,14 @@ if($Acao =="buscackList"){
     }else{
         $Erro = 1;
     }
-    $var = array("coderro"=>$Erro, "itemcklist"=>$tbl[0], "ativo"=> $tbl[1]);
+    $var = array("coderro"=>$Erro, "itemnum"=>$tbl[0], "itemcklist"=>$tbl[1], "ativo"=> $tbl[2]);
     $responseText = json_encode($var);
     echo $responseText;
 }
 
 if($Acao =="salvaCkList"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $NumItem = filter_input(INPUT_GET, 'numitem');
     $DescItem = filter_input(INPUT_GET, 'descitem');
     $Ativo = (int) filter_input(INPUT_GET, 'ativo');
     $UsuIns = $_SESSION['usuarioID'];
@@ -911,10 +912,10 @@ if($Acao =="salvaCkList"){
         $tblCod = pg_fetch_row($rsCod);
         $Codigo = $tblCod[0];
         $CodigoNovo = ($Codigo+1); 
-        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, setor, itemverif, ativo, usuins, datains) 
-        VALUES ($CodigoNovo, 1, '$DescItem', $Ativo, $UsuIns, NOW() )");
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, itemnum, itemverif, ativo, usuins, datains) 
+        VALUES ($CodigoNovo, $NumItem, '$DescItem', $Ativo, $UsuIns, NOW() )");
     }else{
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".livrocheck SET ITEMVERIF = '$DescItem', ativo = $Ativo WHERE id = $Cod");
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".livrocheck SET itemnum = $NumItem, itemverif = '$DescItem', ativo = $Ativo WHERE id = $Cod");
     }
     if(!$rs){
         $Erro = 1;

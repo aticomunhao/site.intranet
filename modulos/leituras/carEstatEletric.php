@@ -101,7 +101,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 WHERE TO_CHAR(dataleitura2, 'MM') = '$Mes' And TO_CHAR(dataleitura2, 'DD') = '$DiaMedia' ");
                 $rowA = pg_num_rows($rsA);
                 if($rowA > 0){
-                    $tblA = pg_fetch-row($rsA);
+                    $tblA = pg_fetch_row($rsA);
                     $LeitMesAnt = $tblA[0];
                 }else{
                     $LeitMesAnt = 0;
@@ -110,7 +110,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 WHERE TO_CHAR(dataleitura2, 'MM') = '$MesAnt' And TO_CHAR(dataleitura2, 'DD') = '$DiaMedia' ");
                 $rowB = pg_num_rows($rsB);
                 if($rowB > 0){
-                    $tblB = pg_fetch-row($rsB);
+                    $tblB = pg_fetch_row($rsB);
                     $LeitMesAtual = $tblB[0];
                 }else{
                     $LeitMesAtual = 0;
@@ -119,9 +119,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 if($LeitMesAtual == 0){ // ainda não chegou o dia
                     $ConsCalc = "Aguardando o dia ".$DiaMedia."...";
                 }else{
-                    $ConsCalc = (($LeitMesAtual - $LeitMesAnt)*$FatorCor)." kWh";
+                    $ConsCalc = number_format((($LeitMesAtual - $LeitMesAnt)*$FatorCor), 0, ",",".")." kWh";
                 }
-
                 ?>
                 <div style="border: 1px solid; border-radius: 10px">
                     <table style="margin: 0 auto; width: 95%;">
@@ -135,17 +134,17 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         </tr>
                         <tr>
                             <td style="border-bottom: 1px solid gray; font-size: 90%;">Consumo Mensal</td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo $Cons1; ?> kWh</td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo number_format(($Cons1), 0, ",","."); ?> kWh</td>
                         </tr>
 
                         <tr>
                             <td style="border-bottom: 1px solid gray; font-size: 90%;">Consumo Médio Diário <?php if($QuantDias == 1){echo " (1 dia)";}else{echo "(".$QuantDias." dias)";} ?></td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo ($Cons1/$QuantDias); ?> kWh</td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo number_format(($Cons1/$QuantDias), 0, ",","."); ?> kWh</td>
                         </tr>
                         
                         <tr>
                             <td style="border-bottom: 1px solid gray; font-size: 90%;" title="Fator aplicado:  <?php echo $FatorCor; ?>">Consumo Mensal Corrigido <?php echo "(Fator: ".$FatorCor.")"; ?></td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo ($Cons1*$FatorCor); ?> kWh</td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo number_format(($Cons1*$FatorCor), 0, ",","."); ?> kWh</td> 
                         </tr>
 
                         <tr>

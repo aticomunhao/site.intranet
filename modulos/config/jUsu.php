@@ -77,6 +77,8 @@ require_once("abrealas.php");
             }else{
                 $Acao = "todos";
             }
+            $rsT = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog WHERE ativo = 1"); 
+            $Total = pg_num_rows($rsT);
 
             $Condic = "id != 0 And nomecompl IS NOT NULL ";
             if($Acao == "online"){
@@ -116,6 +118,14 @@ require_once("abrealas.php");
         ?>
               <div class="box" style="position: relative; float: left; width: 33%; text-align: left;">
                 <table>
+                    <tr>
+                        <td style="font-size: 80%; color: green;">Total de Usuários:</td>
+                        <td style="font-size: 80%; color: green; text-align: right; min-width: 15px;"><?php echo $Total; ?></td>
+                        <td style="font-size: 80%; color: #4682B4; text-align: right; padding-left: 10px;"></td>
+                        <td style="font-size: 80%; color: #4682B4; text-align: right; min-width: 15px;"></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
                     <tr>
                         <td style="font-size: 80%; color: green;">Usuários do Dia:</td>
                         <td style="font-size: 80%; color: green; text-align: right; min-width: 15px;"><?php echo $TotDia; ?></td>

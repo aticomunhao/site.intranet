@@ -29,7 +29,18 @@
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS dialeit_eletr VARCHAR(2) DEFAULT '08' ");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS fatorcor_eletr VARCHAR(10) DEFAULT '40' ");
 
+				//0044
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".livrocheck ADD COLUMN IF NOT EXISTS marca smallint NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS valorkwh double precision NOT NULL DEFAULT 0.5 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_daf smallint NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS eft_daf smallint NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_daf = 1 WHERE pessoas_id = 3 Or pessoas_id = 83");
+
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS daf_marca smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS daf_turno smallint NOT NULL DEFAULT 0;");
 				
+
+
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

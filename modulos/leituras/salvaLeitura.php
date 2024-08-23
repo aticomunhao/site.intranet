@@ -495,3 +495,15 @@ if($Acao == "salvaFator"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
+if($Acao == "apagareg"){
+    $Erro = 0;
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".leitura_eletric SET ativo = 0 WHERE id = $Cod");
+    if(!$rs1){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}

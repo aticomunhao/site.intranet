@@ -422,6 +422,78 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
+            function apagaModalEletric(){
+                $.confirm({
+                    title: 'Confirmação!',
+                    content: 'Confirma apagar este lançamento?',
+                    autoClose: 'Não|20000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/leituras/salvaLeitura3.php?acao=apagareg&codigo="+document.getElementById("guardacod").value, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro no servidor.")
+                                            }else{
+                                                $("#container5").load("modulos/leituras/carEletric3.php");
+                                                $("#container6").load("modulos/leituras/carEstatEletric3.php");
+                                                document.getElementById("relacmodalEletric").style.display = "none";                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                            document.getElementById("configfatorcorrec").value = document.getElementById("guardafator").value;
+                        }
+                    }
+                });
+            }
+
+            function salvaValorKwh(){
+                $.confirm({
+                    title: 'Confirmação!',
+                    content: 'Modificar o valor do kWh informado pela fornecedora de energia elétrica. Prossegue?',
+                    autoClose: 'Não|20000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/leituras/salvaLeitura3.php?acao=salvaValorkWh&valor="+encodeURIComponent(document.getElementById("configvalorkwh").value), true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro no servidor.")
+                                            }else{
+                                                $('#mensagemConfig').fadeIn("slow");
+                                                document.getElementById("mensagemConfig").innerHTML = "Valor salvo.";
+                                                $('#mensagemConfig').fadeOut(1000); 
+                                                $("#container6").load("modulos/leituras/carEstatEletric2.php");
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                            document.getElementById("configvalorkwh").value = document.getElementById("guardavalorkwh").value;
+                        }
+                    }
+                });
+            }
+
             function abreEletric2Config(){
                 document.getElementById("leituraEletric").checked = false;
                 document.getElementById("leituraEletric2").checked = false;
@@ -527,6 +599,7 @@ if(!isset($_SESSION["usuarioID"])){
             $Menu1 = escMenu($Conec, $xProj, 1);
             $Menu2 = escMenu($Conec, $xProj, 2);
             $Menu3 = escMenu($Conec, $xProj, 3);
+            $ValorKwh = parAdm("valorkwh", $Conec, $xProj); // é o mesmo para pag_eletric2 e 3
 
             // Preenche caixa de escolha mes/ano para impressão
             $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataleitura3, 'MM'), '/', TO_CHAR(dataleitura3, 'YYYY')) 
@@ -545,6 +618,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" />
         <input type="hidden" id="InsLeituraEletric" value="<?php echo $InsEletric; ?>" /> <!-- autorização para um só indivíduo inserir as leituras -->
+        <input type="hidden" id="guardavalorkwh" value = "<?php echo $ValorKwh; ?>" />
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->
@@ -625,7 +699,18 @@ if(!isset($_SESSION["usuarioID"])){
                 <!-- div três colunas -->
                 <div class="container" style="margin: 0 auto;">
                     <div class="row">
-                        <div class="col quadro" style="margin: 0 auto;"></div>
+                        <div class="col quadro" style="margin: 0 auto;">
+                        <div style="text-align: center; border: 2px solid red; border-radius: 5px; width: 80%; padding: 5px;">
+                                <table style="margin: 0 auto; width: 90%;">
+                                    <tr>
+                                        <td class="etiqAzul" title="Valor do kWh em R$.">Valor do kWh: R$</td>
+                                        <td>
+                                        <input type="text" id="configvalorkwh" style="width: 70px; text-align: left; border: 1px solid #666; border-radius: 5px;" value="<?php echo $ValorKwh; ?>" onchange="salvaValorKwh();" onkeypress="if(event.keyCode===13){javascript:foco('configSelecEletric');return false;}" title="Valor em Reais."/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
                         <div class="col quadro"><h5 style="text-align: center; color: #666;">Configuração <br>Eletricidade <?php echo $Menu3; ?></h5></div> <!-- Central - espaçamento entre colunas  -->
                         <div class="col quadro" style="margin: 0 auto; text-align: center;"><button class="botpadrred" style="font-size: 70%;" onclick="resumoUsuEletric();">Resumo em PDF</button></div> 
                     </div>
@@ -637,7 +722,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td colspan="4" style="text-align: center;"></td>
                     </tr>
                     <tr>
-                        <td colspan="4" style="text-align: center;">Busca Nome ou CPF do Solicitante</td>
+                        <td colspan="4" style="text-align: center;">Busca Nome ou CPF do Usuário</td>
                     </tr>
                     <tr>
                         <td class="etiqAzul">Procura nome: </td>

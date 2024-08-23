@@ -473,6 +473,41 @@ if(!isset($_SESSION["usuarioID"])){
                 });
             }
 
+            function apagaModalEletric(){
+                $.confirm({
+                    title: 'Confirmação!',
+                    content: 'Confirma apagar este lançamento?',
+                    autoClose: 'Não|20000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/leituras/salvaLeitura.php?acao=apagareg&codigo="+document.getElementById("guardacod").value, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro no servidor.")
+                                            }else{
+                                                $("#container5").load("modulos/leituras/carEletric.php");
+                                                $("#container6").load("modulos/leituras/carEstatEletric.php");
+                                                document.getElementById("relacmodalEletric").style.display = "none";                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                            document.getElementById("configfatorcorrec").value = document.getElementById("guardafator").value;
+                        }
+                    }
+                });
+            }
+
             function salvaFator(){
                 $.confirm({
                     title: 'Confirmação!',
@@ -604,7 +639,7 @@ if(!isset($_SESSION["usuarioID"])){
             $Menu1 = escMenu($Conec, $xProj, 1);
             $Menu2 = escMenu($Conec, $xProj, 2);
             $Menu3 = escMenu($Conec, $xProj, 3);
-            $DiaMedia = parAdm("dialeit_eletr", $Conec, $xProj); // nível para editar
+            $DiaMedia = parAdm("dialeit_eletr", $Conec, $xProj);
             
 
             // Preenche caixa de escolha mes/ano para impressão
@@ -726,7 +761,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     <tr>
                                         <td class="etiqAzul" title="Fator de correção na medição do mostrador para indicar o consumo mensal considerando o consumo das antenas.">Fator de correção:</td>
                                         <td>
-                                        <input type="text" id="configfatorcorrec" style="width: 50px; text-align: center; border: 1px solid #666; border-radius: 5px;" value="<?php echo $FatorCor; ?>" onchange="salvaFator();" onkeypress="if(event.keyCode===13){javascript:foco('configSelecEletric');return false;}" title="Fator de correção na medição do mostrador para indicar o consumo mensal em conjunto com as antenas."/>
+                                        <input type="text" id="configfatorcorrec" style="width: 50px; text-align: center; border: 1px solid #666; border-radius: 5px;" value="<?php echo $FatorCor; ?>" onchange="$FatorCor = parAdm("fatorcor_eletr", $Conec, $xProj);();" onkeypress="if(event.keyCode===13){javascript:foco('configSelecEletric');return false;}" title="Fator de correção na medição do mostrador para indicar o consumo mensal em conjunto com as antenas."/>
                                         </td>
                                     </tr>
                                 </table>
@@ -743,7 +778,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td colspan="4" style="text-align: center;"></td>
                     </tr>
                     <tr>
-                        <td colspan="4" style="text-align: center;">Busca Nome ou CPF do Solicitante</td>
+                        <td colspan="4" style="text-align: center;">Busca Nome ou CPF do Usuário</td>
                     </tr>
                     <tr>
                         <td class="etiqAzul">Procura nome: </td>

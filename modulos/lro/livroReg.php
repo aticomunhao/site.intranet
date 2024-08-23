@@ -12,11 +12,13 @@ if(!isset($_SESSION["usuarioID"])){
         <meta charset="UTF-8">
         <title></title>
         <link rel="stylesheet" type="text/css" media="screen" href="class/dataTable/datatables.min.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/relacmod.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/indlog.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
         <script src="class/dataTable/datatables.min.js"></script>
         <script src="comp/js/jquery-confirm.min.js"></script> <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
+        <script src="comp/js/jquery-confirm.min.js"></script> 
         <script src="comp/js/jquery.mask.js"></script>
         <style>
             .modalMsg-content{
@@ -125,6 +127,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("botinserir").style.visibility = "visible"; 
                 }
                 $("#listaCheckList").load("modulos/lro/checkListLRO.php");
+                $("#listaCheckReg").load("modulos/lro/checkListReg.php");
 
                 modalMostra = document.getElementById('relacMostramodalReg'); //span[0]
                 spanMostra = document.getElementsByClassName("close")[0];
@@ -728,6 +731,50 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
+            function MarcaLista(obj, Cod){
+                if(obj.checked === false){
+                    return false;
+                }
+               $.confirm({
+                    title: 'Confirmação!',
+                    content: 'Quer inserir este item nas ocorrências para comentar?',
+                    autoClose: 'Não|20000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/lro/salvaReg.php?acao=buscaitem&codigo="+Cod, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro no servidor.")
+                                            }else{
+                                                document.getElementById('ocorrencia1').checked = true; // houve ocorr
+                                                document.getElementById('relato').disabled = false;
+                                                document.getElementById("mudou").value = "1";
+                                                if(document.getElementById('relato').value == ""){ 
+                                                    document.getElementById('relato').value = "item "+Resp.item+" - "+Resp.descr;
+                                                }else{
+                                                    document.getElementById('relato').value = document.getElementById('relato').value+"\n"+"item "+Resp.item+" - "+Resp.descr;
+                                                }
+                                                document.getElementById("relacCheckListReg").style.display = "none";
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                            obj.checked = false;
+                        }
+                    }
+                });
+            }
 
             function modif(){ // assinala se houve qualquer modificação
                 document.getElementById("mudou").value = "1";
@@ -753,6 +800,13 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("relacCheckList").style.display = "none";
             }
             
+            function abreCheckReg(){
+                document.getElementById("relacCheckListReg").style.display = "block";
+            }
+            function fechaCheckListReg(){
+                document.getElementById("relacCheckListReg").style.display = "none";
+            }
+
             function fechaHelpLRO(){
                 document.getElementById("relacHelpLRO").style.display = "none";
             }
@@ -857,6 +911,67 @@ if(!isset($_SESSION["usuarioID"])){
             echo "Faltam tabelas. Informe à ATI.";
             return false;
         }
+
+
+//Provisório
+
+			$rs1 = pg_query($Conec, "SELECT column_name, data_type FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'livrocheck' AND COLUMN_NAME = 'itemnum'");
+			$row1 = pg_num_rows($rs1);
+			if($row1 == 0){
+				pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".livrocheck");
+			}
+
+			pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livrocheck (
+				id SERIAL PRIMARY KEY,
+				marca smallint NOT NULL DEFAULT 0,
+				itemnum smallint NOT NULL DEFAULT 0,
+				itemverif VARCHAR(250),
+				ativo smallint NOT NULL DEFAULT 1,
+				usuins bigint NOT NULL DEFAULT 0,
+				datains timestamp without time zone DEFAULT '3000-12-31',
+				usuedit bigint NOT NULL DEFAULT 0,
+				dataedit timestamp without time zone DEFAULT '3000-12-31'
+				)
+			");
+
+
+	$rs = pg_query($Conec, "SELECT id FROM ".$xProj.".livrocheck LIMIT 3");
+	$row = pg_num_rows($rs);
+	if($row == 0){
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (1, 0, 1, 'Bebedouro com Garrafão', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (2, 0, 2, 'Cadeira', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (3, 0, 3, 'Câmera', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (4, 0, 4, 'Chaves do Claviculário', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (5, 0, 5, 'Carregador dos Rádiocomunicadores', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (6, 0, 6, 'Chaves lacradas do claviculário', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (7, 0, 7, 'Computador', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (8, 0, 8, 'Correspondências ou encomendas entregues para a Casa', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (9, 0, 9, 'Doações recebidas dentro da Guarita', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (10, 0, 10, 'Extintor de incêndio', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (11, 0, 11, 'Formulário de Achados e Perdidos', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (12, 0, 12, 'Formulário de Controle do Claviculário', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (13, 0, 13, 'Formulário de Controle dos Rádiocomunicadores', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (14, 0, 14, 'Formulário de Controle de viaturas - pernoite', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (15, 0, 15, 'Formulário de Utilização de Vagas', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (16, 0, 16, 'Formulário de Utilização de Vagas no Estacionamento', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (17, 0, 17, 'LRO - Formulários', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (18, 0, 18, 'Monitor Câmera', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (19, 0, 19, 'Objetos Perdidos', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (20, 0, 20, 'Pasta com Normas', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (21, 0, 21, 'Problemas com elevadores', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (22, 0, 22, 'Problemas nas instalações - Portas, janelas, etc.', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (23, 0, 23, 'Rádiocomunicadores', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (24, 0, 24, 'Relógio de parede', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (25, 0, 25, 'Telefone Celular', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (26, 0, 26, 'Telefone Ramal 1804', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (27, 0, 27, 'Veículos e moto da Comunhão pernoitando na Casa', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (28, 0, 28, 'Veículos particulares pernoitando na casa', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (29, 0, 29, 'Ventilador', 1, 3, NOW()); ");
+	}
+
+
+//-------------------
+
         $rs = pg_query($Conec, "UPDATE ".$xProj.".livroreg SET enviado = 1 WHERE datains < (NOW() - interval '13 hour') "); // marca enviado após 13 horas de inserido - o turno 3 tem 12 horas
 
         $admIns = parAdm("insocor", $Conec, $xProj);   // nível para inserir 
@@ -963,10 +1078,15 @@ if(!isset($_SESSION["usuarioID"])){
                                 ?>
                             </select>
                             <label class="etiqAzul"> ciente das alterações dos turnos anteriores.</label>
+                            
+                            <label style="padding-left: 10px;"></label>
+                            <img src="imagens/checkVerde.png" height="15px;" style="cursor: pointer;" onclick="abreCheckReg();" title="Lista de Verificação (checklist)">
+
                             <br>
                             <label class="etiqAzul" title="Marcar se houve ou não houve ocorrência digna de nota">Ocorrências: </label>
                             <input type="radio" name="ocorrencia" id="ocorrencia1" value="1" title="Houve algo que precisa ser relatado" onclick="abreOcor(value);"><label for="ocorrencia1" class="etiqAzul" style="padding-left: 3px;"> Houve</label>
                             <input type="radio" name="ocorrencia" id="ocorrencia2" value="0" CHECKED title="Nada aconteceu que seja digno de nota" onclick="abreOcor(value);"><label for="ocorrencia2" class="etiqAzul" style="padding-left: 3px;"> Não Houve</label>
+
                             <br>
                             <textarea style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="8" cols="90" id="relato" onclick="tiraBorda(id);" onchange="modif();"></textarea>
                         </div>
@@ -1151,6 +1271,18 @@ if(!isset($_SESSION["usuarioID"])){
                 <h5 style="text-align: center; color: #666;">Passagem de Serviço</h5>
                 <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
                     <div id="listaCheckList"></div>  <!-- checkListLRO.php -->
+                </div>
+            </div>
+        </div>  <!-- Fim Modal checklist-->
+
+        <!-- div modal para checklist no registro -->
+        <div id="relacCheckListReg" class="relacmodal">
+            <div class="checkList-content">
+                <span class="close" onclick="fechaCheckListReg();">&times;</span>
+                <h4 style="text-align: center; color: #666;">Lista de Verificação</h4>
+                <div style="text-align: center; color: #666;">Auxiliar na composição do relato</div>
+                <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
+                    <div id="listaCheckReg"></div>  <!-- checkListLRO.php -->
                 </div>
             </div>
         </div>  <!-- Fim Modal checklist-->

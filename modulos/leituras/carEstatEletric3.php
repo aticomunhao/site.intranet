@@ -38,6 +38,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         if(strLen($DiaMedia) < 2){
             $DiaMedia = "0".$DiaMedia;
         }
+        $ValorKwh = parAdm("valorkwh", $Conec, $xProj); // é o mesmo para pag_eletric2 e 3
 
         $rs = pg_query($Conec, "SELECT valorinieletric3, TO_CHAR(datainieletric3, 'YYYY/MM/DD') FROM ".$xProj.".paramsis WHERE idpar = 1 ");
         $row = pg_num_rows($rs);
@@ -100,7 +101,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 WHERE TO_CHAR(dataleitura3, 'MM') = '$Mes' And TO_CHAR(dataleitura3, 'DD') = '$DiaMedia' ");
                 $rowA = pg_num_rows($rsA);
                 if($rowA > 0){
-                    $tblA = pg_fetch-row($rsA);
+                    $tblA = pg_fetch_row($rsA);
                     $LeitMesAnt = $tblA[0];
                 }else{
                     $LeitMesAnt = 0;
@@ -109,7 +110,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 WHERE TO_CHAR(dataleitura3, 'MM') = '$MesAnt' And TO_CHAR(dataleitura3, 'DD') = '$DiaMedia' ");
                 $rowB = pg_num_rows($rsB);
                 if($rowB > 0){
-                    $tblB = pg_fetch-row($rsB);
+                    $tblB = pg_fetch_row($rsB);
                     $LeitMesAtual = $tblB[0];
                 }else{
                     $LeitMesAtual = 0;
@@ -117,10 +118,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
                 if($LeitMesAtual == 0){ // ainda não chegou o dia
                     $ConsCalc = "Aguardando o dia ".$DiaMedia."...";
+                    $ValorCalc = "Aguardando o dia ".$DiaMedia."...";
                 }else{
-                    $ConsCalc = ($LeitMesAtual - $LeitMesAnt)." kWh";
+                    $ConsCalc = number_format(($LeitMesAtual - $LeitMesAnt), 0, ",",".")." kWh";
+                    $ValorCalc = "R$ ".number_format(($ConsCalc*$ValorKwh), 2, ",",".");
                 }
-
 
                 ?>
                 <div style="border: 1px solid; border-radius: 10px">
@@ -135,19 +137,22 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         </tr>
                         <tr>
                             <td style="border-bottom: 1px solid gray; font-size: 90%;">Consumo Mensal</td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo $Cons1; ?> kWh</td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo number_format(($Cons1), 0, ",","."); ?> kWh</td>
                         </tr>
 
                         <tr>
                             <td style="border-bottom: 1px solid gray; font-size: 90%;">Consumo Médio Diário <?php if($QuantDias == 1){echo " (1 dia)";}else{echo "(".$QuantDias." dias)";} ?></td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo ($Cons1/$QuantDias); ?> kWh</td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo number_format(($Cons1/$QuantDias), 0, ",","."); ?> kWh</td>
                         </tr>
                         
                         <tr>
                             <td style="border-bottom: 1px solid gray; font-size: 90%;">Consumo Mensal Calculado <?php echo "(Dia ".$DiaMedia.")"; ?> </td>
                             <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo $ConsCalc; ?> </td>
                         </tr>
-
+                        <tr>
+                            <td style="border-bottom: 1px solid gray; font-size: 90%;">Valor Consumo Mensal Calculado <?php echo "(Dia ".$DiaMedia.")"; ?> </td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo $ValorCalc; ?> </td>
+                        </tr>
                         <tr>
                             <td colspan="3" style="font-size: 90%; text-align: right;"></td>
                             <td style="text-align: center; color: red;"></td>

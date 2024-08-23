@@ -1061,7 +1061,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td colspan="4" style="text-align: center;"></td>
                     </tr>
                     <tr>
-                        <td colspan="4" style="text-align: center;">Busca Nome ou CPF do Solicitante</td>
+                        <td colspan="4" style="text-align: center;">Busca Nome ou CPF do Usuário</td>
                     </tr>
                     <tr>
                         <td class="etiqAzul">Procura nome: </td>

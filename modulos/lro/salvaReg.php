@@ -381,4 +381,27 @@ if($Acao=="incluirnome"){
     echo $responseText;
 }
 
-
+if($Acao=="buscaitem"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo'); // id de livrocheck
+    $Erro = 0;
+    $rs = pg_query($Conec, "SELECT itemnum, itemverif FROM ".$xProj.".livrocheck WHERE id = $Cod");
+    $row =  pg_num_rows($rs);
+    if($row > 0){
+        $tbl = pg_fetch_row($rs);
+        if(strLen($tbl[0]) < 2){
+            $Item = "0".$tbl[0];
+        }else{
+            $Item = $tbl[0];
+        }
+        $Desc = $tbl[1];
+    }else{
+        $Item = "";
+        $Desc = "";
+    }
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro, "item"=>$Item, "descr"=>$Desc);
+    $responseText = json_encode($var);
+    echo $responseText;
+}

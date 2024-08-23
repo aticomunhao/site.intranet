@@ -33,7 +33,7 @@ require_once("abrealas.php");
             <div style="text-align: center;"><h4>Lista de Verificação</h4></div>
             <div style="text-align: center;">Passagem de Serviço na Portaria<br></div>
             <?php
-                $rs0 = pg_query($Conec, "SELECT id, setor, itemverif, ativo FROM ".$xProj.".livrocheck WHERE setor = 1 ORDER BY itemverif ");
+                $rs0 = pg_query($Conec, "SELECT id, itemnum, itemverif, ativo FROM ".$xProj.".livrocheck WHERE itemnum != 0 ORDER BY itemnum ");
             ?>
             <table id="idTabelaLRO" class="display" style="width:85%;">
                 <thead>
@@ -49,8 +49,10 @@ require_once("abrealas.php");
                 $Item = 1;
                 while ($tbl0 = pg_fetch_row($rs0)){
                     $Cod = $tbl0[0]; // id
-                    if($Item < 10){
-                        $Item = "0".$Item;
+                    if(strLen($tbl0[1]) < 2){
+                        $Item = "0".$tbl0[1];
+                    }else{
+                        $Item = $tbl0[1];
                     }
                     ?>
                     <tr>
@@ -86,6 +88,10 @@ require_once("abrealas.php");
                 <h5 id="titulomodal" style="text-align: center; color: #666;">Edição do Checklist - LRO</h5>
                 <div style="margin-top: 10px; border: 2px solid blue; border-radius: 10px; padding: 10px;">
                     <table style="margin: 0 auto; width: 100%;">
+                        <tr>
+                            <td class="etiqAzul">Num:</td>
+                            <td><input type="text" id="numitem" style="width: 20%; text-align: center;" value="" onchange="modif();"></td>
+                        </tr>
                         <tr>
                             <td class="etiqAzul">Item:</td>
                             <td><input type="text" id="descitem" style="width: 100%;" value="" onchange="modif();"></td>

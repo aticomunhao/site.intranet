@@ -530,6 +530,7 @@
                                 if(parseInt(Resp.coderro) > 0){
                                     alert("Houve erro ao salvar");
                                 }else{
+                                    document.getElementById("numitem").value = Resp.itemnum;
                                     document.getElementById("descitem").value = Resp.itemcklist;
                                     if(parseInt(Resp.ativo) === 1){
                                         document.getElementById("atividadecklist1").checked = true;
@@ -537,8 +538,7 @@
                                         document.getElementById("atividadecklist2").checked = true;
                                     }
                                     document.getElementById("guardaAtivCkList").value = Resp.ativo;
-
-                                    document.getElementById("relacmodalCkList").style.display = "block"; // está em carDir.php
+                                    document.getElementById("relacmodalCkList").style.display = "block"; // está em carckListLRO.php
                                 }
                             }
                         }
@@ -558,6 +558,7 @@
                     ajaxIni();
                     if(ajax){
                         ajax.open("POST", "modulos/config/registr.php?acao=salvaCkList&codigo="+document.getElementById("guardacod").value
+                        +"&numitem="+document.getElementById("numitem").value
                         +"&descitem="+document.getElementById("descitem").value
                         +"&ativo="+document.getElementById("guardaAtivCkList").value, true);
                         ajax.onreadystatechange = function(){
