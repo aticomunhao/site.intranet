@@ -14,22 +14,28 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     </head>
     <body>
         <?php
+        $MesAtual = date("m");
+        $AnoAtual = date("Y");
+        $ValorKwh = parAdm("valorkwh", $Conec, $xProj);
+
         $Menu1 = escMenu($Conec, $xProj, 1);
+        $Menu2 = escMenu($Conec, $xProj, 2);
+        $Menu3 = escMenu($Conec, $xProj, 3);
         ?>
         <div style="text-align: center;"><label class="titRelat">Controle do Consumo de Eletricidade<?php echo " - ".$Menu1; ?><label></div>
         <?php
         $mes_extenso = array(
-            '1' => 'Janeiro',
-            '2' => 'Fevereiro',
-            '3' => 'Março',
-            '4' => 'Abril',
-            '5' => 'Maio',
-            '6' => 'Junho',
-            '7' => 'Julho',
-            '8' => 'Agosto',
-            '9' => 'Novembro',
-            '10' => 'Setembro',
-            '11' => 'Outubro',
+            '01' => 'Janeiro',
+            '02' => 'Fevereiro',
+            '03' => 'Março',
+            '04' => 'Abril',
+            '05' => 'Maio',
+            '06' => 'Junho',
+            '07' => 'Julho',
+            '08' => 'Agosto',
+            '09' => 'Setembro',
+            '10' => 'Outubro',
+            '11' => 'Novembro',
             '12' => 'Dezembro'
         ); 
 
@@ -53,22 +59,28 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             return false;
         }
 
-        $rs1 = pg_query($Conec, "SELECT DATE_PART('MONTH', dataleitura1), COUNT(id), SUM(leitura1) 
+        $rs1 = pg_query($Conec, "SELECT DATE_PART('MONTH', dataleitura1), COUNT(id), SUM(leitura1), DATE_PART('YEAR', dataleitura1) 
         FROM ".$xProj.".leitura_eletric 
         WHERE colec = 1 And dataleitura1 IS NOT NULL And leitura1 != 0 
-        GROUP BY DATE_PART('MONTH', dataleitura1) ORDER BY DATE_PART('MONTH', dataleitura1) DESC ");
+        GROUP BY DATE_PART('MONTH', dataleitura1), DATE_PART('YEAR', dataleitura1) ORDER BY DATE_PART('MONTH', dataleitura1) DESC, DATE_PART('YEAR', dataleitura1) DESC ");
 
         $row1 = pg_num_rows($rs1);
         if($row1 > 0){
-            while($tbl1 = pg_fetch_row($rs1) ){
+            while($tbl1 = pg_fetch_row($rs1)){ // messes e anos
                 $Mes = $tbl1[0];
+                $Ano = $tbl1[3];
+                if(strLen($Mes) < 2){
+                    $Mes = "0".$Mes;
+                }                
                 $QuantDias = $tbl1[1];
                 $Cons1 = 0;
                 $MediaDiaria = 0;
                 $SomaLeit1 = 0;
                 $SomaLeitAnt = 0;
+                $SomaCons1Fator = 0;
 
-                $rs2 = pg_query($Conec, "SELECT dataleitura1, leitura1 FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura1) = $Mes And colec = 1 And ativo = 1 And leitura1 != 0 ");
+                
+                $rs2 = pg_query($Conec, "SELECT dataleitura1, leitura1, fator, valorkwh FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura1) = $Mes And DATE_PART('YEAR', dataleitura1) = '$Ano' And colec = 1 And ativo = 1 And leitura1 != 0 ");
                 $row2 = pg_num_rows($rs2);
                 if($row2 > 0){
                     while($tbl2 = pg_fetch_row($rs2) ){
@@ -88,17 +100,23 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             }
                         }
                         $Cons1 = ($SomaLeit1-$SomaLeitAnt);
-                        $MediaDiaria = $Cons1/$QuantDias;
+                        $Cons2 = (($SomaLeit1-$SomaLeitAnt)*$tbl2[2]); // fator de correção do bc registrado junto com o consumo
+
+//echo $Cons1."<br>";
+//echo $Cons2."<br>";
+//Echo $Cons1Fator."<br>";
                     }
                 }
+
+//echo $Cons1*$FatorCor."<br>";
 
                 $MesAnt = ($Mes-1);
                 if(strLen($MesAnt) < 2){
                     $MesAnt = "0".$MesAnt;
                 }
 
-                $rsA = pg_query($Conec, "SELECT leitura2 FROM ".$xProj.".leitura_eletric 
-                WHERE TO_CHAR(dataleitura2, 'MM') = '$Mes' And TO_CHAR(dataleitura2, 'DD') = '$DiaMedia' ");
+                $rsA = pg_query($Conec, "SELECT leitura1 FROM ".$xProj.".leitura_eletric 
+                WHERE DATE_PART('YEAR', dataleitura1) = '$Ano' And TO_CHAR(dataleitura1, 'MM') = '$MesAnt' And TO_CHAR(dataleitura1, 'DD') = '$DiaMedia' And ativo = 1 ");
                 $rowA = pg_num_rows($rsA);
                 if($rowA > 0){
                     $tblA = pg_fetch_row($rsA);
@@ -106,8 +124,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 }else{
                     $LeitMesAnt = 0;
                 }
-                $rsB = pg_query($Conec, "SELECT leitura2 FROM ".$xProj.".leitura_eletric 
-                WHERE TO_CHAR(dataleitura2, 'MM') = '$MesAnt' And TO_CHAR(dataleitura2, 'DD') = '$DiaMedia' ");
+
+                $rsB = pg_query($Conec, "SELECT leitura1 FROM ".$xProj.".leitura_eletric 
+                WHERE DATE_PART('YEAR', dataleitura1) = '$Ano' And TO_CHAR(dataleitura1, 'MM') = '$Mes' And TO_CHAR(dataleitura1, 'DD') = '$DiaMedia' And ativo = 1 ");
                 $rowB = pg_num_rows($rsB);
                 if($rowB > 0){
                     $tblB = pg_fetch_row($rsB);
@@ -116,16 +135,43 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     $LeitMesAtual = 0;
                 }
 
-                if($LeitMesAtual == 0){ // ainda não chegou o dia
-                    $ConsCalc = "Aguardando o dia ".$DiaMedia."...";
+                //Energia Injetada
+                $rsC = pg_query($Conec, "SELECT leitura4 FROM ".$xProj.".leitura_eletric 
+                WHERE DATE_PART('YEAR', dataleitura4) = '$Ano' And TO_CHAR(dataleitura4, 'MM') = '$Mes' And ativo = 1 And leitura4 != 0");
+                $rowC = pg_num_rows($rsC);
+                if($rowC > 0){
+                    $tblC = pg_fetch_row($rsC);
+                    $Injet = $tblC[0];
+                }else{
+                    $Injet = 0;
+                }
+
+
+
+                $Eletric2Mes = buscaEletric2Mes($Conec, $xProj, $Ano, $Mes, $DiaMedia);
+                $Eletric2MesAnt = buscaEletric2Mes($Conec, $xProj, $Ano, $MesAnt, $DiaMedia);
+                $Eletric3Mes = buscaEletric3Mes($Conec, $xProj, $Ano, $Mes, $DiaMedia);
+                $Eletric3MesAnt = buscaEletric3Mes($Conec, $xProj, $Ano, $MesAnt, $DiaMedia);
+
+
+                if($LeitMesAtual == 0 || $LeitMesAnt == 0){ // ainda não chegou o dia
+                    if($LeitMesAtual == 0){
+                        $ConsCalc = "Agd dia ".$DiaMedia."/".$Mes;
+                        $Fatura = "Agd dia ".$DiaMedia."/".$Mes;
+                    }
+                    if($LeitMesAnt == 0){
+                        $ConsCalc = "Agd dia ".$DiaMedia."/".$MesAnt;
+                        $Fatura = "Agd dia ".$DiaMedia."/".$MesAnt;    
+                    }
                 }else{
                     $ConsCalc = number_format((($LeitMesAtual - $LeitMesAnt)*$FatorCor), 0, ",",".")." kWh";
+                    $Fatura = "R$ ".number_format((($LeitMesAtual - $LeitMesAnt)*$FatorCor-$Injet)*$ValorKwh, 2, ",",".");
                 }
                 ?>
                 <div style="border: 1px solid; border-radius: 10px">
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>
-                            <td style="font-size: 140%; font-weight: bold;"><?php echo $mes_extenso[$Mes]; ?></td>
+                            <td style="font-size: 140%; font-weight: bold;"><?php echo $mes_extenso[$Mes]."/".$Ano; ?></td>
                             <td colspan="3" style="text-align: center;"></td>
                         </tr>
                         <tr>
@@ -133,7 +179,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td style="border-bottom: 1px solid gray; font-size: 80%; text-align: center;"></td>
                         </tr>
                         <tr>
-                            <td style="border-bottom: 1px solid gray; font-size: 90%;">Consumo Mensal</td>
+                            <td style="border-bottom: 1px solid gray; font-size: 90%;">Consumo Mensal (leitura) <?php if($Mes == $MesAtual){if($QuantDias == 1){echo " (1 dia)";}else{echo "(".$QuantDias." dias)";}} ?></td>
                             <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo number_format(($Cons1), 0, ",","."); ?> kWh</td>
                         </tr>
 
@@ -144,12 +190,87 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         
                         <tr>
                             <td style="border-bottom: 1px solid gray; font-size: 90%;" title="Fator aplicado:  <?php echo $FatorCor; ?>">Consumo Mensal Corrigido <?php echo "(Fator: ".$FatorCor.")"; ?></td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo number_format(($Cons1*$FatorCor), 0, ",","."); ?> kWh</td> 
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo number_format($Cons2, 0, ",","."); ?> kWh</td> 
                         </tr>
 
                         <tr>
-                            <td style="border-bottom: 1px solid gray; font-size: 90%;" title="Aplicado fator de correção: <?php echo $FatorCor; ?>">Consumo Mensal Calculado <?php echo "(Dia ".$DiaMedia.")"; ?> </td>
+                            <td style="border-bottom: 1px solid gray; font-size: 90%;" title="Aplicado fator de correção: <?php echo $FatorCor; ?>">Consumo Calculado 
+                                <?php 
+                                echo "(".$DiaMedia."/".$MesAnt." a ".$DiaMedia."/".$Mes.")";
+                                if($LeitMesAtual > 0 && $LeitMesAnt > 0){
+                                    echo "&rarr; (".$LeitMesAtual." - ".$LeitMesAnt." = ".($LeitMesAtual - $LeitMesAnt)." x ".$FatorCor.")";
+                                }
+                                ?> 
+                            </td>
                             <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo $ConsCalc; ?> </td>
+                        </tr>
+
+                        <tr>
+                            <td style="border-bottom: 1px solid gray; font-size: 90%;" title="Fator aplicado:  <?php echo $FatorCor; ?>">Energia Ativa Injetada </td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php if($Injet == 0){echo "(Agd Info Mês ".$Mes.")";}else{echo number_format($Injet, 0, ",",".")." kWh";} ?></td> 
+                        </tr>
+                        <tr>
+                            <td style="border-bottom: 1px solid gray; font-size: 90%;" title="Fator aplicado:  <?php echo $FatorCor; ?>">Fatura: 
+                                <?php 
+                                if($LeitMesAtual > 0 && $LeitMesAnt > 0){ 
+                                    echo number_format((($LeitMesAtual - $LeitMesAnt)*$FatorCor), 0, ",",".")." kWh - ".number_format($Injet, 0, ",",".")." kWh x R$ ".$ValorKwh; 
+                                }
+                                ?>
+                            </td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo $Fatura; ?></td> 
+                        </tr>
+
+            <!-- Leitura das antenas -->
+                        <tr>
+                            <td style="border-bottom: 1px solid gray; font-size: 90%; color: #9C9C9C;">Consumo <?php echo $Menu2; ?> 
+                                <?php 
+                                    echo "(".$DiaMedia."/".$MesAnt." a ".$DiaMedia."/".$Mes.")";
+                                    if($Eletric2Mes > 0 && $Eletric2MesAnt > 0){
+                                        echo "&rarr; (".$Eletric2Mes." - ".$Eletric2MesAnt.")";
+                                    }
+                                ?>
+                            </td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%; color: #9C9C9C;">
+                                <?php 
+                                if($Eletric2Mes > 0 && $Eletric2MesAnt > 0){
+                                    echo number_format(($Eletric2Mes - $Eletric2MesAnt), 0, ",",".")." kWh";
+                                }else{
+                                    if($Eletric2Mes == 0){
+                                        echo "Agd dia ".$DiaMedia."/".$Mes;
+                                    }else{
+                                        if($Eletric2MesAnt == 0){
+                                            echo "Agd dia ".$DiaMedia."/".$MesAnt;
+                                        }
+                                    }
+                                }; 
+                                ?> 
+                            </td> 
+                        </tr>
+
+                        <tr>
+                            <td style="border-bottom: 1px solid gray; font-size: 90%; color: #9C9C9C;">Consumo <?php echo $Menu3; ?> 
+                                <?php 
+                                    echo "(".$DiaMedia."/".$MesAnt." a ".$DiaMedia."/".$Mes.")";
+                                    if($Eletric3Mes > 0 && $Eletric3MesAnt > 0){
+                                        echo "&rarr; (".$Eletric3Mes." - ".$Eletric3MesAnt.")";
+                                    }
+                                ?>
+                            </td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%; color: #9C9C9C;">
+                                <?php 
+                                if($Eletric3Mes > 0 && $Eletric3MesAnt > 0){
+                                    echo number_format(($Eletric3Mes - $Eletric3MesAnt), 0, ",",".")." kWh";
+                                }else{
+                                    if($Eletric3Mes == 0){
+                                        echo "Agd dia ".$DiaMedia."/".$Mes." ";
+                                    }else{
+                                        if($Eletric3MesAnt == 0){
+                                            echo "Agd dia ".$DiaMedia."/".$MesAnt;
+                                        }
+                                    }
+                                }; 
+                                ?> 
+                            </td> 
                         </tr>
 
                         <tr>
@@ -165,6 +286,61 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 <?php
             }
         }
+
+
+        //Calcula o consumo das operadoras das antenas
+        function buscaEletric2Mes($Conec, $xProj, $Ano, $Mes, $DiaMedia){
+            $rs = pg_query($Conec, "SELECT leitura2 FROM ".$xProj.".leitura_eletric 
+            WHERE DATE_PART('YEAR', dataleitura2) = '$Ano' And TO_CHAR(dataleitura2, 'MM') = '$Mes' And TO_CHAR(dataleitura2, 'DD') = '$DiaMedia' And ativo = 1  And leitura2 != 0");
+            $row = pg_num_rows($rs);
+            if($row > 0){
+                $tbl = pg_fetch_row($rs);
+                $Leitura = $tbl[0];
+            }else{
+                $Leitura = 0;
+            }
+            return $Leitura;
+        }
+
+        function buscaEletric2MesAnt($Conec, $xProj, $Ano, $MesAnt, $DiaMedia){
+            $rs = pg_query($Conec, "SELECT leitura2 FROM ".$xProj.".leitura_eletric 
+            WHERE DATE_PART('YEAR', dataleitura2) = '$Ano' And TO_CHAR(dataleitura2, 'MM') = '$MesAnt' And TO_CHAR(dataleitura2, 'DD') = '$DiaMedia' And ativo = 1  And leitura2 != 0");
+            $row = pg_num_rows($rs);
+            if($row > 0){
+                $tbl = pg_fetch_row($rs);
+                $Leitura = $tbl[0];
+            }else{
+                $Leitura = 0;
+            }
+            return $Leitura;
+        }
+
+        function buscaEletric3Mes($Conec, $xProj, $Ano, $Mes, $DiaMedia){
+            $rs = pg_query($Conec, "SELECT leitura3 FROM ".$xProj.".leitura_eletric 
+            WHERE DATE_PART('YEAR', dataleitura3) = '$Ano' And TO_CHAR(dataleitura3, 'MM') = '$Mes' And TO_CHAR(dataleitura3, 'DD') = '$DiaMedia' And ativo = 1  And leitura3 != 0");
+            $row = pg_num_rows($rs);
+            if($row > 0){
+                $tbl = pg_fetch_row($rs);
+                $Leitura = $tbl[0];
+            }else{
+                $Leitura = 0;
+            }
+            return $Leitura;
+        }
+
+        function buscaEletric3MesAnt($Conec, $xProj, $Ano, $MesAnt, $DiaMedia){
+            $rs = pg_query($Conec, "SELECT leitura3 FROM ".$xProj.".leitura_eletric 
+            WHERE DATE_PART('YEAR', dataleitura3) = '$Ano' And TO_CHAR(dataleitura3, 'MM') = '$MesAnt' And TO_CHAR(dataleitura3, 'DD') = '$DiaMedia' And ativo = 1  And leitura3 != 0");
+            $row = pg_num_rows($rs);
+            if($row > 0){
+                $tbl = pg_fetch_row($rs);
+                $Leitura = $tbl[0];
+            }else{
+                $Leitura = 0;
+            }
+            return $Leitura;
+        }
+
         ?>
     </body>
 </html>

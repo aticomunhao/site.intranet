@@ -194,8 +194,13 @@
 						<ul>
 							<?php
 								echo "<li>";
-								$Menu1 = escMenu($Conec, $xProj, 1); //abre alas
+								$Menu1 = escMenu($Conec, $xProj, 1); //escMenu em abrealas
 								echo "<a href='#' onclick='openhref(35);'>$Menu1</a>";
+									echo "<ul>";
+										echo "<li>";
+											echo "<a href='#' onclick='openhref(78);'>Eletricidade Injetada</a>";
+										echo "</li>";
+									echo "</ul>";
 								echo "</li>";
 								echo "<li>";
 								$Menu2 = escMenu($Conec, $xProj, 2);
@@ -267,13 +272,14 @@
 								echo "</li>";
 							}
 						}
-						if($_SESSION["usuarioID"] == 3){ // superusuário  
-//							if($NumGrupo > 0 || $FiscEscala > 0 || $Escalante > 0){
+						$EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
+//						if($_SESSION["usuarioID"] == 3){ // superusuário  
+							if($EscalanteDAF == 1){
 								echo "<li>";
 									echo "<a href='#' onclick='openhref(77);'>Escala DAF</a>";
 								echo "</li>";
-//							}
-						}
+							}
+//						}
 
 						if($_SESSION["AdmUsu"] > 6){ // superusuário
 							echo "<li>";

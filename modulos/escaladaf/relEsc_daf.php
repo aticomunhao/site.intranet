@@ -55,16 +55,15 @@ $Semana_Extract = array(
                 echo "<tr>";
                     echo "<td>";
                         echo "<div style='width: 150px;'> &nbsp; </div>";
-                        $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala) FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
+                        $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala), TO_CHAR(dataescala, 'DD/MM/YYYY') FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $row = pg_num_rows($rs);
                         if($row > 0){
                             while($tbl = pg_fetch_row($rs)){
                                 $IdDia = $tbl[0];
-                                echo "<td>";
-                                    echo "<div class='quadrodiaClick' onclick='abreEdit($IdDia)'> $tbl[1]<br> ";
-                                    echo $Semana_Extract[$tbl[2]];
-                                    echo " </div>";
-                                echo "</td>";
+                                $DataDia = addslashes($tbl[3]);
+                                ?>
+                                <td><div class="quadrodiaClick" onclick="abreEdit(<?php echo $IdDia; ?>, '<?php echo $DataDia; ?>');"><?php echo $tbl[1]; ?><br><?php echo $Semana_Extract[$tbl[2]]; ?></div></td>
+                                <?php
                             }
                         } 
                     echo "</td>";
@@ -123,5 +122,7 @@ $Semana_Extract = array(
                     }
                 echo "</tr>";
             echo "</table>";
+        }else{
+            echo "Nenhum usuário participa desta escala. Use as configurações para definir os participantes.";
         }
 ?>

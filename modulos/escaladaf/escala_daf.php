@@ -61,16 +61,15 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("imgEscalaConfig").style.visibility = "visible"; 
                 }
 
-                document.getElementById("selecMesAno").value = document.getElementById("guardamesano").value;
-                $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
+                document.getElementById("selecMesAnoEsc").value = document.getElementById("guardamesano").value;
+                $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
 
-                $("#selecMesAno").change(function(){
-                    if(parseInt(document.getElementById("selecMesAno").value) > 0){
-                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
 
+                $("#selecMesAnoEsc").change(function(){
+                    if(parseInt(document.getElementById("selecMesAnoEsc").value) > 0){
+                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                     }
                 });
-
 
 
                 $("#configSelecEscala").change(function(){
@@ -177,8 +176,9 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-            function abreEdit(DiaId){
+            function abreEdit(DiaId, DataDia){
                 document.getElementById("guardaDiaId").value = DiaId; // id do dia em escaladaf
+                document.getElementById("titulomodal").innerHTML = DataDia;
                 $("#relacaoParticip").load("modulos/escaladaf/equipe.php");
                 document.getElementById("relacParticip").style.display = "block";
             }
@@ -249,7 +249,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         });
                                         return false;
                                     }else{
-                                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
+                                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                                         $('#mensagemConfig').fadeIn("slow");
                                         document.getElementById("mensagemConfig").innerHTML = "Valor salvo.";
                                         $('#mensagemConfig').fadeOut(1000);
@@ -305,7 +305,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 }else if(parseInt(Resp.coderro) === 2){
                                     $.confirm({
                                         title: 'Atenção!',
-                                        content: 'É necessário inserir os horários dos turnos.<br>Clique em Editar.',
+                                        content: 'É necessário inserir os horários dos turnos.',
                                         autoClose: 'OK|10000',
                                         draggable: true,
                                         buttons: {
@@ -322,13 +322,13 @@ if(!isset($_SESSION["usuarioID"])){
                                             OK: function(){}
                                         }
                                     });
-                                    $("#faixacentral").load("modulos/QuadroHorario/jQuadro.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
-                                    $("#estat").load("modulos/quadroHorario/jCarga.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
+                                    $("#faixacentral").load("modulos/QuadroHorario/jQuadro.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+//                                    $("#estat").load("modulos/quadroHorario/jCarga.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                                     document.getElementById("relacParticip").style.display = "none";
                                 }else{
-                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
-//                                    $("#estat").load("modulos/quadroHorario/jCarga.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
-//                                    document.getElementById("relacParticip").style.display = "none";
+                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+//                                    $("#estat").load("modulos/quadroHorario/jCarga.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                    document.getElementById("relacParticip").style.display = "none";
                                 }
                             }
                         }
@@ -479,7 +479,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <div class="col" style="margin: 0 auto; text-align: left;" title="Inserir leitura do medidor de energia elétrica">
                     <img src="imagens/settings.png" height="20px;" id="imgEscalaConfig" style="cursor: pointer; padding-left: 30px;" onclick="abreEscalaConfig();" title="Configurar o acesso ao processamento">
                     <label style="padding-left: 40px;">Selecione o mês: </label>
-                    <select id="selecMesAno" style="font-size: 1rem; width: 90px;" title="Selecione o mês/ano.">
+                    <select id="selecMesAnoEsc" style="font-size: 1rem; width: 90px;" title="Selecione o mês/ano.">
                         <option value=""></option>
                             <?php 
                                 if($OpcoesEscMes){
@@ -545,7 +545,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <div class="container" style="margin: 0 auto;">
                     <div class="row">
                         <div class="col quadro" style="margin: 0 auto;"></div>
-                        <div class="col quadro"><h5 id="titulomodal" style="text-align: center; color: #666;">Escala DAF</h5></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col quadro"><h5 style="text-align: center; color: #666;">Escala DAF</h5></div> <!-- Central - espaçamento entre colunas  -->
                         <div class="col quadro" style="margin: 0 auto; text-align: center;"><button class="botpadrred" style="font-size: 70%;" onclick="resumoUsuEscala();">Resumo em PDF</button></div> 
                     </div>
                 </div>

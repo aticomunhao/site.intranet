@@ -165,9 +165,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 <div style="border: 2px solid blue; border-radius: 10px;">
                 <table style="margin: 0 auto; width: 95%;">
                     <tr>
-                        <td class="etiq" style="width: 100px;">Data</td>
-                        <td class="etiq" style="width: 5ch;">Sem</td>
-                        <td class="etiq" style="width: 120px;">Leitura</td>
+                        <td class="etiq" style="width: 120px;">Data</td>
+                        <td class="etiq">Sem</td>
+                        <td class="etiq" style="width: 150px;">Leitura</td>
                     </tr>
                     <tr>
                         <td><input type="text" style="text-align: center; border: 1px solid; border-radius: 4px;" id="insdata" width="150" onchange="checaData();" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('insleitura2');return false;}"/></td>
@@ -175,7 +175,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <td style="width: 120px;"><input type="text" style="text-align: center; width: 100%;" id="insleitura2" onchange="modif();" placeholder="Leitura" onkeypress="if(event.keyCode===13){javascript:foco('botsalvar');return false;}"/></td>
                     </tr>
                     <tr>
-                        <td colspan="5" style="text-align: center; padding-top: 5px;"><div id="mensagemLeitura" style="color: red; font-weight: bold;"></div></td>
+                        <td colspan="3" style="text-align: center; padding-top: 5px;"><div id="mensagemLeitura" style="color: red; font-weight: bold;"></div></td>
                     </tr>
                 </table>
 

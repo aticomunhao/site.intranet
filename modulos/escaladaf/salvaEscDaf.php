@@ -126,6 +126,13 @@ if($Acao =="insParticipante"){
         while($tbl = pg_fetch_row($rs)){
             $CodPartic = $tbl[0];
             $Turno = $tbl[1];
+            if($Turno == 0){
+                $Erro = 2; 
+                $var = array("coderro"=>$Erro);
+                $responseText = json_encode($var);
+                echo $responseText;
+                return;       
+            }
             $Letra = $tbl[2];
             $DescTurno = $tbl[3];
             $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_ins");

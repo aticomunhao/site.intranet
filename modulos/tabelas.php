@@ -271,6 +271,8 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
       leitura2 double precision NOT NULL DEFAULT 0,
       dataleitura3 date DEFAULT CURRENT_TIMESTAMP,
       leitura3 double precision NOT NULL DEFAULT 0,
+      dataleitura4 date DEFAULT CURRENT_TIMESTAMP,
+      leitura4 double precision NOT NULL DEFAULT 0,
       ativo smallint DEFAULT 1 NOT NULL,
       usuins integer DEFAULT 0 NOT NULL,
       datains timestamp without time zone DEFAULT CURRENT_TIMESTAMP,

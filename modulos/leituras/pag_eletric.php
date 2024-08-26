@@ -251,7 +251,6 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("guardacod").value = 0;
                                     document.getElementById("insdata").disabled = false;
                                     document.getElementById("insdata").value = Resp.proximo;  // document.getElementById("guardahoje").value;
-                                    document.getElementById("insdiasemana").innerHTML = Resp.sem;
                                     document.getElementById("insleitura1").value = "";
                                     document.getElementById("relacmodalEletric").style.display = "block";
                                     document.getElementById("apagaRegEletric").style.visibility = "hidden";
@@ -265,7 +264,6 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("guardacod").value = 0;
                                     document.getElementById("insdata").disabled = false;
                                     document.getElementById("insdata").value = Resp.proximo;  // document.getElementById("guardahoje").value;
-                                    document.getElementById("insdiasemana").innerHTML = Resp.sem;
                                     document.getElementById("insleitura1").value = "";
                                     document.getElementById("relacmodalEletric").style.display = "block";
                                     document.getElementById("apagaRegEletric").style.visibility = "hidden";
@@ -458,7 +456,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                 $('#mensagemConfig').fadeIn("slow");
                                                 document.getElementById("mensagemConfig").innerHTML = "Valor salvo.";
                                                 $('#mensagemConfig').fadeOut(1000); 
-                                                $("#container6").load("modulos/leituras/carEstatEletric2.php");
+                                                $("#container6").load("modulos/leituras/carEstatEletric.php");
                                             }
                                         }
                                     }
@@ -530,7 +528,6 @@ if(!isset($_SESSION["usuarioID"])){
                                                 $('#mensagemConfig').fadeIn("slow");
                                                 document.getElementById("mensagemConfig").innerHTML = "Valor salvo.";
                                                 $('#mensagemConfig').fadeOut(1000); 
-//                                                $("#container5").load("modulos/leituras/carEletric.php");
                                                 $("#container6").load("modulos/leituras/carEstatEletric.php");
                                             }
                                         }
@@ -541,6 +538,43 @@ if(!isset($_SESSION["usuarioID"])){
                         },
                         Não: function () {
                             document.getElementById("configfatorcorrec").value = document.getElementById("guardafator").value;
+                        }
+                    }
+                });
+            }
+
+            function salvaValorKwh(){
+                $.confirm({
+                    title: 'Confirmação!',
+                    content: 'Modificar o valor do kWh informado pela fornecedora de energia elétrica. Prossegue?',
+                    autoClose: 'Não|20000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/leituras/salvaLeitura.php?acao=salvaValorkWh&valor="+encodeURIComponent(document.getElementById("configvalorkwh").value), true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro no servidor.")
+                                            }else{
+                                                $('#mensagemConfig').fadeIn("slow");
+                                                document.getElementById("mensagemConfig").innerHTML = "Valor salvo.";
+                                                $('#mensagemConfig').fadeOut(1000); 
+                                                $("#container6").load("modulos/leituras/carEstatEletric2.php");
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                            document.getElementById("configvalorkwh").value = document.getElementById("guardavalorkwh").value;
                         }
                     }
                 });
@@ -607,29 +641,6 @@ if(!isset($_SESSION["usuarioID"])){
                 echo "Faltam tabelas. Informe à ATI.";
                 return false;
             }
-            $rs1 = pg_query($Conec, "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'leitura_eletric' AND COLUMN_NAME = 'dataleitura'");
-            $row1 = pg_num_rows($rs1);
-            if($row1 > 0){
-                pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".leitura_eletric");
-            
-                pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".leitura_eletric (
-                    id SERIAL PRIMARY KEY, 
-                    colec smallint NOT NULL DEFAULT 0, 
-                    dataleitura1 date DEFAULT CURRENT_TIMESTAMP,
-                    leitura1 double precision NOT NULL DEFAULT 0,
-                    dataleitura2 date DEFAULT CURRENT_TIMESTAMP,
-                    leitura2 double precision NOT NULL DEFAULT 0,
-                    dataleitura3 date DEFAULT CURRENT_TIMESTAMP,
-                    leitura3 double precision NOT NULL DEFAULT 0,
-                    ativo smallint DEFAULT 1 NOT NULL,
-                    usuins integer DEFAULT 0 NOT NULL,
-                    datains timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-                    usumodif integer DEFAULT 0 NOT NULL,
-                    datamodif timestamp without time zone DEFAULT CURRENT_TIMESTAMP) 
-                ");
-                pg_query($Conec, "INSERT INTO ".$xProj.".leitura_eletric (id, colec, dataleitura1, leitura1)  VALUES (1, 1, '2024-04-01', '100.5')");
-                pg_query($Conec, "INSERT INTO ".$xProj.".leitura_eletric (id, colec, dataleitura1, leitura1)  VALUES (2, 1, '2024-04-02', '100.8')");
-            }
 
             $admIns = parAdm("insleituraeletric", $Conec, $xProj);   // nível para inserir 
             $admEdit = parAdm("editleituraeletric", $Conec, $xProj); // nível para editar
@@ -640,6 +651,7 @@ if(!isset($_SESSION["usuarioID"])){
             $Menu2 = escMenu($Conec, $xProj, 2);
             $Menu3 = escMenu($Conec, $xProj, 3);
             $DiaMedia = parAdm("dialeit_eletr", $Conec, $xProj);
+            $ValorKwh = parAdm("valorkwh", $Conec, $xProj); // é o mesmo para pag_eletric2 e 3
             
 
             // Preenche caixa de escolha mes/ano para impressão
@@ -660,6 +672,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="InsLeituraEletric" value="<?php echo $InsEletric; ?>" /> <!-- autorização para um só indivíduo inserir as leituras -->
         <input type="hidden" id="guardafator" value = "<?php echo $FatorCor; ?>" />
         <input type="hidden" id="guardadia" value = "<?php echo $DiaMedia; ?>" />
+        <input type="hidden" id="guardavalorkwh" value = "<?php echo $ValorKwh; ?>" />
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->
@@ -673,7 +686,6 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
 
             <div style="padding: 10px; display: flex; align-items: center; justify-content: center;"> 
-
                 <div class="row" style="width: 95%;">
                     <div id="container5" class="col quadro" style="margin: 0 auto; width: 100%;"></div> <!-- quadro -->
 
@@ -740,11 +752,11 @@ if(!isset($_SESSION["usuarioID"])){
                 <div class="container" style="margin: 0 auto;">
                     <div class="row">
                         <div class="col quadro" style="margin: 0 auto;">
-                            <div style="text-align: center; border: 2px solid red; border-radius: 5px; width: 80%; padding: 5px;">
+                            <div style="text-align: center; border: 2px solid red; border-radius: 5px; width: 95%; padding: 5px;">
                                 <table>
                                     <tr>
                                         <td class="etiqAzul" title="Dia marcado pela fornecedora para apurar o consumo mensal.">Dia para Média Mensal:</td>
-                                        <td>
+                                        <td style="text-align: left;">
                                             <select id="configSelecDia" style="max-width: 50px;" onchange="salvaDia();" title="Dia marcado pela fornecedora para apurar o consumo mensal. Selecione o dia apropriado.">
                                                 <option value="<?php echo $DiaMedia; ?>"><?php echo $DiaMedia; ?></option>
                                                 <?php 
@@ -760,10 +772,19 @@ if(!isset($_SESSION["usuarioID"])){
                                     </tr>
                                     <tr>
                                         <td class="etiqAzul" title="Fator de correção na medição do mostrador para indicar o consumo mensal considerando o consumo das antenas.">Fator de correção:</td>
-                                        <td>
-                                        <input type="text" id="configfatorcorrec" style="width: 50px; text-align: center; border: 1px solid #666; border-radius: 5px;" value="<?php echo $FatorCor; ?>" onchange="$FatorCor = parAdm("fatorcor_eletr", $Conec, $xProj);();" onkeypress="if(event.keyCode===13){javascript:foco('configSelecEletric');return false;}" title="Fator de correção na medição do mostrador para indicar o consumo mensal em conjunto com as antenas."/>
+                                        <td style="text-align: left;">
+                                            <input type="text" id="configfatorcorrec" style="width: 50px; text-align: center; border: 1px solid #666; border-radius: 5px;" value="<?php echo $FatorCor; ?>" onchange="salvaFator();" onkeypress="if(event.keyCode===13){javascript:foco('configSelecEletric');return false;}" title="Fator de correção na medição do mostrador para indicar o consumo mensal em conjunto com as antenas."/>
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <td class="etiqAzul" title="Valor do kWh em R$.">Valor do kWh: R$</td>
+                                        <td>
+                                            <input type="text" id="configvalorkwh" style="width: 90px; text-align: left; border: 1px solid #666; border-radius: 5px;" value="<?php echo $ValorKwh; ?>" onchange="salvaValorKwh();" onkeypress="if(event.keyCode===13){javascript:foco('configSelecEletric');return false;}" title="Valor em Reais."/>
+                                        </td>
+                                    </tr>
+
+      
+
                                 </table>
                             </div>
                         </div>

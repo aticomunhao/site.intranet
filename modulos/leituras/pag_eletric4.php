@@ -23,7 +23,7 @@ if(!isset($_SESSION["usuarioID"])){
         <script src="comp/js/jquery-confirm.min.js"></script> 
         <script src="comp/js/jquery.mask.js"></script>
         <style type="text/css">
-            .modal-content-Eletric2Controle{
+           .modal-content-Eletric2Controle{
                 background: linear-gradient(180deg, white, #86c1eb);
                 margin: 10% auto;
                 padding: 20px;
@@ -60,17 +60,16 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 }
             }
-
             $(document).ready(function(){
                 if(parseInt(document.getElementById("guardaerro").value) === 0){
                     document.getElementById("botInserir").style.visibility = "hidden"; 
                     document.getElementById("botImprimir").style.visibility = "hidden"; 
-                    document.getElementById("imgEletric2config").style.visibility = "hidden"; 
+                    document.getElementById("imgEletricconfig").style.visibility = "hidden"; 
                     if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // // se estiver marcado em cadusu para fazer a leitura
                         if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
                             document.getElementById("botInserir").style.visibility = "visible"; 
-                            $("#container5").load("modulos/leituras/carEletric2.php");
-                            $("#container6").load("modulos/leituras/carEstatEletric2.php");
+                            $("#container5").load("modulos/leituras/carEletric4.php");
+                            $("#container6").load("modulos/leituras/carEstatEletric.php");
                             //para inserir tem que estar marcado no cadastro de usuários e ter o nível adm estabelecido nos parâmetros do sistema
                         }else{
                             $("#container5").load("modulos/leituras/carMsg.php?msgtipo=2");
@@ -83,7 +82,7 @@ if(!isset($_SESSION["usuarioID"])){
                     //para editar obedece ao nivel administrativo
                     if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 && parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) || parseInt(document.getElementById("UsuAdm").value) > 6){
                         document.getElementById("botImprimir").style.visibility = "visible"; 
-                        document.getElementById("imgEletric2config").style.visibility = "visible"; 
+                        document.getElementById("imgEletricconfig").style.visibility = "visible"; 
                     }else{
                         document.getElementById("botImprimir").style.visibility = "hidden"; 
                     }
@@ -91,23 +90,13 @@ if(!isset($_SESSION["usuarioID"])){
 
                 $("#configCpfEletric").mask("999.999.999-99");
 
-                $("#selecMesAnoEletric").change(function(){
-                    document.getElementById("selecAnoEletric").value = "";
-                    if(document.getElementById("selecMesAnoEletric").value != ""){
-                        window.open("modulos/leituras/imprLista.php?acao=listamesEletric&colec=2&mesano="+encodeURIComponent(document.getElementById("selecMesAnoEletric").value), document.getElementById("selecMesAnoEletric").value);
-                        document.getElementById("selecMesAnoEletric").value = "";
-                        document.getElementById("relacimprLeituraEletric").style.display = "none";
-                    }
-                });
                 $("#selecAnoEletric").change(function(){
-                    document.getElementById("selecMesAnoEletric").value = "";
                     if(document.getElementById("selecAnoEletric").value != ""){
-                        window.open("modulos/leituras/imprLista.php?acao=listaanoEletric&colec=2&ano="+encodeURIComponent(document.getElementById("selecAnoEletric").value), document.getElementById("selecAnoEletric").value);
+                        window.open("modulos/leituras/imprLista.php?acao=listaanoEletricInj&colec=4&ano="+encodeURIComponent(document.getElementById("selecAnoEletric").value), document.getElementById("selecAnoEletric").value);
                         document.getElementById("selecAnoEletric").value = "";
                         document.getElementById("relacimprLeituraEletric").style.display = "none";
                     }
                 });
-
 
                 $("#configSelecEletric").change(function(){
                     if(document.getElementById("configSelecEletric").value == ""){
@@ -205,12 +194,13 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
 
+
             }); // fim do ready
 
             function carregaModal(Cod){
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/leituras/salvaLeitura2.php?acao=buscaDataEletric&codigo="+Cod, true);
+                    ajax.open("POST", "modulos/leituras/salvaLeitura4.php?acao=buscaDataEletric&codigo="+Cod, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -220,8 +210,8 @@ if(!isset($_SESSION["usuarioID"])){
                                     alert("Houve um erro no servidor.");
                                 }else{
                                     document.getElementById("insdata").value = Resp.data;
-                                    document.getElementById("insdiasemana").innerHTML = Resp.sem;
-                                    document.getElementById("insleitura2").value = Resp.leitura2;
+//                                    document.getElementById("insdiasemana").innerHTML = Resp.sem;
+                                    document.getElementById("insleitura1").value = Resp.leitura;
                                     document.getElementById("guardacod").value = Cod;
                                     document.getElementById("relacmodalEletric").style.display = "block";
                                     if(parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
@@ -238,7 +228,7 @@ if(!isset($_SESSION["usuarioID"])){
             function insereModal(){
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/leituras/salvaLeitura2.php?acao=ultDataEletric", true);
+                    ajax.open("POST", "modulos/leituras/salvaLeitura.php?acao=ultDataEletric", true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -248,30 +238,31 @@ if(!isset($_SESSION["usuarioID"])){
                                     alert("Houve um erro no servidor.");
                                 }else if(parseInt(Resp.coderro) === 2){
                                     document.getElementById("insdata").value = Resp.data;
-                                    document.getElementById("insdiasemana").innerHTML = Resp.sem;
+//                                    document.getElementById("insdiasemana").innerHTML = Resp.sem;
                                     document.getElementById("guardacod").value = 0;
                                     document.getElementById("insdata").disabled = false;
                                     document.getElementById("insdata").value = Resp.proximo;  // document.getElementById("guardahoje").value;
-                                    document.getElementById("insleitura2").value = "";
+                                    document.getElementById("insleitura1").value = "";
                                     document.getElementById("relacmodalEletric").style.display = "block";
                                     document.getElementById("apagaRegEletric").style.visibility = "hidden";
                                     $('#mensagemLeitura').fadeIn("slow");
                                     document.getElementById("mensagemLeitura").innerHTML = "Data inicial para os lançamentos. <br>O valor anterior anotado é: "+Resp.valorini;
                                     $('#mensagemLeitura').fadeOut(10000);
-                                    document.getElementById("insleitura2").focus();
+                                    document.getElementById("insleitura1").focus();
                                 }else{
                                     document.getElementById("insdata").value = Resp.data;
-                                    document.getElementById("insdiasemana").innerHTML = Resp.sem;
+//                                    document.getElementById("insdiasemana").innerHTML = Resp.sem;
                                     document.getElementById("guardacod").value = 0;
                                     document.getElementById("insdata").disabled = false;
                                     document.getElementById("insdata").value = Resp.proximo;  // document.getElementById("guardahoje").value;
-                                    document.getElementById("insleitura2").value = "";
+//                                    document.getElementById("insdiasemana").innerHTML = Resp.sem;
+                                    document.getElementById("insleitura1").value = "";
                                     document.getElementById("relacmodalEletric").style.display = "block";
                                     document.getElementById("apagaRegEletric").style.visibility = "hidden";
-                                    $('#mensagemLeitura').fadeIn("slow");
-                                    document.getElementById("mensagemLeitura").innerHTML = "Próxima data para lançamento.";
-                                    $('#mensagemLeitura').fadeOut(2000);
-                                    document.getElementById("insleitura2").focus();
+//                                    $('#mensagemLeitura').fadeIn("slow");
+//                                    document.getElementById("mensagemLeitura").innerHTML = "Próxima data para lançamento.";
+//                                    $('#mensagemLeitura').fadeOut(2000);
+                                    document.getElementById("insleitura1").focus();
                                 }
                             }
                         }
@@ -290,7 +281,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/leituras/salvaLeitura2.php?acao=checaDataEletric&data="+encodeURIComponent(document.getElementById("insdata").value), true);
+                    ajax.open("POST", "modulos/leituras/salvaLeitura4.php?acao=checaDataEletric&data="+encodeURIComponent(document.getElementById("insdata").value), true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -301,8 +292,8 @@ if(!isset($_SESSION["usuarioID"])){
                                 }else{
                                     if(parseInt(Resp.jatem) === 1){
                                         document.getElementById("insdata").value = Resp.data;
-                                        document.getElementById("insdiasemana").innerHTML = Resp.sem;
-                                        document.getElementById("insleitura2").value = Resp.leitura2;
+//                                        document.getElementById("insdiasemana").innerHTML = Resp.sem;
+                                        document.getElementById("insleitura1").value = Resp.leitura4;
                                         document.getElementById("guardacod").value = Resp.id;
                                         $('#mensagemLeitura').fadeIn("slow");
                                         document.getElementById("mensagemLeitura").innerHTML = "Essa data já foi lançada.";
@@ -327,16 +318,16 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("insdata").focus();
                     return false;
                 }
-                if(document.getElementById("insleitura2").value == ""){
+                if(document.getElementById("insleitura1").value == ""){
                     $('#mensagemLeitura').fadeIn("slow");
-                    document.getElementById("mensagemLeitura").innerHTML = "Nenhuma leitura anotada";
+                    document.getElementById("mensagemLeitura").innerHTML = "Nenhum valor anotado";
                     $('#mensagemLeitura').fadeOut(3000);
                     return false;
                 }
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/leituras/salvaLeitura2.php?acao=salvaDataEletric&colec=2&insdata="+encodeURIComponent(document.getElementById("insdata").value)
-                    +"&leitura2="+document.getElementById("insleitura2").value
+                    ajax.open("POST", "modulos/leituras/salvaLeitura4.php?acao=salvaValorInjetado&colec=4&insdata="+encodeURIComponent(document.getElementById("insdata").value)
+                    +"&leitura1="+document.getElementById("insleitura1").value
                     +"&codigo="+document.getElementById("guardacod").value, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
@@ -345,15 +336,12 @@ if(!isset($_SESSION["usuarioID"])){
                                 Resp = eval("(" + ajax.responseText + ")");
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
-                                }else if(parseInt(Resp.coderro) === 2){
-                                    document.getElementById("relacmodalEletric").style.display = "none";
-                                    alert("Este primeiro lançamento está diferente da data especificada para o início. \nA estatística ficará prejudicada. Informe à ATI.");
                                 }else{
                                     $('#mensagemLeitura').fadeIn("slow");
                                     document.getElementById("mensagemLeitura").innerHTML = "Lançamento salvo.";
                                     $('#mensagemLeitura').fadeOut(1000);
-                                    $("#container5").load("modulos/leituras/carEletric2.php");
-                                    $("#container6").load("modulos/leituras/carEstatEletric2.php");
+                                    $("#container5").load("modulos/leituras/carEletric4.php");
+                                    $("#container6").load("modulos/leituras/carEstatEletric.php");
                                     document.getElementById("relacmodalEletric").style.display = "none";
                                 }
                             }
@@ -362,6 +350,7 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 }
             }
+
 
             function marcaEletric(obj, Campo){
                 if(obj.checked === true){
@@ -419,42 +408,6 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-            function apagaModalEletric(){
-                $.confirm({
-                    title: 'Confirmação!',
-                    content: 'Confirma apagar este lançamento?',
-                    autoClose: 'Não|20000',
-                    draggable: true,
-                    buttons: {
-                        Sim: function () {
-                            ajaxIni();
-                            if(ajax){
-                                ajax.open("POST", "modulos/leituras/salvaLeitura2.php?acao=apagareg&codigo="+document.getElementById("guardacod").value, true);
-                                ajax.onreadystatechange = function(){
-                                    if(ajax.readyState === 4 ){
-                                        if(ajax.responseText){
-//alert(ajax.responseText);
-                                            Resp = eval("(" + ajax.responseText + ")");
-                                            if(parseInt(Resp.coderro) === 1){
-                                                alert("Houve um erro no servidor.")
-                                            }else{
-                                                $("#container5").load("modulos/leituras/carEletric2.php");
-                                                $("#container6").load("modulos/leituras/carEstatEletric2.php");
-                                                document.getElementById("relacmodalEletric").style.display = "none";                                            }
-                                        }
-                                    }
-                                };
-                                ajax.send(null);
-                            }
-                        },
-                        Não: function () {
-                            document.getElementById("configfatorcorrec").value = document.getElementById("guardafator").value;
-                        }
-                    }
-                });
-            }
-            
-
             function abreEletric2Config(){
                 document.getElementById("leituraEletric").checked = false;
                 document.getElementById("leituraEletric2").checked = false;
@@ -469,19 +422,52 @@ if(!isset($_SESSION["usuarioID"])){
             function resumoUsuEletric(){
                 window.open("modulos/leituras/imprUsuEletric.php?acao=listaUsuarios", "EletricUsu");
             }
- 
+
+            function apagaModalEletric(){
+                $.confirm({
+                    title: 'Confirmação!',
+                    content: 'Confirma apagar este lançamento?',
+                    autoClose: 'Não|20000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/leituras/salvaLeitura.php?acao=apagareg&codigo="+document.getElementById("guardacod").value, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro no servidor.")
+                                            }else{
+                                                $("#container5").load("modulos/leituras/carEletric4.php");
+                                                $("#container6").load("modulos/leituras/carEstatEletric.php");
+                                                document.getElementById("relacmodalEletric").style.display = "none";                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {}
+                    }
+                });
+            }
+
             function imprMesLeitura(){
                 if(document.getElementById("selecMesAno").value == ""){
                     return false;
                 }
-                window.open("modulos/leituras/imprLista.php?acao=listamesEletric&colec=2&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
+                window.open("modulos/leituras/imprLista.php?acao=listamesEletric&colec=1&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
                 document.getElementById("relacimprLeituraEletric").style.display = "none";
             }
             function imprAnoLeitura(){
                 if(document.getElementById("selecAno").value == ""){
                     return false;
                 }
-                window.open("modulos/leituras/imprLista.php?acao=listaanoEletric&colec=2&ano="+encodeURIComponent(document.getElementById("selecAno").value));
+                window.open("modulos/leituras/imprLista.php?acao=listaanoEletric&colec=1&ano="+encodeURIComponent(document.getElementById("selecAno").value));
                 document.getElementById("relacimprLeituraEletric").style.display = "none";
             }
 
@@ -531,72 +517,48 @@ if(!isset($_SESSION["usuarioID"])){
                 echo "Faltam tabelas. Informe à ATI.";
                 return false;
             }
-            $rs1 = pg_query($Conec, "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'leitura_eletric' AND COLUMN_NAME = 'dataleitura'");
-            $row1 = pg_num_rows($rs1);
-            if($row1 > 0){
-                pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".leitura_eletric");
-            
-                pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".leitura_eletric (
-                    id SERIAL PRIMARY KEY, 
-                    colec smallint NOT NULL DEFAULT 0, 
-                    dataleitura1 date DEFAULT CURRENT_TIMESTAMP,
-                    leitura1 double precision NOT NULL DEFAULT 0,
-                    dataleitura2 date DEFAULT CURRENT_TIMESTAMP,
-                    leitura2 double precision NOT NULL DEFAULT 0,
-                    dataleitura3 date DEFAULT CURRENT_TIMESTAMP,
-                    leitura3 double precision NOT NULL DEFAULT 0,
-                    ativo smallint DEFAULT 1 NOT NULL,
-                    usuins integer DEFAULT 0 NOT NULL,
-                    datains timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-                    usumodif integer DEFAULT 0 NOT NULL,
-                    datamodif timestamp without time zone DEFAULT CURRENT_TIMESTAMP) 
-                ");
-            }
 
             $admIns = parAdm("insleituraeletric", $Conec, $xProj);   // nível para inserir 
             $admEdit = parAdm("editleituraeletric", $Conec, $xProj); // nível para editar
-            $InsEletric = parEsc("eletric2", $Conec, $xProj, $_SESSION["usuarioID"]); // procura coluna eletric em poslog 
+            $InsEletric = parEsc("eletric", $Conec, $xProj, $_SESSION["usuarioID"]); // procura coluna eletric em poslog 
 
             $Menu1 = escMenu($Conec, $xProj, 1);
             $Menu2 = escMenu($Conec, $xProj, 2);
             $Menu3 = escMenu($Conec, $xProj, 3);
-            $ValorKwh = parAdm("valorkwh", $Conec, $xProj); // é o mesmo para pag_eletric2 e 3
-
+          
             // Preenche caixa de escolha mes/ano para impressão
-            $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataleitura2, 'MM'), '/', TO_CHAR(dataleitura2, 'YYYY')) 
-            FROM ".$xProj.".leitura_eletric WHERE colec = 2 GROUP BY TO_CHAR(dataleitura2, 'MM'), TO_CHAR(dataleitura2, 'YYYY') ORDER BY TO_CHAR(dataleitura2, 'YYYY') DESC, TO_CHAR(dataleitura2, 'MM') DESC ");
-            $OpcoesEscAno = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".leitura_eletric.dataleitura2)::text 
-            FROM ".$xProj.".leitura_eletric WHERE colec = 2 GROUP BY 1 ORDER BY 1 DESC ");
+            $OpcoesEscAno = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".leitura_eletric.dataleitura1)::text 
+            FROM ".$xProj.".leitura_eletric WHERE colec = 1 GROUP BY 1 ORDER BY 1 DESC ");
 
             $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
         ?>
-        <input type="hidden" id="guardahoje" value = "<?php echo $Hoje; ?>" />
-        <input type="hidden" id="guardaerro" value = "<?php echo $Erro; ?>" />
-        <input type="hidden" id="guardaUsuId" value = "<?php echo $_SESSION["usuarioID"]; ?>" />
-        <input type="hidden" id="UsuAdm" value = "<?php echo $_SESSION["AdmUsu"] ?>" />
-        <input type="hidden" id="admIns" value = "<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->
-        <input type="hidden" id="admEdit" value = "<?php echo $admEdit; ?>" />
-        <input type="hidden" id="InsLeituraEletric" value = "<?php echo $InsEletric; ?>" /> <!-- autorização para um só indivíduo inserir as leituras -->
+        <input type="hidden" id="guardahoje" value="<?php echo $Hoje; ?>" />
+        <input type="hidden" id="guardaerro" value="<?php echo $Erro; ?>" />
+        <input type="hidden" id="guardaUsuId" value="<?php echo $_SESSION["usuarioID"]; ?>" />
+        <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
+        <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->
+        <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" />
+        <input type="hidden" id="InsLeituraEletric" value="<?php echo $InsEletric; ?>" /> <!-- autorização para um só indivíduo inserir as leituras -->
+
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->
                 <div class="col" style="margin: 0 auto; text-align: left;" title="Inserir leitura do medidor de energia elétrica">
-                    <img src="imagens/settings.png" height="20px;" id="imgEletric2config" style="cursor: pointer; padding-left: 30px;" onclick="abreEletric2Config();" title="Configurar o acesso ao processamento">
+                    <img src="imagens/settings.png" height="20px;" id="imgEletricconfig" style="cursor: pointer; padding-left: 30px;" onclick="abreEletric2Config();" title="Configurar o acesso ao processamento">
                     <label style="padding-right: 40px;"></label>
-                    <button id="botInserir" class="botpadrblue" onclick="insereModal();">Inserir</button>    
+                    <button id="botInserir" class="botpadrblue" onclick="insereModal();">Inserir</button>
                 </div> <!-- quadro -->
-                <div class="col" style="text-align: center;">Controle do Consumo de Energia Elétrica<?php echo " - ".$Menu2; ?></div> <!-- espaçamento entre colunas  -->
+                <div class="col" style="text-align: center;">Energia Ativa Injetada<?php echo " - ".$Menu1; ?></div> <!-- espaçamento entre colunas  -->
                 <div class="col" style="margin: 0 auto; text-align: center;"><button id="botImprimir" class="botpadrred" onclick="abreImprLeitura();">PDF</button></div> <!-- quadro -->
             </div>
 
             <div style="padding: 10px; display: flex; align-items: center; justify-content: center;"> 
-
                 <div class="row" style="width: 95%;">
-                    <div id="container5" class="col quadro" style="margin: 0 auto; width: 100%;"></div> <!-- quadro -->
+                    <div id="container5" class="col quadro" style="margin: 0 auto;"></div> <!-- quadro -->
 
                     <div class="col-1" style="width: 1%;"></div> <!-- espaçamento entre colunas  -->
 
-                    <div id="container6" class="col quadro" style="margin: 0 auto; width: 100%;"></div> <!-- quadro -->
+                    <div id="container6" class="col quadro" style="margin: 0 auto;"></div> <!-- quadro -->
 
                 </div> <!-- row  -->
             </div> <!-- container  -->
@@ -606,31 +568,16 @@ if(!isset($_SESSION["usuarioID"])){
         <div id="relacimprLeituraEletric" class="relacmodal">
             <div class="modal-content-imprLeitura">
                 <span class="close" onclick="fechaModalImpr();">&times;</span>
-                <h5 style="text-align: center;color: #666;">Controle do Consumo de Eletricidade<?php echo " - ".$Menu2; ?></h5>
-                <h6 style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
+                <h5 id="titulomodal" style="text-align: center;color: #666;">Controle do Consumo de Eletricidade<?php echo " - ".$Menu1; ?></h5>
+                <h6 id="titulomodal" style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
                 <div style="border: 2px solid #C6E2FF; border-radius: 10px;">
                     <table style="margin: 0 auto; width: 95%;">
-                        <tr>
-                            <td style="text-align: right;"><label style="font-size: 80%;">Mensal - Selecione o Mês/Ano: </label></td>
-                            <td>
-                                <select id="selecMesAnoEletric" style="font-size: 1rem; width: 90px;" title="Selecione o período.">
-                                    <option value=""></option>
-                                    <?php 
-                                    if($OpcoesEscMes){
-                                        while ($Opcoes = pg_fetch_row($OpcoesEscMes)){ ?>
-                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
-                                        <?php 
-                                        }
-                                    }
-                                    ?>
-                                </select>
-                            </td>
-                        </tr>
                         <tr>
                             <td style="text-align: right;"><label style="font-size: 80%;">Anual - Selecione o Ano: </label></td>
                             <td>
                                 <select id="selecAnoEletric" style="font-size: 1rem; width: 90px;" title="Selecione o Ano.">
                                     <option value=""></option>
+                                    <option value="Todos">Todos</option>
                                     <?php 
                                     if($OpcoesEscAno){
                                         while ($Opcoes = pg_fetch_row($OpcoesEscAno)){ ?>
@@ -649,7 +596,6 @@ if(!isset($_SESSION["usuarioID"])){
            <br><br>
         </div> <!-- Fim Modal-->
 
-
          <!-- Modal configuração-->
          <div id="modalEletric2Config" class="relacmodal">
             <div class="modal-content-Eletric2Controle">
@@ -657,10 +603,8 @@ if(!isset($_SESSION["usuarioID"])){
                 <!-- div três colunas -->
                 <div class="container" style="margin: 0 auto;">
                     <div class="row">
-                        <div class="col quadro" style="margin: 0 auto;">
-    
-                        </div>
-                        <div class="col quadro"><h5 style="text-align: center; color: #666;">Configuração <br>Eletricidade <?php echo $Menu2; ?></h5></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col quadro" style="margin: 0 auto;"></div>
+                        <div class="col quadro"><h5 id="titulomodal" style="text-align: center; color: #666;">Configuração <br>Eletricidade <?php echo $Menu1; ?></h5></div> <!-- Central - espaçamento entre colunas  -->
                         <div class="col quadro" style="margin: 0 auto; text-align: center;"><button class="botpadrred" style="font-size: 70%;" onclick="resumoUsuEletric();">Resumo em PDF</button></div> 
                     </div>
                 </div>

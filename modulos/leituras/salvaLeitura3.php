@@ -116,6 +116,8 @@ if($Acao =="salvaDataEletric"){
     }else{
         $Leitura3 = str_replace(",", ".", $Leit3);
     }
+    $ValorKwh = parAdm("valorkwh", $Conec, $xProj);
+    $FatorCor = parAdm("fatorcor_eletr", $Conec, $xProj);
     $Erro = 0;
 
     if($Cod == 0){
@@ -123,8 +125,8 @@ if($Acao =="salvaDataEletric"){
         $tblCod = pg_fetch_row($rsCod);
         $Codigo = $tblCod[0];
         $CodigoNovo = ($Codigo+1); 
-        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".leitura_eletric (id, colec, dataleitura3, leitura3, ativo, usuins, datains) 
-        VALUES($CodigoNovo, $Colec, '$PegaDia', $Leitura3, 1, ".$_SESSION["usuarioID"].", NOW() )");
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".leitura_eletric (id, colec, dataleitura3, leitura3, fator, valorkwh, ativo, usuins, datains) 
+        VALUES($CodigoNovo, $Colec, '$PegaDia', $Leitura3, $FatorCor, $ValorKwh, 1, ".$_SESSION["usuarioID"].", NOW() )");
         if(!$rs){
             $Erro = 1;
         }
@@ -137,7 +139,7 @@ if($Acao =="salvaDataEletric"){
             }
         }
     }else{
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".leitura_eletric SET colec = $Colec, dataleitura3 = '$PegaDia', leitura3 = $Leitura3, usumodif = ".$_SESSION["usuarioID"].", datamodif = NOW() WHERE id = $Cod ");
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".leitura_eletric SET colec = $Colec, dataleitura3 = '$PegaDia', leitura3 = $Leitura3, fator =  $FatorCor, valorkwh = $ValorKwh, usumodif = ".$_SESSION["usuarioID"].", datamodif = NOW() WHERE id = $Cod ");
         if(!$rs){
             $Erro = 1;
         }

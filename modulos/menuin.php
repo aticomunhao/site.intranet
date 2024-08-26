@@ -40,6 +40,12 @@
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS daf_turno smallint NOT NULL DEFAULT 0;");
 				
 
+				//0045
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".leitura_eletric ADD COLUMN IF NOT EXISTS dataleitura4 date DEFAULT CURRENT_TIMESTAMP;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".leitura_eletric ADD COLUMN IF NOT EXISTS leitura4 double precision NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".leitura_eletric ADD COLUMN IF NOT EXISTS fator double precision NOT NULL DEFAULT 40 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".leitura_eletric ADD COLUMN IF NOT EXISTS valorkwh double precision NOT NULL DEFAULT 0.9925695 ");
+
 
 			} // fim data limite
         ?>

@@ -28,25 +28,12 @@ if(!isset($_SESSION['AdmUsu'])){
         '06' => 'Junho',
         '07' => 'Julho',
         '08' => 'Agosto',
-        '09' => 'Novembro',
-        '10' => 'Setembro',
-        '11' => 'Outubro',
+        '09' => 'Setembro',
+        '10' => 'Outubro',
+        '11' => 'Novembro',
         '12' => 'Dezembro'
     ); 
-    $mesNum_extenso = array(
-        '1' => 'Janeiro',
-        '2' => 'Fevereiro',
-        '3' => 'Março',
-        '4' => 'Abril',
-        '5' => 'Maio',
-        '6' => 'Junho',
-        '7' => 'Julho',
-        '8' => 'Agosto',
-        '9' => 'Novembro',
-        '10' => 'Setembro',
-        '11' => 'Outubro',
-        '12' => 'Dezembro'
-    );
+
 //numeração do dia da semana da função extract() (DOW) é diferente da função to_char() (D)
 //Função para Extract no postgres
     $Semana_Extract = array(

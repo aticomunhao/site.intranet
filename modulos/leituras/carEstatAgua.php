@@ -24,9 +24,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             '6' => 'Junho',
             '7' => 'Julho',
             '8' => 'Agosto',
-            '9' => 'Novembro',
-            '10' => 'Setembro',
-            '11' => 'Outubro',
+            '9' => 'Setembro',
+            '10' => 'Outubro',
+            '11' => 'Novembro',
             '12' => 'Dezembro'
         ); 
         $rs = pg_query($Conec, "SELECT valoriniagua, TO_CHAR(datainiagua, 'YYYY/MM/DD') FROM ".$xProj.".paramsis WHERE idpar = 1 ");

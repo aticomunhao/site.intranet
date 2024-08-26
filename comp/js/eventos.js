@@ -102,7 +102,9 @@ function openhref(Num){
     if(parseInt(Num) === 77){
         $('#container3').load('modulos/escaladaf/escala_daf.php');
     }
-
+    if(parseInt(Num) === 78){
+        $('#container3').load('modulos/leituras/pag_eletric4.php');
+    }
 
 
     if(parseInt(Num) === 30){

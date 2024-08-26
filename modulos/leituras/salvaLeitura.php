@@ -275,6 +275,9 @@ if($Acao =="salvaDataEletric"){
     }else{
         $Leitura1 = str_replace(",", ".", $Leit1);
     }
+
+    $ValorKwh = parAdm("valorkwh", $Conec, $xProj);
+    $FatorCor = parAdm("fatorcor_eletr", $Conec, $xProj);
     $Erro = 0;
 
     if($Cod == 0){
@@ -282,8 +285,8 @@ if($Acao =="salvaDataEletric"){
         $tblCod = pg_fetch_row($rsCod);
         $Codigo = $tblCod[0];
         $CodigoNovo = ($Codigo+1); 
-        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".leitura_eletric (id, colec, dataleitura1, leitura1, ativo, usuins, datains) 
-        VALUES($CodigoNovo, $Colec, '$PegaDia', $Leitura1, 1, ".$_SESSION["usuarioID"].", NOW() )");
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".leitura_eletric (id, colec, dataleitura1, leitura1, fator, valorkwh, ativo, usuins, datains) 
+        VALUES($CodigoNovo, $Colec, '$PegaDia', $Leitura1, $FatorCor, $ValorKwh, 1, ".$_SESSION["usuarioID"].", NOW() )");
         if(!$rs){
             $Erro = 1;
         }
@@ -296,7 +299,7 @@ if($Acao =="salvaDataEletric"){
             }
         }
     }else{
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".leitura_eletric SET colec = 1, dataleitura1 = '$PegaDia', leitura1 = $Leitura1, usumodif = ".$_SESSION["usuarioID"].", datamodif = NOW() WHERE id = $Cod ");
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".leitura_eletric SET colec = 1, dataleitura1 = '$PegaDia', leitura1 = $Leitura1, fator =  $FatorCor, valorkwh = $ValorKwh, usumodif = ".$_SESSION["usuarioID"].", datamodif = NOW() WHERE id = $Cod ");
         if(!$rs){
             $Erro = 1;
         }
@@ -501,6 +504,23 @@ if($Acao == "apagareg"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $rs1 = pg_query($Conec, "UPDATE ".$xProj.".leitura_eletric SET ativo = 0 WHERE id = $Cod");
     if(!$rs1){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="salvaValorkWh"){
+    $Val = filter_input(INPUT_GET, 'valor'); 
+    if($Val == ""){
+        $Valor = 0;
+    }else{
+        $Valor = str_replace(",", ".", $Val); // troca vírgula por ponto
+    }
+    $Erro = 0;
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".paramsis SET valorkwh = $Valor WHERE idpar = 1 ");
+    if(!$rs){
         $Erro = 1;
     }
     $var = array("coderro"=>$Erro);
