@@ -76,6 +76,96 @@ if(isset($_REQUEST["acao"])){
     $pdf->SetDrawColor(200); // cinza claro  
 
     if($Acao == "listaUsuarios"){
+
+        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chefe_escdaf = 1 And ativo = 1 ORDER BY nomecompl");
+        $row0 = pg_num_rows($rs0);
+        $pdf->ln(5);
+        $pdf->SetFont('Arial', 'I', 11);
+        $pdf->MultiCell(0, 3, "Chefe da Divisão Administrativa:", 0, 'L', false);
+        $pdf->ln(3);
+        if($row0 > 0){
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->SetX(50);
+            $pdf->Cell(40, 3, "Nome", 0, 0, 'L');
+            $pdf->Cell(150, 3, "Nome Completo", 0, 0, 'L');
+            $pdf->ln(4);
+            $lin = $pdf->GetY();
+            $pdf->Line(50, $lin, 200, $lin);
+            $pdf->SetFont('Arial', '', 10);
+
+            while($tbl0 = pg_fetch_row($rs0)){
+                $Cod = $tbl0[0];
+                $pdf->SetX(50); 
+                $pdf->Cell(40, 5, $tbl0[2], 0, 0, 'L');
+                $pdf->Cell(150, 5, $tbl0[1], 0, 1, 'L');
+
+                $lin = $pdf->GetY();
+                $pdf->Line(50, $lin, 200, $lin);
+            }
+            $pdf->SetX(50);
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->Cell(150, 5, "Total: ".$row0, 0, 1, 'L');
+            $pdf->SetFont('Arial', '', 10);
+            $lin = $pdf->GetY();               
+            $pdf->Line(20, $lin, 200, $lin);
+            $pdf->ln(10);
+       
+        }else{
+            $pdf->SetFont('Arial', 'I', 10);
+            $pdf->SetX(50);
+            $pdf->Cell(40, 5, 'Nenhum usuário encontrado.', 0, 1, 'L');
+            $lin = $pdf->GetY();               
+            $pdf->Line(20, $lin, 200, $lin);
+            $pdf->ln(10);
+        }
+
+
+
+        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE enc_escdaf = 1 And ativo = 1 ORDER BY nomecompl");
+        $row0 = pg_num_rows($rs0);
+        $pdf->ln(5);
+        $pdf->SetFont('Arial', 'I', 11);
+        $pdf->MultiCell(0, 3, "Chefe Imediato:", 0, 'L', false);
+        $pdf->ln(3);
+        if($row0 > 0){
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->SetX(50);
+            $pdf->Cell(40, 3, "Nome", 0, 0, 'L');
+            $pdf->Cell(150, 3, "Nome Completo", 0, 0, 'L');
+            $pdf->ln(4);
+            $lin = $pdf->GetY();
+            $pdf->Line(50, $lin, 200, $lin);
+            $pdf->SetFont('Arial', '', 10);
+
+            while($tbl0 = pg_fetch_row($rs0)){
+                $Cod = $tbl0[0];
+                $pdf->SetX(50); 
+                $pdf->Cell(40, 5, $tbl0[2], 0, 0, 'L');
+                $pdf->Cell(150, 5, $tbl0[1], 0, 1, 'L');
+
+                $lin = $pdf->GetY();
+                $pdf->Line(50, $lin, 200, $lin);
+            }
+            $pdf->SetX(50);
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->Cell(150, 5, "Total: ".$row0, 0, 1, 'L');
+            $pdf->SetFont('Arial', '', 10);
+            $lin = $pdf->GetY();               
+            $pdf->Line(20, $lin, 200, $lin);
+            $pdf->ln(10);
+       
+        }else{
+            $pdf->SetFont('Arial', 'I', 10);
+            $pdf->SetX(50);
+            $pdf->Cell(40, 5, 'Nenhum usuário encontrado.', 0, 1, 'L');
+            $lin = $pdf->GetY();               
+            $pdf->Line(20, $lin, 200, $lin);
+            $pdf->ln(10);
+        }
+
+
+
+
         $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE esc_daf = 1 And ativo = 1 ORDER BY nomecompl");
         $row0 = pg_num_rows($rs0);
         $pdf->ln(5);

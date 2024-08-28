@@ -177,10 +177,6 @@ if(!isset($_SESSION['AdmUsu'])){
             }
             $pdf->Cell(7, 5, "", 0, 1, 'L');
 
-
-//            $rs1 = pg_query($Conec, "SELECT DISTINCT turno1_id, nomeusual 
-//            FROM ".$xProj.".quadrohor INNER JOIN (".$xProj.".poslog INNER JOIN ".$xProj.".quadroins ON ".$xProj.".poslog.pessoas_id = ".$xProj.".quadroins.turno1_id) ON ".$xProj.".quadrohor.id = ".$xProj.".quadroins.quadrohor_id 
-//            WHERE grupo_id = $NumGrupo And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ORDER BY nomeusual");
             $rs1 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE esc_eft = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl ");
             $row1 = pg_num_rows($rs1);
             if($row1 > 0){

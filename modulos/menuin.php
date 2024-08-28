@@ -34,7 +34,7 @@
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS valorkwh double precision NOT NULL DEFAULT 0.5 ");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS esc_daf smallint NOT NULL DEFAULT 0 ");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS eft_daf smallint NOT NULL DEFAULT 0 ");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_daf = 1 WHERE pessoas_id = 3 Or pessoas_id = 83");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_daf = 1 WHERE pessoas_id = 3 Or pessoas_id = 22 Or pessoas_id = 83");
 
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS daf_marca smallint NOT NULL DEFAULT 0;");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS daf_turno smallint NOT NULL DEFAULT 0;");
@@ -46,6 +46,16 @@
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".leitura_eletric ADD COLUMN IF NOT EXISTS fator double precision NOT NULL DEFAULT 40 ");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".leitura_eletric ADD COLUMN IF NOT EXISTS valorkwh double precision NOT NULL DEFAULT 0.9925695 ");
 
+				//0046
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS mes_escdaf VARCHAR(10);"); // para guardar o mês de consulta
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS chefe_escdaf smallint NOT NULL DEFAULT 0;"); // chefe da escala DAF
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS enc_escdaf smallint NOT NULL DEFAULT 0;"); // encarregado da escala DAF
+
+
+				//0036 de volta
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS setorins smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS setorexec smallint NOT NULL DEFAULT 0 ;");
+				
 
 			} // fim data limite
         ?>

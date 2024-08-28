@@ -317,6 +317,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("labelnomeIns").innerHTML = "";
                 document.getElementById("selecprio").value = 3;                
                 document.getElementById("guardaid").value = 0;
+                document.getElementById("guardaidEdit").value = 0;
                 document.getElementById("mudou").value = "1"; // vai inserir novo
                 document.getElementById("botapagar").style.visibility = "hidden";
                 document.getElementById("selectStatus").disabled = true;
@@ -350,7 +351,9 @@ if(!isset($_SESSION["usuarioID"])){
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
-//alert(ajax.responseText);
+if(document.getElementById("guardaUsuCpf").value == "13652176049"){
+    alert(ajax.responseText);
+}
                                     Resp = eval("(" + ajax.responseText + ")");
                                     if(parseInt(Resp.coderro) === 0){
                                         document.getElementById("mudou").value = "0";
@@ -359,14 +362,13 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else if(parseInt(Resp.coderro) === 2){
                                         $.confirm({
                                             title: 'Atenção!',
-                                            content: 'Esta tarefa já foi dada para o mesmo usuário.',
+                                            content: 'Esta tarefa já foi dada para este usuário e ainda não está terminada.',
                                             draggable: true,
                                             buttons: {
                                                 OK: function(){}
                                             }
                                         });
                                         return false;
-                                    
                                     }else{
                                         alert("Houve um erro no servidor.");
                                         document.getElementById("relacmodalTarefa").style.display = "none";
@@ -377,7 +379,7 @@ if(!isset($_SESSION["usuarioID"])){
                         ajax.send(null);
                     }
                 }else{
-                    document.getElementById("mudou").value = "0";
+//                    document.getElementById("mudou").value = "0";
                     document.getElementById("relacmodalTarefa").style.display = "none";
                 }
             }
@@ -608,6 +610,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardaAtiv" value="1" /> <!-- Guarda se a tarefa foi finalizada-->
         <input type="hidden" id="guardaUsuExec" value="0" />
         <input type="hidden" id="grupotarefa" value="1" />
+        <input type="hidden" id="guardaUsuCpf" value="<?php echo $_SESSION["usuarioCPF"]; ?>" />
 
         <!-- div três colunas -->
         <div class="container" style="margin: 0 auto;">

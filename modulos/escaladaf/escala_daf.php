@@ -36,6 +36,22 @@ if(!isset($_SESSION["usuarioID"])){
                 border-radius: 15px;
                 width: 70%;
             }
+            .modal-content-relacHorario{
+                background: linear-gradient(180deg, white, #00BFFF);
+                margin: 12% auto;
+                padding: 10px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 40%;
+            }
+            .modal-content-relacNotas{
+                background: linear-gradient(180deg, white, #00BFFF);
+                margin: 12% auto;
+                padding: 10px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 60%;
+            }
              .quadrodia {
                 font-size: 90%;
                 min-width: 30px;
@@ -48,6 +64,25 @@ if(!isset($_SESSION["usuarioID"])){
                 border: 1px solid;
                 border-radius: 3px;
                 cursor: pointer;
+            }
+            .quadroletra {
+                text-align: center;
+                font-size: 90%;
+                min-width: 10px;
+                border: 1px solid;
+                border-radius: 3px;
+            }
+            .bContainer{ /* encapsula uma frase no topo de uma div */
+                position: absolute; 
+                right: 50px;
+                margin-top: -10px; 
+                border: 1px solid blue;
+                background-color: blue;
+                color: white;
+                cursor: pointer;
+                border-radius: 10px; 
+                padding-left: 10px; 
+                padding-right: 10px; 
             }
             .etiq{
                 text-align: right; font-size: 70%; font-weight: bold; padding-right: 1px; padding-bottom: 1px;
@@ -63,11 +98,29 @@ if(!isset($_SESSION["usuarioID"])){
 
                 document.getElementById("selecMesAnoEsc").value = document.getElementById("guardamesano").value;
                 $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
-
+                $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                $("#faixanotas").load("modulos/escaladaf/notasdaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
 
                 $("#selecMesAnoEsc").change(function(){
                     if(parseInt(document.getElementById("selecMesAnoEsc").value) > 0){
                         $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                        ajaxIni();
+                        if(ajax){
+                            ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvamesano&mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value), true);
+                            ajax.onreadystatechange = function(){
+                                if(ajax.readyState === 4 ){
+                                    if(ajax.responseText){
+//alert(ajax.responseText);
+                                        Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                        if(parseInt(Resp.coderro) === 0){
+                                           }else{
+                                            alert("Houve um erro no servidor.")
+                                        }
+                                    }
+                                }
+                            };
+                            ajax.send(null);
+                        }
                     }
                 });
 
@@ -77,6 +130,8 @@ if(!isset($_SESSION["usuarioID"])){
                         document.getElementById("configCpfEscala").value = "";
                         document.getElementById("checkefetivo").checked = false;
                         document.getElementById("checkescalante").checked = false;
+                        document.getElementById("checkEncarreg").checked = false;
+                        document.getElementById("checkChefeADM").checked = false;
                         return false;
                     }
                     ajaxIni();
@@ -99,6 +154,16 @@ if(!isset($_SESSION["usuarioID"])){
                                         }else{
                                             document.getElementById("checkescalante").checked = false;
                                         }
+                                        if(parseInt(Resp.encarreg) === 1){
+                                            document.getElementById("checkEncarreg").checked = true;
+                                        }else{
+                                            document.getElementById("checkEncarreg").checked = false;
+                                        }
+                                        if(parseInt(Resp.chefeadm) === 1){
+                                            document.getElementById("checkChefeADM").checked = true;
+                                        }else{
+                                            document.getElementById("checkChefeADM").checked = false;
+                                        }
                                     }else{
                                         alert("Houve um erro no servidor.")
                                     }
@@ -114,7 +179,10 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("configCpfEscala").value = "";
                     document.getElementById("checkefetivo").checked = false;
                     document.getElementById("checkescalante").checked = false;
+                    document.getElementById("checkEncarreg").checked = false;
+                    document.getElementById("checkChefeADM").checked = false;
                 });
+
                 $("#configCpfEscala").change(function(){
                     document.getElementById("configSelecEscala").value = "";
                     ajaxIni();
@@ -138,6 +206,16 @@ if(!isset($_SESSION["usuarioID"])){
                                         }else{
                                             document.getElementById("checkescalante").checked = false;
                                         }
+                                        if(parseInt(Resp.encarreg) === 1){
+                                            document.getElementById("checkEncarreg").checked = true;
+                                        }else{
+                                            document.getElementById("checkEncarreg").checked = false;
+                                        }
+                                        if(parseInt(Resp.chefeadm) === 1){
+                                            document.getElementById("checkChefeADM").checked = true;
+                                        }else{
+                                            document.getElementById("checkChefeADM").checked = false;
+                                        }
                                     }
                                     if(parseInt(Resp.coderro) === 1){
                                         alert("Houve um erro no servidor.");
@@ -145,6 +223,8 @@ if(!isset($_SESSION["usuarioID"])){
                                     if(parseInt(Resp.coderro) === 2){
                                         document.getElementById("checkefetivo").checked = false;
                                         document.getElementById("checkescalante").checked = false;
+                                        document.getElementById("checkEncarreg").checked = false;
+                                        document.getElementById("checkChefeADM").checked = false;
                                         $('#mensagemConfig').fadeIn("slow");
                                         document.getElementById("mensagemConfig").innerHTML = "Não encontrado";
                                         $('#mensagemConfig').fadeOut(2000);
@@ -183,7 +263,241 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("relacParticip").style.display = "block";
             }
 
+            function abreEditHorario(){
+                $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php");
+                document.getElementById("relacQuadroHorario").style.display = "block";
+            }
 
+            function editaOrdem(Cod, Valor){
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaordem&codigo="+Cod+"&valor="+Valor, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php");
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function editaLetra(Cod, Valor){
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaletra&codigo="+Cod+"&valor="+Valor, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    $('#mensagemQuadroHorario').fadeIn("slow");
+                                    document.getElementById("mensagemQuadroHorario").innerHTML = "Valor salvo.";
+                                    $('#mensagemQuadroHorario').fadeOut(2000);
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function editaTurno(Cod, Valor){
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaturno&codigo="+Cod+"&valor="+encodeURIComponent(Valor), true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    $('#mensagemQuadroHorario').fadeIn("slow");
+                                    document.getElementById("mensagemQuadroHorario").innerHTML = "Valor salvo.";
+                                    $('#mensagemQuadroHorario').fadeOut(2000);
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+            
+            function salvaLetra(){
+                if(document.getElementById("insordem").value == ""){
+                    return false;
+                }
+                if(document.getElementById("insletra").value == ""){
+                    return false;
+                }
+                if(document.getElementById("insturno").value == ""){
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=insereletra&ordem="+document.getElementById("insordem").value
+                    +"&insletra="+encodeURIComponent(document.getElementById("insletra").value)
+                    +"&insturno="+encodeURIComponent(document.getElementById("insturno").value), true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php");
+                                    $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                    document.getElementById("abreinsletra").style.visibility = "visible";
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function apagaLetra(Cod){
+                $.confirm({
+                    title: 'Apagar evento.',
+                    content: 'Confirma apagar este turno?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=apagaletra&codigo="+Cod, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                            if(parseInt(Resp.coderro) > 0){
+                                                alert("Houve um erro no servidor.");
+                                            }else{
+                                            }
+                                            $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php");
+                                            $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                        }
+                    }
+                });
+            }
+
+            function fechaQuadroHorario(){
+                document.getElementById("relacQuadroHorario").style.display = "none";
+            }
+
+            function fechaQuadroNotas(){
+                document.getElementById("relacQuadroNotas").style.display = "none";
+            }
+
+            function editaNota(Cod){
+                document.getElementById("guardacod").value = Cod;
+                document.getElementById("mudou").value = "0";
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=buscanota&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    document.getElementById("numnota").value = Resp.numnota;
+                                    document.getElementById("textonota").value = Resp.textonota;
+                                    document.getElementById("relacQuadroNotas").style.display = "block";
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function InsereNota(){
+                document.getElementById("guardacod").value = 0;
+                document.getElementById("mudou").value = "0";
+                document.getElementById("numnota").value = "";
+                document.getElementById("textonota").value = "";
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=buscanumnota", true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro ao calcular o novo número.");
+                                }else{
+                                    document.getElementById("numnota").value = Resp.numnota;
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+                document.getElementById("relacQuadroNotas").style.display = "block";
+            }
+
+            function salvaNota(){
+                if(document.getElementById("mudou").value == "0"){
+                    document.getElementById("relacQuadroNotas").style.display = "none";
+                    return false;
+                }
+                if(document.getElementById("numnota").value == ""){
+                    return false;
+                }
+                if(document.getElementById("textonota").value == ""){
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvanota&codigo="+document.getElementById("guardacod").value
+                    +"&numnota="+document.getElementById("numnota").value
+                    +"&textonota="+encodeURIComponent(document.getElementById("textonota").value)
+                    , true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    document.getElementById("relacQuadroNotas").style.display = "none";
+                                    $("#faixanotas").load("modulos/escaladaf/notasdaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+
+            }
+            
             function MarcaPartic(Cod){ // vem de equipe.php
                 ajaxIni();
                 if(ajax){
@@ -203,8 +517,6 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 }
             }
-
-
 
             function marcaConfigEscala(obj, Campo){
                 if(obj.checked === true){
@@ -282,7 +594,6 @@ if(!isset($_SESSION["usuarioID"])){
                     };
                     ajax.send(null);
                 }
-
             }
 
 
@@ -322,12 +633,10 @@ if(!isset($_SESSION["usuarioID"])){
                                             OK: function(){}
                                         }
                                     });
-                                    $("#faixacentral").load("modulos/QuadroHorario/jQuadro.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
-//                                    $("#estat").load("modulos/quadroHorario/jCarga.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                                     document.getElementById("relacParticip").style.display = "none";
                                 }else{
                                     $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
-//                                    $("#estat").load("modulos/quadroHorario/jCarga.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                                     document.getElementById("relacParticip").style.display = "none";
                                 }
                             }
@@ -341,6 +650,8 @@ if(!isset($_SESSION["usuarioID"])){
             function abreEscalaConfig(){
                 document.getElementById("checkefetivo").checked = false;
                 document.getElementById("checkescalante").checked = false;
+                document.getElementById("checkEncarreg").checked = false;
+                document.getElementById("checkChefeADM").checked = false;
                 document.getElementById("configCpfEscala").value = "";
                 document.getElementById("configSelecEscala").value = "";
                 document.getElementById("modalEscalaConfig").style.display = "block";
@@ -354,7 +665,12 @@ if(!isset($_SESSION["usuarioID"])){
             function resumoUsuEscala(){
                 window.open("modulos/escaladaf/imprUsuEsc.php?acao=listaUsuarios", "EscalaUsu");
             }
-
+            function imprPlanilha(){
+                window.open("modulos/escaladaf/imprEscDaf.php?acao=imprPlan&mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value), document.getElementById("selecMesAnoEsc").value);
+            }
+            function modif(){ // assinala se houve qualquer modificação nos campos do modal durante a edição para evitar salvar desnecessariamente
+                document.getElementById("mudou").value = "1";
+            }
             function format_CnpjCpf(value){
                 //https://gist.github.com/davidalves1/3c98ef866bad4aba3987e7671e404c1e
                 const CPF_LENGTH = 11;
@@ -393,6 +709,7 @@ if(!isset($_SESSION["usuarioID"])){
         poslog_id INT NOT NULL DEFAULT 0,
         letraturno VARCHAR(3), 
         turnoturno VARCHAR(30), 
+        destaque smallint NOT NULL DEFAULT 0,
         ativo smallint NOT NULL DEFAULT 1, 
         usuins bigint NOT NULL DEFAULT 0, 
         datains timestamp without time zone DEFAULT '3000-12-31', 
@@ -401,11 +718,18 @@ if(!isset($_SESSION["usuarioID"])){
         )
     ");
 
-    //pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_turnos");
+    $rs1 = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'escaladaf_turnos' AND COLUMN_NAME = 'destaq'");               
+    $row1 = pg_num_rows($rs1);
+    if($row1 == 0){
+        pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_turnos");
+    }
+
     pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_turnos (
         id SERIAL PRIMARY KEY, 
         letra VARCHAR(3), 
         horaturno VARCHAR(30), 
+        ordemletra smallint NOT NULL DEFAULT 0,
+        destaq smallint NOT NULL DEFAULT 0,
         ativo smallint NOT NULL DEFAULT 1, 
         usuins bigint NOT NULL DEFAULT 0,
         datains timestamp without time zone DEFAULT '3000-12-31',
@@ -413,45 +737,67 @@ if(!isset($_SESSION["usuarioID"])){
         dataedit timestamp without time zone DEFAULT '3000-12-31' 
         ) 
     ");
-    $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_turnos LIMIT 3");
-    $row = pg_num_rows($rs);
-    if($row == 0){
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, usuins, datains) VALUES(1, 'F', 'FÉRIAS', 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, usuins, datains) VALUES(2, 'X', 'FOLGA', 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, usuins, datains) VALUES(3, 'Y', 'INSS', 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, usuins, datains) VALUES(4, 'Q', 'AULA IAQ', 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, usuins, datains) VALUES(5, 'A', '08:00 / 17:00', 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, usuins, datains) VALUES(6, 'B', '07:00 / 16:00', 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, usuins, datains) VALUES(7, 'C', '07:00 / 17:00', 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, usuins, datains) VALUES(8, 'E', '09:00 / 18:00', 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, usuins, datains) VALUES(9, 'H', '14:00 / 18:00', 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, usuins, datains) VALUES(10, 'D', '11:00 / 15:00', 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, usuins, datains) VALUES(11, 'K', '08:00 / 14:15', 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, usuins, datains) VALUES(12, 'J', '06:50 / 15:50', 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, usuins, datains) VALUES(13, 'G', '10:50 / 19:50', 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, usuins, datains) VALUES(14, 'L', '07:00 / 13:15', 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, usuins, datains) VALUES(15, 'M', '13:35 / 19:50', 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, usuins, datains) VALUES(16, 'O', '08:00 / 18:00', 3, NOW() )");
+    $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_turnos LIMIT 3");
+    $row2 = pg_num_rows($rs2);
+    if($row2 == 0){
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(1, 'F', 'FÉRIAS', 13, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(2, 'X', 'FOLGA', 14, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(3, 'Y', 'INSS', 15, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(4, 'Q', 'AULA IAQ', 16, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(5, 'A', '08:00 / 17:00', 1, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(6, 'B', '07:00 / 16:00', 2, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(7, 'C', '07:00 / 17:00', 3, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(8, 'E', '09:00 / 18:00', 5, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(9, 'H', '14:00 / 18:00', 7, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(10, 'D', '11:00 / 15:00', 4, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(11, 'K', '08:00 / 14:15', 9, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(12, 'J', '06:50 / 15:50', 8, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(13, 'G', '10:50 / 19:50', 6, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(14, 'L', '07:00 / 13:15', 10, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(15, 'M', '13:35 / 19:50', 11, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(16, 'O', '08:00 / 18:00', 12, 3, NOW() )");
     }
 
-
+//    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_notas");
+    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_notas (
+        id SERIAL PRIMARY KEY, 
+        numnota  smallint NOT NULL DEFAULT 0,
+        textonota text, 
+        ativo smallint NOT NULL DEFAULT 1, 
+        usuins bigint NOT NULL DEFAULT 0,
+        datains timestamp without time zone DEFAULT '3000-12-31',
+        usuedit bigint NOT NULL DEFAULT 0,
+        dataedit timestamp without time zone DEFAULT '3000-12-31' 
+        ) 
+    ");
+    $rs3 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_notas LIMIT 2");
+    $row3 = pg_num_rows($rs3);
+    if($row3 == 0){
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, numnota, textonota, usuins, datains) 
+        VALUES(1, 1, 'Durante os turnos de 6 horas de duração, o funcionário deverá tirar 15 minutos de descanso, entre a terceira e quinta hora. Em consequência, o horário do turno de serviço deverá ser acrescido de 15 minutos  (Art. 71 - §1º e $2º da CLT). Nesses turnos não será necessário bater ponto quando do inicio e término do descanso. Exemplo: inicio do turno às 07h00 e saída para o descanso às 10h00. Regresso do descanso 10h15 e término do turno às 13h15.', 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, numnota, textonota, usuins, datains) 
+        VALUES(2, 2, 'Durante os turnos de 8 horas de duração, o funcionário deverá tirar 1 h de descanso, entre a quarta e sexta hora. O horário de descanso de cada empregado será definido e obrigatoriamente informado à DAF pelo chefe responsável do setor, por email, até o dia 25 do mês que antecede o início da escala de serviço. É obrigatório bater o ponto quando do início e término do descanso.', 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, numnota, textonota, usuins, datains) 
+        VALUES(3, 3, 'É obrigatório bater o ponto quando do início e término da jornada de trabalho.  Horas extras somente serão realizadas quando expressamente autorizadas pelo diretor da Área ou da Presidência. A utilização do banco de horas somente será possível para os empregados que assinaram o acordo individual - AI - NI-4.18-a DAF.', 3, NOW() ) ");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, numnota, textonota, usuins, datains) 
+        VALUES(4, 4, 'As segundas, quartas e sextas feiras, o horário de funcionamento da comunhão será das 07h00 até as 21h30. Os setores funcionarão conforme as escalas de serviço.', 3, NOW() )");
+    }
 //------------
 
  
     $Escalante = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
-
+    $MesSalvo = parEsc("mes_escdaf", $Conec, $xProj, $_SESSION["usuarioID"]);
+    if(is_null($MesSalvo) || $MesSalvo == ""){
+        $MesSalvo = date("m")."/".date("Y");
+    }
 
     $DiaIni = strtotime(date('Y/m/01')); // número - para começar com o dia 1
     $DiaIni = strtotime("-1 day", $DiaIni); // para começar com o dia 1 no loop for
-    $ParamIni = date("m/Y");
-
 
     $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataescala, 'MM'), '/', TO_CHAR(dataescala, 'YYYY')) 
     FROM ".$xProj.".escaladaf GROUP BY TO_CHAR(dataescala, 'MM'), TO_CHAR(dataescala, 'YYYY') ORDER BY TO_CHAR(dataescala, 'YYYY') DESC, TO_CHAR(dataescala, 'MM') DESC ");
     $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
 
-
-//    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
 
     //Mantem a tabela meses à frente
     for($i = 0; $i < 180; $i++){
@@ -467,17 +813,19 @@ if(!isset($_SESSION["usuarioID"])){
             
     ?>
 
-        <input type="hidden" id="guardamesano" value="<?php echo $ParamIni; ?>" />
+        <input type="hidden" id="guardamesano" value="<?php echo $MesSalvo; ?>" />
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>" />
         <input type="hidden" id="escalante" value="<?php echo $Escalante; ?>" />
         <input type="hidden" id="guardaDiaId" value="" />
         <input type="hidden" id="guardaUsuId" value="" />
+        <input type="hidden" id="guardacod" value="" />
+        <input type="hidden" id="mudou" value="0" />
 
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->
-                <div class="col" style="margin: 0 auto; text-align: left;" title="Inserir leitura do medidor de energia elétrica">
-                    <img src="imagens/settings.png" height="20px;" id="imgEscalaConfig" style="cursor: pointer; padding-left: 30px;" onclick="abreEscalaConfig();" title="Configurar o acesso ao processamento">
+                <div class="col" style="margin: 0 auto; text-align: left;">
+                    <img src="imagens/settings.png" height="20px;" id="imgEscalaConfig" style="cursor: pointer; padding-left: 30px;" onclick="abreEscalaConfig();" title="Configurar o acesso e inserir participantes da escala">
                     <label style="padding-left: 40px;">Selecione o mês: </label>
                     <select id="selecMesAnoEsc" style="font-size: 1rem; width: 90px;" title="Selecione o mês/ano.">
                         <option value=""></option>
@@ -494,8 +842,7 @@ if(!isset($_SESSION["usuarioID"])){
 
                 <div class="col" style="text-align: center;">Escala de Serviço DAF</div> <!-- espaçamento entre colunas  -->
                 <div class="col" style="margin: 0 auto; text-align: center;">
-                    <button class="botpadrblue" onclick="abreModal();">Participantes</button>
-                    <button id="botImprimir" class="botpadrred" onclick="abreImprLeitura();">PDF</button>
+                    <button id="botImprimir" class="botpadrred" onclick="imprPlanilha();">PDF</button>
                 </div> <!-- quadro -->
             </div>
         </div>
@@ -516,23 +863,57 @@ if(!isset($_SESSION["usuarioID"])){
                 </tr>
             </table>
             <div id="faixacentral"></div>
+            <div id="faixaquadro"></div>
+            <div id="faixanotas"></div>
         </div>
-
 
 
         <!-- div modal relacionar escalado -->
         <div id="relacParticip" class="relacmodal">
             <div class="modal-content-relacParticip">
                 <span class="close" onclick="fechaRelaPart();">&times;</span>
-                <label style="color: #666;">Escala para o dia: &nbsp; </label><label id="titulomodal" style="color: #666; padding-bottom: 10px;"></label>
-                <label id="turnotitmodal" style="color: #666; padding-bottom: 10px;"></label>
-                <label id="nometitmodal" style="color: #666; padding-bottom: 10px; font-weight: bold;"></label>
-                <label id="retiranomemodal" style="color: blue; text-decoration: underline; padding-bottom: 10px; padding-left: 30px; cursor: pointer;" onclick="apagaEscalado();" title="retira da escala deste dia e turno"></label>
-
+                <label style="color: #666;">Escala para o dia: &nbsp; </label><label id="titulomodal" style="color: #666; padding-bottom: 10px; font-weight: bold;"></label>
                 <!-- lista dos participantes da escala do grupo -->
-                <div id="relacaoParticip" style="border: 2px solid #C6E2FF; border-radius: 10px;"></div>
+                <div id="relacaoParticip" style="margin-bottom: 5px; border: 2px solid #C6E2FF; border-radius: 10px;"></div>
 
                 <button class="botpadrblue" style="font-size: 80%;" onclick="insParticipante();">Inserir Marcados</button>
+            </div>
+        </div> <!-- Fim Modal-->
+
+
+        <!-- div modal relacionar turnos - edHorarios.php -->
+        <div id="relacQuadroHorario" class="relacmodal">
+            <div class="modal-content-relacHorario">
+                <span class="close" onclick="fechaQuadroHorario();">&times;</span>
+                <div id="relacaoHorarios" style="border: 2px solid #C6E2FF; border-radius: 10px;"></div>
+            </div>
+        </div> <!-- Fim Modal-->
+
+        <!-- div modal editar notas -->
+        <div id="relacQuadroNotas" class="relacmodal">
+            <div class="modal-content-relacNotas">
+                <span class="close" onclick="fechaQuadroNotas();">&times;</span>
+                <h5 id="titulomodal" style="text-align: center;color: #666;">Edição de Nota ao Horário de Trabalho</h5>
+                <div style="border: 2px solid #C6E2FF; border-radius: 10px;">
+                    <table style="margin: 0 auto; width: 95%;">
+                        <tr>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Nota nº: </label></td>
+                            <td><input type="text" id="numnota" style="width: 40px; text-align: center; border: 1px solid; border-radius: 5px;" valor="" onchange="modif();" title="Número da nota"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul">Texto: </td>
+                            <td colspan="2"><textarea id="textonota" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 4px;" rows="6" cols="70" title="Texto da nota" onchange="modif();"></textarea></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul"><button id="botInsNota" class="botpadrred" style="font-size: .7rem;" onclick="InsereNota();" title="Insere uma nova nota">Inserir</button></td>
+                            <td colspan="2" class="aDir">
+                                <button id="botSalvarNota" class="botpadrblue" style="font-size: .9rem;" onclick="salvaNota();">Salvar</button>
+                            <label style="padding-left: 80px;"></label>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
             </div>
         </div> <!-- Fim Modal-->
 
@@ -597,6 +978,21 @@ if(!isset($_SESSION["usuarioID"])){
                         <td colspan="4">
                             <input type="checkbox" id="checkescalante" onchange="marcaConfigEscala(this, 'esc_daf');" >
                             <label for="checkescalante">escalante</label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq80">Encarregado ADM:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="checkEncarreg" onchange="marcaConfigEscala(this, 'enc_escdaf');" >
+                            <label for="checkEncarreg">Chefe Imediato</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="etiq80">Chefe DIV ADM:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="checkChefeADM" onchange="marcaConfigEscala(this, 'chefe_escdaf');" >
+                            <label for="checkChefeADM">Chefe Div Adm</label>
                         </td>
                     </tr>
 

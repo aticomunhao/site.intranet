@@ -10,10 +10,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <title></title>
     </head>
     <body> 
-        <?php
-//            $Cod = (int) filter_input(INPUT_GET, 'codigo');
-        ?>
-         <!-- Apresenta os usuários do grupo -->
+        <!-- Apresenta os usuários do grupo -->
         <div style="padding: 10px;">
             <?php
                 $rs3 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual, daf_turno, daf_marca, letra, horaturno 
