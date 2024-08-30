@@ -174,7 +174,12 @@ if(!isset($_SESSION['AdmUsu'])){
                     $Cod = $tbl1[0];
                     $pdf->Cell(20, 5, $tbl1[2], 0, 0, 'L');
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque 
+//                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, marcadaf 
+//                    FROM ".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".escaladaf ON ".$xProj.".escaladaf_ins.escaladaf_id = ".$xProj.".escaladaf.id
+//                    WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '01' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' 
+//                    ORDER BY dataescala");
+
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '01' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(50); 
@@ -193,6 +198,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '01' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
+
+
+//                        if($tbl3[2] == 1){
+//                            $pdf->SetFillColor(255, 255, 0);
+//                        }
+
+
                         if($tbl3[1] == 6 || $tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
@@ -1375,7 +1387,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
             
 // Encarregado - order by datamodif DESC para pegar sempre o último chefe marcado  
-            $pdf->ln(5);
+            $pdf->ln(7);
             $rs2 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE enc_escdaf = 1 And ativo = 1 ORDER BY datamodif DESC");
             $row2 = pg_num_rows($rs2);
             $pdf->SetX(140); 

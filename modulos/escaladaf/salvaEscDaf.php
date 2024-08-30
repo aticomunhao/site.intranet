@@ -92,6 +92,45 @@ if($Acao =="marcaPartic"){
     echo $responseText;
 }
 
+if($Acao =="marcaDia"){ // sem uso
+    $Erro = 0;
+    $Cod = (int) filter_input(INPUT_GET, 'codigo'); // pessoas_id
+    $rs0 = pg_query($Conec, "SELECT marcadaf FROM ".$xProj.".escaladaf WHERE id = $Cod");
+    $tbl0 = pg_fetch_row($rs0);
+    $Marca = (int) $tbl0[0];
+    if($Marca == 0){
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf SET marcadaf = 1 WHERE id = $Cod");
+    }else{
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf SET marcadaf = 0 WHERE id = $Cod");
+    }
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="marcaTurno"){ // sem uso
+    $Erro = 0;
+    $Cod = (int) filter_input(INPUT_GET, 'codigo'); // pessoas_id
+    $rs0 = pg_query($Conec, "SELECT destaq FROM ".$xProj.".escaladaf_turnos WHERE id = $Cod");
+    $tbl0 = pg_fetch_row($rs0);
+    $Marca = (int) $tbl0[0];
+    if($Marca == 0){
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET destaq = 1 WHERE id = $Cod");
+    }else{
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET destaq = 0 WHERE id = $Cod");
+    }
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+
 if($Acao =="salvaTurno"){
     $Erro = 0;
     $CodPartic = (int) filter_input(INPUT_GET, 'codpartic'); // pessoas_id
@@ -108,11 +147,28 @@ if($Acao =="salvaTurno"){
 if($Acao =="salvamesano"){
     $Erro = 0;
     $MesAno = addslashes(filter_input(INPUT_GET, 'mesano'));
+
+    $Proc = explode("/", $MesAno);
+    $Mes = $Proc[0];
+    if(strLen($Mes) < 2){
+        $Mes = "0".$Mes;
+    }
+    $Ano = $Proc[1];
+
+    //Guarda a consulta
     $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET mes_escdaf = '$MesAno' WHERE pessoas_id = $UsuIns");
+    //ver se a escala do mes está liberada para os participantes da escala
+    $MesLiberado = 0;
+    $rsLib = pg_query($Conec, "SELECT liberames FROM ".$xProj.".escaladaf WHERE DATE_PART('MONTH', dataescala) = '$Mes' And DATE_PART('YEAR', dataescala) = '$Ano' And liberames != 0 ");
+    $rowLib = pg_num_rows($rsLib);
+    if($rowLib > 0){
+        $MesLiberado = 1;
+    }
+
     if(!$rs){
         $Erro = 1;
     }
-    $var = array("coderro"=>$Erro);
+    $var = array("coderro"=>$Erro, "mesliberado"=>$MesLiberado);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -271,7 +327,7 @@ if($Acao =="insereletra"){
     $CodigoNovo = ($Codigo+1);
 
     $rs = pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, ordemletra, letra, horaturno, usuins, datains) 
-    VALUES($CodigoNovo, $Ordem, '$Letra', '$Turno', $UsuIns, NOW() )");
+    VALUES($CodigoNovo, $Ordem, UPPER('$Letra'), '$Turno', $UsuIns, NOW() )");
     if(!$rs){
         $Erro = 1;
     }
@@ -285,6 +341,27 @@ if($Acao =="apagaletra"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
 
     $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET ativo = 0 WHERE id = $Cod ");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="liberaMes"){
+    $Erro = 0;
+    $Valor = (int) filter_input(INPUT_GET, 'valor');
+    $Busca = addslashes(filter_input(INPUT_GET, 'mesano')); 
+    $Proc = explode("/", $Busca);
+    $Mes = $Proc[0];
+    if(strLen($Mes) < 2){
+        $Mes = "0".$Mes;
+    }
+    $Ano = $Proc[1];
+
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf SET liberames = $Valor WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");    
+
     if(!$rs){
         $Erro = 1;
     }

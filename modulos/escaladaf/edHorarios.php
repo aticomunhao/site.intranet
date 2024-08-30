@@ -25,15 +25,16 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <label style="position: relative; float: left; margin-top: -30px; padding-left: 10px;  color: red; font-weight: bold;" id="mensagemQuadroHorario"></label>
         <div style="margin: 10px; padding: 20px; text-align: center; border: 2px solid green; border-radius: 15px;">
             <?php
-            $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, ordemletra FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 ORDER BY ordemletra");
+            $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, ordemletra, destaq FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 ORDER BY ordemletra");
             ?>
             <div style="position: relative; float: right; color: red; font-weight: bold;" id="_mensagemQuadroHorario"></div>
             <table style="margin: 0 auto; width: 85%;">
                 <tr>
                     <td style="display: none;"></td>
                     <td style="display: none;"></td>
-                    <td>Ordem</td>
+                    <td title="Ordem de apresentação no quadro de horários">Ordem</td>
                     <td>Letra</td>
+                    <td title="Destaque fundo amarelo">Dest</td>
                     <td>Turno</td>
                     <td></td>
                 </tr>
@@ -44,10 +45,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     <tr>
                         <td style="display: none;"></td>
                         <td style="display: none;"><?php echo $tbl3[0]; ?></td>
-                        <td><input type="text" value="<?php echo $tbl3[3]; ?>" style="width: 70px; text-align: center; border: 1px solid; border-radius: 3px;" onchange="editaOrdem(<?php echo $Cod; ?>, value);"/></td>
-                        <td><input type="text" value="<?php echo $tbl3[1]; ?>" style="width: 70px; text-align: center; border: 1px solid; border-radius: 3px;" onchange="editaLetra(<?php echo $Cod; ?>, value);"/></td>
+                        <td><input type="text" value="<?php echo $tbl3[3]; ?>" style="width: 70px; text-align: center; border: 1px solid; border-radius: 3px;" onchange="editaOrdem(<?php echo $Cod; ?>, value);" title="Ordem de apresentação no quadro de horários"/></td>
+                        <td><input type="text" value="<?php echo $tbl3[1]; ?>" style="width: 70px; text-align: center; border: 1px solid; border-radius: 3px; <?php if($tbl3[4] == 1){echo "background-color: yellow;";} ?>" onchange="editaLetra(<?php echo $Cod; ?>, value);"/></td>
+                        <td><input type="checkbox" id="ev" title="Marca para destacar" onClick="marcaTurno(<?php echo $Cod ?>);" <?php if($tbl3[4] == 1) {echo "checked";} ?> ></td>
                         <td><input type="text" value="<?php echo $tbl3[2]; ?>" style="width: 170px; text-align: center; border: 1px solid; border-radius: 3px;" onchange="editaTurno(<?php echo $Cod; ?>, value);"/></td>
-                        <td style="text-align: center;"><img src='imagens/lixeiraPreta.png' height='15px;' style='cursor: pointer; padding-right: 3px;' onclick='apagaLetra(<?php echo $Cod; ?>);' title='Apagar esta letra.'></td>
+                        <td style="text-align: center; padding-left: 5px;"><img src='imagens/lixeiraPreta.png' height='15px;' style='cursor: pointer; padding-right: 3px;' onclick='apagaLetra(<?php echo $Cod; ?>);' title='Apagar esta letra.'></td>
 
                     </tr>
                     <?php
@@ -68,9 +70,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     <tr>
                         <td style="display: none;"></td>
                         <td style="display: none;">0</td>
-                        <td><input type="text" id="insordem" value="" style="width: 70px; text-align: center; border: 1px solid; border-radius: 3px;" /></td>
-                        <td><input type="text" id="insletra" value="" style="width: 70px; text-align: center; border: 1px solid; border-radius: 3px;" /></td>
-                        <td><input type="text" id="insturno" value="" style="width: 170px; text-align: center; border: 1px solid; border-radius: 3px;" /></td>
+                        <td><input type="text" id="insordem" value="" style="width: 70px; text-align: center; border: 1px solid; border-radius: 3px;" onkeypress="if(event.keyCode===13){javascript:foco('insletra');return false;}" /></td>
+                        <td><input type="text" id="insletra" value="" style="width: 70px; text-align: center; border: 1px solid; border-radius: 3px;" onkeypress="if(event.keyCode===13){javascript:foco('insturno');return false;}" /></td>
+                        <td><input type="text" id="insturno" value="" style="width: 170px; text-align: center; border: 1px solid; border-radius: 3px;" onkeypress="if(event.keyCode===13){javascript:foco('insordem');return false;}" /></td>
                     </tr>
                     <tr>
                         <td style="display: none;"></td>

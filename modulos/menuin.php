@@ -22,9 +22,14 @@
 				$diaSemana = 1;
 			}
 			//Provisório
-			if(strtotime('2024/08/30') > strtotime(date('Y/m/d'))){
+			if(strtotime('2024/09/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
 
+				//0036 de volta
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS setorins smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS setorexec smallint NOT NULL DEFAULT 0 ;");
+
+								
 				//0043
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS dialeit_eletr VARCHAR(2) DEFAULT '08' ");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS fatorcor_eletr VARCHAR(10) DEFAULT '40' ");
@@ -51,11 +56,12 @@
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS chefe_escdaf smallint NOT NULL DEFAULT 0;"); // chefe da escala DAF
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS enc_escdaf smallint NOT NULL DEFAULT 0;"); // encarregado da escala DAF
 
-
-				//0036 de volta
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS setorins smallint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS setorexec smallint NOT NULL DEFAULT 0 ;");
-				
+				//0047
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_ins ADD COLUMN IF NOT EXISTS destaque smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS destaq smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS ordemletra smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf ADD COLUMN IF NOT EXISTS marcadaf smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf ADD COLUMN IF NOT EXISTS liberames smallint NOT NULL DEFAULT 0 ;");
 
 			} // fim data limite
         ?>

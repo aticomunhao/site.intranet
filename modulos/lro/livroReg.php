@@ -1088,7 +1088,9 @@ if(!isset($_SESSION["usuarioID"])){
                             <input type="radio" name="ocorrencia" id="ocorrencia2" value="0" CHECKED title="Nada aconteceu que seja digno de nota" onclick="abreOcor(value);"><label for="ocorrencia2" class="etiqAzul" style="padding-left: 3px;"> Não Houve</label>
 
                             <br>
-                            <textarea style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="8" cols="90" id="relato" onclick="tiraBorda(id);" onchange="modif();"></textarea>
+                            <div class="col-xs-6">
+                                <textarea class="form-control" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="8" cols="90" id="relato" onclick="tiraBorda(id);" onchange="modif();"></textarea>
+                            </div>
                         </div>
                         <br>
                     </div>
@@ -1109,8 +1111,8 @@ if(!isset($_SESSION["usuarioID"])){
                         <input type="text" id="formanomes" value="" style="font-size: 80%;" onchange="incluiNome();"/> 
                         <label class="etiqAzul"> <- Insira o nome do substituto aqui para formar um arquivo de nomes</label>
                     </div>
-                    <div style="text-align: center; padding-bottom: 10px;">
-                        <textarea id="relatosubstit" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="4" cols="80" onchange="modif();"></textarea>
+                    <div class="col-xs-6" style="text-align: center; padding-bottom: 10px;">
+                        <textarea class="form-control" id="relatosubstit" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="4" cols="80" onchange="modif();"></textarea>
                     </div>
 
                     <div id="mensagem" style="color: red; font-weight: bold;"></div>
@@ -1159,12 +1161,14 @@ if(!isset($_SESSION["usuarioID"])){
                             <input disabled type="radio" name="mostraocorrencia" id="mostraocorrencia1" value="1" title="Houve algo que precisa ser relatado"><label for="mostraocorrencia1" class="etiqAzul" style="padding-left: 3px;"> Houve</label>
                             <input disabled type="radio" name="mostraocorrencia" id="mostraocorrencia2" value="0" CHECKED title="Nada aconteceu que seja digno de nota"><label for="mostraocorrencia2" class="etiqAzul" style="padding-left: 3px;"> Não Houve</label>
                             <br>
-                            <textarea disabled id="mostrarelato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="10" cols="90"></textarea>
+                            <div class="col-xs-6">
+                                <textarea class="form-control" disabled id="mostrarelato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="10" cols="90"></textarea>
+                            </div>
                         </div>
                     </div>
                     <div class="aEsq"><label class="etiqAzul"> - Substituições temporárias: </label></div>
-                    <div style="text-align: center; padding-bottom: 10px;">
-                        <textarea disabled id="mostrarelatosubstit" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="4" cols="80" ></textarea>
+                    <div class="col-xs-6 style="text-align: center; padding-bottom: 10px;">
+                        <textarea class="form-control" disabled id="mostrarelatosubstit" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="4" cols="80" ></textarea>
                     </div>
                     <div id="mostramensagem" style="color: red; font-weight: bold;"></div>
                     <div style="text-align: center; padding-bottom: 10px;">
@@ -1230,7 +1234,9 @@ if(!isset($_SESSION["usuarioID"])){
                             <input type="radio" name="complocorrencia" id="complocorrencia1" value="1" CHECKED title="Houve algo que precisa ser relatado"><label for="complocorrencia1" class="etiqAzul" style="padding-left: 3px;"> Houve</label>
                             <input type="radio" name="complocorrencia" id="complocorrencia2" value="0" title="Nada aconteceu que seja digno de nota"><label for="complocorrencia2" class="etiqAzul" style="padding-left: 3px;"> Não Houve</label> 
                             <br>
-                            <textarea id="complrelato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="8" cols="90" onclick="tiraBorda(id);" onchange="modif();"></textarea>
+                            <div class="col-xs-6">
+                                <textarea class="form-control" id="complrelato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="8" cols="90" onclick="tiraBorda(id);" onchange="modif();"></textarea>
+                            </div>
                         </div>
                         <br>
                     </div>
@@ -1250,8 +1256,8 @@ if(!isset($_SESSION["usuarioID"])){
                             </select>
                             
                     </div>
-                    <div style="text-align: center; padding-bottom: 10px;">
-                        <textarea id="complrelatosubstit" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="4" cols="80" onchange="modif();"></textarea>
+                    <div class="col-xs-6" style="text-align: center; padding-bottom: 10px;">
+                        <textarea class="form-control" id="complrelatosubstit" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="4" cols="80" onchange="modif();"></textarea>
                     </div>
 
                     <div id="mensagemcompl2" style="color: red; font-weight: bold;"></div>

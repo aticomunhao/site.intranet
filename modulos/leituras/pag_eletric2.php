@@ -516,8 +516,6 @@ if(!isset($_SESSION["usuarioID"])){
                         modalImpr.style.display = "none";
                     }
                 };
-//var versaoJquery = $.fn.jquery; 
-//alert(versaoJquery);
         </script>
     </head>
     <body>

@@ -285,7 +285,7 @@ if($Acao =="buscaacesso"){
                 $Marca = 1;
             }
         }
-        $rsTar = pg_query($Conec, "SELECT idtar, sit FROM ".$xProj.".tarefas WHERE usuexec = '".$_SESSION["usuarioID"]."' And sit = 1");
+        $rsTar = pg_query($Conec, "SELECT idtar, sit FROM ".$xProj.".tarefas WHERE usuexec = '".$_SESSION["usuarioID"]."' And sit = 1 And ativo = 1");
         $rowTar = pg_num_rows($rsTar);
         if($rowTar > 0){
             if($rowTar == 1){

@@ -626,8 +626,6 @@ if(!isset($_SESSION["usuarioID"])){
                         modalImpr.style.display = "none";
                     }
                 };
-//var versaoJquery = $.fn.jquery; 
-//alert(versaoJquery);
         </script>
     </head>
     <body>
@@ -653,7 +651,6 @@ if(!isset($_SESSION["usuarioID"])){
             $DiaMedia = parAdm("dialeit_eletr", $Conec, $xProj);
             $ValorKwh = parAdm("valorkwh", $Conec, $xProj); // é o mesmo para pag_eletric2 e 3
             
-
             // Preenche caixa de escolha mes/ano para impressão
             $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataleitura1, 'MM'), '/', TO_CHAR(dataleitura1, 'YYYY')) 
             FROM ".$xProj.".leitura_eletric WHERE colec = 1 GROUP BY TO_CHAR(dataleitura1, 'MM'), TO_CHAR(dataleitura1, 'YYYY') ORDER BY TO_CHAR(dataleitura1, 'YYYY') DESC, TO_CHAR(dataleitura1, 'MM') DESC ");

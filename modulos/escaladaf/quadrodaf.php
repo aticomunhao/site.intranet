@@ -11,7 +11,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     </head>
     <body> 
         <div style="margin-top: 15px;">Horários de Trabalho</div>
-
+        <?php
+            $EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
+        ?>
         <div style="margin: 10px; padding: 20px; border: 2px solid green; border-radius: 15px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->
                 <div class="col" style="margin: 0 auto; text-align: left;">
@@ -26,7 +28,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <tr>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"><?php echo $tbl3[0]; ?></td>
-                                <td><div class="quadroletra"><?php echo $tbl3[1]; ?></div></td>
+                                <td><div class="quadroletra"><?php if($tbl3[1] == ""){echo "&nbsp;";}else{echo $tbl3[1];} ?></div></td>
                                 <td><div class="quadroletra"><?php echo $tbl3[2]; ?></div></td>
                             </tr>
                             <?php
@@ -47,7 +49,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <tr>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"><?php echo $tbl3[0]; ?></td>
-                                <td><div class="quadroletra"><?php echo $tbl3[1]; ?></div></td>
+                                <td><div class="quadroletra"><?php if($tbl3[1] == ""){echo "&nbsp;";}else{echo $tbl3[1];} ?></div></td>
                                 <td><div class="quadroletra"><?php echo $tbl3[2]; ?></div></td>
                             </tr>
                             <?php
@@ -68,7 +70,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <tr>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"><?php echo $tbl3[0]; ?></td>
-                                <td><div class="quadroletra"><?php echo $tbl3[1]; ?></div></td>
+                                <td><div class="quadroletra"><?php if($tbl3[1] == ""){echo "&nbsp;";}else{echo $tbl3[1];} ?></div></td>
                                 <td><div class="quadroletra"><?php echo $tbl3[2]; ?></div></td>
                             </tr>
                             <?php
@@ -80,7 +82,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
                 <div class="col" style="margin: 0 auto; text-align: center;">
                     <?php
-                    $rs3 = pg_query($Conec, "SELECT id, letra, horaturno FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 15 And ordemletra <= 20 ORDER BY letra");
+                        $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 15 And ordemletra <= 20 ORDER BY letra");
                     ?>
                     <table class="display" style="margin: 0 auto; width:85%;">
                         <?php 
@@ -90,7 +92,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <tr>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"><?php echo $tbl3[0]; ?></td>
-                                <td><div class="quadroletra"><?php echo $tbl3[1]; ?></div></td>
+                                <td><div <?php if($tbl3[3] == 0){echo "class='quadroletra'";}else{echo "class='quadroletraYellow'";} ?>  ><?php if($tbl3[1] == ""){echo "&nbsp;";}else{echo $tbl3[1];} ?></div></td>
                                 <td><div class="quadroletra"><?php echo $tbl3[2]; ?></div></td>
                             </tr>
                             <?php
@@ -100,8 +102,13 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 </div> <!-- quadro -->
 
                 <div class="col" style="margin: 0 auto; text-align: center;">
-                    <div class='bContainer corFundo' onclick='abreEditHorario()'> Editar </div>
-
+                    <?php
+                        if($EscalanteDAF == 1){
+                            ?>
+                            <div class='bContainer corFundo' onclick='abreEditHorario()'> Editar </div>
+                            <?php
+                        }
+                    ?>
                 </div> <!-- quadro -->
             </div>
         </div>

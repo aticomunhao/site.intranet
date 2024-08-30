@@ -94,7 +94,7 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 50%; /* acertar de acordo com a tela */
+                width: 60%; /* acertar de acordo com a tela */
             }
             .modalTransf-content{
                 background: linear-gradient(180deg, white, #86c1eb);
@@ -130,6 +130,7 @@ if(!isset($_SESSION["usuarioID"])){
                     color: blue;
                 }
             }
+
         </style>
         <script type="text/javascript">
             $(document).ready(function(){
@@ -865,22 +866,19 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
                     </tr>
                     <tr>
                         <td id="etiqTextoEvid" class="etiq">Tarefa:</td>
-                        <td colspan='4' rowspan='3' style="min-width: 500px;"><textarea id="textoEvid" rows='3' placeholder="Descrição sucinta" onchange="modif();" style="font-size:95%; width: 60%; border: 1px solid blue; border-radius: 10px"></textarea>
-                    </td>
+                        <td colspan='5' rowspan='3'>
+                            <div class="col-xs-6">
+                                <textarea class="form-control" id="textoEvid" rows="5" cols="70" placeholder="Descrição sucinta" onchange="modif();" style="font-size:95%; width: 60%; border: 1px solid blue; border-radius: 10px"></textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
                         <td></td>
                     </tr>
                     <tr>
                         <td></td>
-                        <td></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
                         <td></td>
                     </tr>
                     <tr>
@@ -904,27 +902,25 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
                     </tr> 
                     <tr>
                         <td id="etiqTextoExt" class="etiq">Memória:</td>
-                        <td colspan='4' rowspan='6'><textarea id="textoExt" rows='6' placeholder="Detalhes (opcional)" onchange="modif();" style="font-size: 95%; width: 98%; border: 1px solid blue; border-radius: 10px"></textarea></td>
+                        <td colspan='5' rowspan='6'>
+                            <div class="col-xs-6">
+                                <textarea class="form-control" id="textoExt" rows='6' placeholder="Detalhes (opcional)" onchange="modif();" style="font-size: 95%; width: 98%; border: 1px solid blue; border-radius: 10px"></textarea>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
                         <td></td>
                     </tr>
                     <tr>
                         <td></td>
+                    </tr>
+                    <tr>
                         <td></td>
                     </tr>
                     <tr>
                         <td></td>
-                        <td></td>
                     </tr>
                     <tr>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <td></td>
                         <td></td>
                     </tr>
                     <tr>

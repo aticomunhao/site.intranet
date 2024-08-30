@@ -516,8 +516,6 @@ if(!isset($_SESSION["usuarioID"])){
                         modalImpr.style.display = "none";
                     }
                 };
-//var versaoJquery = $.fn.jquery; 
-//alert(versaoJquery);
         </script>
     </head>
     <body>
@@ -603,7 +601,6 @@ if(!isset($_SESSION["usuarioID"])){
             </div> <!-- container  -->
         </div>
 
-        
         <!-- div modal para imprimir em pdf  -->
         <div id="relacimprLeituraEletric" class="relacmodal">
             <div class="modal-content-imprLeitura">

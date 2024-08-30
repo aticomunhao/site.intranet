@@ -149,7 +149,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             ?>
                     </tbody>
                 </table>
-        
         </div>
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->

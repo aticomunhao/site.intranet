@@ -11,13 +11,14 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     </head>
     <body> 
         <div style="margin-top: 15px; text-align: center;">Notas aos Horários de Trabalho</div>
-        <label style="position: relative; float: left; margin-top: -30px; padding-left: 10px;  color: red; font-weight: bold;" id="mensagemQuadroHorario"></label>
-        <div style="margin: 10px; padding: 20px; text-align: center; border: 2px solid green; border-radius: 15px;">
+        <label style="position: relative; float: left; margin-top: -30px; padding-left: 10px;  color: red; font-weight: bold;"></label>
+        <div style="margin: 10px; padding: 10px; text-align: center; border: 2px solid green; border-radius: 15px;">
             <?php
-            $rs3 = pg_query($Conec, "SELECT id, numnota, textonota, ativo FROM ".$xProj.".escaladaf_notas WHERE ativo = 1 ORDER BY numnota");
+                $EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
+                $rs3 = pg_query($Conec, "SELECT id, numnota, textonota, ativo FROM ".$xProj.".escaladaf_notas WHERE ativo = 1 ORDER BY numnota");
             ?>
-            <div style="position: relative; float: right; color: red; font-weight: bold;" id="_mensagemQuadroHorario"></div>
-            <table style="margin: 0 auto; width: 85%;">
+            <div style="position: relative; float: right; color: red; font-weight: bold;" ></div>
+            <table style="margin: 0 auto; width: 90%;">
                 <tr>
                     <td style="display: none;"></td>
                     <td style="display: none;"></td>
@@ -34,7 +35,19 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <td style="display: none;"><?php echo $tbl3[0]; ?></td>
                         <td><div class="quadroletra"><?php echo $tbl3[1]; ?></div></td>
                         <td><div class="quadroletra" style="text-align: left; padding: 3px;"><?php echo $tbl3[2]; ?></div></td>
-                        <td><label style="font-family: arial, verdana, sans-serif; font-size: 80%; color: blue; cursor: pointer;" onclick="editaNota(<?php echo $Cod; ?>);" title="Clique para editar">Editar</label></td>
+                        <td>
+                            <?php
+                            if($EscalanteDAF == 1){
+                                ?>
+                                <label style="font-family: arial, verdana, sans-serif; font-size: 80%; color: blue; cursor: pointer; padding-left: 5px; text-decoration: underline;" onclick="editaNota(<?php echo $Cod; ?>);" title="Clique para editar">Editar</label>
+                                <?php
+                            }else{
+                                ?>
+                                <label style="font-family: arial, verdana, sans-serif; font-size: 80%; padding-left: 5px; ">&nbsp;</label>
+                                <?php
+                            }
+                            ?>
+                        </td>
                     </tr>
                     <?php
                 }

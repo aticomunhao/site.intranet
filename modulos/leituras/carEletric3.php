@@ -178,7 +178,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <td colspan="2" style="text-align: center; padding-top: 5px;"><div id="mensagemLeitura" style="color: red; font-weight: bold;"></div></td>
                     </tr>
                 </table>
-
                     <div style="text-align: center; padding-bottom: 4px;">
                         <button id="apagaRegEletric" class="botpadrred" onclick="apagaModalEletric();">Apagar</button>
                         <label style="padding-left: 50%;"></label>

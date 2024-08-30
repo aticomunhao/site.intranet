@@ -273,8 +273,10 @@
 							}
 						}
 						$EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
+						$EfetivoEscalaDAF = parEsc("eft_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
+
 //						if($_SESSION["usuarioID"] == 3){ // superusuário  
-							if($EscalanteDAF == 1){
+							if($EscalanteDAF == 1 || $EfetivoEscalaDAF == 1){
 								echo "<li>";
 									echo "<a href='#' onclick='openhref(77);'>Escala DAF</a>";
 								echo "</li>";

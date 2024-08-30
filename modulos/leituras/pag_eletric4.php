@@ -502,8 +502,6 @@ if(!isset($_SESSION["usuarioID"])){
                         modalImpr.style.display = "none";
                     }
                 };
-//var versaoJquery = $.fn.jquery; 
-//alert(versaoJquery);
         </script>
     </head>
     <body>
@@ -539,7 +537,6 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" />
         <input type="hidden" id="InsLeituraEletric" value="<?php echo $InsEletric; ?>" /> <!-- autorização para um só indivíduo inserir as leituras -->
-
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->
