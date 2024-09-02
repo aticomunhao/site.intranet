@@ -18,7 +18,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             <div class="row"> <!-- botões Inserir e Imprimir-->
                 <div class="col" style="margin: 0 auto; text-align: left;">
                     <?php
-                    $rs3 = pg_query($Conec, "SELECT id, letra, horaturno FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra <= 5 ORDER BY letra");
+                    $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra <= 5 ORDER BY letra");
                     ?>
                     <table class="display" style="margin: 0 auto; width:85%;">
                         <?php 
@@ -28,7 +28,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <tr>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"><?php echo $tbl3[0]; ?></td>
-                                <td><div class="quadroletra"><?php if($tbl3[1] == ""){echo "&nbsp;";}else{echo $tbl3[1];} ?></div></td>
+                                <td><div <?php if($tbl3[3] == 0){echo "class='quadroletra'";}else{echo "class='quadroletraYellow'";} ?>  ><?php if($tbl3[1] == ""){echo "&nbsp;";}else{echo $tbl3[1];} ?></div></td>
                                 <td><div class="quadroletra"><?php echo $tbl3[2]; ?></div></td>
                             </tr>
                             <?php
@@ -39,7 +39,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
                 <div class="col" style="text-align: center;">
                     <?php
-                    $rs3 = pg_query($Conec, "SELECT id, letra, horaturno FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 5 And ordemletra <= 10 ORDER BY ordemletra");
+                    $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 5 And ordemletra <= 10 ORDER BY ordemletra");
                     ?>
                     <table class="display" style="margin: 0 auto; width:85%;">
                         <?php 
@@ -49,7 +49,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <tr>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"><?php echo $tbl3[0]; ?></td>
-                                <td><div class="quadroletra"><?php if($tbl3[1] == ""){echo "&nbsp;";}else{echo $tbl3[1];} ?></div></td>
+                                <td><div <?php if($tbl3[3] == 0){echo "class='quadroletra'";}else{echo "class='quadroletraYellow'";} ?>  ><?php if($tbl3[1] == ""){echo "&nbsp;";}else{echo $tbl3[1];} ?></div></td>
                                 <td><div class="quadroletra"><?php echo $tbl3[2]; ?></div></td>
                             </tr>
                             <?php
@@ -60,7 +60,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
                 <div class="col" style="margin: 0 auto; text-align: center;">
                     <?php
-                    $rs3 = pg_query($Conec, "SELECT id, letra, horaturno FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 10 And ordemletra <= 15 ORDER BY letra");
+                    $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 10 And ordemletra <= 15 ORDER BY letra");
                     ?>
                     <table class="display" style="margin: 0 auto; width:85%;">
                         <?php 
@@ -70,7 +70,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <tr>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"><?php echo $tbl3[0]; ?></td>
-                                <td><div class="quadroletra"><?php if($tbl3[1] == ""){echo "&nbsp;";}else{echo $tbl3[1];} ?></div></td>
+                                <td><div <?php if($tbl3[3] == 0){echo "class='quadroletra'";}else{echo "class='quadroletraYellow'";} ?>  ><?php if($tbl3[1] == ""){echo "&nbsp;";}else{echo $tbl3[1];} ?></div></td>
                                 <td><div class="quadroletra"><?php echo $tbl3[2]; ?></div></td>
                             </tr>
                             <?php

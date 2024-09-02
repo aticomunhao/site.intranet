@@ -63,6 +63,21 @@
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf ADD COLUMN IF NOT EXISTS marcadaf smallint NOT NULL DEFAULT 0 ;");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf ADD COLUMN IF NOT EXISTS liberames smallint NOT NULL DEFAULT 0 ;");
 
+				//0048
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS calcdataini timestamp without time zone DEFAULT CURRENT_TIMESTAMP ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS calcdatafim timestamp without time zone DEFAULT CURRENT_TIMESTAMP ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS cargahor VARCHAR(20) DEFAULT '00:00'");
+
+//				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_ins ADD COLUMN IF NOT EXISTS cargaturno VARCHAR(10) DEFAULT '00:00' ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_ins ADD COLUMN IF NOT EXISTS cargatime time without time zone NOT NULL DEFAULT '00:00';");
+
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS cargahora time without time zone NOT NULL DEFAULT '00:00';");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS interv time without time zone NOT NULL DEFAULT '00:00';");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS cargacont time without time zone NOT NULL DEFAULT '00:00';");
+//				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos DROP COLUMN IF EXISTS cargahor;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf ADD COLUMN IF NOT EXISTS feriado smallint NOT NULL DEFAULT 0 ;");
+
+				
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

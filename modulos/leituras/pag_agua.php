@@ -222,6 +222,32 @@ if(!isset($_SESSION["usuarioID"])){
                     $('#mensagemLeitura').fadeOut(3000);
                     return false;
                 }
+
+                if(parseInt(document.getElementById("insleitura1").value) >= parseInt(document.getElementById("insleitura2").value) ){
+//                    alert("Erro nas leituras");
+                    $.confirm({
+                        title: 'Ação Suspensa!',
+                        content: 'Erro nas leituras',
+                        draggable: true,
+                        buttons: {
+                            OK: function(){}
+                        }
+                    });
+                    return false;
+                }
+
+                if(parseInt(document.getElementById("insleitura2").value) >= parseInt(document.getElementById("insleitura3").value) ){
+                    $.confirm({
+                        title: 'Ação Suspensa!',
+                        content: 'Erro nas leituras',
+                        draggable: true,
+                        buttons: {
+                            OK: function(){}
+                        }
+                    });
+                    return false;
+                }
+
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/leituras/salvaLeitura.php?acao=salvaData&insdata="+encodeURIComponent(document.getElementById("insdata").value)

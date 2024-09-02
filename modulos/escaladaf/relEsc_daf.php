@@ -45,6 +45,7 @@ $Semana_Extract = array(
     $EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
     echo "Mês: ".$Mes.'/'.$Ano;
     echo "<br><br>";
+
         $rs2 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 ORDER BY nomeusual, nomecompl ");
         $row2 = pg_num_rows($rs2);
         if($row2 > 0){
@@ -53,19 +54,20 @@ $Semana_Extract = array(
                 echo "<tr>";
                     echo "<td>";
                         echo "<div style='width: 150px;'> &nbsp; </div>";
-                        $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala), TO_CHAR(dataescala, 'DD/MM/YYYY') FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ORDER BY dataescala");
+                        $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala), TO_CHAR(dataescala, 'DD/MM/YYYY'), feriado FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ORDER BY dataescala");
                         $row = pg_num_rows($rs);
                         if($row > 0){
                             while($tbl = pg_fetch_row($rs)){
                                 $IdDia = $tbl[0];
                                 $DataDia = addslashes($tbl[3]);
+                                
                                 if($EscalanteDAF == 1){
                                     ?>
-                                    <td><div <?php if($tbl[2] == 0 || $tbl[2] == 6){echo "class='quadrodiaClickCinza'";}else{echo "class='quadrodiaClick'";} ?> onclick="abreEdit(<?php echo $IdDia; ?>, '<?php echo $DataDia; ?>');"><?php echo $tbl[1]; ?><br><?php echo $Semana_Extract[$tbl[2]]; ?></div></td>
+                                    <td><div <?php if($tbl[2] == 0 || $tbl[4] == 1){echo "class='quadrodiaClickCinza'";}else{echo "class='quadrodiaClick'";} ?> onclick="abreEdit(<?php echo $IdDia; ?>, '<?php echo $DataDia; ?>');"><?php echo $tbl[1]; ?><br><?php echo $Semana_Extract[$tbl[2]]; ?></div></td>
                                     <?php
                                 }else{
                                     ?>
-                                    <td><div <?php if($tbl[2] == 0 || $tbl[2] == 6){echo "class='quadrodiaCinza'";}else{echo "class='quadrodia'";} ?> ><?php echo $tbl[1]; ?><br><?php echo $Semana_Extract[$tbl[2]]; ?></div></td>
+                                    <td><div <?php if($tbl[2] == 0 || $tbl[4] == 1){echo "class='quadrodiaCinza'";}else{echo "class='quadrodia'";} ?> ><?php echo $tbl[1]; ?><br><?php echo $Semana_Extract[$tbl[2]]; ?></div></td>
                                     <?php
                                 }
                             }
@@ -76,14 +78,14 @@ $Semana_Extract = array(
                     while($tbl2 = pg_fetch_row($rs2)){
                         $Cod = $tbl2[0]; //pessoas_id de poslog
                         if(is_null($tbl2[2]) || $tbl2[2] == ""){
-                            $Nome = $tbl2[1];
+                            $Nome = substr($tbl2[1], 0, 20);
                         }else{
-                            $Nome = $tbl2[2]; //nomeusual
+                            $Nome = substr($tbl2[2], 0, 22); //nomeusual
                         }
                         echo "<tr>";
                             echo "<td>";
                                 echo "<div class='quadrodia' style='min-width: 150px; text-align: left; padding-left: 3px;'> $Nome </div>";
-                                $rs3 = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala) FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ORDER BY dataescala");
+                                $rs3 = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala), feriado FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ORDER BY dataescala");
                                 $row3 = pg_num_rows($rs3);
                                 if($row3 > 0){
                                     while($tbl3 = pg_fetch_row($rs3)){
@@ -94,7 +96,7 @@ $Semana_Extract = array(
 //                                        FROM ".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_ins.poslog_id = ".$xProj.".poslog.pessoas_id  
 //                                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And  TO_CHAR(dataescalains, 'DD') = '$Dia'");
 
-                                        $rs4 = pg_query($Conec, "SELECT letraturno, turnoturno, destaque, date_part('dow', dataescala) 
+                                        $rs4 = pg_query($Conec, "SELECT letraturno, turnoturno, destaque, date_part('dow', dataescala), feriado 
                                         FROM ".$xProj.".escaladaf INNER JOIN (".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_ins.poslog_id = ".$xProj.".poslog.pessoas_id) ON ".$xProj.".escaladaf.id = ".$xProj.".escaladaf_ins.escaladaf_id  
                                         WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And  TO_CHAR(dataescalains, 'DD') = '$Dia'");
 
@@ -103,7 +105,7 @@ $Semana_Extract = array(
                                         if($row4 > 0){
                                             $tbl4 = pg_fetch_row($rs4);
                                             if($tbl4[2] == 0){
-                                                if($Sem == 0 ||  $Sem == 6){ // sáb ou dom
+                                                if($Sem == 0 || $tbl4[4] == 1){ // dom ou feriado
                                                     echo "<div class='quadrodiaCinza'> $tbl4[0] </div>";
                                                 }else{
                                                     echo "<div class='quadrodia'> $tbl4[0] </div>";
@@ -116,7 +118,7 @@ $Semana_Extract = array(
                                                 }
                                             }
                                         }else{
-                                            if($Sem == 0 ||  $Sem == 6){ // sáb ou dom
+                                            if($Sem == 0 || $tbl3[3] == 1){ // dom ou feriado
                                                 echo "<div class='quadrodiaCinza'> &nbsp; </div>";
                                             }else{
                                                 echo "<div class='quadrodia'> &nbsp; </div>";
@@ -124,7 +126,7 @@ $Semana_Extract = array(
                                         }
                                         echo "</td>";
                                     }
-                                } 
+                                }
                             echo "</td>";
                         echo "</tr>";
                         $Dia++;

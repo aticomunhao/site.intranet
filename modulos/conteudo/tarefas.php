@@ -579,6 +579,13 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
         $UsuLogadoId = $_SESSION["usuarioID"];
         $UsuLogadoNome = $_SESSION["NomeCompl"];
 
+        $rs = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'tarefas' ");
+        $row = pg_num_rows($rs);
+        if($row == 0){
+            echo "Faltam tabelas. Informe à ATI.";
+            return false;
+        }
+
         $admIns = parAdm("instarefa", $Conec, $xProj);   // nível para inserir
         $admEdit = parAdm("edittarefa", $Conec, $xProj); // nível para editar
         $VerTarefas = parAdm("vertarefa", $Conec, $xProj); // ver tarefas   1: todos - 2: só mandante e executante

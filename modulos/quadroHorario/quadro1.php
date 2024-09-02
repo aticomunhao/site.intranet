@@ -90,6 +90,7 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#estat").load("modulos/quadroHorario/jCarga.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value));
                 document.getElementById("etiqgrupo").style.visibility = "hidden";
                 document.getElementById("selecGrupo").style.visibility = "hidden";
+                document.getElementById("botimprPlanilha").style.visibility = "hidden";
 
                 $("#selecMesAno").change(function(){
                     if(parseInt(document.getElementById("selecMesAno").value) > 0){
@@ -100,10 +101,6 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#horainiedit").mask("99:99");
                 $("#horafimedit").mask("99:99");
             }); // fim do ready
-
-
-
-
 
             function abreParticip(Turno, Cod, CodPartic, Data, Nome){
                 if(parseInt(document.getElementById("guardaescalante").value) === 0){
@@ -217,6 +214,8 @@ if(!isset($_SESSION["usuarioID"])){
                                 Resp = eval("(" + ajax.responseText + ")");
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
+                                }else if(parseInt(Resp.coderro) === 2){
+                                    alert("Verifique os horários: "+Resp.horaini+"/"+Resp.horafim);
                                 }else{
                                     $("#relacaoParticip").load("modulos/quadroHorario/jEquipes.php?codigo="+document.getElementById("guardanumgrupo").value);
                                     document.getElementById("editaModalParticip").style.display = "none";

@@ -139,10 +139,12 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->ln(5);
             $pdf->SetFont('Arial', '' , 10);
 
+
+
             //Dia
-            $pdf->SetX(50); 
+            $pdf->SetX(70); 
             while($tbl = pg_fetch_row($rs)){
-                if($tbl[2] == 6 || $tbl[2] == 0){
+                if($tbl[2] == 0){
                     $pdf->SetFillColor(232, 232, 232); // fundo cinza
                 }else{
                     $pdf->SetFillColor(255, 255, 255);
@@ -151,13 +153,20 @@ if(!isset($_SESSION['AdmUsu'])){
             }
             $pdf->Cell(7, 5, "", 0, 1, 'L');
 
+            $pdf->SetX(42); 
+            $pdf->SetFont('Arial', '' , 8);
+            $pdf->Cell(7, 5, "Carga Semanal", 0, 0, 'L', true);
+
+
+            $pdf->SetFont('Arial', '' , 10);
+            $pdf->SetX(70); 
+
             //Semana
-            $pdf->SetX(50); 
             $rs1 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
             FROM ".$xProj.".escaladaf 
             WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ORDER BY dataescala");
             while($tbl1 = pg_fetch_row($rs1)){
-                if($tbl1[1] == 6 || $tbl1[1] == 0){
+                if($tbl1[1] == 0){
                     $pdf->SetFillColor(232, 232, 232); // fundo cinza
                 }else{
                     $pdf->SetFillColor(255, 255, 255);
@@ -172,7 +181,58 @@ if(!isset($_SESSION['AdmUsu'])){
             if($row1 > 0){
                 while($tbl1 = pg_fetch_row($rs1)){
                     $Cod = $tbl1[0];
-                    $pdf->Cell(20, 5, $tbl1[2], 0, 0, 'L');
+                    $pdf->SetX(10); 
+                    $pdf->Cell(27, 5, substr($tbl1[2], 0, 16), 0, 0, 'L');
+                    
+   //substr($DescArq, 0, 14);
+
+                //Carga horária Semanal
+                    //Seleciona as semanas do mês e ano para os escalados do grupo
+                    $rsS = pg_query($Conec, "SELECT DISTINCT TO_CHAR(dataescala, 'WW') FROM ".$xProj.".escaladaf 
+                    WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ORDER BY TO_CHAR(dataescala, 'WW') ");
+                    $rowS = pg_num_rows($rsS);
+                    while($tblS = pg_fetch_row($rsS)){
+                        $SemanaNum = $tblS[0]; // número da semana no ano
+                        //Dia de início dessa Semana
+                        $a = new DateTime();
+                        $a->setISODate($Ano, $SemanaNum);
+                        $DiaIniSem = $a->format('d/m');
+                        $IniSem = $a->format('m');
+
+                        //Dia final dessa semana
+                        $b = new DateTime();
+                        $b->setISODate($Ano, $SemanaNum, 7);
+                        $DiaFimSem = $b->format('d/m');
+                        $FimSem = $b->format('m');
+
+                        $CargaHoraCor =  0;
+
+                        //Carga Semanal turno1
+                        $rsS1 = pg_query($Conec, "SELECT TO_CHAR(SUM(cargatime), 'HH24:MI') 
+                        FROM ".$xProj.".escaladaf LEFT JOIN ".$xProj.".escaladaf_ins ON ".$xProj.".escaladaf.id = ".$xProj.".escaladaf_ins.escaladaf_id 
+                        WHERE poslog_id = $Cod And TO_CHAR(dataescala, 'WW') = '$SemanaNum' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
+                        $rowS1 = pg_num_rows($rsS1);
+                        if($rowS1 > 0){
+                            $tblS1 = pg_fetch_row($rsS1);
+                            $CargaHoraCor =  $tblS1[0]; 
+                        }
+                        $pdf->SetFont('Arial','' , 8); 
+                        if($IniSem == $Mes && $FimSem == $Mes){
+                            if($rowS == 5){
+                                $pdf->Cell(10, 5, $CargaHoraCor, 1, 0, 'C');
+                            }else{
+                                $pdf->Cell(8, 5, $CargaHoraCor, 1, 0, 'C');
+                            }
+                        }
+                    }
+//                    $pdf->Cell(20, 5, "", 0, 1, 'L');
+
+
+
+
+
+
+                
 
 //                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, marcadaf 
 //                    FROM ".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".escaladaf ON ".$xProj.".escaladaf_ins.escaladaf_id = ".$xProj.".escaladaf.id
@@ -182,10 +242,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '01' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(50); 
+                    $pdf->SetX(70); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -205,7 +265,7 @@ if(!isset($_SESSION['AdmUsu'])){
 //                        }
 
 
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -217,10 +277,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '02' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(57); 
+                    $pdf->SetX(77); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -233,7 +293,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '02' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -245,10 +305,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '03' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(64); 
+                    $pdf->SetX(84); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -261,7 +321,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '03' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -273,10 +333,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '04' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(71); 
+                    $pdf->SetX(91); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -289,7 +349,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '04' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -301,10 +361,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '05' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(78); 
+                    $pdf->SetX(98); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -317,7 +377,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '05' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -329,10 +389,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '06' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(85); 
+                    $pdf->SetX(105); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -345,7 +405,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '06' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -357,10 +417,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '07' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(92); 
+                    $pdf->SetX(112); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -373,7 +433,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '07' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -385,10 +445,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '08' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(99); 
+                    $pdf->SetX(119); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -401,7 +461,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '08' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -413,10 +473,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '09' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(106); 
+                    $pdf->SetX(126); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -429,7 +489,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '09' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -441,10 +501,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '10' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(113); 
+                    $pdf->SetX(133); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -457,7 +517,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '10' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -469,10 +529,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '11' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(120); 
+                    $pdf->SetX(140); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -485,7 +545,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '11' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -497,10 +557,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '12' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(127); 
+                    $pdf->SetX(147); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -513,7 +573,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '12' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -525,10 +585,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque 
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '13' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(134); 
+                    $pdf->SetX(154); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -541,7 +601,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '13' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -553,10 +613,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque 
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '14' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(141); 
+                    $pdf->SetX(161); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -569,7 +629,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '14' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -581,10 +641,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '15' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(148); 
+                    $pdf->SetX(168); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -597,7 +657,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '15' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -609,10 +669,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '16' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(155); 
+                    $pdf->SetX(175); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -625,7 +685,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '16' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -637,10 +697,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '17' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(162); 
+                    $pdf->SetX(182); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -653,7 +713,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '17' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -665,10 +725,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '18' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(169); 
+                    $pdf->SetX(189); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -681,7 +741,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '18' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -693,10 +753,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '19' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(176); 
+                    $pdf->SetX(196); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -709,7 +769,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '19' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -721,10 +781,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '20' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(183); 
+                    $pdf->SetX(203); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -737,7 +797,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '20' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -749,10 +809,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '21' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(190); 
+                    $pdf->SetX(210); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -765,7 +825,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '21' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -777,10 +837,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '22' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(197); 
+                    $pdf->SetX(217); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -793,7 +853,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '22' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -805,10 +865,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '23' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(204); 
+                    $pdf->SetX(224); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -821,7 +881,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '23' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -833,10 +893,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '24' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(211); 
+                    $pdf->SetX(231); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -849,7 +909,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '24' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -861,10 +921,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '25' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(218); 
+                    $pdf->SetX(238); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -877,7 +937,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '25' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -889,10 +949,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '26' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(225); 
+                    $pdf->SetX(245); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -905,7 +965,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '26' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -917,10 +977,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '27' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(232); 
+                    $pdf->SetX(252); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -933,7 +993,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '27' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -945,10 +1005,10 @@ if(!isset($_SESSION['AdmUsu'])){
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '28' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                     $row2 = pg_num_rows($rs2);
-                    $pdf->SetX(239); 
+                    $pdf->SetX(259); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 6 || $tbl2[1] == 0){
+                        if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             $pdf->SetFillColor(255, 255, 255);
@@ -961,7 +1021,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '28' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 6 || $tbl3[1] == 0){
+                        if($tbl3[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -974,10 +1034,10 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                         FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '29' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                         $row2 = pg_num_rows($rs2);
-                        $pdf->SetX(246); 
+                        $pdf->SetX(266); 
                         if($row2 > 0){
                             $tbl2 = pg_fetch_row($rs2);
-                            if($tbl2[1] == 6 || $tbl2[1] == 0){
+                            if($tbl2[1] == 0){
                                 $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             }else{
                                 $pdf->SetFillColor(255, 255, 255);
@@ -990,7 +1050,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                             FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '29' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                             $tbl3 = pg_fetch_row($rs3);
-                            if($tbl3[1] == 6 || $tbl3[1] == 0){
+                            if($tbl3[1] == 0){
                                 $pdf->SetFillColor(232, 232, 232); // fundo cinza
                                 $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                                 $pdf->SetFillColor(255, 255, 255);
@@ -1006,10 +1066,10 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                         FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '30' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                         $row2 = pg_num_rows($rs2);
-                        $pdf->SetX(253); 
+                        $pdf->SetX(273); 
                         if($row2 > 0){
                             $tbl2 = pg_fetch_row($rs2);
-                            if($tbl2[1] == 6 || $tbl2[1] == 0){
+                            if($tbl2[1] == 0){
                                 $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             }else{
                                 $pdf->SetFillColor(255, 255, 255);
@@ -1022,7 +1082,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                             FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '30' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                             $tbl3 = pg_fetch_row($rs3);
-                            if($tbl3[1] == 6 || $tbl3[1] == 0){
+                            if($tbl3[1] == 0){
                                 $pdf->SetFillColor(232, 232, 232); // fundo cinza
                                 $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                                 $pdf->SetFillColor(255, 255, 255);
@@ -1038,10 +1098,10 @@ if(!isset($_SESSION['AdmUsu'])){
                         $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                         FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '31' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
                         $row2 = pg_num_rows($rs2);
-                        $pdf->SetX(260); 
+                        $pdf->SetX(280); 
                         if($row2 > 0){
                             $tbl2 = pg_fetch_row($rs2);
-                            if($tbl2[1] == 6 || $tbl2[1] == 0){
+                            if($tbl2[1] == 0){
                                 $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             }else{
                                 $pdf->SetFillColor(255, 255, 255);
@@ -1054,7 +1114,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                             FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '31' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
                             $tbl3 = pg_fetch_row($rs3);
-                            if($tbl3[1] == 6 || $tbl3[1] == 0){
+                            if($tbl3[1] == 0){
                                 $pdf->SetFillColor(232, 232, 232); // fundo cinza
                                 $pdf->Cell(7, 5, "", 1, 1, 'C', true);
                                 $pdf->SetFillColor(255, 255, 255);
@@ -1065,6 +1125,11 @@ if(!isset($_SESSION['AdmUsu'])){
                     }else{
                         $pdf->Cell(7, 5, "", 0, 1, 'C');
                     }
+
+
+
+
+
 
                 }
             }

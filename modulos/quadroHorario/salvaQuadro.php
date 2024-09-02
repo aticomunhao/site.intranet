@@ -58,6 +58,29 @@ if(isset($_REQUEST["acao"])){
         $HoraIni = addslashes(filter_input(INPUT_GET, 'horaini'));
         $HoraFim = addslashes(filter_input(INPUT_GET, 'horafim'));
 
+        $HoraI = addslashes(filter_input(INPUT_GET, 'horaini')); 
+        $Proc = explode(":", $HoraI);
+        $Hora = $Proc[0];
+        $Min = $Proc[1];
+        if($Hora == 24 && $Min != "00"){
+            $Erro = 2;
+            $var = array("coderro"=>$Erro, "horaini"=>$HoraIni, "horafim"=>$HoraFim);
+            $responseText = json_encode($var);
+            echo $responseText;
+            return;
+        }
+        $HoraF = addslashes(filter_input(INPUT_GET, 'horafim')); 
+        $Proc = explode(":", $HoraF);
+        $Hora = $Proc[0];
+        $Min = $Proc[1];
+        if($Hora == 24 && $Min != "00"){
+            $Erro = 2;
+            $var = array("coderro"=>$Erro, "horaini"=>$HoraIni, "horafim"=>$HoraFim);
+            $responseText = json_encode($var);
+            echo $responseText;
+            return;
+        }
+
         $rs0 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_horaini = '$HoraIni', esc_horafim = '$HoraFim' WHERE pessoas_id = $CodPartic");
         if(!$rs0){
             $Erro = 1;

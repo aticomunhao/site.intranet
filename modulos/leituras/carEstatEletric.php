@@ -226,14 +226,18 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                 <?php 
                                     echo "(".$DiaMedia."/".$MesAnt." a ".$DiaMedia."/".$Mes.")";
                                     if($Eletric2Mes > 0 && $Eletric2MesAnt > 0){
-                                        echo "&rarr; (".$Eletric2Mes." - ".$Eletric2MesAnt.")";
+//                                        echo "&rarr; (".$Eletric2Mes." - ".$Eletric2MesAnt.")";
+                                        echo " &rarr; ".number_format(($Eletric2Mes - $Eletric2MesAnt), 0, ",",".")." kWh";
                                     }
                                 ?>
                             </td>
                             <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%; color: #9C9C9C;">
                                 <?php 
                                 if($Eletric2Mes > 0 && $Eletric2MesAnt > 0){
-                                    echo number_format(($Eletric2Mes - $Eletric2MesAnt), 0, ",",".")." kWh";
+//                                    echo number_format(($Eletric2Mes - $Eletric2MesAnt), 0, ",",".")." kWh";
+                                    $Total1 = "R$ ".number_format(($Eletric2Mes - $Eletric2MesAnt)*$ValorKwh, 2, ",",".");
+                                    echo $Total1;
+
                                 }else{
                                     if($Eletric2Mes == 0){
                                         echo "Agd dia ".$DiaMedia."/".$Mes;
@@ -252,7 +256,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                 <?php 
                                     echo "(".$DiaMedia."/".$MesAnt." a ".$DiaMedia."/".$Mes.")";
                                     if($Eletric3Mes > 0 && $Eletric3MesAnt > 0){
-                                        echo "&rarr; (".$Eletric3Mes." - ".$Eletric3MesAnt.")";
+//                                        echo " &rarr; ".number_format(($Eletric3Mes - $Eletric3MesAnt), 0, ",",".")." kWh";
+                                        $Total1 = "R$ ".number_format(($Eletric3Mes - $Eletric3MesAnt)*$ValorKwh, 2, ",",".");
+                                        echo $Total1;
                                     }
                                 ?>
                             </td>

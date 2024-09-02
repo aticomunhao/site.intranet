@@ -42,7 +42,7 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 10px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 40%;
+                width: 60%;
             }
             .modal-content-destacaDia{
                 background: linear-gradient(180deg, white, #00BFFF);
@@ -59,6 +59,14 @@ if(!isset($_SESSION["usuarioID"])){
                 border: 1px solid #888;
                 border-radius: 15px;
                 width: 60%;
+            }
+            .modal-content-relacFeriados{
+                background: linear-gradient(180deg, white, #00BFFF);
+                margin: 12% auto;
+                padding: 10px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 40%;
             }
              .quadrodia {
                 font-size: 90%;
@@ -130,18 +138,26 @@ if(!isset($_SESSION["usuarioID"])){
                 if(parseInt(document.getElementById("liberadoefetivo").value) === 0 && parseInt(document.getElementById("escalante").value) === 0){
                     $("#faixacentral").load("modulos/escaladaf/infoAgd1.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                     $("#faixaquadro").load("modulos/escaladaf/infoAgd2.php");
+                    $("#faixacarga").load("modulos/escaladaf/infoAgd2.php");
                     $("#faixanotas").load("modulos/escaladaf/infoAgd3.php");
+                    $("#faixaferiados").load("modulos/escaladaf/infoAgd2.php");
                      document.getElementById("botImprimir").style.visibility = "hidden";
+                     document.getElementById("transfMesAnoEsc").style.visibility = "hidden";
                 }else{
                     $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                     $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                    $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                     $("#faixanotas").load("modulos/escaladaf/notasdaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                    $("#faixaferiados").load("modulos/escaladaf/relFeriados.php");
                     document.getElementById("botImprimir").style.visibility = "visible";
+                    document.getElementById("transfMesAnoEsc").style.visibility = "visible";
                 }
+
+                $("#edinterv").mask("99:99");
+//                $("#insdata").mask("99/99");
 
                 $("#selecMesAnoEsc").change(function(){
                     if(parseInt(document.getElementById("selecMesAnoEsc").value) > 0){
-//                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                         ajaxIni();
                         if(ajax){
                             ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvamesano&mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value), true);
@@ -155,11 +171,14 @@ if(!isset($_SESSION["usuarioID"])){
                                                 $("#faixacentral").load("modulos/escaladaf/infoAgd1.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                                                 $("#faixaquadro").load("modulos/escaladaf/infoAgd2.php");
                                                 $("#faixanotas").load("modulos/escaladaf/infoAgd3.php");
+                                                $("#faixaferiados").load("modulos/escaladaf/infoAgd2.php");
                                                 document.getElementById("botImprimir").style.visibility = "hidden";
                                             }else{
                                                 $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                                                 $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                                $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                                                 $("#faixanotas").load("modulos/escaladaf/notasdaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                                $("#faixaferiados").load("modulos/escaladaf/relFeriados.php");
                                                 document.getElementById("botImprimir").style.visibility = "visible";
                                             }
                                             if(parseInt(Resp.mesliberado) === 0){
@@ -175,6 +194,67 @@ if(!isset($_SESSION["usuarioID"])){
                             };
                             ajax.send(null);
                         }
+                    }
+                });
+
+                $("#transfMesAnoEsc").change(function(){
+                    if(parseInt(document.getElementById("transfMesAnoEsc").value) > 0){
+                        $.confirm({
+                            title: 'Transferir escala.',
+                            content: 'Se houver lançamentos no mês de destino ('+document.getElementById("transfMesAnoEsc").value+') eles serão perdidos.<br>Confirma transferir?',
+                            autoClose: 'Não|10000',
+                            draggable: true,
+                            buttons: {
+                                Sim: function () {
+
+                        ajaxIni();
+                        if(ajax){
+                            ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=transfmesano&mesano="+encodeURIComponent(document.getElementById("transfMesAnoEsc").value)
+                            +"&transfde="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value), true);
+                            ajax.onreadystatechange = function(){
+                                if(ajax.readyState === 4 ){
+                                    if(ajax.responseText){
+//alert(ajax.responseText);
+                                        Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                        if(parseInt(Resp.coderro) === 0){
+                                            if(parseInt(Resp.mesliberado) === 0 && parseInt(document.getElementById("escalante").value) === 0){
+                                                $("#faixacentral").load("modulos/escaladaf/infoAgd1.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                                $("#faixaquadro").load("modulos/escaladaf/infoAgd2.php");
+                                                $("#faixanotas").load("modulos/escaladaf/infoAgd3.php");
+                                                $("#faixaferiados").load("modulos/escaladaf/infoAgd2.php");
+                                                document.getElementById("botImprimir").style.visibility = "hidden";
+                                            }else{
+                                                $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("transfMesAnoEsc").value));
+                                                $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?mesano="+encodeURIComponent(document.getElementById("transfMesAnoEsc").value));
+                                                $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?mesano="+encodeURIComponent(document.getElementById("transfMesAnoEsc").value));
+                                                $("#faixanotas").load("modulos/escaladaf/notasdaf.php?mesano="+encodeURIComponent(document.getElementById("transfMesAnoEsc").value));
+                                                $("#faixaferiados").load("modulos/escaladaf/relFeriados.php");
+
+                                                document.getElementById("selecMesAnoEsc").value = document.getElementById("transfMesAnoEsc").value;
+                                                document.getElementById("transfMesAnoEsc").value = "";
+                                                document.getElementById("botImprimir").style.visibility = "visible";
+                                            }
+                                            if(parseInt(Resp.mesliberado) === 0){
+                                                document.getElementById("evliberames").checked = false;
+                                            }else{
+                                                document.getElementById("evliberames").checked = true;
+                                            }
+                                        }else{
+                                            alert("Houve um erro no servidor.")
+                                        }
+                                    }
+                                }
+                            };
+                            ajax.send(null);
+                        }
+
+
+                            },
+                                Não: function () {
+                                    document.getElementById("transfMesAnoEsc").value = "";
+                                }
+                            }
+                        });
                     }
                 });
 
@@ -321,6 +401,11 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("relacQuadroHorario").style.display = "block";
             }
 
+            function abreEditFeriados(){
+                $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php");
+                document.getElementById("relacQuadroFeriados").style.display = "block";
+            }
+
             function editaOrdem(Cod, Valor){
                 ajaxIni();
                 if(ajax){
@@ -354,9 +439,15 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
                                 }else{
-                                    $('#mensagemQuadroHorario').fadeIn("slow");
-                                    document.getElementById("mensagemQuadroHorario").innerHTML = "Valor salvo.";
-                                    $('#mensagemQuadroHorario').fadeOut(2000);
+                                    $.confirm({
+                                        title: 'Valor Salvo!',
+                                        content: '',
+                                        autoClose: 'OK|1000',
+                                        draggable: true,
+                                        buttons: {
+                                            OK: function(){}
+                                        }
+                                    });
                                 }
                             }
                         }
@@ -374,12 +465,74 @@ if(!isset($_SESSION["usuarioID"])){
                             if(ajax.responseText){
 //alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 0){
+                                    $.confirm({
+                                        title: 'Valor Salvo!',
+                                        content: '',
+                                        autoClose: 'OK|1000',
+                                        draggable: true,
+                                        buttons: {
+                                            OK: function(){}
+                                        }
+                                    });
+                                    $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php");
+                                }
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }
+                                if(parseInt(Resp.coderro) === 2){
+                                    $.confirm({
+                                        title: 'Ação Suspensa!',
+                                        content: 'Erro de formatação do turno.<br>Formatação: 00:00 / 00:00',
+                                        draggable: true,
+                                        buttons: {
+                                            OK: function(){}
+                                        }
+                                    });
+                                    return false;
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function editaInterv(Cod, Valor){
+                let INTERV_LENGTH = 5;
+                if (Valor.length !== INTERV_LENGTH) {
+                    $.confirm({
+                        title: 'Ação Suspensa!',
+                        content: 'Observe o formato 00:00',
+                        draggable: true,
+                        buttons: {
+                            OK: function(){}
+                        }
+                    });
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaInterv&codigo="+Cod+"&valor="+encodeURIComponent(Valor), true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
                                 }else{
-                                    $('#mensagemQuadroHorario').fadeIn("slow");
-                                    document.getElementById("mensagemQuadroHorario").innerHTML = "Valor salvo.";
-                                    $('#mensagemQuadroHorario').fadeOut(2000);
+                                    $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php");
+
+                                    $.confirm({
+                                        title: 'Valor Salvo!',
+                                        content: '',
+                                        autoClose: 'OK|1000',
+                                        draggable: true,
+                                        buttons: {
+                                            OK: function(){}
+                                        }
+                                    });
                                 }
                             }
                         }
@@ -398,6 +551,21 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("insturno").value == ""){
                     return false;
                 }
+
+                let Turno = document.getElementById("insturno").value;
+                let Valor_Length = 13;
+                if (Turno.length !== Valor_Length) {
+                    $.confirm({
+                        title: 'Ação Suspensa!',
+                        content: 'Observe o formato: 00:00 / 00:00',
+                        draggable: true,
+                        buttons: {
+                            OK: function(){}
+                        }
+                    });
+                    return false;
+                }
+
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=insereletra&ordem="+document.getElementById("insordem").value
@@ -499,23 +667,13 @@ if(!isset($_SESSION["usuarioID"])){
                                     alert("Houve um erro no servidor.");
                                 }else{
                                     $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php");
-//                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                                     $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
-
                                 }
                             }
                         }
                     };
                     ajax.send(null);
                 }
-            }
-
-            function fechaQuadroHorario(){
-                document.getElementById("relacQuadroHorario").style.display = "none";
-            }
-
-            function fechaQuadroNotas(){
-                document.getElementById("relacQuadroNotas").style.display = "none";
             }
 
             function editaNota(Cod){
@@ -625,6 +783,86 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
+            function salvaDataFer(){
+                if(document.getElementById("insdata").value == ""){
+                    return false;
+                }
+                if(document.getElementById("insdescr").value == ""){
+                    return false;
+                }
+                let Turno = document.getElementById("insdata").value;
+                let Valor_Length = 5;
+                if (Turno.length !== Valor_Length) {
+                    $.confirm({
+                        title: 'Ação Suspensa!',
+                        content: 'Observe o formato: 00/00',
+                        draggable: true,
+                        buttons: {
+                            OK: function(){}
+                        }
+                    });
+                    return false;
+                }
+
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=insereFeriado&insdata="+document.getElementById("insdata").value
+                    +"&insdescr="+encodeURIComponent(document.getElementById("insdescr").value), true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php");
+                                    $("#faixaferiados").load("modulos/escaladaf/relFeriados.php");
+                                    document.getElementById("inserirData").style.display = "none";
+                                    document.getElementById("abreinsData").style.visibility = "visible";
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function apagaDataFer(Cod){
+                $.confirm({
+                    title: 'Apagar Data.',
+                    content: 'Confirma apagar este feriado?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=apagadatafer&codigo="+Cod, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                            if(parseInt(Resp.coderro) > 0){
+                                                alert("Houve um erro no servidor.");
+                                            }else{
+                                                $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                                $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php");
+                                                $("#faixaferiados").load("modulos/escaladaf/relFeriados.php");
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                        }
+                    }
+                });
+            }
+
             function marcaConfigEscala(obj, Campo){
                 if(obj.checked === true){
                     Valor = 1;
@@ -685,7 +923,7 @@ if(!isset($_SESSION["usuarioID"])){
             function mudaTurno(CodPartic, CodTurno){
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaTurno&codpartic="+CodPartic+"&codturno="+CodTurno, true);
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaTurnoParticip&codpartic="+CodPartic+"&codturno="+CodTurno, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -741,9 +979,11 @@ if(!isset($_SESSION["usuarioID"])){
                                         }
                                     });
                                     $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                    $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                                     document.getElementById("relacParticip").style.display = "none";
                                 }else{
                                     $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                    $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                                     document.getElementById("relacParticip").style.display = "none";
                                 }
                             }
@@ -769,6 +1009,16 @@ if(!isset($_SESSION["usuarioID"])){
             function fechaRelaPart(){
                 document.getElementById("relacParticip").style.display = "none";
             }
+            function fechaQuadroHorario(){
+                document.getElementById("relacQuadroHorario").style.display = "none";
+            }
+            function fechaQuadroNotas(){
+                document.getElementById("relacQuadroNotas").style.display = "none";
+            }
+            function fechaQuadroFeriados(){
+                document.getElementById("relacQuadroFeriados").style.display = "none";
+            }
+
             function resumoUsuEscala(){
                 window.open("modulos/escaladaf/imprUsuEsc.php?acao=listaUsuarios", "EscalaUsu");
             }
@@ -805,12 +1055,8 @@ if(!isset($_SESSION["usuarioID"])){
                     };
                     ajax.send(null);
                 }
-
-
-
-
-
             }
+
             function format_CnpjCpf(value){
                 //https://gist.github.com/davidalves1/3c98ef866bad4aba3987e7671e404c1e
                 const CPF_LENGTH = 11;
@@ -907,7 +1153,7 @@ if(!isset($_SESSION["usuarioID"])){
 //    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_notas");
     pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_notas (
         id SERIAL PRIMARY KEY, 
-        numnota  smallint NOT NULL DEFAULT 0,
+        numnota smallint NOT NULL DEFAULT 0,
         textonota text, 
         ativo smallint NOT NULL DEFAULT 1, 
         usuins bigint NOT NULL DEFAULT 0,
@@ -940,10 +1186,53 @@ if(!isset($_SESSION["usuarioID"])){
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf ADD COLUMN IF NOT EXISTS marcadaf smallint NOT NULL DEFAULT 0 ;");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf ADD COLUMN IF NOT EXISTS liberames smallint NOT NULL DEFAULT 0 ;");
 
+//    $rs4 = pg_query($Conec, "SELECT id, horaturno FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And id > 4 ");
+//    $row4 = pg_num_rows($rs4);
+//    if($row4 > 0){
+//        $Hoje = date('Y/m/d');
+//        while($tbl4 = pg_fetch_row($rs4)){
+//            $Cod = $tbl4[0];
+//            $Hora = $tbl4[1];
+//            $Proc = explode("/", $Hora);
+//            $HoraI = $Proc[0];
+//            $HoraF = $Proc[1];
+//            $TurnoIni = $Hoje." ".$HoraI;
+//            $TurnoFim = $Hoje." ".$HoraF;
+//            pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET calcdataini = '$TurnoIni', calcdatafim = '$TurnoFim' WHERE id = $Cod");
+//            pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargahora = (calcdatafim - calcdataini) WHERE id = $Cod And cargahora = '00:00:00'");
+//           
+//        }
+////        pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargahora = (cargahor - time '01:00') WHERE cargahor > '08:00:00'");
+//    }
 
+
+//    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_fer");
+    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_fer (
+        id SERIAL PRIMARY KEY, 
+        dataescalafer date DEFAULT '3000-12-31',
+        descr VARCHAR(200), 
+        ativo smallint NOT NULL DEFAULT 1, 
+        usuins bigint NOT NULL DEFAULT 0,
+        datains timestamp without time zone DEFAULT '3000-12-31',
+        usuedit bigint NOT NULL DEFAULT 0,
+        dataedit timestamp without time zone DEFAULT '3000-12-31' 
+        ) 
+    ");
+    $rs5 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer LIMIT 2");
+    $row5 = pg_num_rows($rs5);
+    if($row5 == 0){
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(1, '2024/01/01', 'Confraternização Universal', 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(2, '2024/04/21', 'Tiradentes', 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(3, '2024/05/01', 'Dia do Trabalhador', 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(4, '2024/09/07', 'Proclamação da Independência', 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(5, '2024/10/12', 'Padroeira do Brasil', 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(6, '2024/11/02', 'Dia de Finados', 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(7, '2024/11/15', 'Proclamação da República', 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(8, '2024/12/25', 'Natal', 3, NOW() )");
+    }
 //------------
 
- 
+
     $Escalante = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
     $MesSalvo = parEsc("mes_escdaf", $Conec, $xProj, $_SESSION["usuarioID"]);
     if(is_null($MesSalvo) || $MesSalvo == ""){
@@ -971,8 +1260,12 @@ if(!isset($_SESSION["usuarioID"])){
 
     $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataescala, 'MM'), '/', TO_CHAR(dataescala, 'YYYY')) 
     FROM ".$xProj.".escaladaf GROUP BY TO_CHAR(dataescala, 'MM'), TO_CHAR(dataescala, 'YYYY') ORDER BY TO_CHAR(dataescala, 'YYYY') DESC, TO_CHAR(dataescala, 'MM') DESC ");
-    $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
 
+    $OpcoesTransfMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataescala, 'MM'), '/', TO_CHAR(dataescala, 'YYYY')) 
+    FROM ".$xProj.".escaladaf WHERE CONCAT(TO_CHAR(dataescala, 'MM'), '/', TO_CHAR(dataescala, 'YYYY')) != '$MesSalvo' 
+    GROUP BY TO_CHAR(dataescala, 'MM'), TO_CHAR(dataescala, 'YYYY') ORDER BY TO_CHAR(dataescala, 'YYYY') DESC, TO_CHAR(dataescala, 'MM') DESC ");
+
+    $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
 
     //Mantem a tabela meses à frente
     for($i = 0; $i < 180; $i++){
@@ -985,7 +1278,18 @@ if(!isset($_SESSION["usuarioID"])){
             pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf (dataescala) VALUES ('$Data')");
         }
     }
-            
+
+    // Marcar Feriados em escaladaf
+    $rsFer = pg_query($Conec, "SELECT TO_CHAR(dataescalafer, 'DD'), TO_CHAR(dataescalafer, 'MM') FROM ".$xProj.".escaladaf_fer WHERE ativo = 1 ORDER BY dataescalafer ");
+    $rowFer = pg_num_rows($rsFer);
+    if($rowFer > 0){
+        while($tblFer = pg_fetch_row($rsFer)){
+            $DiaFer = $tblFer[0];
+            $MesFer = $tblFer[1];
+            pg_query($Conec, "UPDATE ".$xProj.".escaladaf SET feriado = 1 WHERE TO_CHAR(dataescala, 'DD') = '$DiaFer' And TO_CHAR(dataescala, 'MM') = '$MesFer' ");
+        }
+    }
+
     ?>
 
         <input type="hidden" id="guardamesano" value="<?php echo $MesSalvo; ?>" />
@@ -1028,6 +1332,22 @@ if(!isset($_SESSION["usuarioID"])){
 
                 <div class="col" style="text-align: center;">Escala de Serviço DAF</div> <!-- espaçamento entre colunas  -->
                 <div class="col" style="margin: 0 auto; text-align: center;">
+
+
+                <label style="padding-left: 40px;">Transferir para o mês: </label>
+                    <select id="transfMesAnoEsc" style="font-size: 1rem; width: 90px;" title="Transferir esta escala para o mês/ano escolhido">
+                        <option value=""></option>
+                            <?php 
+                                if($OpcoesTransfMes){
+                                    while ($Opcoes = pg_fetch_row($OpcoesTransfMes)){ ?>
+                                        <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                                        <?php 
+                                    }
+                                }
+                            ?>
+                    </select>
+                    <label style="padding-left: 20px;"></label>
+
                     <button id="botImprimir" class="botpadrred" onclick="imprPlanilha();">PDF</button>
                 </div> <!-- quadro -->
             </div>
@@ -1037,20 +1357,32 @@ if(!isset($_SESSION["usuarioID"])){
         <div style="margin: 10px; border: 2px solid green; border-radius: 15px; padding: 10px; min-height: 70px; text-align: center;">
             <table style="margin: 0 auto; width: 90%;">
                 <tr>
-                <td>
-                <div class="container" style="margin: 0 auto;">
-                    <div class="row">
-                        <div class="col quadro"></div>
-                        <div class="col quadro" style="text-align: center;"></div> <!-- Central - espaçamento entre colunas  -->
-                        <div class="col quadro" style="position: relative; float: rigth; text-align: right;"></div> 
-                    </div>
-                </div>
+                    <td>
+                        <div class="container" style="margin: 0 auto;">
+                            <div class="row">
+                                <div class="col quadro"></div>
+                                <div class="col quadro" style="text-align: center;"></div> <!-- Central - espaçamento entre colunas  -->
+                                <div class="col quadro" style="position: relative; float: rigth; text-align: right;"></div> 
+                            </div>
+                        </div>
                     </td>
                 </tr>
             </table>
             <div id="faixacentral"></div>
             <div id="faixaquadro"></div>
+            <div id="faixacarga"></div>
             <div id="faixanotas"></div>
+
+            <div class="row">
+                <div class="col quadro"></div>
+                <div class="col quadro" style="text-align: center;">
+                    <div id="faixaferiados"></div> 
+                </div> <!-- Central -->
+                <div class="col quadro" style="position: relative; float: rigth; text-align: right;"></div> 
+            </div>
+
+
+            
         </div>
 
 
@@ -1061,7 +1393,6 @@ if(!isset($_SESSION["usuarioID"])){
                 <label style="color: #666;">Escala para o dia: &nbsp; </label><label id="titulomodal" style="color: #666; padding-bottom: 10px; font-weight: bold;"></label>
                 <!-- lista dos participantes da escala do grupo -->
                 <div id="relacaoParticip" style="margin-bottom: 5px; border: 2px solid #C6E2FF; border-radius: 10px;"></div>
-
                 <button class="botpadrblue" style="font-size: 80%;" onclick="insParticipante();">Inserir Marcados</button>
             </div>
         </div> <!-- Fim Modal-->
@@ -1075,7 +1406,7 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
         </div> <!-- Fim Modal-->
 
-        <!-- div modal relacionar turnos - edHorarios.php -->
+        <!-- div modal para destacar um dia - Sem uso -->
         <div id="relacDestacaDia" class="relacmodal">
             <div class="modal-content-destacaDia">
                 <span class="close" onclick="fechaDestacaDia();">&times;</span>
@@ -1112,6 +1443,15 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                     </table>
                 </div>
+            </div>
+        </div> <!-- Fim Modal-->
+
+
+        <!-- div modal relacionar feriados de interesse - edFeriados.php -->
+        <div id="relacQuadroFeriados" class="relacmodal">
+            <div class="modal-content-relacFeriados">
+                <span class="close" onclick="fechaQuadroFeriados();">&times;</span>
+                <div id="relacaoFeriados" style="border: 2px solid #C6E2FF; border-radius: 10px;"></div>
             </div>
         </div> <!-- Fim Modal-->
 
@@ -1193,7 +1533,6 @@ if(!isset($_SESSION["usuarioID"])){
                             <label for="checkChefeADM">Chefe Div Adm</label>
                         </td>
                     </tr>
-
 
                 </table>
             </div>
