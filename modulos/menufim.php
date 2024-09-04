@@ -143,7 +143,7 @@
 				<a href="#" href="#" onclick="openhref(90);">Tarefas</a>
 			</li>
             <li>
-				<a href="#" href="#" onclick="openhref(80);">Trocas</a>
+				<a href="#" href="#" onclick="openhref(89);">Trocas</a>
 			</li>
 			<li>
 				<a href="#">Controles</a>
@@ -172,15 +172,35 @@
 					</li>
 
 					<?php
+				if($_SESSION["usuarioID"] == 3){
+					//Claviculário da DAF
+					$Clav2 = parEsc("clav2", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
+					$FiscClav2 = parEsc("fisc_clav2", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
+					if($Clav2 == 1 || $FiscClav2 == 1 || $_SESSION["AdmUsu"] > 6){
+						echo "<li>";
+							echo "<a href='#' onclick='openhref(79);'>Chaves DAF</a>";
+						echo "</li>";
+					}
+				}
+				if($_SESSION["usuarioID"] == 3){
+					//Claviculário Chaves Lacradas
+					$Clav3 = parEsc("clav3", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
+					$FiscClav3 = parEsc("fisc_clav3", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
+					if($Clav3 == 1 || $FiscClav3 == 1 || $_SESSION["AdmUsu"] > 6){
+						echo "<li>";
+							echo "<a href='#' onclick='openhref(80);'>Chaves Lacradas</a>";
+						echo "</li>";
+					}
+				}
+					//Claviculário da Portaria
 					$Clav = parEsc("clav", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
-//					$Chave = parEsc("chave", $Conec, $xProj, $_SESSION["usuarioID"]); // pode pegar chaves
 					$FiscClav = parEsc("fisc_clav", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
-
 					if($Clav == 1 || $FiscClav == 1 || $_SESSION["AdmUsu"] > 6){
 						echo "<li>";
 							echo "<a href='#' onclick='openhref(75);'>Chaves Portaria</a>";
 						echo "</li>";
 					}
+
 					$Contr = parEsc("contr", $Conec, $xProj, $_SESSION["usuarioID"]);
 					$FiscContr = parEsc("fisc_contr", $Conec, $xProj, $_SESSION["usuarioID"]);
 					if($Contr == 1 || $FiscContr == 1 || $_SESSION["AdmUsu"] > 6){
@@ -188,6 +208,7 @@
 							echo "<a href='#' onclick='openhref(76);'>Contratos</a>";
 						echo "</li>";
 					}
+
 					?>
 					<li>
 						<a href='#'>Eletricidade</a>
@@ -265,31 +286,34 @@
 						if($Efet == 1){
 							$NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]); // procurar a que grupo de escala pertence
 						}
-//						if($_SESSION["usuarioID"] == 3){ // if($_SESSION["AdmUsu"] > 6){ // superusuário
+						if($_SESSION["AdmUsu"] > 6){ // superusuário
 							if($NumGrupo > 0 || $FiscEscala > 0 || $Escalante > 0){
 								echo "<li>";
 									echo "<a href='#' onclick='openhref(72);'>Escala</a>";
 								echo "</li>";
 							}
-//						}
+						}
 						$EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
 						$EfetivoEscalaDAF = parEsc("eft_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
-
-//						if($_SESSION["usuarioID"] == 3){ // superusuário  
-							if($EscalanteDAF == 1 || $EfetivoEscalaDAF == 1){
-								echo "<li>";
-									echo "<a href='#' onclick='openhref(77);'>Escala DAF</a>";
-								echo "</li>";
-							}
-//						}
+						if($EscalanteDAF == 1 || $EfetivoEscalaDAF == 1){
+							echo "<li>";
+								echo "<a href='#' onclick='openhref(77);'>Escala DAF</a>";
+							echo "</li>";
+						}
 
 						if($_SESSION["AdmUsu"] > 6){ // superusuário
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(31);'>Parâmetros do Sistema</a>";
 							echo "</li>";
+						}
+
+						if($NumGrupo > 0 || $FiscEscala > 0 || $Escalante > 0){
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(74);'>Quadro Horário</a>";
 							echo "</li>";
+						}
+
+						if($_SESSION["AdmUsu"] > 6){ // superusuário
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(33);'>Registro de Ocorrências</a>";
 							echo "</li>";

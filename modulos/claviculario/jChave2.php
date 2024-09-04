@@ -7,15 +7,15 @@
     require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     date_default_timezone_set('America/Sao_Paulo'); 
 
-    $Clav = parEsc("clav", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
-    $Chave = parEsc("chave", $Conec, $xProj, $_SESSION["usuarioID"]); // pode pegar chaves
-	$FiscClav = parEsc("fisc_clav", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
+    $Clav = parEsc("clav2", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
+    $Chave = parEsc("chave2", $Conec, $xProj, $_SESSION["usuarioID"]); // pode pegar chaves
+	$FiscClav = parEsc("fisc_clav2", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
 ?>
     <div style="text-align: center; margin: 10px;">
-        <h5>Claviculário da Portaria</h5>
+        <h5>Claviculário da DAF</h5>
         <?php 
         $rs = pg_query($Conec, "SELECT id, chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente 
-        FROM ".$xProj.".chaves WHERE ativo = 1 ORDER BY chavenum, chavenumcompl ");
+        FROM ".$xProj.".chaves2 WHERE ativo = 1 ORDER BY chavenum, chavenumcompl ");
         $row = pg_num_rows($rs);
         ?>
         <table style="margin: 0 auto;">
@@ -69,4 +69,3 @@
         </table>
         <br><br>
     </div>
-    <br><br>

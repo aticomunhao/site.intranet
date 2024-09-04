@@ -29,7 +29,6 @@
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS setorins smallint NOT NULL DEFAULT 0 ;");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS setorexec smallint NOT NULL DEFAULT 0 ;");
 
-								
 				//0043
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS dialeit_eletr VARCHAR(2) DEFAULT '08' ");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS fatorcor_eletr VARCHAR(10) DEFAULT '40' ");
@@ -43,7 +42,6 @@
 
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS daf_marca smallint NOT NULL DEFAULT 0;");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS daf_turno smallint NOT NULL DEFAULT 0;");
-				
 
 				//0045
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".leitura_eletric ADD COLUMN IF NOT EXISTS dataleitura4 date DEFAULT CURRENT_TIMESTAMP;");
@@ -68,16 +66,25 @@
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS calcdatafim timestamp without time zone DEFAULT CURRENT_TIMESTAMP ;");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS cargahor VARCHAR(20) DEFAULT '00:00'");
 
-//				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_ins ADD COLUMN IF NOT EXISTS cargaturno VARCHAR(10) DEFAULT '00:00' ;");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_ins ADD COLUMN IF NOT EXISTS cargatime time without time zone NOT NULL DEFAULT '00:00';");
 
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS cargahora time without time zone NOT NULL DEFAULT '00:00';");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS interv time without time zone NOT NULL DEFAULT '00:00';");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS cargacont time without time zone NOT NULL DEFAULT '00:00';");
-//				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos DROP COLUMN IF EXISTS cargahor;");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf ADD COLUMN IF NOT EXISTS feriado smallint NOT NULL DEFAULT 0 ;");
 
-				
+				//0049
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS clav2 smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS chave2 smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisc_clav2 smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS clav3 smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS chave3 smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisc_clav3 smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET clav2 = 1, chave2 = 1, fisc_clav2 = 1, clav3 = 1, chave3 = 1, fisc_clav3 = 1 WHERE pessoas_id = 3 ;");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET clav2 = 1, chave2 = 1, fisc_clav2 = 1, clav3 = 1, chave3 = 1, fisc_clav3 = 1 WHERE pessoas_id = 83 ;");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET clav2 = 1, chave2 = 1, fisc_clav2 = 1, clav3 = 1, chave3 = 1, fisc_clav3 = 1 WHERE pessoas_id = 22 ;");
+
+
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

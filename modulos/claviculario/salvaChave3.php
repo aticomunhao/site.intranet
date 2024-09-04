@@ -16,7 +16,7 @@ if(isset($_REQUEST["acao"])){
         $UsuRetira = "";
         $NomeRetira = "";
         $Cod = (int) filter_input(INPUT_GET, 'codigo'); 
-        $rs = pg_query($Conec, "SELECT chavenum, chavenumcompl, chavelocal, chavesala, chaveobs FROM ".$xProj.".chaves WHERE id = $Cod");
+        $rs = pg_query($Conec, "SELECT chavenum, chavenumcompl, chavelocal, chavesala, chaveobs FROM ".$xProj.".chaves3 WHERE id = $Cod");
         $row = pg_num_rows($rs);
         if($row > 0){
             $tbl = pg_fetch_row($rs);
@@ -27,7 +27,7 @@ if(isset($_REQUEST["acao"])){
         }
 
         // verifica se e para quando está agendada
-        $rs1 = pg_query($Conec, "SELECT id, datasaida, usuretira FROM ".$xProj.".chaves_agd WHERE chaves_id = $Cod And ativo = 1");
+        $rs1 = pg_query($Conec, "SELECT id, datasaida, usuretira FROM ".$xProj.".chaves3_agd WHERE chaves_id = $Cod And ativo = 1");
         $row1 = pg_num_rows($rs1);
         if($row1 > 0){
             while($tbl1 = pg_fetch_row($rs1)){
@@ -60,13 +60,13 @@ if(isset($_REQUEST["acao"])){
         $Obs =  filter_input(INPUT_GET, 'obschave'); 
 
         if($Cod > 0){
-            $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves SET chavenum = $Num, chavenumcompl = '$Compl', chavelocal = '$Local', chavesala = '$Sala', chaveobs = '$Obs', usuedit = ". $_SESSION['usuarioID'].", dataedit = NOW()  WHERE id = $Cod");
+            $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves3 SET chavenum = $Num, chavenumcompl = '$Compl', chavelocal = '$Local', chavesala = '$Sala', chaveobs = '$Obs', usuedit = ". $_SESSION['usuarioID'].", dataedit = NOW()  WHERE id = $Cod");
         }else{
-            $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves");
+            $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves3");
             $tblCod = pg_fetch_row($rsCod);
             $CodigoNovo = $tblCod[0]+1;
 
-            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".chaves (id, chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente, usuins, datains) 
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".chaves3 (id, chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente, usuins, datains) 
             VALUES ($CodigoNovo, $Num, '$Compl', '$Local', '$Sala', '$Obs', 1, ". $_SESSION['usuarioID'].", NOW()) ");
         }
         
@@ -88,17 +88,17 @@ if(isset($_REQUEST["acao"])){
         $Cpf2 = str_replace(".", "", $Cpf1);
         $GuardaCpf = str_replace("-", "", $Cpf2);
 
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_ctl SET datavolta = NOW(), funcrecebe = ". $_SESSION['usuarioID'].", cpfdevolve = '$GuardaCpf', usudevolve = $CodUsu, usuedit = ". $_SESSION['usuarioID'].", dataedit = NOW() WHERE id = $Cod");
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves3_ctl SET datavolta = NOW(), funcrecebe = ". $_SESSION['usuarioID'].", cpfdevolve = '$GuardaCpf', usudevolve = $CodUsu, usuedit = ". $_SESSION['usuarioID'].", dataedit = NOW() WHERE id = $Cod");
 
-        $rs = pg_query($Conec, "SELECT chaves_id, ".$xProj.".chaves.chavenum, ".$xProj.".chaves.chavenumcompl 
-        FROM ".$xProj.".chaves_ctl INNER JOIN ".$xProj.".chaves ON ".$xProj.".chaves_ctl.chaves_id = ".$xProj.".chaves.id 
-        WHERE ".$xProj.".chaves_ctl.id = $Cod");
+        $rs = pg_query($Conec, "SELECT chaves_id, ".$xProj.".chaves3.chavenum, ".$xProj.".chaves3.chavenumcompl 
+        FROM ".$xProj.".chaves3_ctl INNER JOIN ".$xProj.".chaves3 ON ".$xProj.".chaves3_ctl.chaves_id = ".$xProj.".chaves3.id 
+        WHERE ".$xProj.".chaves3_ctl.id = $Cod");
         $row = pg_num_rows($rs);
         if($row > 0){
             $tbl = pg_fetch_row($rs);
             $CodChave = $tbl[0];
             $ChaveNum = str_pad($tbl[1], 3, 0, STR_PAD_LEFT).$tbl[2];
-            pg_query($Conec, "UPDATE ".$xProj.".chaves SET presente = 1 WHERE id = $CodChave");
+            pg_query($Conec, "UPDATE ".$xProj.".chaves3 SET presente = 1 WHERE id = $CodChave");
         }
         if(!$rs){
             $Erro = 1;
@@ -112,7 +112,7 @@ if(isset($_REQUEST["acao"])){
     if($Acao == "buscaNumero"){
         $Erro = 0;
         $Prox = 1;
-        $rs = pg_query($Conec, "SELECT MAX(chavenum) FROM ".$xProj.".chaves");
+        $rs = pg_query($Conec, "SELECT MAX(chavenum) FROM ".$xProj.".chaves3");
         $tbl = pg_fetch_row($rs);
         $Prox = ($tbl[0]+1);
     
@@ -143,7 +143,7 @@ if(isset($_REQUEST["acao"])){
             }
         }
 
-         $rs1 = pg_query($Conec, "SELECT telef FROM ".$xProj.".chaves_ctl WHERE usuretira = $Cod ORDER BY datasaida DESC");
+         $rs1 = pg_query($Conec, "SELECT telef FROM ".$xProj.".chaves3_ctl WHERE usuretira = $Cod ORDER BY datasaida DESC");
          $row1 = pg_num_rows($rs1);
          if($row1 > 0){
             $tbl1 = pg_fetch_row($rs1);
@@ -152,7 +152,7 @@ if(isset($_REQUEST["acao"])){
             $Telef = "";
          }
          if($Telef == ""){
-            $rs2 = pg_query($Conec, "SELECT telef FROM ".$xProj.".chaves_ctl WHERE usudevolve = $Cod ORDER BY datavolta DESC");
+            $rs2 = pg_query($Conec, "SELECT telef FROM ".$xProj.".chaves3_ctl WHERE usudevolve = $Cod ORDER BY datavolta DESC");
             $row2 = pg_num_rows($rs2);
             if($row2 > 0){
                 $tbl2 = pg_fetch_row($rs2);
@@ -175,7 +175,7 @@ if(isset($_REQUEST["acao"])){
         $GuardaCpf = str_replace("-", "", $Cpf2);
 
         //pega o último número de telefone informado
-        $rs1 = pg_query($Conec, "SELECT telef FROM ".$xProj.".chaves_ctl WHERE cpfretira = '$GuardaCpf' ORDER BY datasaida DESC");
+        $rs1 = pg_query($Conec, "SELECT telef FROM ".$xProj.".chaves3_ctl WHERE cpfretira = '$GuardaCpf' ORDER BY datasaida DESC");
         $row1 = pg_num_rows($rs1);
         if($row1 > 0){
            $tbl1 = pg_fetch_row($rs1);
@@ -216,20 +216,20 @@ if(isset($_REQUEST["acao"])){
         $Telef = addslashes(filter_input(INPUT_GET, 'celular')); 
         $DataAgenda = "";
 
-        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves_ctl");
+        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves3_ctl");
         $tblCod = pg_fetch_row($rsCod);
         $CodigoNovo = $tblCod[0]+1;
 
-        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".chaves_ctl (id, chaves_id, cpfretira, datasaida, funcentrega, usuretira, telef, usuins, datains) 
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".chaves3_ctl (id, chaves_id, cpfretira, datasaida, funcentrega, usuretira, telef, usuins, datains) 
         VALUES ($CodigoNovo, $Cod, '$GuardaCpf', NOW(), ".$_SESSION['usuarioID'].", $CodUsu, '$Telef', ".$_SESSION['usuarioID'].", NOW() )");
 
-        pg_query($Conec, "UPDATE ".$xProj.".chaves SET presente = 0 WHERE id = $Cod");// marca como ausente
+        pg_query($Conec, "UPDATE ".$xProj.".chaves3 SET presente = 0 WHERE id = $Cod");// marca como ausente
 
         //Detectar de onde está vindo
         if($IdAgenda > 0){ // se era uma chave agendada sendo entregue
-            pg_query($Conec, "UPDATE ".$xProj.".chaves_agd SET ativo = 0 WHERE id = $IdAgenda ");
+            pg_query($Conec, "UPDATE ".$xProj.".chaves3_agd SET ativo = 0 WHERE id = $IdAgenda ");
         }else{ // verifica se e para quando está agendada
-            $rs1 = pg_query($Conec, "SELECT id, datasaida FROM ".$xProj.".chaves_agd WHERE chaves_id = $Cod");
+            $rs1 = pg_query($Conec, "SELECT id, datasaida FROM ".$xProj.".chaves3_agd WHERE chaves_id = $Cod");
             $row1 = pg_num_rows($rs1);
             if($row1 > 0){
                 $tbl1 = pg_fetch_row($rs1);
@@ -259,11 +259,11 @@ if(isset($_REQUEST["acao"])){
         $Data = addslashes(filter_input(INPUT_GET, 'dataagenda')); 
         $RevData = implode("/", array_reverse(explode("/", $Data)));
 
-        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves_agd");
+        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves3_agd");
         $tblCod = pg_fetch_row($rsCod);
         $CodigoNovo = $tblCod[0]+1;
 
-        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".chaves_agd (id, chaves_id, cpfretira, datasaida, usuretira, telef, usuins, datains) 
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".chaves3_agd (id, chaves_id, cpfretira, datasaida, usuretira, telef, usuins, datains) 
         VALUES ($CodigoNovo, $Cod, '$GuardaCpf', '$RevData', $CodUsu, '$Telef', ".$_SESSION['usuarioID'].", NOW() )");
     
         $var = array("coderro"=>$Erro);
@@ -280,13 +280,13 @@ if(isset($_REQUEST["acao"])){
         $Telef = "";
 
         //Pega o número da chave
-        $rs0 = pg_query($Conec, "SELECT chavenum, chavenumcompl FROM ".$xProj.".chaves WHERE id = $Cod");
+        $rs0 = pg_query($Conec, "SELECT chavenum, chavenumcompl FROM ".$xProj.".chaves3 WHERE id = $Cod");
         $row0 = pg_num_rows($rs0);
         $tbl0=pg_fetch_row($rs0);
         $Chave = $tbl0[0].$tbl0[1];
 
-        $rs1 = pg_query($Conec, "SELECT ".$xProj.".chaves_ctl.id 
-        FROM ".$xProj.".chaves INNER JOIN ".$xProj.".chaves_ctl ON ".$xProj.".chaves.id = ".$xProj.".chaves_ctl.chaves_id 
+        $rs1 = pg_query($Conec, "SELECT ".$xProj.".chaves3_ctl.id 
+        FROM ".$xProj.".chaves3 INNER JOIN ".$xProj.".chaves3_ctl ON ".$xProj.".chaves3.id = ".$xProj.".chaves3_ctl.chaves_id 
         WHERE CONCAT(chavenum, chavenumcompl) = '$Chave' And presente = 0 And usudevolve = 0 ");
         $row1 = pg_num_rows($rs1);
         if($row1 > 0){ 
@@ -297,8 +297,8 @@ if(isset($_REQUEST["acao"])){
         }
 
         $rs = pg_query($Conec, "SELECT chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, usuretira, telef, cpfretira 
-        FROM ".$xProj.".chaves INNER JOIN ".$xProj.".chaves_ctl ON ".$xProj.".chaves.id = ".$xProj.".chaves_ctl.chaves_id
-        WHERE ".$xProj.".chaves_ctl.id = $Ctl_id");
+        FROM ".$xProj.".chaves3 INNER JOIN ".$xProj.".chaves3_ctl ON ".$xProj.".chaves3.id = ".$xProj.".chaves3_ctl.chaves_id
+        WHERE ".$xProj.".chaves3_ctl.id = $Ctl_id");
         $row = pg_num_rows($rs);
         if($row > 0){
             $tbl = pg_fetch_row($rs);
@@ -326,15 +326,15 @@ if(isset($_REQUEST["acao"])){
 
     if($Acao == "retornoChave"){
         $Erro = 0;
-        $Cod = (int) filter_input(INPUT_GET, 'codigo'); // id de chaves_ctl
+        $Cod = (int) filter_input(INPUT_GET, 'codigo'); // id de chaves3_ctl
         $NomeCompl = "";
         $Nome = "";
         $CpfRetirou = "";
         $Telef = "";
 
         $rs = pg_query($Conec, "SELECT chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, usuretira, telef, cpfretira 
-        FROM ".$xProj.".chaves INNER JOIN ".$xProj.".chaves_ctl ON ".$xProj.".chaves.id = ".$xProj.".chaves_ctl.chaves_id
-        WHERE ".$xProj.".chaves_ctl.id = $Cod");
+        FROM ".$xProj.".chaves3 INNER JOIN ".$xProj.".chaves3_ctl ON ".$xProj.".chaves3.id = ".$xProj.".chaves3_ctl.chaves_id
+        WHERE ".$xProj.".chaves3_ctl.id = $Cod");
         $row = pg_num_rows($rs);
         if($row > 0){
             $tbl = pg_fetch_row($rs);
@@ -368,7 +368,7 @@ if(isset($_REQUEST["acao"])){
         $Data = addslashes(filter_input(INPUT_GET, 'dataagenda')); 
         $Presente = 1;
 
-        $rs = pg_query($Conec, "SELECT chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente FROM ".$xProj.".chaves WHERE id = $Cod");
+        $rs = pg_query($Conec, "SELECT chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente FROM ".$xProj.".chaves3 WHERE id = $Cod");
         $row = pg_num_rows($rs);
         if($row > 0){
             $tbl = pg_fetch_row($rs);
@@ -396,7 +396,7 @@ if(isset($_REQUEST["acao"])){
             $SiglaSetor = "";
         }
 
-        $rs2 = pg_query($Conec, "SELECT telef FROM ".$xProj.".chaves_agd WHERE id = $IdAgenda ");   //usuretira = $CodUsu And TO_CHAR(datasaida, 'DD/MM/YYYY') = '$Data' ORDER BY datasaida DESC");
+        $rs2 = pg_query($Conec, "SELECT telef FROM ".$xProj.".chaves3_agd WHERE id = $IdAgenda ");   //usuretira = $CodUsu And TO_CHAR(datasaida, 'DD/MM/YYYY') = '$Data' ORDER BY datasaida DESC");
         $row2 = pg_num_rows($rs2);
         if($row2 > 0){
             $tbl2 = pg_fetch_row($rs2);
@@ -407,7 +407,7 @@ if(isset($_REQUEST["acao"])){
         
         if($Presente == 0){
             $rs3 = pg_query($Conec, "SELECT nomecompl, cpf, telef 
-            FROM ".$xProj.".poslog INNER JOIN ".$xProj.".chaves_ctl ON ".$xProj.".poslog.pessoas_id = ".$xProj.".chaves_ctl.usuretira 
+            FROM ".$xProj.".poslog INNER JOIN ".$xProj.".chaves3_ctl ON ".$xProj.".poslog.pessoas_id = ".$xProj.".chaves3_ctl.usuretira 
             WHERE chaves_id = $Cod And usudevolve = 0");
             $row3 = pg_num_rows($rs3);
             if($row3 > 0){
@@ -435,7 +435,7 @@ if(isset($_REQUEST["acao"])){
         $Erro = 0;
         $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de polog
 
-        $rs1 = pg_query($Conec, "SELECT clav, chave, fisc_clav, cpf FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
+        $rs1 = pg_query($Conec, "SELECT clav3, chave3, fisc_clav3, cpf FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
         $row1 = pg_num_rows($rs1);
         if($row1 > 0){
             $tbl1 = pg_fetch_row($rs1);
@@ -455,7 +455,7 @@ if(isset($_REQUEST["acao"])){
         $Cpf2 = str_replace(".", "", $Cpf1);
         $GuardaCpf = str_replace("-", "", $Cpf2);
 
-        $rs1 = pg_query($Conec, "SELECT clav, chave, fisc_clav, cpf, pessoas_id FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf'");
+        $rs1 = pg_query($Conec, "SELECT clav3, chave3, fisc_clav3, cpf, pessoas_id FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf'");
         if(!$rs1){
             $Erro = 1;
             $var = array("coderro"=>$Erro);
@@ -478,8 +478,8 @@ if(isset($_REQUEST["acao"])){
         $Campo = filter_input(INPUT_GET, 'campo');
         $Valor = (int) filter_input(INPUT_GET, 'valor');
 
-        if($Campo == "fisc_clav" && $Valor == 0){
-            $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE fisc_clav = 1");
+        if($Campo == "fisc_clav3" && $Valor == 0){
+            $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE fisc_clav3 = 1");
             $row = pg_num_rows($rs);
             if($row == 1){
                 $Erro = 2;
@@ -501,9 +501,9 @@ if(isset($_REQUEST["acao"])){
 
     if($Acao == "apagaagendaChave"){
         $Erro = 0;
-        $Cod = (int) filter_input(INPUT_GET, 'codigo'); // id de chaves_agd
+        $Cod = (int) filter_input(INPUT_GET, 'codigo'); // id de chaves3_agd
 
-        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".chaves_agd SET ativo = 2 WHERE id = $Cod");
+        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".chaves3_agd SET ativo = 2 WHERE id = $Cod");
         if(!$rs1){
             $Erro = 1;
         }

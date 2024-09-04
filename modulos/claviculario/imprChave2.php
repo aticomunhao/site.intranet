@@ -56,10 +56,10 @@ if(isset($_REQUEST["acao"])){
     $pdf->AliasNbPages(); // pega o número total de páginas
     $pdf->AddPage("L", "A4");
     $pdf->SetLeftMargin(30);
-    $pdf->SetTitle('Resumo Clavic Portaria', $isUTF8=TRUE);
+    $pdf->SetTitle('Resumo Clavic DAF', $isUTF8=TRUE);
     //Monta o arquivo pdf        
     $pdf->SetFont('Arial', '' , 12); 
-    $pdf->SetTitle('Claviculário Portaria', $isUTF8=TRUE);
+    $pdf->SetTitle('Claviculário DAF', $isUTF8=TRUE);
     if($Dom != "" && $Dom != "NULL"){
         if(file_exists('../../imagens/'.$Dom)){
             if(getimagesize('../../imagens/'.$Dom)!=0){
@@ -77,7 +77,7 @@ if(isset($_REQUEST["acao"])){
     $pdf->Cell(0, 5, $Cabec3, 0, 2, 'C');
     $pdf->SetFont('Arial', '' , 10);
     $pdf->SetTextColor(25, 25, 112);
-    $pdf->MultiCell(0, 3, "Claviculário da Portaria", 0, 'C', false);
+    $pdf->MultiCell(0, 3, "Claviculário da DAF", 0, 'C', false);
 
     $pdf->SetTextColor(0, 0, 0);
     $pdf->SetFont('Arial', '', 6);
@@ -102,8 +102,8 @@ if(isset($_REQUEST["acao"])){
 
 
     if($Acao == "listamesChaves" || $Acao == "listaanoChaves"){
-        $rs0 = pg_query($Conec, "SELECT ".$xProj.".chaves.id, chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente 
-        FROM ".$xProj.".chaves  
+        $rs0 = pg_query($Conec, "SELECT ".$xProj.".chaves2.id, chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente 
+        FROM ".$xProj.".chaves2  
         WHERE ativo = 1 And chavenum != 0 ORDER BY chavenum");
         $row0 = pg_num_rows($rs0);
         $pdf->SetFont('Arial', 'I', 14);
@@ -142,11 +142,11 @@ if(isset($_REQUEST["acao"])){
                 $pdf->Line(25, $lin, 282, $lin);
 
                 if($Acao == "listamesChaves"){
-                    $rs1 = pg_query($Conec, "SELECT TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datavolta, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datasaida, 'YYYY'), TO_CHAR(datavolta, 'YYYY'), usuretira, usudevolve, TO_CHAR(datavolta - datasaida, 'DD HH24:MI'), TO_CHAR(datavolta - datasaida, 'DD'), TO_CHAR(CURRENT_DATE - datasaida, 'DD'), telef FROM ".$xProj.".chaves_ctl 
+                    $rs1 = pg_query($Conec, "SELECT TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datavolta, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datasaida, 'YYYY'), TO_CHAR(datavolta, 'YYYY'), usuretira, usudevolve, TO_CHAR(datavolta - datasaida, 'DD HH24:MI'), TO_CHAR(datavolta - datasaida, 'DD'), TO_CHAR(CURRENT_DATE - datasaida, 'DD'), telef FROM ".$xProj.".chaves2_ctl 
                     WHERE chaves_id = $Cod And DATE_PART('MONTH', datasaida) = '$Mes' And DATE_PART('YEAR', datasaida) = '$Ano' ORDER BY datasaida DESC");
                 }
                 if($Acao == "listaanoChaves"){
-                    $rs1 = pg_query($Conec, "SELECT TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datavolta, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datasaida, 'YYYY'), TO_CHAR(datavolta, 'YYYY'), usuretira, usudevolve, TO_CHAR(datavolta - datasaida, 'DD HH24:MI'), TO_CHAR(datavolta - datasaida, 'DD'), TO_CHAR(CURRENT_DATE - datasaida, 'DD'), telef FROM ".$xProj.".chaves_ctl 
+                    $rs1 = pg_query($Conec, "SELECT TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datavolta, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datasaida, 'YYYY'), TO_CHAR(datavolta, 'YYYY'), usuretira, usudevolve, TO_CHAR(datavolta - datasaida, 'DD HH24:MI'), TO_CHAR(datavolta - datasaida, 'DD'), TO_CHAR(CURRENT_DATE - datasaida, 'DD'), telef FROM ".$xProj.".chaves2_ctl 
                     WHERE chaves_id = $Cod And DATE_PART('YEAR', datasaida) = '$Ano' ORDER BY datasaida DESC ");
                 }
 
@@ -229,7 +229,7 @@ if(isset($_REQUEST["acao"])){
     $pdf->AddPage();
     $pdf->ln(10);
     if($Acao == "listamesChaves"){
-        $rs0 = pg_query($Conec, "SELECT id, chavenum, chavenumcompl, chavelocal, chavesala FROM ".$xProj.".chaves  
+        $rs0 = pg_query($Conec, "SELECT id, chavenum, chavenumcompl, chavelocal, chavesala FROM ".$xProj.".chaves2  
         WHERE ativo = 1 And chavenum != 0 ORDER BY chavenum");
         $row0 = pg_num_rows($rs0);
 
@@ -257,7 +257,7 @@ if(isset($_REQUEST["acao"])){
                 $pdf->Cell(20, 5, str_pad($tbl0[1], 3, 0, STR_PAD_LEFT).$tbl0[2], 0, 0, 'L');
                 $pdf->SetFont('Arial', '', 10);
 
-                $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_ctl WHERE ativo = 1 And chaves_id = $Cod And DATE_PART('MONTH', datasaida) = '$Mes' And DATE_PART('YEAR', datasaida) = '$Ano'");
+                $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves2_ctl WHERE ativo = 1 And chaves_id = $Cod And DATE_PART('MONTH', datasaida) = '$Mes' And DATE_PART('YEAR', datasaida) = '$Ano'");
                 $row1 = pg_num_rows($rs1);
                 $pdf->Cell(20, 5, $row1, 0, 0, 'R');
                 $pdf->Cell(80, 5, $tbl0[3], 0, 1, 'L');
@@ -267,7 +267,7 @@ if(isset($_REQUEST["acao"])){
 
     $pdf->ln(10);
     if($Acao == "listaanoChaves"){
-        $rs0 = pg_query($Conec, "SELECT id, chavenum, chavenumcompl, chavelocal, chavesala FROM ".$xProj.".chaves  
+        $rs0 = pg_query($Conec, "SELECT id, chavenum, chavenumcompl, chavelocal, chavesala FROM ".$xProj.".chaves2  
         WHERE ativo = 1 And chavenum != 0 ORDER BY chavenum");
         $row0 = pg_num_rows($rs0);
 
@@ -294,7 +294,7 @@ if(isset($_REQUEST["acao"])){
                 $pdf->Cell(20, 5, str_pad($tbl0[1], 3, 0, STR_PAD_LEFT).$tbl0[2], 0, 0, 'L');
                 $pdf->SetFont('Arial', '', 10);
 
-                $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_ctl WHERE ativo = 1 And chaves_id = $Cod And DATE_PART('YEAR', datasaida) = '$Ano'");
+                $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves2_ctl WHERE ativo = 1 And chaves_id = $Cod And DATE_PART('YEAR', datasaida) = '$Ano'");
                 $row1 = pg_num_rows($rs1);
                 $pdf->Cell(20, 5, $row1, 0, 0, 'R');
                 $pdf->Cell(80, 5, $tbl0[3], 0, 1, 'L');

@@ -105,6 +105,13 @@ function openhref(Num){
     if(parseInt(Num) === 78){
         $('#container3').load('modulos/leituras/pag_eletric4.php');
     }
+    if(parseInt(Num) === 79){
+        $('#container3').load('modulos/claviculario/clavic2.php');
+    }
+    if(parseInt(Num) === 80){
+        $('#container3').load('modulos/claviculario/clavic3.php');
+    }
+
 
 
     if(parseInt(Num) === 30){
@@ -128,7 +135,7 @@ function openhref(Num){
     if(parseInt(Num) === 36){
         $('#container3').load('modulos/lro/livroReg.php');
     }
-    if(parseInt(Num) === 80){
+    if(parseInt(Num) === 89){
         $('#container3').load('modulos/trocas/relTrocas.php');
     }
     if(parseInt(Num) === 90){
