@@ -1074,7 +1074,6 @@ if(!isset($_SESSION["usuarioID"])){
             require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
 //Provisórios
-
 //    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf");
     pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf (
         id SERIAL PRIMARY KEY, 
@@ -1150,6 +1149,27 @@ if(!isset($_SESSION["usuarioID"])){
         pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(16, 'O', '08:00 / 18:00', 12, 3, NOW() )");
     }
 
+    //Acerta as colunas auxiliares para os turnos
+    $rsT = pg_query($Conec, "SELECT id, horaturno FROM ".$xProj.".escaladaf_turnos WHERE id > 4 And ativo = 1 And cargahora < '00:01' And cargahora IS NOT NULL ORDER BY letra");
+    $rowT = pg_num_rows($rsT);
+    if($rowT > 0){
+        $Hoje = date('d/m/Y');
+        while($tblT = pg_fetch_row($rsT)){  //Calcular carga horaria
+            $Cod = $tblT[0];
+            $Hora = $tblT[1]; 
+            $Proc = explode("/", $Hora);
+            $HoraI = $Proc[0];
+            $HoraF = $Proc[1];
+            $TurnoIni = $Hoje." ".$HoraI;
+            $TurnoFim = $Hoje." ".$HoraF;
+            pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET calcdataini = '$TurnoIni', calcdatafim = '$TurnoFim' WHERE id = $Cod");
+            pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargahora = (calcdatafim - calcdataini) WHERE id = $Cod");
+            pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '01:00'), interv = '01:00' WHERE cargahora >= '08:00' And id = $Cod ");
+            pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '00:15'), interv = '00:15' WHERE cargahora >= '06:00' And cargahora < '08:00' And id = $Cod ");
+            pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = cargahora, interv = '00:00' WHERE cargahora <= '06:00' And id = $Cod ");
+        }
+    }
+
 //    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_notas");
     pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_notas (
         id SERIAL PRIMARY KEY, 
@@ -1174,37 +1194,6 @@ if(!isset($_SESSION["usuarioID"])){
         pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, numnota, textonota, usuins, datains) 
         VALUES(4, 4, 'As segundas, quartas e sextas feiras, o horário de funcionamento da comunhão será das 07h00 até as 21h30. Os setores funcionarão conforme as escalas de serviço.', 3, NOW() )");
     }
-//Provisório
-				//0046
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS mes_escdaf VARCHAR(10);"); // para guardar o mês de consulta
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS chefe_escdaf smallint NOT NULL DEFAULT 0;"); // chefe da escala DAF
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS enc_escdaf smallint NOT NULL DEFAULT 0;"); // encarregado da escala DAF
-				//0047
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_ins ADD COLUMN IF NOT EXISTS destaque smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS destaq smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS ordemletra smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf ADD COLUMN IF NOT EXISTS marcadaf smallint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf ADD COLUMN IF NOT EXISTS liberames smallint NOT NULL DEFAULT 0 ;");
-
-//    $rs4 = pg_query($Conec, "SELECT id, horaturno FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And id > 4 ");
-//    $row4 = pg_num_rows($rs4);
-//    if($row4 > 0){
-//        $Hoje = date('Y/m/d');
-//        while($tbl4 = pg_fetch_row($rs4)){
-//            $Cod = $tbl4[0];
-//            $Hora = $tbl4[1];
-//            $Proc = explode("/", $Hora);
-//            $HoraI = $Proc[0];
-//            $HoraF = $Proc[1];
-//            $TurnoIni = $Hoje." ".$HoraI;
-//            $TurnoFim = $Hoje." ".$HoraF;
-//            pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET calcdataini = '$TurnoIni', calcdatafim = '$TurnoFim' WHERE id = $Cod");
-//            pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargahora = (calcdatafim - calcdataini) WHERE id = $Cod And cargahora = '00:00:00'");
-//           
-//        }
-////        pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargahora = (cargahor - time '01:00') WHERE cargahor > '08:00:00'");
-//    }
-
 
 //    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_fer");
     pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_fer (
@@ -1333,7 +1322,6 @@ if(!isset($_SESSION["usuarioID"])){
                 <div class="col" style="text-align: center;">Escala de Serviço DAF</div> <!-- espaçamento entre colunas  -->
                 <div class="col" style="margin: 0 auto; text-align: center;">
 
-
                 <label style="padding-left: 40px;">Transferir para o mês: </label>
                     <select id="transfMesAnoEsc" style="font-size: 1rem; width: 90px;" title="Transferir esta escala para o mês/ano escolhido">
                         <option value=""></option>
@@ -1380,11 +1368,7 @@ if(!isset($_SESSION["usuarioID"])){
                 </div> <!-- Central -->
                 <div class="col quadro" style="position: relative; float: rigth; text-align: right;"></div> 
             </div>
-
-
-            
         </div>
-
 
         <!-- div modal relacionar escalado -->
         <div id="relacParticip" class="relacmodal">
@@ -1537,6 +1521,5 @@ if(!isset($_SESSION["usuarioID"])){
                 </table>
             </div>
         </div> <!-- Fim Modal-->
-
     </body>
 </html>

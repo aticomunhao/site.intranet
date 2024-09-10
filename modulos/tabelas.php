@@ -566,8 +566,138 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
       ) 
    ");
 
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf (
+      id SERIAL PRIMARY KEY, 
+      dataescala date DEFAULT '3000-12-31',
+      ativo smallint DEFAULT 1 NOT NULL, 
+      usuins integer DEFAULT 0 NOT NULL,
+      datains timestamp without time zone DEFAULT '3000-12-31',
+      usuedit integer DEFAULT 0 NOT NULL,
+      dataedit timestamp without time zone DEFAULT '3000-12-31' 
+      ) 
+  ");
+      pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_ins (
+        id SERIAL PRIMARY KEY, 
+        escaladaf_id bigint NOT NULL DEFAULT 0,
+        dataescalains date DEFAULT '3000-12-31',
+        poslog_id INT NOT NULL DEFAULT 0,
+        letraturno VARCHAR(3), 
+        turnoturno VARCHAR(30), 
+        destaque smallint NOT NULL DEFAULT 0,
+        marcadaf smallint NOT NULL DEFAULT 0,
+        ativo smallint NOT NULL DEFAULT 1, 
+        usuins bigint NOT NULL DEFAULT 0, 
+        datains timestamp without time zone DEFAULT '3000-12-31', 
+        usuedit bigint NOT NULL DEFAULT 0, 
+        dataedit timestamp without time zone DEFAULT '3000-12-31' 
+        )
+    ");
+    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_turnos (
+      id SERIAL PRIMARY KEY, 
+      letra VARCHAR(3), 
+      horaturno VARCHAR(30), 
+      ordemletra smallint NOT NULL DEFAULT 0,
+      destaq smallint NOT NULL DEFAULT 0,
+      ativo smallint NOT NULL DEFAULT 1, 
+      usuins bigint NOT NULL DEFAULT 0,
+      datains timestamp without time zone DEFAULT '3000-12-31',
+      usuedit bigint NOT NULL DEFAULT 0,
+      dataedit timestamp without time zone DEFAULT '3000-12-31' 
+      ) 
+  ");
    
-   
+  $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_turnos LIMIT 3");
+  $row2 = pg_num_rows($rs2);
+  if($row2 == 0){
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(1, 'F', 'FÉRIAS', 13, 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(2, 'X', 'FOLGA', 14, 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(3, 'Y', 'INSS', 15, 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(4, 'Q', 'AULA IAQ', 16, 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(5, 'A', '08:00 / 17:00', 1, 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(6, 'B', '07:00 / 16:00', 2, 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(7, 'C', '07:00 / 17:00', 3, 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(8, 'E', '09:00 / 18:00', 5, 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(9, 'H', '14:00 / 18:00', 7, 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(10, 'D', '11:00 / 15:00', 4, 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(11, 'K', '08:00 / 14:15', 9, 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(12, 'J', '06:50 / 15:50', 8, 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(13, 'G', '10:50 / 19:50', 6, 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(14, 'L', '07:00 / 13:15', 10, 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(15, 'M', '13:35 / 19:50', 11, 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(16, 'O', '08:00 / 18:00', 12, 3, NOW() )");
+  }
+
+  //Acerta as colunas auxiliares para os turnos da escalaDAF
+  $rsT = pg_query($Conec, "SELECT id, horaturno FROM ".$xProj.".escaladaf_turnos WHERE id > 4 And ativo = 1 And cargahora < '00:01' And cargahora IS NOT NULL ORDER BY letra");
+  $rowT = pg_num_rows($rsT);
+  if($rowT > 0){
+      $Hoje = date('d/m/Y');
+      while($tblT = pg_fetch_row($rsT)){  //Calcular carga horaria
+          $Cod = $tblT[0];
+          $Hora = $tblT[1]; 
+          $Proc = explode("/", $Hora);
+          $HoraI = $Proc[0];
+          $HoraF = $Proc[1];
+          $TurnoIni = $Hoje." ".$HoraI;
+          $TurnoFim = $Hoje." ".$HoraF;
+          pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET calcdataini = '$TurnoIni', calcdatafim = '$TurnoFim' WHERE id = $Cod");
+          pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargahora = (calcdatafim - calcdataini) WHERE id = $Cod");
+          pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '01:00'), interv = '01:00' WHERE cargahora >= '08:00' And id = $Cod ");
+          pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '00:15'), interv = '00:15' WHERE cargahora >= '06:00' And cargahora < '08:00' And id = $Cod ");
+          pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = cargahora, interv = '00:00' WHERE cargahora <= '06:00' And id = $Cod ");
+      }
+  }
+
+  pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_notas (
+      id SERIAL PRIMARY KEY, 
+      numnota smallint NOT NULL DEFAULT 0,
+      textonota text, 
+      ativo smallint NOT NULL DEFAULT 1, 
+      usuins bigint NOT NULL DEFAULT 0,
+      datains timestamp without time zone DEFAULT '3000-12-31',
+      usuedit bigint NOT NULL DEFAULT 0,
+      dataedit timestamp without time zone DEFAULT '3000-12-31' 
+      ) 
+  ");
+  $rs3 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_notas LIMIT 2");
+  $row3 = pg_num_rows($rs3);
+  if($row3 == 0){
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, numnota, textonota, usuins, datains) 
+      VALUES(1, 1, 'Durante os turnos de 6 horas de duração, o funcionário deverá tirar 15 minutos de descanso, entre a terceira e quinta hora. Em consequência, o horário do turno de serviço deverá ser acrescido de 15 minutos  (Art. 71 - §1º e $2º da CLT). Nesses turnos não será necessário bater ponto quando do inicio e término do descanso. Exemplo: inicio do turno às 07h00 e saída para o descanso às 10h00. Regresso do descanso 10h15 e término do turno às 13h15.', 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, numnota, textonota, usuins, datains) 
+      VALUES(2, 2, 'Durante os turnos de 8 horas de duração, o funcionário deverá tirar 1 h de descanso, entre a quarta e sexta hora. O horário de descanso de cada empregado será definido e obrigatoriamente informado à DAF pelo chefe responsável do setor, por email, até o dia 25 do mês que antecede o início da escala de serviço. É obrigatório bater o ponto quando do início e término do descanso.', 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, numnota, textonota, usuins, datains) 
+      VALUES(3, 3, 'É obrigatório bater o ponto quando do início e término da jornada de trabalho.  Horas extras somente serão realizadas quando expressamente autorizadas pelo diretor da Área ou da Presidência. A utilização do banco de horas somente será possível para os empregados que assinaram o acordo individual - AI - NI-4.18-a DAF.', 3, NOW() ) ");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, numnota, textonota, usuins, datains) 
+      VALUES(4, 4, 'As segundas, quartas e sextas feiras, o horário de funcionamento da comunhão será das 07h00 até as 21h30. Os setores funcionarão conforme as escalas de serviço.', 3, NOW() )");
+  }
+
+  pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_fer (
+      id SERIAL PRIMARY KEY, 
+      dataescalafer date DEFAULT '3000-12-31',
+      descr VARCHAR(200), 
+      ativo smallint NOT NULL DEFAULT 1, 
+      usuins bigint NOT NULL DEFAULT 0,
+      datains timestamp without time zone DEFAULT '3000-12-31',
+      usuedit bigint NOT NULL DEFAULT 0,
+      dataedit timestamp without time zone DEFAULT '3000-12-31' 
+      ) 
+  ");
+  $rs5 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer LIMIT 2");
+  $row5 = pg_num_rows($rs5);
+  if($row5 == 0){
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(1, '2024/01/01', 'Confraternização Universal', 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(2, '2024/04/21', 'Tiradentes', 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(3, '2024/05/01', 'Dia do Trabalhador', 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(4, '2024/09/07', 'Proclamação da Independência', 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(5, '2024/10/12', 'Padroeira do Brasil', 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(6, '2024/11/02', 'Dia de Finados', 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(7, '2024/11/15', 'Proclamação da República', 3, NOW() )");
+      pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(8, '2024/12/25', 'Natal', 3, NOW() )");
+  }
+
+
+
    echo "<br><br>";
 
    

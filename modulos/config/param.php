@@ -54,6 +54,7 @@
                     $("#relmenu").load("modulos/config/relMenu.php"); // para editar menu
                     $("#carGruposEscala").load("modulos/config/carGrupos.php");
                     $("#carCheckListLRO").load("modulos/config/carckListLRO.php");
+                    
                 });
 
                 function salvaParam(Valor, Param){
@@ -67,6 +68,8 @@
                                     Resp = eval("(" + ajax.responseText + ")");
                                     if(parseInt(Resp.coderro) > 0){
                                         alert("Houve erro ao salvar");
+                                    }else{
+
                                     }
                                 }
                             }
@@ -759,7 +762,6 @@
             $Proc2 = pg_fetch_row($rs2);
             $nomeEditEletric = $Proc2[0];
 
-
             $insTarefa = $ProcSis[5];   // insTarefa - inserção de tarefas
             $rs3 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $insTarefa");
             $Proc3 = pg_fetch_row($rs3);
@@ -896,6 +898,37 @@
             $OpAdmInsBens = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
             $OpAdmEditBens = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
 
+            $TempoInat  = parAdm("tempoinat", $Conec, $xProj); // tempo de ociosidade
+            $DescInat = "";
+            switch ($TempoInat){
+                case 0:
+                    $DescInat = "Ilimitado";
+                    break;
+                case 900:
+                    $DescInat = "15 min";
+                    break;
+                case 1800:
+                    $DescInat = "30 min";
+                    break;
+                case 3600:
+                    $DescInat = "01 hora";
+                    break;
+                case 7200:
+                    $DescInat = "02 horas";
+                    break;
+                case 10800:
+                    $DescInat = "03 horas";
+                    break;
+                case 14400:
+                    $DescInat = "04 horas";
+                    break;
+                case 18000:
+                    $DescInat = "05 horas";
+                    break;
+                case 21600:
+                    $DescInat = "06 horas";
+                    break;
+            }
         ?>
         <input type="hidden" id="guardacod" value="0" /> <!-- id ocorrência -->
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
@@ -910,8 +943,23 @@
             <div style="text-align: center;">
                 <h4>Parâmetros do Sistema</h4>
             </div>
-
-
+            <div style="margin: 5px; margin-left: 200px; margin-right: 200px; border: 1px solid; border-radius: 10px; text-align: center; padding: 15px;">
+                <label style="color: gray; font-size: .8em;">Desconectar após </label>
+                <select id="tempoocioso" onchange="salvaParam(value, 'tempoinat');" style="font-size: 1rem;" title="Selecione o tempo apropriado.">
+                    <option value="<?php echo $TempoInat; ?>"><?php echo $DescInat; ?></option>
+                    <option value="0">Ilimitado</option>
+                    <option value="900">15 min</option>
+                    <option value="1800">30 min</option>
+                    <option value="3600">01 hora</option>
+                    <option value="7200">02 horas</option>
+                    <option value="10800">03 horas</option>
+                    <option value="14400">04 horas</option>
+                    <option value="18000">05 horas</option>
+                    <option value="21600">06 horas</option>
+                </select>
+                <label id="labeltempoocioso" style="color: gray; font-size: .8em;"> de tempo ocioso.</label>
+            </div>
+            
 <!-- Bens Encontrados  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
                 - <b>Bens Encontrados</b>: <label style="color: gray; font-size: .8em;"> Nível mínimo mais a marca no usuário autorizam a inserção.</label><br>

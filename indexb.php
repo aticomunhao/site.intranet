@@ -316,10 +316,37 @@
             checaFim = setInterval("checaLogFim()", 60000); // 1 minuto
             //Aviso de eventos do calendário
             AvisoCalend = setInterval("checaCalend()", 3600000);  // 3 600 000 milessegundos- > 1 hora; 1 800 000 1/2 hora; 900000 15 minutos; 300000 5 minutos;
+
+            seg = 0;
+            document.addEventListener("mousemove", function(){
+                seg = 0;
+                document.getElementById("mensagemtempo").style.display = "none"; // está em modais.php
+            });
+
+            //guardatempo - tempo definido em parâmetros do sistema
+            contaTempo = setInterval(function(){
+                if(parseInt(document.getElementById("guardatempo").value) > 0){ // 0 tempo infinito
+                    seg = seg + 1;
+                    if(parseInt(seg) >= parseInt(document.getElementById("guardatempo").value) - 16){
+                        document.getElementById("mensagemtempo").style.display = "block";
+                        document.getElementById("textoTempo").innerHTML = "Tempo de inatividade será atingido em "+(parseInt(document.getElementById("guardatempo").value) - parseInt(seg))+" segundos. <br> Movimente o mouse para revalidar o uso do sistema.";
+                    }
+                    if(parseInt(seg) == parseInt(document.getElementById("guardatempo").value)){
+                        location.replace('modulos/cansei.php');
+                        $('#container3').load('modulos/config.php');
+                        clearInterval(contaTempo);
+                    }
+                }else{
+                    clearInterval(contaTempo);
+                }
+                document.getElementById("teste").value = seg;
+            }, 1000);
+
         </script>
     </head>
     <body>
         <?php
+            require_once("modulos/config/modais.php");
             date_default_timezone_set('America/Sao_Paulo'); //  echo date("l, d/m/Y");
             $data = date('Y-m-d');
             $diaSemana = date('w', strtotime($data)); // date('w', time()); // também funciona
@@ -335,11 +362,13 @@
                 $TextoPag = "";
             }
             $admEdit = parAdm("editpagini", $Conec, $xProj); // nível para editar
-
+            $TempoInat  = parAdm("tempoinat", $Conec, $xProj); // tempo de ociosidade
         ?>
         <input type="hidden" id="guardadiasemana" value="<?php echo $diaSemana; ?>"/>
         <input type="hidden" id="guardaAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>"/> <!-- nível administrativo do usuário logado -->
         <input type="hidden" id="guardamsgcalend" value="0"/>
+        <input type="hidden" id="guardatempo" value="<?php echo $TempoInat; ?>"/>
+        <input type="hidden" id="teste" value=""/>
 
         <div id="container0" class="container-fluid"> <!-- página toda -->
             <div id="container1" class="container-fluid corFundo"></div> <!-- cabec.php banner superior dividido em 3 -->

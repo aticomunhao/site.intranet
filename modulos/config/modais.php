@@ -41,14 +41,15 @@
             }
         </style>
         <script type="text/javascript">
-//            $(document).ready(function(){
-//            })
             function fechaMensagem(Cod){
                 if(parseInt(Cod) === 1){
                     document.getElementById("relacmensagem").style.display = "none";
                 }
                 if(parseInt(Cod) === 2){
                     document.getElementById("infomensagem").style.display = "none";
+                }
+                if(parseInt(Cod) === 3){
+                    document.getElementById("mensagemtempo").style.display = "none";
                 }
             }
         </script>
@@ -68,6 +69,14 @@
                 <br />
                 <h5><img src="imagens/LogoComunhao.png" height="30px;"><label id="textoTitulo" style="padding-left: 5px;">Informação</label></h5>
                 <div id="textoInfo" style="text-align: center; font-weight: bold; padding: 10px;"></div>
+            </div>
+        </div>
+        <div id="mensagemtempo" class="relacmsg">
+            <div class="modal-content-Msg">
+                <span class="close" onclick="fechaMensagem(3);">&times;</span>
+                <br>
+                <h5><img src="imagens/LogoComunhao.png" height="30px;"><label id="textoTitulo" style="padding-left: 5px;">Site Ocioso</label></h5>
+                <div id="textoTempo" style="text-align: center; font-size: 110%; font-weight: bold; padding: 10px;">Tempo de inatividade será atingido em 10 segundos.</div>
             </div>
         </div>
     </body>

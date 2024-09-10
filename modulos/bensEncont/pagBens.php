@@ -489,11 +489,13 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById('cpfproprietario').disabled = true;
                                             document.getElementById('telefproprietario').disabled = true;
                                             document.getElementById('botsalvaRestit').disabled = true;
+                                            document.getElementById("botsalvaRestit").style.visibility = "hidden";
                                         }else{
                                             document.getElementById('nomeproprietario').disabled = false;
                                             document.getElementById('cpfproprietario').disabled = false;
                                             document.getElementById('telefproprietario').disabled = false;
                                             document.getElementById('botsalvaRestit').disabled = false;
+                                            document.getElementById("botsalvaRestit").style.visibility = "visible";
                                         }
                                         document.getElementById("numprocessoRest").innerHTML = Resp.numprocesso;
                                         document.getElementById("etiqprocessoRest").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";

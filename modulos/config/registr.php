@@ -963,7 +963,6 @@ if($Acao =="checaLogFim"){
     if($row4 > $QuantDia){
         pg_query($Conec, "UPDATE ".$xProj.".paramsis SET pico_dia = $row4, data_pico_dia = NOW() WHERE idpar = 1 ");
     }
-
     $var = array("coderro"=>$Erro, "interv"=>$tbl1[0]);
     $responseText = json_encode($var);
     echo $responseText;
@@ -979,7 +978,6 @@ if($Acao =="buscaMenuOpr"){
         $tbl=pg_fetch_row($rs);
         $Valor = $tbl[0];
     }
-
     $var = array("coderro"=>$Erro, "valor"=>$Valor);
     $responseText = json_encode($var);
     echo $responseText;
@@ -1002,7 +1000,6 @@ if($Acao =="insexectarefa"){
     $UsuIndiv = (int) filter_input(INPUT_GET, 'usuindiv');
     $UsuGrupo = (int) filter_input(INPUT_GET, 'usugrupo');
     $Erro = 0;
-
     $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".tarefas_gr WHERE usuindiv = $UsuIndiv And usugrupo = $UsuGrupo");
     $row = pg_num_rows($rs);
     if($row == 0){

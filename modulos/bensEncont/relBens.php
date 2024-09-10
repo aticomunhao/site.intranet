@@ -154,7 +154,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <?php
 //                            echo "<div class='etiqResult' style='border: 0px;' title='Situação do processo'>Situação: </div>";
                             if($UsuIns > 0){
-                                echo "<div class='etiqResult' title='Registro inicial'>Reg</div>";
+                                echo "<div class='etiqResult' title='Registro inicial'>Registrado</div>";
                             }
                             if($GuardaCSG > 0){
                                 echo "<div class='etiqResult' title='Sob guarda da CSG'>CSG</div>";
@@ -163,14 +163,14 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 //                                echo "<div class='etiqResult' title='Entregue à DAF'>DAF</div>";
 //                            }
                             if($Restit > 0){
-                                echo "<div class='etiqResult'style='border-color: red;' title='Bem restituído'>Rest</div>";
+                                echo "<div class='etiqResult'style='border-color: red;' title='Bem restituído'>Restituído</div>";
                             }
 
                             if($Destino > 0){
-                                echo "<div class='etiqResult' title='Bem já destinado'>Dest</div>";
+                                echo "<div class='etiqResult' title='Bem já destinado'>Destinado</div>";
                             }
                             if($Arquivado > 0){
-                                echo "<div class='etiqResult' style='border-color: red;' title='Processo arquivado'>Arq</div>";
+                                echo "<div class='etiqResult' style='border-color: red;' title='Processo arquivado'>Arquivado</div>";
                             }
                             ?>
                             </td> <!-- descrição do bem -->

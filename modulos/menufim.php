@@ -172,7 +172,6 @@
 					</li>
 
 					<?php
-				if($_SESSION["usuarioID"] == 3){
 					//Claviculário da DAF
 					$Clav2 = parEsc("clav2", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
 					$FiscClav2 = parEsc("fisc_clav2", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
@@ -181,8 +180,7 @@
 							echo "<a href='#' onclick='openhref(79);'>Chaves DAF</a>";
 						echo "</li>";
 					}
-				}
-				if($_SESSION["usuarioID"] == 3){
+
 					//Claviculário Chaves Lacradas
 					$Clav3 = parEsc("clav3", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
 					$FiscClav3 = parEsc("fisc_clav3", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
@@ -191,7 +189,7 @@
 							echo "<a href='#' onclick='openhref(80);'>Chaves Lacradas</a>";
 						echo "</li>";
 					}
-				}
+
 					//Claviculário da Portaria
 					$Clav = parEsc("clav", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
 					$FiscClav = parEsc("fisc_clav", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
@@ -279,20 +277,23 @@
 							echo "<a href='#' onclick='openhref(63);'>Calendário</a>";
 						echo "</li>";
 
+						//usado para o Quadro Horário
 						$Efet = parEsc("esc_eft", $Conec, $xProj, $_SESSION["usuarioID"]); // procura marca Efetivo da escala em poslog
 						$FiscEscala = parEsc("esc_fisc", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de escala
 						$Escalante = parEsc("esc_edit", $Conec, $xProj, $_SESSION["usuarioID"]); // escalante do grupo
 						$NumGrupo = 0;
 						if($Efet == 1){
 							$NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]); // procurar a que grupo de escala pertence
-						}
-						if($_SESSION["AdmUsu"] > 6){ // superusuário
-							if($NumGrupo > 0 || $FiscEscala > 0 || $Escalante > 0){
-								echo "<li>";
-									echo "<a href='#' onclick='openhref(72);'>Escala</a>";
-								echo "</li>";
-							}
-						}
+						}  // Essas variáveis foram para o Quadro Horário
+
+//						if($_SESSION["AdmUsu"] > 6){ // superusuário
+//							if($NumGrupo > 0 || $FiscEscala > 0 || $Escalante > 0){
+//								echo "<li>";
+//									echo "<a href='#' onclick='openhref(72);'>Escala</a>";
+//								echo "</li>";
+//							}
+//						}
+
 						$EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
 						$EfetivoEscalaDAF = parEsc("eft_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
 						if($EscalanteDAF == 1 || $EfetivoEscalaDAF == 1){

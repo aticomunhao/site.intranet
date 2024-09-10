@@ -15,7 +15,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <div style="position: relative; float: left; width: 30%; text-align: left;">&nbsp;
             <div class="quadroletra" style="position: relative; float: left; width: 25px; background-color: yellow;"> &nbsp; </div>
         </div>
-
         <?php
             if(isset($_REQUEST["mesano"])){
                 $Busca = addslashes(filter_input(INPUT_GET, 'mesano'));
