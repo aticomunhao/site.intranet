@@ -251,6 +251,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("guardacod").value = 0;
                                     document.getElementById("insdata").disabled = false;
                                     document.getElementById("insdata").value = Resp.proximo;  // document.getElementById("guardahoje").value;
+                                    document.getElementById("guardaUltLeitura").value = Resp.ultleitura;
                                     document.getElementById("insleitura1").value = "";
                                     document.getElementById("relacmodalEletric").style.display = "block";
                                     document.getElementById("apagaRegEletric").style.visibility = "hidden";
@@ -265,6 +266,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("insdata").disabled = false;
                                     document.getElementById("insdata").value = Resp.proximo;  // document.getElementById("guardahoje").value;
                                     document.getElementById("insleitura1").value = "";
+                                    document.getElementById("guardaUltLeitura").value = Resp.ultleitura;
                                     document.getElementById("relacmodalEletric").style.display = "block";
                                     document.getElementById("apagaRegEletric").style.visibility = "hidden";
                                     $('#mensagemLeitura').fadeIn("slow");
@@ -329,6 +331,18 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("insleitura1").value == ""){
                     $('#mensagemLeitura').fadeIn("slow");
                     document.getElementById("mensagemLeitura").innerHTML = "Nenhuma leitura anotada";
+                    $('#mensagemLeitura').fadeOut(3000);
+                    return false;
+                }
+                if(parseInt(document.getElementById("insleitura1").value) < parseInt(document.getElementById("guardaUltLeitura").value)){
+                    $('#mensagemLeitura').fadeIn("slow");
+                    document.getElementById("mensagemLeitura").innerHTML = "Este valor é menor que a leitura anterior";
+                    $('#mensagemLeitura').fadeOut(3000);
+                    return false;
+                }
+                if(parseInt(document.getElementById("insleitura1").value) === parseInt(document.getElementById("guardaUltLeitura").value)){
+                    $('#mensagemLeitura').fadeIn("slow");
+                    document.getElementById("mensagemLeitura").innerHTML = "Este valor é igual à leitura anterior";
                     $('#mensagemLeitura').fadeOut(3000);
                     return false;
                 }
@@ -670,6 +684,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardafator" value = "<?php echo $FatorCor; ?>" />
         <input type="hidden" id="guardadia" value = "<?php echo $DiaMedia; ?>" />
         <input type="hidden" id="guardavalorkwh" value = "<?php echo $ValorKwh; ?>" />
+        <input type="hidden" id="guardaUltLeitura" value = "0" />
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->

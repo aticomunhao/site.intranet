@@ -296,7 +296,8 @@
 
 						$EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
 						$EfetivoEscalaDAF = parEsc("eft_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
-						if($EscalanteDAF == 1 || $EfetivoEscalaDAF == 1){
+//						if($EscalanteDAF == 1 || $EfetivoEscalaDAF == 1){
+						if($EscalanteDAF == 1){
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(77);'>Escala DAF</a>";
 							echo "</li>";

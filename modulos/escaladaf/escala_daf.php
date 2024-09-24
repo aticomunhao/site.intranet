@@ -129,11 +129,15 @@ if(!isset($_SESSION["usuarioID"])){
         </style>
         <script>
             $(document).ready(function(){
+
+                //Não vai liberar para os escalados - só o pdf impresso
+                document.getElementById("evliberames").style.visibility = "hidden"; 
+                document.getElementById("etiqevliberames").style.visibility = "hidden"; 
+
                 document.getElementById("imgEscalaConfig").style.visibility = "hidden"; 
                 if(parseInt(document.getElementById("escalante").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // // se estiver marcado
                     document.getElementById("imgEscalaConfig").style.visibility = "visible"; 
                 }
-
                 document.getElementById("selecMesAnoEsc").value = document.getElementById("guardamesano").value;
                 if(parseInt(document.getElementById("liberadoefetivo").value) === 0 && parseInt(document.getElementById("escalante").value) === 0){
                     $("#faixacentral").load("modulos/escaladaf/infoAgd1.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
@@ -1244,6 +1248,10 @@ if(!isset($_SESSION["usuarioID"])){
         $MesLiberado = 1;
     }
 
+
+    $MesLiberado = 0; // só o escalante verá a página
+
+
     $DiaIni = strtotime(date('Y/m/01')); // número - para começar com o dia 1
     $DiaIni = strtotime("-1 day", $DiaIni); // para começar com o dia 1 no loop for
 
@@ -1313,7 +1321,7 @@ if(!isset($_SESSION["usuarioID"])){
                         ?>
                         <label style="padding-left: 10px;"></label>
                         <input type="checkbox" id="evliberames" title="Liberar acesso aos participantes da escala" onClick="liberaMes(this);" <?php if($MesLiberado == 1) {echo "checked";} ?> >
-                        <label for="evliberames" title="Acesso aos participantes da escala">liberado</label>
+                        <label id="etiqevliberames" for="evliberames" title="Acesso aos participantes da escala">liberado</label>
                         <?php
                     }
                     ?>
