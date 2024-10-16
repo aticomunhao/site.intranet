@@ -37,16 +37,16 @@
 
         <div class="carousel-inner">
             <div class="carousel-item active" data-bs-interval="5000">
-                <img src="imagens/slides/<?php echo $Slide1; ?>" height=200px; alt="Animado" class="d-block w-100">
+                <img src="imagens/slides/<?php echo $Slide1; ?>" height=200px; alt="" class="d-block w-100">
             </div>
             <div class="carousel-item">
-                <img src="imagens/slides/<?php echo $Slide2; ?>"" height=200px; alt="" class="d-block w-100">
+                <img src="imagens/slides/<?php echo $Slide2; ?>" height=200px; alt="" class="d-block w-100">
             </div>
             <div class="carousel-item">
-                <img src="imagens/slides/<?php echo $Slide3; ?>"" height=200px; alt="" class="d-block w-100">
+                <img src="imagens/slides/<?php echo $Slide3; ?>" height=200px; alt="" class="d-block w-100">
             </div>
             <div class="carousel-item">
-                <img src="imagens/slides/<?php echo $Slide4; ?>"" height=200px; alt="" class="d-block w-100">
+                <img src="imagens/slides/<?php echo $Slide4; ?>" height=200px; alt="" class="d-block w-100">
             </div>
         </div>
 

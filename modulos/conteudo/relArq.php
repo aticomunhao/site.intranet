@@ -211,6 +211,7 @@ if(!isset($_SESSION["usuarioID"])){
                     });
                     request.open("post", "modulos/conteudo/arqUpload.php");  //Arquivo responsável em fazer o upload
                     request.send(formdata);
+                    document.getElementById('arquivo').value = "";
                 }
             });
         </script>

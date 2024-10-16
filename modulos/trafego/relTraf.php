@@ -44,7 +44,7 @@ if(!isset($_SESSION["usuarioID"])){
         </style>
         <script type="text/javascript">
             $(document).ready(function(){
-                $("#relArquivos").load("modulos/trafego/carRelTraf.php");
+                $("#relTrafArquivos").load("modulos/trafego/carRelTraf.php");
 
                 $('#arquivo').click(function(){
                     document.getElementById('bottsubmit').disabled = false;
@@ -119,9 +119,9 @@ if(!isset($_SESSION["usuarioID"])){
                                 alert("Houve um erro desconhecido no servidor.");
                             }else if(parseInt(Resp.coderro) === 2){
                                 alert("O arquivo não foi encontrado ou está corrompido.");
-                                $("#relArquivos").load("modulos/trafego/carRelTraf.php");
+                                $("#relTrafArquivos").load("modulos/trafego/carRelTraf.php");
                             }else{
-                                $("#relArquivos").load("modulos/trafego/carRelTraf.php");
+                                $("#relTrafArquivos").load("modulos/trafego/carRelTraf.php");
                             }
                         }
                     };
@@ -197,8 +197,8 @@ if(!isset($_SESSION["usuarioID"])){
                         $form.find('.progress-bar').addClass('progress-bar-success').html('...');
                         //Atualizar a página após o upload completo
 //                      setTimeout("window.open(self.location, '_self');", 5000);
-                      setTimeout("$('#relArquivos').load('modulos/trafego/carRelTraf.php')", 1000); // recarrega a div com a relação dos arquivos carregados
-                      setTimeout("$form.find('.progress-bar').width( 0 + '%').html( 0 + '%')", 1000); //faz voltar a barra de progresso
+                        setTimeout("$('#relTrafArquivos').load('modulos/trafego/carRelTraf.php')", 1000); // recarrega a div com a relação dos arquivos carregados
+                        setTimeout("$form.find('.progress-bar').width( 0 + '%').html( 0 + '%')", 1000); //faz voltar a barra de progresso
 
                         $('#msg').fadeIn(2000);
                         $('#msg').load('modulos/trafego/carSess.php');
@@ -207,11 +207,12 @@ if(!isset($_SESSION["usuarioID"])){
                     });
                     request.open("post", "modulos/trafego/uploadTraf.php");  //Arquivo responsável em fazer o upload
                     request.send(formdata);
+                    document.getElementById('arquivo').value = "";
                 }
             });
         </script>
 
-        <div id="relArquivos" style="padding-top: 15px;"></div>  <!-- div para mostrar a relação dos arquivos -->
+        <div id="relTrafArquivos" style="padding-top: 15px;"></div>  <!-- div para mostrar a relação dos arquivos -->
 
         <input type="hidden" id="guardaCod" value="0" /> <!-- guarda o cod que foi pego na função  guardaArq($Arq) no meio do loop -->
 
