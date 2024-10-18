@@ -216,7 +216,7 @@ if(!isset($_SESSION["usuarioID"])){
             });
         </script>
 
-        <div id="relArquivos"></div>  <!-- div para mostrar a relação dos arquivos -->
+        <div id="relArquivos"></div>  <!-- div para mostrar a relação dos arquivos carregados -->
 
         <!-- Modal bootstrap para confirmação -->
         <div class="modal fade" id="deletaModal" tabindex="-1" aria-labelledby="deletaModalLabel" aria-hidden="true">

@@ -213,7 +213,6 @@ if(!isset($_SESSION["usuarioID"])){
         </script>
 
         <div id="relTrafArquivos" style="padding-top: 15px;"></div>  <!-- div para mostrar a relação dos arquivos -->
-
         <input type="hidden" id="guardaCod" value="0" /> <!-- guarda o cod que foi pego na função  guardaArq($Arq) no meio do loop -->
 
         <!-- Modal bootstrap para confirmação -->

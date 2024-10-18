@@ -22,8 +22,22 @@
 				$diaSemana = 1;
 			}
 			//Provisório
-			if(strtotime('2024/09/30') > strtotime(date('Y/m/d'))){
+			if(strtotime('2024/10/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
+
+				//0049
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS clav2 smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS chave2 smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisc_clav2 smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS clav3 smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS chave3 smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisc_clav3 smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET clav2 = 1, chave2 = 1, fisc_clav2 = 1, clav3 = 1, chave3 = 1, fisc_clav3 = 1 WHERE pessoas_id = 3 ;");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET clav2 = 1, chave2 = 1, fisc_clav2 = 1, clav3 = 1, chave3 = 1, fisc_clav3 = 1 WHERE pessoas_id = 83 ;");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET clav2 = 1, chave2 = 1, fisc_clav2 = 1, clav3 = 1, chave3 = 1, fisc_clav3 = 1 WHERE pessoas_id = 22 ;");
+
+				//0050 - liberação dos claviculários DAF e Chaves Lacradas - OK
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS tempoinat smallint NOT NULL DEFAULT 1800 ");
 
 			} // fim data limite
         ?>

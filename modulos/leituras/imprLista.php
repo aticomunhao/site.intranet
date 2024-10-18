@@ -95,7 +95,7 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->SetFont('Arial', '' , 10);
     $pdf->SetTextColor(25, 25, 112);
     if($Acao == "listamesAgua" || $Acao == "listaanoAgua"){
-        $pdf->MultiCell(150, 3, "Controle do Consumo de Água", 0, 'C', false);
+        $pdf->MultiCell(0, 3, "Controle do Consumo de Água", 0, 'C', false);
     }
     if($Acao == "listamesEletric" || $Acao == "listaanoEletric" || $Acao == "listaanoEletricInj"){
         $Colec = (int) filter_input(INPUT_GET, 'colec'); 

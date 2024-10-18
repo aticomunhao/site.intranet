@@ -60,7 +60,7 @@
 			date_default_timezone_set('America/Sao_Paulo');
 //            $data = date('Y-m-d');
 //            $diaSemana = date('w', strtotime($data)); // date('w', time()); // também funciona
-			//$diaSemana = 4;
+
             $rs = pg_query($Conec, "SELECT column_name, data_type, character_maximum_length FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'setores'");
             $row = pg_num_rows($rs);
             if($row == 0){
@@ -76,7 +76,7 @@
 				return false;
             }
         ?>
-		
+
 		<input type="hidden" id="guardadiasemana" value="<?php echo $diaSemana; ?>"/>		
 		<input type="hidden" id="guardaAdm" value="<?php echo $Adm; ?>"/>	
 		<!-- menu para as páginas seguintes  -->

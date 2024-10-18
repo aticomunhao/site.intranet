@@ -59,7 +59,7 @@
         require_once("config/abrealas.php");
         require_once("config/gUtils.php");
 //        $rs0 = pg_query($ConecPes, "SELECT id, nome_completo, TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM'), nome_resumido FROM ".$xPes.".pessoas WHERE nome_completo != '' ORDER BY nome_completo ");
-        $rs0 = pg_query($Conec, "SELECT id, nomecompl, TO_CHAR(datanasc, 'DD'), TO_CHAR(datanasc , 'MM'), nomeusual FROM ".$xProj.".poslog WHERE nomecompl != '' ORDER BY nomecompl ");
+        $rs0 = pg_query($Conec, "SELECT id, nomecompl, TO_CHAR(datanasc, 'DD'), TO_CHAR(datanasc , 'MM'), nomeusual, TO_CHAR(datanasc , 'YYYY') FROM ".$xProj.".poslog WHERE nomecompl != '' ORDER BY nomecompl ");
         $row0 = pg_num_rows($rs0);
         ?>
         <div style="margin: 20px; border: 2px solid blue; border-radius: 15px; padding: 20px;">
@@ -86,18 +86,21 @@
                         }
                         $DiaAniv = $tbl[2];
                         $MesAniv = $tbl[3];
+                        $Aniv = $DiaAniv."/".$MesAniv;
+                        if($tbl[5] == "1500"){
+                            $Aniv = "";
+                        }
                         if(!is_null($tbl[4])){
                             $NomeUsual = GUtils::normalizarNome($tbl[4]);
                         }else{
                             $NomeUsual = "";
                         }
-                        
                     ?>
                     <tr>
                         <td style="display: none;"></td> <!-- para não indexar pela primeira coluna (nome usual). Evita configurações no datatable -->
                         <td><?php echo $NomeUsual; ?></td>
                         <td><?php echo $NomeCompl; ?></td>
-                        <td style="text-align: center;"><?php echo $DiaAniv."/".$MesAniv; ?></td>
+                        <td style="text-align: center;"><?php echo $Aniv; ?></td>
                     </tr>
                     <?php
                     }
