@@ -220,6 +220,10 @@ if(!isset($_SESSION["usuarioID"])){
                         document.getElementById("relacimprBens").style.display = "none";
                     }
                 });
+                $("#resumoBens").click(function(){
+                    window.open("modulos/bensEncont/imprResumo.php?acao=resumo", "Resumo");
+                    document.getElementById("relacimprBens").style.display = "none";
+                });
 
             }); // fim do ready
 
@@ -1544,6 +1548,11 @@ if(!isset($_SESSION["usuarioID"])){
                                     }
                                     ?>
                                 </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="padding: 10px; text-align: center;">
+                                <button class="resetbotazul" style="font-size: 80%;" id="resumoBens" title="Demonstrativo anual dos bens encontrados">Resumo Anual</button>
                             </td>
                         </tr>
                     </table>

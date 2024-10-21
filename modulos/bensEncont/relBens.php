@@ -14,11 +14,15 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     {
                         target: 2,
                         orderable: false
+                    },
+                    {
+                        target: 3,
+                        orderable: false
                     }
                 ],
                 lengthMenu: [
-                    [50, 100, 200, 500],
-                    [50, 100, 200, 500]
+                    [500, 1000],
+                    [500, 1000]
                 ],
                 language: {
                     info: 'Mostrando Página _PAGE_ of _PAGES_',
@@ -60,8 +64,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             <?php
             $rs0 = pg_query($Conec, "SELECT ".$xProj.".bensachados.id, to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, usuguarda, usurestit, usucsg, usuarquivou, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, usudestino, CURRENT_DATE-datareceb, codusuins, date_part('dow', datareceb)  
             FROM ".$xProj.".bensachados INNER JOIN ".$xProj.".poslog ON ".$xProj.".bensachados.codusuins = ".$xProj.".poslog.pessoas_id
-            WHERE ".$xProj.".bensachados.ativo = 1 And AGE(".$xProj.".bensachados.datareceb, CURRENT_DATE) <= '1 YEAR' 
+            WHERE ".$xProj.".bensachados.ativo = 1 
             ORDER BY ".$xProj.".bensachados.datareceb DESC");
+
+            //And AGE(CURRENT_DATE, ".$xProj.".bensachados.datareceb) <= '1 YEAR' 
 
             $Edit = 0;
             $Impr = 0; // impressão do relatório
@@ -84,9 +90,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 WHERE ".$xProj.".bensachados.ativo = 1 And usucsg = 0 And ".$xProj.".bensachados.datareceb = CURRENT_DATE 
                 ORDER BY ".$xProj.".bensachados.datareceb DESC");
             }
-
+            $row0 = pg_num_rows($rs0);
             ?>
             <table id="idTabela" class="display" style="width:85%;">
+                <caption><?php echo $row0." registros"; ?></caption>
                 <thead>
                     <tr>
                         <th style="display: none;"></th>
@@ -137,7 +144,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 //                                } else{
 //                                    echo "<button disabled class='botTable fundoCinza corAzulClaro'>Guarda</button>";
 //                                }
-                                echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);' title='Formuário de restituição ao proprietário'>Restituição</button>";
+                                if($Destino == 0){
+                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);' title='Formuário de restituição ao proprietário'>Restituição</button>";
+                                }else{
+                                    echo "<button disabled class='botTable fundoCinza corAzulClaro'>Restituição</button>";
+                                }
 
                                 if($Edit == 1 && $Arquivado == 0 && $Intervalo > 2){
                                     echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 4, $Restit);' title='Destinação após 90 dias'>Destinação</button>";
