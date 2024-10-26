@@ -221,7 +221,7 @@ if(!isset($_SESSION['AdmUsu'])){
         $pdf->Line(10, $lin, 200, $lin);
         $pdf->ln(5);
         $pdf->SetFont('Arial', 'I', 8);
-        $pdf->MultiCell(0, 5, "TERMO DE RECEBIMENTO PELA CSG", 1, 'L', true);
+        $pdf->MultiCell(0, 5, "TERMO DE RECEBIMENTO PELO SSV", 1, 'L', true);
         $pdf->ln(3);
 
         $pdf->SetX(15); 
@@ -233,7 +233,7 @@ if(!isset($_SESSION['AdmUsu'])){
         $pdf->SetX(20); 
 
         if($UsuCSG == 0){
-            $pdf->MultiCell(0, 5, "Transferência para a CSG não realizada", 0, 'C', false);
+            $pdf->MultiCell(0, 5, "Transferência para o SSV não realizada", 0, 'C', false);
         }else{
             $pdf->MultiCell(0, 5, "Brasília, ".$tbl[16]."                         (a) ".$NomeCSG, 0, 'C', false);
         }
@@ -294,17 +294,17 @@ if(!isset($_SESSION['AdmUsu'])){
 //        $pdf->Line(10, $lin, 200, $lin);
 //        $pdf->ln(5);
 //
-//        $pdf->MultiCell(0, 5, "ENCAMINHAMENTO PARA CSG", 1, 'L', true);
+//        $pdf->MultiCell(0, 5, "ENCAMINHAMENTO PARA SSV", 1, 'L', true);
 //        $pdf->ln(3);
 //        $pdf->SetX(15); 
 //        $pdf->SetFont('Arial', 'I', 9);
-//        $pdf->MultiCell(0, 5, "     Declaro que recebi, nesta CSG, o bem constante do processo ".$tbl[1]." para armazenamento e destinação do Bem ou arquivamento do processo.", 1, 'J', false);
+//        $pdf->MultiCell(0, 5, "     Declaro que recebi, nesta SSV, o bem constante do processo ".$tbl[1]." para armazenamento e destinação do Bem ou arquivamento do processo.", 1, 'J', false);
 //        $pdf->ln(1);
 //
 //        $pdf->SetX(20); 
 //        $pdf->SetFont('Arial', '', 8);
 //        if($UsuCSG == 0){
-//            $pdf->MultiCell(0, 5, "Encaminhamento para CSG não realizado.", 0, 'C', false);
+//            $pdf->MultiCell(0, 5, "Encaminhamento para SSV não realizado.", 0, 'C', false);
 //        }else{
 //            $pdf->MultiCell(0, 5, "Brasília, ".$tbl[16]."                         (a) ".$NomeCSG, 0, 'C', false);
 //        }

@@ -174,6 +174,7 @@ if($Acao =="ultDataEletric"){
                 $ProxDay = $Hoje;
             }
         }else{
+            $UltDay = date('Y/m/d', strtotime($tbl[0]));
             $ProxDay = date('d/m/Y', strtotime($tbl[0]. ' + 1 day'));
         }
         $Sem = date("D", strtotime("$ProxDay"));
@@ -186,7 +187,16 @@ if($Acao =="ultDataEletric"){
             'Fri' => 'SEX',
             'Sat' => 'SAB'
         );
-        $var = array("coderro"=>$Erro, "data"=>$tbl[0], "sem"=>$semana["$Sem"], "proximo"=>$ProxDay, "valorini"=>$ValorIni);
+        //última leitura para conferir
+        $rs2 = pg_query($Conec, "SELECT leitura2 FROM ".$xProj.".leitura_eletric WHERE dataleitura3 = '$UltDay' And colec = 3 And ativo = 1");
+        $row2 = pg_num_rows($rs2);
+        if($row2 > 0){
+            $tbl2 = pg_fetch_row($rs2);
+            $UltLeit = $tbl2[0];
+        }else{
+            $UltLeit = 0;
+        }
+        $var = array("coderro"=>$Erro, "data"=>$tbl[0], "sem"=>$semana["$Sem"], "proximo"=>$ProxDay, "valorini"=>$ValorIni, "ultleitura"=>$UltLeit);
     }else{
         $var = array("coderro"=>$Erro);
     }

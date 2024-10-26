@@ -159,7 +159,7 @@ if($Acao =="checaDataEletric"){
     $Erro = 0;
     $JaTem = 0;
     $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataleitura1, 'DD/MM/YYYY'), date_part('dow', dataleitura1), leitura1 
-    FROM ".$xProj.".leitura_eletric WHERE dataleitura1 = '$BuscaDia' And ativo = 1");
+    FROM ".$xProj.".leitura_eletric WHERE dataleitura1 = '$BuscaDia' And colec = 1 And ativo = 1");
     if(!$rs){
         $Erro = 1;
     }
@@ -382,11 +382,11 @@ if($Acao =="ultDataEletric"){
             'Sat' => 'SAB'
         );
         //última leitura para conferir
-        $rs1 = pg_query($Conec, "SELECT leitura1 FROM ".$xProj.".leitura_eletric WHERE dataleitura1 = '$UltDay' And colec = 1 And ativo = 1");
-        $row1 = pg_num_rows($rs1);
-        if($row1 > 0){
-            $tbl1 = pg_fetch_row($rs1);
-            $UltLeit = $tbl1[0];
+        $rs2 = pg_query($Conec, "SELECT leitura1 FROM ".$xProj.".leitura_eletric WHERE dataleitura1 = '$UltDay' And colec = 1 And ativo = 1");
+        $row2 = pg_num_rows($rs2);
+        if($row2 > 0){
+            $tbl2 = pg_fetch_row($rs2);
+            $UltLeit = $tbl2[0];
         }else{
             $UltLeit = 0;
         }

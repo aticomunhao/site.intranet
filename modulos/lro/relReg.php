@@ -87,7 +87,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td style="display: none;"></td>
                             <td style="display: none;"><?php echo $Cod; ?></td>
                             <td><?php echo $tbl0[1]; ?></td> <!-- data -->
-                            <td><?php if($tbl0[2] == 1){echo $Semana_Extract[$tbl0[10]];} ?></td> <!-- dia semana data -->
+                            <td style="font-size: 80%;"><?php echo $Semana_Extract[$tbl0[10]]; ?></td> <!-- dia semana data -->
                             <td style="<?php if($row1 > 0){echo 'color: red;'; } ?>" ><?php echo $tbl0[2]." - ".$tbl0[3]; ?></td> <!-- turno -->
                             <td style="text-align: center;"><?php echo $tbl0[4]; ?></td> <!-- numocor -->
                             <td style="text-align: center;"><?php echo $tbl0[5]; ?></td> <!-- ususvc -->

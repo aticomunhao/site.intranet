@@ -252,6 +252,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("guardacod").value = 0;
                                     document.getElementById("insdata").disabled = false;
                                     document.getElementById("insdata").value = Resp.proximo;  // document.getElementById("guardahoje").value;
+                                    document.getElementById("guardaUltLeitura").value = Resp.ultleitura;
                                     document.getElementById("insleitura2").value = "";
                                     document.getElementById("relacmodalEletric").style.display = "block";
                                     document.getElementById("apagaRegEletric").style.visibility = "hidden";
@@ -266,6 +267,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("insdata").disabled = false;
                                     document.getElementById("insdata").value = Resp.proximo;  // document.getElementById("guardahoje").value;
                                     document.getElementById("insleitura2").value = "";
+                                    document.getElementById("guardaUltLeitura").value = Resp.ultleitura;
                                     document.getElementById("relacmodalEletric").style.display = "block";
                                     document.getElementById("apagaRegEletric").style.visibility = "hidden";
                                     $('#mensagemLeitura').fadeIn("slow");
@@ -299,6 +301,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
                                 }else{
+                                    document.getElementById("guardaUltLeitura").value = Resp.leitura2;
                                     if(parseInt(Resp.jatem) === 1){
                                         document.getElementById("insdata").value = Resp.data;
                                         document.getElementById("insdiasemana").innerHTML = Resp.sem;
@@ -330,6 +333,12 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("insleitura2").value == ""){
                     $('#mensagemLeitura').fadeIn("slow");
                     document.getElementById("mensagemLeitura").innerHTML = "Nenhuma leitura anotada";
+                    $('#mensagemLeitura').fadeOut(3000);
+                    return false;
+                }
+                if(parseInt(document.getElementById("insleitura2").value) < parseInt(document.getElementById("guardaUltLeitura").value)){
+                    $('#mensagemLeitura').fadeIn("slow");
+                    document.getElementById("mensagemLeitura").innerHTML = "Este valor é menor que a leitura anterior";
                     $('#mensagemLeitura').fadeOut(3000);
                     return false;
                 }
@@ -575,6 +584,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="admIns" value = "<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->
         <input type="hidden" id="admEdit" value = "<?php echo $admEdit; ?>" />
         <input type="hidden" id="InsLeituraEletric" value = "<?php echo $InsEletric; ?>" /> <!-- autorização para um só indivíduo inserir as leituras -->
+        <input type="hidden" id="guardaUltLeitura" value = "0" />
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->

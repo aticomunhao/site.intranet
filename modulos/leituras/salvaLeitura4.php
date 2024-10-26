@@ -51,7 +51,7 @@ if($Acao =="checaDataEletric"){
     $Erro = 0;
     $JaTem = 0;
     $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataleitura4, 'DD/MM/YYYY'), date_part('dow', dataleitura4), leitura4 
-    FROM ".$xProj.".leitura_eletric WHERE dataleitura4 = '$BuscaDia' And ativo = 1");
+    FROM ".$xProj.".leitura_eletric WHERE dataleitura4 = '$BuscaDia' And colec = 4 And ativo = 1");
     if(!$rs){
         $Erro = 1;
     }

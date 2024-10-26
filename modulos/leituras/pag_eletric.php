@@ -300,6 +300,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
                                 }else{
+                                    document.getElementById("guardaUltLeitura").value = Resp.leitura1
                                     if(parseInt(Resp.jatem) === 1){
                                         document.getElementById("insdata").value = Resp.data;
                                         document.getElementById("insdiasemana").innerHTML = Resp.sem;

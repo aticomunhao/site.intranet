@@ -473,7 +473,7 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
-//alert(ajax.responseText);
+alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.")
@@ -493,6 +493,11 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById('cpfproprietario').disabled = true;
                                             document.getElementById('telefproprietario').disabled = true;
                                             document.getElementById('botsalvaRestit').disabled = true;
+
+                                            if(Resp.nomeusurestit != ""){
+                                                document.getElementById("etiqnomeusurestit").innerHTML = Resp.nomeusurestit;
+                                            }
+
                                             document.getElementById("botsalvaRestit").style.visibility = "hidden";
                                         }else{
                                             document.getElementById('nomeproprietario').disabled = false;
@@ -705,7 +710,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             }else{
                                                 $.confirm({
                                                     title: 'Sucesso!',
-                                                    content: 'Objeto recebido na CSG por '+document.getElementById("usuarioNome").value,
+                                                    content: 'Objeto recebido no SSV por '+document.getElementById("usuarioNome").value,
                                                     draggable: true,
                                                     buttons: {
                                                         OK: function(){}
@@ -1274,7 +1279,8 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <tr>
                             <td class="etiqAzul">Assinatura: </td>
-                            <td style="padding-left: 15px; padding-right: 15px;"><div style="border: 1px solid blue; border-radius: 10px; text-align: center;">(a) <label style="font-weight: bold;"> <?php echo $_SESSION["NomeCompl"]; ?> </label></div></td>
+
+                            <td style="padding-left: 15px; padding-right: 15px;"><div style="border: 1px solid blue; border-radius: 10px; text-align: center;">(a) <label id="etiqnomeusurestit" style="font-weight: bold;"> <?php echo $_SESSION["NomeCompl"]; ?> </label></div></td>
                         </tr>
                         <tr>
                             <td><button class="botpadrTijolo" id="botApagaBem" onclick="ApagarBem();">Apagar</button></td>
@@ -1290,7 +1296,7 @@ if(!isset($_SESSION["usuarioID"])){
            </div>
         </div> <!-- Fim Modal-->
 
-        <!-- div modal para encaminhar o objeto para CSG  -->
+        <!-- div modal para encaminhar o objeto para SSV (Setor de Serviços) -->
         <div id="relacmodalEncam" class="relacmodal">
             <div class="modal-content-Bens">
                 <span class="close" onclick="fechaModalEncam();">&times;</span>
@@ -1298,7 +1304,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <div class="container" style="margin: 0 auto;">
                     <div class="row">
                         <div class="col quadro" style="margin: 0 auto;"></div>
-                        <div class="col quadro"><h5 id="titulomodal" style="color: #666;">Registro de Encaminhamento para CSG</h5></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col quadro"><h5 id="titulomodal" style="color: #666;">Registro de Encaminhamento para SSV</h5></div> <!-- Central - espaçamento entre colunas  -->
                         <div class="col quadro" style="margin: 0 auto; text-align: center;"><!-- <button class="botpadrred" onclick="enviaModalReg(1);">Enviar</button> --> </div> 
                     </div>
                 </div>
@@ -1322,7 +1328,7 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <tr>
                             <td class="etiqAzul">Termo: </td>
-                            <td><div style="border: 1px solid blue; border-radius: 10px; padding: 3px;">Declaro que recebi nesta CSG, o processo acima identificado para armazenamento, destinação e arquivamento do processo.</div></td>
+                            <td><div style="border: 1px solid blue; border-radius: 10px; padding: 3px;">Declaro que recebi neste SSV, o processo acima identificado para armazenamento, destinação e arquivamento do processo.</div></td>
                         </tr>
                         <tr>
                             <td colspan="2" style="padding-bottom: 20px;"></td>
@@ -1332,7 +1338,7 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="2" style="padding-bottom: 20px;"></td>
                         </tr>
                         <tr>
-                            <td class="etiqAzul">Funcionário da CSG: </td>
+                            <td class="etiqAzul">Funcionário do SSV: </td>
                             <td style="padding-left: 15px; padding-right: 15px;"><div style="border: 1px solid blue; border-radius: 10px; text-align: center;">(a) <label style="font-weight: bold;"> <?php echo $_SESSION["NomeCompl"]; ?> </label></div></td>
                         </tr>
                         <tr>

@@ -152,7 +152,7 @@ if(!isset($_SESSION['AdmUsu'])){
                 $tblP4 = pg_fetch_row($rsP4);
                 $pdf->SetFont('Arial', '' , 10); 
                 $pdf->SetX(55);
-                $pdf->Cell(50, 4, "Sob Guarda CSG: ", 0, 0, 'L');
+                $pdf->Cell(50, 4, "Sob Guarda SSV: ", 0, 0, 'L');
                 $pdf->SetFont('Arial', 'B' , 10); 
                 $pdf->Cell(10, 4, number_format($tblP4[0], 0, ",","."), 0, 1, 'R');
 
@@ -162,7 +162,7 @@ if(!isset($_SESSION['AdmUsu'])){
                     $tblP5 = pg_fetch_row($rsP5);
                     $pdf->SetFont('Arial', '' , 10); 
                     $pdf->SetX(55);
-                    $pdf->Cell(50, 4, "Não entregues à CSG: ", 0, 0, 'L');
+                    $pdf->Cell(50, 4, "Não entregues ao SSV: ", 0, 0, 'L');
                     $pdf->SetFont('Arial', 'B' , 10); 
                     $pdf->Cell(10, 4, number_format($rowP5, 0, ",","."), 0, 1, 'R');
                 }

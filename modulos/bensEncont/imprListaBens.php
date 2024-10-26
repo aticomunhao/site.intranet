@@ -168,7 +168,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
                 $pdf->SetX(195);
                 if($GuardaCSG > 0){
-                    $pdf->Cell(17, 5, "Guarda CSG", 1, 0, 'C'); 
+                    $pdf->Cell(17, 5, "Guarda SSV", 1, 0, 'C'); 
                 }else{
                     $pdf->Cell(17, 5, "", 1, 0, 'C'); 
                 }

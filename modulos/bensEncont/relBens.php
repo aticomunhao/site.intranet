@@ -135,9 +135,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     }
 //                                }
                                 if($Edit == 1 && $Restit == 0 && $GuardaCSG == 0 && $Arquivado == 0 ){
-                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 3, $Restit);' title='Encaminhamento para guarda da CSG'>CSG</button>";
+                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 3, $Restit);' title='Encaminhamento para guarda do Setor de Serviços'>SSV</button>";
                                 }else{
-                                    echo "<button disabled class='botTable fundoCinza corAzulClaro'>CSG</button>";
+                                    echo "<button disabled class='botTable fundoCinza corAzulClaro'>SSV</button>";
                                 }
 //                                if($Edit == 1 && $SobGuarda == 0 && $Restit == 0 && $Arquivado == 0){
 //                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 1, $Restit);'  title='Transferir para a guarda da DAF'>Guarda</button>";
@@ -168,7 +168,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                 echo "<div class='etiqResult' title='Registro inicial'>Registrado</div>";
                             }
                             if($GuardaCSG > 0){
-                                echo "<div class='etiqResult' title='Sob guarda da CSG'>CSG</div>";
+                                echo "<div class='etiqResult' title='Sob guarda do SSV'>SSV</div>";
                             }
 //                            if($SobGuarda > 0){
 //                                echo "<div class='etiqResult' title='Entregue à DAF'>DAF</div>";
