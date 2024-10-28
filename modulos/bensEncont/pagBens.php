@@ -473,7 +473,7 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
-alert(ajax.responseText);
+//alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.")
@@ -481,6 +481,7 @@ alert(ajax.responseText);
                                     document.getElementById("guardacod").value = Cod;
                                     document.getElementById("mudou").value = "0";
                                     document.getElementById("codusuins").value = Resp.codusuins;
+                                    document.getElementById("etiqnomeusurestit").innerHTML = Resp.nomeusurestit;
                                     if(parseInt(modal) === 1){
                                         document.getElementById("numprocessotransf").innerHTML = Resp.numprocesso;
                                         document.getElementById("etiqprocessoReg").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
@@ -493,11 +494,6 @@ alert(ajax.responseText);
                                             document.getElementById('cpfproprietario').disabled = true;
                                             document.getElementById('telefproprietario').disabled = true;
                                             document.getElementById('botsalvaRestit').disabled = true;
-
-                                            if(Resp.nomeusurestit != ""){
-                                                document.getElementById("etiqnomeusurestit").innerHTML = Resp.nomeusurestit;
-                                            }
-
                                             document.getElementById("botsalvaRestit").style.visibility = "hidden";
                                         }else{
                                             document.getElementById('nomeproprietario').disabled = false;
@@ -1043,7 +1039,9 @@ alert(ajax.responseText);
                             return false
                 return true
             }
-   
+            function mostraBens(Valor){
+                $("#carregaBens").load("modulos/bensEncont/relBens.php?acao="+Valor);
+            }
         </script>
     </head>
     <body>
@@ -1082,7 +1080,14 @@ alert(ajax.responseText);
                 <div class="col quadro" style="text-align: left;"><button class="botpadrGr fundoAmarelo" id="botInsReg" onclick="abreRegistro();" >Novo Registro</button>
                     <img src="imagens/settings.png" height="20px;" id="imgBensconfig" style="cursor: pointer; padding-left: 30px;" onclick="abreBensConfig();" title="Configurar o acesso ao processamento de bens encontrados">
                 </div>
-                <div class="col quadro"><h5>Registro de Bens Encontrados</h5></div> <!-- Central - espaçamento entre colunas  -->
+                <div class="col quadro"><h5>Registro de Bens Encontrados</h5>
+
+                <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('todos');">Todos</button>
+                <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('restit');">Restituídos</button>
+                <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('destinados');">Destinados</button>
+                <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('destinar');" title="Transcorrido prazo de 90 dias">a Destinar</button>
+
+                </div> <!-- Central - espaçamento entre colunas  -->
                 <div class="col quadro" style="text-align: right;">
                     <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="abreImprBens();">PDF</button>
                     <label style="padding-left: 20px;"></label>
@@ -1091,6 +1096,7 @@ alert(ajax.responseText);
             </div>
         </div>
         <br>
+
 <!--<div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12 " style="border: 1px solid;">Teste de coluna</div> -->
 
         <input type="hidden" id="guardacod" value="0" /> <!-- id ocorrência -->

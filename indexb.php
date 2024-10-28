@@ -50,7 +50,7 @@
                 display: none; 
                 margin-bottom: 0px; 
                 color: white; font-weight: bold; 
-                background-color: #000080; 
+                background-color: red; 
                 text-align: center; padding: 10px; border-radius: 10px;
                 cursor: pointer;
             }
@@ -58,7 +58,7 @@
                 display: none; 
                 margin-bottom: 20px; 
                 color: white; font-weight: bold; 
-                background-color: #000080; text-align: center; padding: 10px; border-radius: 10px;
+                background-color: red; text-align: center; padding: 10px; border-radius: 10px;
                 cursor: pointer;
             }
             .divTemContrato{

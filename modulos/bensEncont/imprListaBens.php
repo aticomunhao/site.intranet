@@ -148,7 +148,9 @@ if(!isset($_SESSION['AdmUsu'])){
                 $Dias = str_pad(($tbl0[11]), 2, "0", STR_PAD_LEFT);
 
                 $pdf->Cell(20, 5, $tbl0[1], 0, 0, 'L');
+                $pdf->SetFont('Arial', '', 7);
                 $pdf->Cell(10, 5, $semana[$tbl0[2]], 0, 0, 'L');
+                $pdf->SetFont('Arial', '', 8);
                 $pdf->Cell(20, 5, $tbl0[3], 1, 0, 'L'); // Processo
                 $lin = $pdf->GetY();
                     

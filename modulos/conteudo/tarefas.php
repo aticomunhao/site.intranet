@@ -212,7 +212,7 @@ if(!isset($_SESSION["usuarioID"])){
                 });
             });
             function relatTarefas(){
-                window.open("modulos/conteudo/imprTarefas.php?acao=estatTarefas", "Estaristica");
+                window.open("modulos/conteudo/imprTarefas.php?acao=estatTarefas", "Estatistica");
                 document.getElementById("relacimprTarefas").style.display = "none";
             }
 
@@ -588,20 +588,31 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
 
         $admIns = parAdm("instarefa", $Conec, $xProj);   // nível para inserir
         $admEdit = parAdm("edittarefa", $Conec, $xProj); // nível para editar
-        $VerTarefas = parAdm("vertarefa", $Conec, $xProj); // ver tarefas   1: todos - 2: só mandante e executante
+        $VerTarefas = parAdm("vertarefa", $Conec, $xProj); // ver tarefas   1: todos - 2: só mandante e executante - 3: visualização por setor 
 
         $CodSetorUsu = $_SESSION["CodSetorUsu"]; //para a visualização das tarefas por setores
 
         //Relacionar usuários - adm <= $Adm - só paga tarefa para nível adm menor ou igual
-        $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm <= $Adm ORDER BY nomeusual, nomecompl");
-        $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm >= $admIns And pessoas_id != $UsuLogadoId ORDER BY nomeusual, nomecompl");
-
+        if($VerTarefas == 3){ // 3 = visualização por setor 
+            $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm <= $Adm And codsetor = $CodSetorUsu ORDER BY nomeusual, nomecompl");
+            $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm >= $admIns And codsetor = $CodSetorUsu And pessoas_id != $UsuLogadoId ORDER BY nomeusual, nomecompl");
+        }else{
+            $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm <= $Adm ORDER BY nomeusual, nomecompl");
+            $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm >= $admIns And pessoas_id != $UsuLogadoId ORDER BY nomeusual, nomecompl");
+        }
+        
         // Preenche caixa de escolha mes/ano para impressão - ano antes para indexar primeiro pelo ano
         $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(datains, 'MM'), '/', TO_CHAR(datains, 'YYYY')) 
         FROM ".$xProj.".tarefas GROUP BY TO_CHAR(datains, 'MM'), TO_CHAR(datains, 'YYYY') ORDER BY TO_CHAR(datains, 'YYYY') DESC, TO_CHAR(datains, 'MM') DESC ");
         $OpcoesEscAno = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".tarefas.datains)::text 
         FROM ".$xProj.".tarefas GROUP BY 1 ORDER BY 1 DESC ");
-        $OpcoesUserMand = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
+
+        if($VerTarefas == 3){ // 3 = visualização por setor 
+            $OpcoesUserMand = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And codsetor = $CodSetorUsu ORDER BY nomecompl, nomeusual");
+        }else{
+            $OpcoesUserMand = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
+        }
+
         $OpcoesUserExec = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
 
         //marca que foi visualizado nesta data - dataSit1
@@ -641,7 +652,7 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
 
         <div style='margin: 20px; border: 3px solid green; border-radius: 10px;'>
             <?php
-          if($Adm > 7){ // Superusuários
+          if($Adm > 10){ // Superusuários
                 $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI')  
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
                 WHERE ".$xProj.".tarefas.ativo > 0 
@@ -657,13 +668,13 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
                 if($VerTarefas == 2){  // visualização só mandante e executante
                     $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
-                    WHERE ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.usuexec = $UsuLogadoId Or ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.usuins = $UsuLogadoId
+                    WHERE ".$xProj.".tarefas.ativo > 0 And ".$xProj.".tarefas.usuexec = $UsuLogadoId Or ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.usuins = $UsuLogadoId
                     ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
                 }
                 if($VerTarefas == 3){  // visualização por setor 
                     $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
-                    WHERE ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.setorins = $CodSetorUsu Or ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.setorexec = $CodSetorUsu
+                    WHERE ".$xProj.".tarefas.ativo > 0 And ".$xProj.".tarefas.setorins = $CodSetorUsu Or ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.setorexec = $CodSetorUsu
                     ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
                 }
             }

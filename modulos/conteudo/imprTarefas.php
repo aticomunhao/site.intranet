@@ -184,21 +184,21 @@ if(!isset($_SESSION['AdmUsu'])){
             }
         }
     }
-    $pdf->SetX(40); 
+//    $pdf->SetX(40); 
     $pdf->SetFont('Arial','' , 14); 
-    $pdf->Cell(150, 5, $Cabec1, 0, 2, 'C');
+    $pdf->Cell(0, 5, $Cabec1, 0, 2, 'C');
     $pdf->SetFont('Arial','' , 12); 
-    $pdf->Cell(150, 5, $Cabec2, 0, 2, 'C');
+    $pdf->Cell(0, 5, $Cabec2, 0, 2, 'C');
 //    $pdf->Cell(150, 5, 'Diretoria Administrativa e Financeira', 0, 2, 'C');
     $pdf->SetFont('Arial','' , 10); 
-    $pdf->Cell(150, 5, $Cabec3, 0, 2, 'C');
+    $pdf->Cell(0, 5, $Cabec3, 0, 2, 'C');
 
     if($Acao == "listaMandante"){
-        $pdf->MultiCell(150, 3, "Relação Individual de Tarefas Expedidas", 0, 'C', false);
+        $pdf->MultiCell(0, 3, "Relação Individual de Tarefas Expedidas", 0, 'C', false);
     }else if($Acao == "listaExecutante"){
-        $pdf->MultiCell(150, 3, "Relação Individual de Tarefas Recebidas", 0, 'C', false);
+        $pdf->MultiCell(0, 3, "Relação Individual de Tarefas Recebidas", 0, 'C', false);
     }else{
-        $pdf->MultiCell(150, 3, "Tarefas", 0, 'C', false);
+        $pdf->MultiCell(0, 3, "Tarefas", 0, 'C', false);
     }
     $pdf->SetDrawColor(0);
     $pdf->SetTextColor(0, 0, 0);
@@ -206,11 +206,15 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->ln();
     $lin = $pdf->GetY();
     $pdf->Line(10, $lin, 200, $lin);
+    $VerTarefas = parAdm("vertarefa", $Conec, $xProj); // ver tarefas   1: todos - 2: só mandante e executante - 3: visualização por setor 
+    $CodSetorUsu = $_SESSION["CodSetorUsu"]; //para a visualização das tarefas por setores
+    $UsuLogadoId = $_SESSION["usuarioID"];
+//    $VerTarefas = 2;
 
     if($Acao == "listamesTarefa" || $Acao == "listaanoTarefa" || $Acao == "listaMandante" || $Acao == "listaExecutante" || $Acao == "listaSitTarefa"){
         $pdf->ln();
         $pdf->SetFont('Arial', 'I', 14);
-        $pdf->SetX(30);
+//        $pdf->SetX(30);
         if($Acao == "listamesTarefa"){
             $Busca = addslashes(filter_input(INPUT_GET, 'mesano')); 
             $Proc = explode("/", $Busca);
@@ -223,24 +227,51 @@ if(!isset($_SESSION['AdmUsu'])){
 
             $pdf->MultiCell(0, 5, $mes_extenso[$Mes]." / ".$Ano, 0, 'C', false);
             //Conta tarefas no mês
-            $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('MONTH', datains) = '$Mes' And DATE_PART('YEAR', datains) = '$Ano'");
+            if($VerTarefas == 1){ // 1 = Todos 
+                $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                WHERE ativo != 0 And DATE_PART('MONTH', datains) = '$Mes' And DATE_PART('YEAR', datains) = '$Ano'");
+
+                $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
+                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' 
+                GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                ORDER BY ".$xProj.".poslog.nomecompl"); 
+            }
+            if($VerTarefas == 2){ // 2 = só mandante e executante 
+                $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                WHERE ativo != 0 And DATE_PART('MONTH', datains) = '$Mes' And DATE_PART('YEAR', datains) = '$Ano' And usuins = $UsuLogadoId Or ativo != 0 And DATE_PART('MONTH', datains) = '$Mes' And DATE_PART('YEAR', datains) = '$Ano' And usuexec = $UsuLogadoId");
+
+                $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
+                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.usuins = $UsuLogadoId Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.usuexec = $UsuLogadoId
+                GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                ORDER BY ".$xProj.".poslog.nomecompl"); 
+            }
+            if($VerTarefas == 3){ // 3 = visualização por setor 
+                $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                WHERE ativo != 0 And DATE_PART('MONTH', datains) = '$Mes' And DATE_PART('YEAR', datains) = '$Ano' And setorins = $CodSetorUsu Or ativo != 0 And DATE_PART('MONTH', datains) = '$Mes' And DATE_PART('YEAR', datains) = '$Ano' And setorexec = $CodSetorUsu");
+
+                $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
+                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And setorins = $CodSetorUsu Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And setorexec = $CodSetorUsu 
+                GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                ORDER BY ".$xProj.".poslog.nomecompl"); 
+            }
+
             $tblCont = pg_fetch_row($rsCont);
             $pdf->SetTextColor(120, 120, 120);  
             $pdf->SetFont('Arial', 'I', 9);
-            $pdf->SetX(30);
-            $pdf->MultiCell(0, 3, $tblCont[0]." tarefas expedidas", 0, 'C', false);
+//            $pdf->SetX(30);
+            if($tblCont[0] == 1){
+                $pdf->MultiCell(0, 3, $tblCont[0]." tarefa expedida", 0, 'C', false);
+            }else{
+                $pdf->MultiCell(0, 3, $tblCont[0]." tarefas expedidas", 0, 'C', false);
+            }
             $pdf->SetTextColor(0, 0, 0);
-
-            $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
-            FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
-            WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' 
-            GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
-            ORDER BY ".$xProj.".poslog.nomecompl");    
             $pdf->ln(3);
             $pdf->SetDrawColor(0);
             $lin = $pdf->GetY();
             $pdf->Line(10, $lin, 200, $lin);
-    
         }
         if($Acao == "listaanoTarefa"){ 
             $Ano = addslashes(filter_input(INPUT_GET, 'ano')); 
@@ -248,20 +279,47 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->SetFont('Arial', 'I', 14);
             $pdf->MultiCell(0, 5, $Ano, 0, 'C', false);
             //Conta tarefas no ano
-            $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$Ano'");
+            if($VerTarefas == 1){ // 1 = Todos 
+                $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$Ano'");
+
+                $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
+                WHERE ".$xProj.".tarefas.ativo != 0  And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' 
+                GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                ORDER BY ".$xProj.".poslog.nomecompl"); 
+            }
+            if($VerTarefas == 2){ // 2 = só mandante e executante 
+                $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$Ano' And usuins = $UsuLogadoId Or ativo != 0 And DATE_PART('YEAR', datains) = '$Ano' And usuexec = $UsuLogadoId");
+
+                $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
+                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.usuins = $UsuLogadoId Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.usuexec = $UsuLogadoId
+                GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                ORDER BY ".$xProj.".poslog.nomecompl"); 
+            }
+            if($VerTarefas == 3){ // 3 = visualização por setor 
+                $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$Ano' And setorins = $CodSetorUsu Or ativo != 0 And DATE_PART('YEAR', datains) = '$Ano' And setorexec = $CodSetorUsu");
+
+                $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
+                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And setorins = $CodSetorUsu Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And setorexec = $CodSetorUsu 
+                GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                ORDER BY ".$xProj.".poslog.nomecompl"); 
+            }
             $tblCont = pg_fetch_row($rsCont);
             $pdf->SetTextColor(120, 120, 120);  
             $pdf->SetFont('Arial', 'I', 9);
-            $pdf->SetX(30);
-            $pdf->MultiCell(0, 3, $tblCont[0]." tarefas expedidas", 0, 'C', false);
+//            $pdf->SetX(30);
+            if($tblCont[0] == 1){
+                $pdf->MultiCell(0, 3, $tblCont[0]." tarefa expedida", 0, 'C', false);
+            }else{
+                $pdf->MultiCell(0, 3, $tblCont[0]." tarefas expedidas", 0, 'C', false);
+            }
             $pdf->SetTextColor(0, 0, 0);
 
-
-            $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
-            FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
-            WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' 
-            GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
-            ORDER BY ".$xProj.".poslog.nomecompl");    
             $pdf->ln(3);
             $pdf->SetDrawColor(0);
             $lin = $pdf->GetY();
@@ -302,19 +360,41 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->SetTitle('Relação de Tarefas', $isUTF8=TRUE);
             $pdf->SetFont('Arial', 'I', 14);
             $pdf->MultiCell(0, 5, "Tarefas na fase: ".$Desc, 0, 'C', false);
-            $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And sit = $Sit");
+            if($VerTarefas == 1){ // 1 = Todos 
+                $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And sit = $Sit");
+
+                $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
+                WHERE ".$xProj.".tarefas.ativo != 0 And sit = $Sit 
+                GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                ORDER BY ".$xProj.".poslog.nomecompl");        
+            }
+            if($VerTarefas == 2){ // 2 = só mandante e executante 
+                $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                WHERE ativo != 0 And usuins = $UsuLogadoId And sit = $Sit Or ativo != 0 And usuexec = $UsuLogadoId And sit = $Sit");
+
+                $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
+                WHERE ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.usuins = $UsuLogadoId And sit = $Sit Or ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.usuexec = $UsuLogadoId And sit = $Sit 
+                GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                ORDER BY ".$xProj.".poslog.nomecompl");     
+            }
+            if($VerTarefas == 3){ // 3 = visualização por setor 
+                $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                WHERE ativo != 0 And setorins = $CodSetorUsu And sit = $Sit Or ativo != 0 And setorexec = $CodSetorUsu And sit = $Sit");
+
+                $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
+                WHERE ".$xProj.".tarefas.ativo != 0 And setorins = $CodSetorUsu And sit = $Sit Or ".$xProj.".tarefas.ativo != 0 And setorexec = $CodSetorUsu And sit = $Sit 
+                GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                ORDER BY ".$xProj.".poslog.nomecompl");
+            }
             $tblCont = pg_fetch_row($rsCont);
             $pdf->SetTextColor(120, 120, 120);  
             $pdf->SetFont('Arial', 'I', 9);
             $pdf->SetX(30);
             $pdf->MultiCell(0, 3, $tblCont[0]." tarefas", 0, 'C', false);
             $pdf->SetTextColor(0, 0, 0);
-
-            $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
-            FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
-            WHERE ".$xProj.".tarefas.ativo != 0 And sit = $Sit 
-            GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
-            ORDER BY ".$xProj.".poslog.nomecompl");        
 
             $pdf->ln(3);
             $pdf->SetDrawColor(0);

@@ -62,9 +62,26 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
          <!-- Apresenta os usuários do setor com o nível administrativo -->
         <div style="padding: 10px;">
             <?php
+            if(isset($_REQUEST["acao"])){
+                $Acao = $_REQUEST["acao"];
+            }else{
+                $Acao = "todos";
+            }
+
+            $Condic = $xProj.".bensachados.ativo = 1 ";
+            if($Acao == "restit"){
+                $Condic = $xProj.".bensachados.ativo = 1 And usurestit > 0";
+            }
+            if($Acao == "destinados"){
+                $Condic = $xProj.".bensachados.ativo = 1 And usudestino > 0";
+            }
+            if($Acao == "destinar"){
+                $Condic = $xProj.".bensachados.ativo = 1 And usurestit = 0 And usudestino = 0 And (CURRENT_DATE-datareceb) > 90 ";
+            }
+
             $rs0 = pg_query($Conec, "SELECT ".$xProj.".bensachados.id, to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, usuguarda, usurestit, usucsg, usuarquivou, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, usudestino, CURRENT_DATE-datareceb, codusuins, date_part('dow', datareceb)  
             FROM ".$xProj.".bensachados INNER JOIN ".$xProj.".poslog ON ".$xProj.".bensachados.codusuins = ".$xProj.".poslog.pessoas_id
-            WHERE ".$xProj.".bensachados.ativo = 1 
+            WHERE $Condic 
             ORDER BY ".$xProj.".bensachados.datareceb DESC");
 
             //And AGE(CURRENT_DATE, ".$xProj.".bensachados.datareceb) <= '1 YEAR' 
@@ -121,7 +138,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td style="display: none;"></td>
                             <td style="display: none;"><?php echo $tbl0[0]; ?></td>
                             <td><?php echo $tbl0[1]; ?></td> <!-- data -->
-                            <td><?php echo $Semana_Extract[$tbl0[12]]; ?></td> <!-- dia semana -->
+                            <td style="font-size: 80%;"><?php echo $Semana_Extract[$tbl0[12]]; ?></td> <!-- dia semana -->
                             <td style="text-align: center;"><?php echo $tbl0[2]; ?></td> <!-- num processo -->
                             <td><?php echo nl2br($tbl0[3]); ?>
                             <hr style="margin: 0; padding: 0px;">
