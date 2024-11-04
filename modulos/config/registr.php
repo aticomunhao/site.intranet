@@ -83,11 +83,20 @@ if($Acao =="loglog"){
                         $_SESSION["NomeUsual"] = $_SESSION["NomeCompl"];
                     }
 
-                    $DNasc = $Sql[3];
                     $DiaAniv = $Sql[4];
                     $MesAniv = $Sql[5];
                     $_SESSION['usuarioCPF'] = $Sql[1];
-                    $_SESSION['sexo'] = $Sql[6];
+                    if(!is_null($Sql[6])){
+                        $Sexo = $Sql[6];    
+                    }else{
+                        $Sexo = 1;
+                    }
+                    if(!is_null($Sql[3])){
+                        $DNasc = $Sql[3];    
+                    }else{
+                        $DNasc = "1500-01-01";
+                    }
+                    $_SESSION['sexo'] = $Sexo;
                     $_SESSION['start_login'] = time();
                     $_SESSION["usuarioID"] = $id;
                     $_SESSION["msg"] = ""; //para troca de slides e tráfego de arquivos
@@ -133,7 +142,7 @@ if($Acao =="loglog"){
                         $tblCod = pg_fetch_row($rsCod);
                         $Codigo = $tblCod[0];
                         $CodigoNovo = ($Codigo+1); // cópia no esquema cesb
-                        pg_query($Conec, "INSERT INTO ".$xProj.".pessoas (id, pessoas_id, cpf, nome_completo, dt_nascimento, sexo, status, datains, nome_resumido) VALUES ($CodigoNovo, $id, '$Login', '$NomeCompl', '$DNasc', ".$_SESSION['sexo'].", 1, NOW(), '$NomeUsual') "); 
+                        pg_query($Conec, "INSERT INTO ".$xProj.".pessoas (id, pessoas_id, cpf, nome_completo, dt_nascimento, sexo, status, datains, nome_resumido) VALUES ($CodigoNovo, $id, '$Login', '$NomeCompl', '$DNasc', $Sexo, 1, NOW(), '$NomeUsual') "); 
                     }
 
                     // o primeiro que logar executa a rotina
@@ -896,6 +905,22 @@ if($Acao =="buscackList"){
         $Erro = 1;
     }
     $var = array("coderro"=>$Erro, "itemnum"=>$tbl[0], "itemcklist"=>$tbl[1], "ativo"=> $tbl[2]);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="buscanumckList"){
+    $Erro = 0;
+    $ProxItem = 0;
+    $rs = pg_query($Conec, "SELECT MAX(itemnum) FROM ".$xProj.".livrocheck WHERE ativo = 1");
+    if(!$rs){
+        $Erro = 1;
+    }else{
+        $tbl = pg_fetch_row($rs);
+        $Item = $tbl[0];
+        $ProxItem = $Item+1;
+    }
+    $var = array("coderro"=>$Erro, "proxitem"=>$ProxItem);
     $responseText = json_encode($var);
     echo $responseText;
 }

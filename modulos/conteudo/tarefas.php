@@ -34,7 +34,8 @@ if(!isset($_SESSION["usuarioID"])){
                 border-radius: 7px;
             }
             .etiqLat{
-                font-size: 1.5rem;
+/*                font-size: 1.5rem;  */
+                font-size: .55rem; 
                 font-weight: bold;
                 margin: 0;
                 text-align: center;
@@ -90,7 +91,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
             .modalMsg-content{
                 background: linear-gradient(180deg, white, #86c1eb);
-                margin: 7% auto; /* 10% do topo e centrado */
+                margin: 10% auto; /* 10% do topo e centrado */
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
@@ -98,7 +99,15 @@ if(!isset($_SESSION["usuarioID"])){
             }
             .modalTransf-content{
                 background: linear-gradient(180deg, white, #86c1eb);
-                margin: 7% auto;
+                margin: 10% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 60%;
+            }
+            .modalTarefas-content{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 10% auto;
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
@@ -134,6 +143,10 @@ if(!isset($_SESSION["usuarioID"])){
         </style>
         <script type="text/javascript">
             $(document).ready(function(){
+                document.getElementById("imgTarefasconfig").style.visibility = "hidden"; // configurar grupos para tarefas
+                if(parseInt(document.getElementById("UsuAdm").value) >= 6){ // nível revisor
+                    document.getElementById("imgTarefasconfig").style.visibility = "visible"; 
+                }
                 if(parseInt(document.getElementById("UsuAdm").value) < parseInt(document.getElementById("admIns").value)){ // nível administrativo
                     document.getElementById("botinserir").style.visibility = "hidden"; // botão de inserir
                 }
@@ -187,7 +200,7 @@ if(!isset($_SESSION["usuarioID"])){
                         document.getElementById("relacimprTarefas").style.display = "none";
                     }
                 });
-                
+
                 $("#selecExecutante").change(function(){
                     document.getElementById("selecMesAno").value = "";
                     document.getElementById("selecAno").value = "";
@@ -210,7 +223,117 @@ if(!isset($_SESSION["usuarioID"])){
                         document.getElementById("relacimprTarefas").style.display = "none";
                     }
                 });
+
+                $("#configselecSolicitante").change(function(){
+                    if(document.getElementById("configselecSolicitante").value == ""){
+                        document.getElementById("configcpfsolicitante").value = "";
+                        return false;
+                    }
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/conteudo/salvaTarefa.php?acao=buscausuario&codigo="+document.getElementById("configselecSolicitante").value, true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 0){
+                                        document.getElementById("configcpfsolicitante").value = format_CnpjCpf(Resp.cpf);
+                                        document.getElementById("configSelecSetor").value = Resp.grupotarefa;
+                                    }else{
+                                        alert("Houve um erro no servidor.")
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                });
+                $("#configcpfsolicitante").click(function(){
+                    document.getElementById("configselecSolicitante").value = "";
+                    document.getElementById("configcpfsolicitante").value = "";
+                    document.getElementById("configSelecSetor").value = "";
+
+                });
+                $("#configcpfsolicitante").change(function(){
+                    document.getElementById("configselecSolicitante").value = "";
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/conteudo/salvaTarefa.php?acao=buscacpfusuario&cpf="+encodeURIComponent(document.getElementById("configcpfsolicitante").value), true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    document.getElementById("configSelecSetor").value = Resp.grupotarefa;
+                                    if(parseInt(Resp.coderro) === 0){
+                                        document.getElementById("configselecSolicitante").value = Resp.PosCod;
+                                    }
+                                    if(parseInt(Resp.coderro) === 3){
+                                        document.getElementById("configcpfsolicitante").focus();
+                                    }
+                                    if(parseInt(Resp.coderro) === 2){
+                                        document.getElementById("configcpfsolicitante").focus();
+                                    }
+                                    if(parseInt(Resp.coderro) === 1){
+                                        alert("Houve um erro no servidor.")
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                });
+
+                $("#configSelecSetor").change(function(){
+                    if(document.getElementById("configSelecSetor").value == ""){
+                        return false;
+                    }
+                    if(document.getElementById("configselecSolicitante").value == ""){
+                        document.getElementById("configSelecSetor").value = "";
+                        return false;
+                    }
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/conteudo/salvaTarefa.php?acao=salvagrupotar&codigo="+document.getElementById("configselecSolicitante").value+"&codgrupo="+document.getElementById("configSelecSetor").value, true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 0){
+                                        $('#mensagemConfig').fadeIn("slow");
+                                        document.getElementById("mensagemConfig").innerHTML = "Valor salvo.";
+                                        $('#mensagemConfig').fadeOut(2000);
+                                        //Se for atualizar o próprio grupo, reinicializar
+                                        if(parseInt(document.getElementById("configselecSolicitante").value) === parseInt(document.getElementById("usu_Logado_id").value)){
+
+                                            $.confirm({
+                                                title: 'Mudança de Grupo',
+                                                content: 'É preciso reiniciar o módulo para mostrar as tarefas desse Grupo. \nQuer fazer isso agora?',
+                                                autoClose: 'Não|10000',
+                                                draggable: true,
+                                                buttons: {
+                                                    Sim: function () {
+                                                        $('#container3').load('modulos/conteudo/tarefas.php');
+                                                    },
+                                                    Não: function () {
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }else{
+                                        alert("Houve um erro no servidor.")
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                });
+
             });
+
             function relatTarefas(){
                 window.open("modulos/conteudo/imprTarefas.php?acao=estatTarefas", "Estatistica");
                 document.getElementById("relacimprTarefas").style.display = "none";
@@ -560,6 +683,15 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
                 }
             }
 
+            function abreTarefasConfig(){
+                document.getElementById("configcpfsolicitante").value = "";
+                document.getElementById("configselecSolicitante").value = "";
+                document.getElementById("configSelecSetor").value = "";
+                document.getElementById("modalTarefasConfig").style.display = "block";
+            }
+            function fechaModalConfig(){
+                document.getElementById("modalTarefasConfig").style.display = "none";
+            }
             function fechaModalTransf(){
                 document.getElementById("relacmodalTransf").style.display = "none";
             }
@@ -568,6 +700,18 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
             }
             function fechaModalImpr(){
                 document.getElementById("relacimprTarefas").style.display = "none";
+            }
+            function resumoGrupoTarefas(){
+                window.open("modulos/conteudo/imprGruposTar.php?acao=imprGrupos", "Grupos");
+            }
+            function format_CnpjCpf(value){
+                //https://gist.github.com/davidalves1/3c98ef866bad4aba3987e7671e404c1e
+                const CPF_LENGTH = 11;
+                const cnpjCpf = value.replace(/\D/g, '');
+                if (cnpjCpf.length === CPF_LENGTH) {
+                    return cnpjCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/g, "\$1.\$2.\$3-\$4");
+                } 
+                  return cnpjCpf.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g, "\$1.\$2.\$3/\$4-\$5");
             }
         </script>
     </head>
@@ -590,12 +734,13 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
         $admEdit = parAdm("edittarefa", $Conec, $xProj); // nível para editar
         $VerTarefas = parAdm("vertarefa", $Conec, $xProj); // ver tarefas   1: todos - 2: só mandante e executante - 3: visualização por setor 
 
-        $CodSetorUsu = $_SESSION["CodSetorUsu"]; //para a visualização das tarefas por setores
+//        $CodSetorUsu = $_SESSION["CodSetorUsu"]; //para a visualização das tarefas por setores
+        $CodSetorUsu = parEsc("grupotarefa", $Conec, $xProj, $_SESSION["usuarioID"]);
 
         //Relacionar usuários - adm <= $Adm - só paga tarefa para nível adm menor ou igual
         if($VerTarefas == 3){ // 3 = visualização por setor 
-            $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm <= $Adm And codsetor = $CodSetorUsu ORDER BY nomeusual, nomecompl");
-            $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm >= $admIns And codsetor = $CodSetorUsu And pessoas_id != $UsuLogadoId ORDER BY nomeusual, nomecompl");
+            $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm <= $Adm And grupotarefa = $CodSetorUsu ORDER BY nomeusual, nomecompl");
+            $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm >= $admIns And grupotarefa = $CodSetorUsu And pessoas_id != $UsuLogadoId ORDER BY nomeusual, nomecompl");
         }else{
             $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm <= $Adm ORDER BY nomeusual, nomecompl");
             $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm >= $admIns And pessoas_id != $UsuLogadoId ORDER BY nomeusual, nomecompl");
@@ -614,6 +759,8 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
         }
 
         $OpcoesUserExec = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
+        $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
+        $OpSetores = pg_query($Conec, "SELECT CodSet, siglasetor, descsetor FROM ".$xProj.".setores ORDER BY siglasetor");
 
         //marca que foi visualizado nesta data - dataSit1
         pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit1 = NOW() WHERE usuexec = ".$_SESSION["usuarioID"]." And datasit1 = '3000/12/31' And ativo = 1");
@@ -632,14 +779,16 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
         <input type="hidden" id="guardaUsuCpf" value="<?php echo $_SESSION["usuarioCPF"]; ?>" />
 
         <!-- div três colunas -->
-        <div class="container" style="margin: 0 auto;">
+        <div class="container" style="margin: 0 auto; padding-top: 10px;">
             <div class="row">
-                <div class="col quadro" style="margin: 0 auto;"> <input type="button" class="botpadrblue" id="botinserir" value="Inserir Tarefa" onclick="abreModal();"></div>
+                <div class="col quadro" style="margin: 0 auto;"> <input type="button" class="botpadrblue" id="botinserir" value="Inserir Tarefa" onclick="abreModal();">
+                <img src="imagens/settings.png" height="20px;" id="imgTarefasconfig" style="cursor: pointer; padding-left: 30px;" onclick="abreTarefasConfig();" title="Configurar grupos de Tarefas">
+                </div>
 
                 <div class="col" style="text-align: center;">
                     <h4>Tarefas</h4>
+                    <?php if($row > 0){ echo "<label style='font-size: 90%;'>Arraste o quadro amarelo para a direita &#8594;</label>"; } ?>
                 </div> <!-- Central - espaçamento entre colunas  -->
-
                 <div class="col quadro" style="margin: 0 auto; text-align: right;">
                     <button class="botpadrred" style="font-size: 80%;" id="botimprTarefas" onclick="escImprTarefas();">Gerar PDF</button>
                     <label style="padding-left: 20px;"></label>
@@ -681,18 +830,17 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
 
             $row = pg_num_rows($resultT);
             ?>
-            <table style="margin: 0 auto; border: 0; width: 80%;" >
-            <caption><?php if($row > 0){ echo "Arraste o quadro amarelo para a direita &#8594;"; } ?></caption>
+            <table style="margin: 0 auto; border: 0; width: 90%;" >
                 <?php
                 echo "<tr>";
                 echo "<td></td>";
-                echo "<td style='text-align: center; font-weight: 600;'>Tarefa<br>Designada</td>";
+                echo "<td style='text-align: center; font-weight: 600;'>Tarefa Designada</td>";
                 echo "<td></td>";
-                echo "<td style='text-align: center; font-weight: 600;'>Tarefa<br>Aceita</td>";
+                echo "<td style='text-align: center; font-weight: 600;'>Tarefa Aceita</td>";
                 echo "<td></td>";
-                echo "<td style='text-align: center; font-weight: 600;'>Tarefa<br>Em Andamento</td>";
+                echo "<td style='text-align: center; font-weight: 600;'>Tarefa em Andamento</td>";
                 echo "<td></td>";
-                echo "<td style='text-align: center; font-weight: 600;'>Tarefa<br>Terminada</td>";
+                echo "<td style='text-align: center; font-weight: 600;'>Tarefa Terminada</td>";
                 echo "<td></td>";
                 echo "</tr>";
 
@@ -759,16 +907,17 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
 
                         echo "<tr>";  //Primeira coluna à esquerda - data e nomes
                         echo "<td style='vertical-align: top;'><div style='padding-bottom: 8px; padding-top: 2px;' title='Tarefa expedida para $NomeExec'><sub>Em $DataInsert para:</sub></div>";
-                            echo "<div class='etiqLat'>" . $NomeExec;
-                                echo "<div style='position: relative; top: -10px; font-size: .5em; text-align: center;'> <sub>Ciência: " . $DataVisu . "</sub></div>";
+                            echo "<div class='etiqLat'>";
+                                echo "<div style='position: relative; font-size: 2.5em; text-align: center;'>" . $NomeExec . "</div>";
+                                echo "<label>Ciência: " . $DataVisu . "</label><br>";
                                 if($DataSit2 != "31/12/3000 00:00"){
-                                    echo "<div style='position: relative; top: -10px; font-size: .5em; text-align: center;'> <sub>Aceita: " . $DataSit2 . "</sub></div>";
+                                    echo "<label>Aceita: " . $DataSit2 . "</label><br>";
                                 }
                                 if($DataSit3 != "31/12/3000 00:00"){
-                                    echo "<div style='position: relative; top: -13px; font-size: .5em; text-align: center;'><sub>Andamento: ".$DataSit3."</sub></div>";
+                                    echo "<label>Andamento: ".$DataSit3."</label><br>";
                                 }
                                 if($DataSit4 != "31/12/3000 00:00"){
-                                    echo "<div style='position: relative; top: -13px; font-size: .5em; text-align: center; color: blue;'><sub>Terminada: ".$DataSit4."</sub></div>";
+                                    echo "<label style='color: blue;'>Terminada: ".$DataSit4 . "</label>";
                                 }
                             echo "</div>";
                             echo "<div title='Tarefa expedida por $NomeIns'><sup>de: " . $NomeIns . "</sup></div>";
@@ -776,7 +925,7 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
 
                         echo "<td style='text-align: center;'>";
                         if($Status == 1 && $Ativo != 2){
-                            echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' id='posicaotit' ondrag='PegaCod($idTar, $Ativo, $usuExec);' ondrop='drop(event)' ondragover='allowDrop(event)' title='Arraste o quadro amarelo para a direita'>$Titulo</div>";
+                            echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' ondrag='PegaCod($idTar, $Ativo, $usuExec);' ondrop='drop(event)' ondragover='allowDrop(event)' title='Tarefa Designada'>$Titulo</div>";
                         }elseif($Status == 1 && $Ativo == 2){
                             echo "<div class='etiqueta etiqInativa' draggable='false' droppable='false'>$Titulo</div>";
                         }else{
@@ -784,11 +933,11 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
                         }
                         echo "</td>";
 
-                        echo "<td title='Arraste o quadro amarelo para a direita'>&#10144;</td>";
+                        echo "<td style='text-align: center; width: 30px;' title='Arraste o quadro amarelo para a direita'>&#10144;</td>";
 
                         echo "<td style='text-align: center;'>";
                         if($Status == 2 && $Ativo != 2){
-                            echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' id='posicaotit' ondrag='PegaCod($idTar, $Ativo, $usuExec);' ondrop='drop(event)' ondragover='allowDrop(event)' title='Arraste o quadro amarelo para a direita'>$Titulo</div>";
+                            echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' ondrag='PegaCod($idTar, $Ativo, $usuExec);' ondrop='drop(event)' ondragover='allowDrop(event)' title='Tarefa Aceita'>$Titulo</div>";
                         }elseif($Status == 2 && $Ativo == 2){
                             echo "<div class='etiqueta etiqInativa' draggable='false' droppable='false'>$Titulo</div>";
                         }else{
@@ -796,11 +945,11 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
                         }
                         echo "</td>";
 
-                        echo "<td title='Arraste o quadro amarelo para a direita'>&#10144;</td>";
+                        echo "<td style='text-align: center; width: 30px;' title='Arraste o quadro amarelo para a direita'>&#10144;</td>";
 
                         echo "<td style='text-align: center;'>";
                         if($Status == 3 && $Ativo != 2){
-                            echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' id='posicaotit' ondrag='PegaCod($idTar, $Ativo, $usuExec);' ondrop='drop(event)' ondragover='allowDrop(event)' title='Arraste o quadro amarelo para a direita'>$Titulo</div>";
+                            echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' ondrag='PegaCod($idTar, $Ativo, $usuExec);' ondrop='drop(event)' ondragover='allowDrop(event)' title='Tarefa em Andamento'>$Titulo</div>";
                         }elseif($Status == 3 && $Ativo == 2){
                             echo "<div class='etiqueta etiqInativa' draggable='false' droppable='false'>$Titulo</div>";
                         }else{
@@ -808,14 +957,14 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
                         }
                         echo "</td>";
 
-                        echo "<td title='Arraste o quadro amarelo para a direita'>&#10144;</td>";
+                        echo "<td style='text-align: center; width: 30px;' title='Arraste o quadro amarelo para a direita'>&#10144;</td>";
 
+                        
                         echo "<td style='text-align: center;'>";
                         if($Status == 4 && $Ativo != 2){
-                            echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' id='posicaotit' ondrag='PegaCod($idTar, $Ativo, $usuExec);' ondrop='drop(dr)' ondragover='allowDrop(event)' title='Arraste o quadro amarelo para a direita'>$Titulo</div>";
-                            
+                            echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' ondrag='PegaCod($idTar, $Ativo, $usuExec);' ondrop='drop(dr)' ondragover='allowDrop(event)' title='Tarefa Terminada'>$Titulo</div>";
                         }elseif($Status == 4 && $Ativo == 2){
-                            echo "<div class='etiqueta etiqInativa' draggable='false' droppable='false'>$Titulo</div>";
+                            echo "<div class='etiqueta etiqInativa' draggable='false' droppable='false' title='Tarefa Terminada'>$Titulo</div>";
                         }else{
                             echo "<div class='etiqueta etiqInat' draggable='false' droppable='true' ondrop='drop(event, 4)' ondragover='allowDrop(event)' </div>";
                         }
@@ -845,7 +994,43 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
                             }
                             echo "</div>";
                         echo "</td>";
-                        
+                        echo "</tr>";
+
+
+                    //Entrelinhas
+                        echo "<tr>";
+                        echo "<td><div></div>";
+                        echo "</td>";
+
+                        echo "<td style='text-align: center;'>";
+                            echo "<div style='font-size: 70%;'><sub>Designada</sub></div>";
+                        echo "</td>";
+
+                        echo "<td style='text-align: center;'>";
+                            echo "<div></div>";
+                        echo "</td>";
+
+                        echo "<td style='text-align: center;'>";
+                            echo "<div style='font-size: 70%;'><sub>Aceita</sub></div>";
+                        echo "</td>";
+                        echo "<td style='text-align: center;'>";
+                            echo "<div></div>";
+                        echo "</td>";
+
+                        echo "<td style='text-align: center;'>";
+                            echo "<div style='font-size: 70%;'><sub>em Andamento</sub></div>";
+                        echo "</td>";
+                        echo "<td style='text-align: center;'>";
+                            echo "<div> </div>";
+                        echo "</td>";
+
+                        echo "<td style='text-align: center;'>";
+                            echo "<div style='font-size: 70%;'><sub>Terminada</sub></div>";
+                        echo "</td>";
+                        echo "<td style='text-align: center;'>";
+                            echo "<div></div>";
+                        echo "</td>";
+
                         echo "</tr>";
                     }
                 }else{
@@ -1114,6 +1299,74 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
            </div>
            <br><br>
         </div> <!-- Fim Modal escolha impressão -->
+
+         <!-- Modal configuração-->
+         <div id="modalTarefasConfig" class="relacmodal">
+            <div class="modalTarefas-content">
+                <span class="close" onclick="fechaModalConfig();">&times;</span>
+                <!-- div três colunas -->
+                <div class="container" style="margin: 0 auto;">
+                    <div class="row">
+                        <div class="col quadro" style="margin: 0 auto;"></div>
+                        <div class="col quadro"><h5 id="titulomodal" style="text-align: center; color: #666;">Grupos para Tarefas</h5></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col quadro" style="margin: 0 auto; text-align: center;"><button class="botpadrred" style="font-size: 70%;" onclick="resumoGrupoTarefas();">Resumo em PDF</button></div> 
+                    </div>
+                </div>
+                <label class="etiqAzul">Selecione um usuário para ver o Grupo de Tarefas a que pertence:</label>
+                
+                <table style="margin: 0 auto; width: 85%;">
+                    <tr>
+                        <td colspan="4" style="text-align: center;"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="text-align: center;">Busca Nome ou CPF do Usuário</td>
+                    </tr>
+                    <tr>
+                        <td class="etiqAzul">Procura nome: </td>
+                        <td style="width: 100px;">
+                            <select id="configselecSolicitante" style="max-width: 330px;" onchange="modif();" title="Selecione um usuário.">
+                                <option value=""></option>
+                                <?php 
+                                if($OpConfig){
+                                    while ($Opcoes = pg_fetch_row($OpConfig)){ ?>
+                                        <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; if($Opcoes[2] != ""){echo " - ".$Opcoes[2];} ?></option>
+                                    <?php 
+                                    }
+                                }
+                                ?>
+                            </select>
+                        </td>
+                        <td class="etiqAzul"><label class="etiqAzul">ou CPF:</label></td>
+                        <td>
+                            <input type="text" id="configcpfsolicitante" style="width: 130px; text-align: center; border: 1px solid #666; border-radius: 5px;" onkeypress="if(event.keyCode===13){javascript:foco('configselecSolicitante');return false;}" title="Procura por CPF. Digite o CPF do usuário."/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding-top: 10px;"></td>
+                    </tr>
+                </table>
+
+                <table style="margin: 0 auto; width: 85%;">
+                    <tr>
+                        <td class="etiq" title="Selecione um setor para agrupar usuários de tarefas.">Participa do Grupo de Tarefas:</td>
+                        <td colspan="4">
+                            <select id="configSelecSetor" style="max-width: 430px;" onchange="modif();" title="Selecione um setor para agrupar usuários de tarefas.">
+                                <option value=""></option>
+                                <?php 
+                                if($OpSetores){
+                                    while ($Opcoes = pg_fetch_row($OpSetores)){ ?>
+                                        <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; if($Opcoes[2] != ""){echo " - ".$Opcoes[2];} ?></option>
+                                    <?php 
+                                    }
+                                }
+                                ?>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+                <div style="text-align: center; color: red; font-weight: bold;" id="mensagemConfig"></div>
+            </div>
+        </div> <!-- Fim Modal-->
 
 
         <!-- div modal para leitura instruções -->

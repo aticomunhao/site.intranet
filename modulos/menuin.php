@@ -22,7 +22,7 @@
 				$diaSemana = 1;
 			}
 			//Provisório
-			if(strtotime('2024/10/30') > strtotime(date('Y/m/d'))){
+			if(strtotime('2024/11/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
 
 				//0049
@@ -38,6 +38,29 @@
 
 				//0050 - liberação dos claviculários DAF e Chaves Lacradas - OK
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS tempoinat smallint NOT NULL DEFAULT 1800 ");
+
+				//0057
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS grupotarefa smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS usumodifgrupo bigint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS datamodifgrupo timestamp without time zone DEFAULT '3000-12-31' ;");
+				$rs = pg_query($Conec, "SELECT grupotarefa FROM ".$xProj.".poslog WHERE grupotarefa > 0;");
+				$row = pg_num_rows($rs);
+				if($row == 0){
+					pg_query($Conec, "UPDATE ".$xProj.".poslog SET grupotarefa = codsetor WHERE codsetor = 7;");
+					pg_query($Conec, "UPDATE ".$xProj.".poslog SET grupotarefa = codsetor WHERE codsetor = 19;");
+					pg_query($Conec, "UPDATE ".$xProj.".poslog SET grupotarefa = 0 WHERE pessoas_id = 3;");
+					pg_query($Conec, "UPDATE ".$xProj.".poslog SET grupotarefa = 7 WHERE pessoas_id = 22;");
+					pg_query($Conec, "UPDATE ".$xProj.".poslog SET grupotarefa = 7 WHERE pessoas_id = 34;");
+					pg_query($Conec, "UPDATE ".$xProj.".poslog SET grupotarefa = 7 WHERE pessoas_id = 45;");
+					pg_query($Conec, "UPDATE ".$xProj.".poslog SET grupotarefa = 7 WHERE pessoas_id = 73;");
+					pg_query($Conec, "UPDATE ".$xProj.".poslog SET grupotarefa = 7 WHERE pessoas_id = 2057;");
+				}
+				//Modificação na destinação dos bens era: Descarte, Destruição, Doação, Venda
+				pg_query($Conec, "UPDATE ".$xProj.".bensdestinos SET descdest = 'Descarte' WHERE id = 2 ;");
+				pg_query($Conec, "UPDATE ".$xProj.".bensdestinos SET descdest = 'Destruição' WHERE id = 3 ;");
+				pg_query($Conec, "UPDATE ".$xProj.".bensdestinos SET descdest = 'Doação' WHERE id = 4 ;");
+				pg_query($Conec, "UPDATE ".$xProj.".bensdestinos SET descdest = 'Bazar' WHERE id = 5 ;");
+
 
 			} // fim data limite
         ?>

@@ -11,8 +11,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <script type="text/javascript">
             new DataTable('#idTabela', {
                 lengthMenu: [
-                    [50, 100, 200, 500],
-                    [50, 100, 200, 500]
+                    [100, 200, 500, 1000],
+                    [100, 200, 500, 1000]
                 ],
                 language: {
                     info: 'Mostrando Página _PAGE_ of _PAGES_',
@@ -88,9 +88,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <tr>
                             <td style="display: none;"></td>
                             <td style="display: none;"><?php echo $tbl0[0]; ?></td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;"><?php echo $tbl0[1]; ?></td> <!-- Data -->
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;"><?php echo number_format($tbl0[3], 0, ",",".")." kWh"; ?></td> <!-- Leitura 1 -->
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;"><?php echo "R$ ".number_format(($tbl0[3]*$ValorKwh), 2, ",","."); ?></td>                    
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;" title="Data"><?php echo $tbl0[1]; ?></td> <!-- Data -->
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;" title="Leitura mensal"><?php echo number_format($tbl0[3], 0, ",",".")." kWh"; ?></td> <!-- Leitura 1 -->
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;" title="Valor mensal"><?php echo "R$ ".number_format(($tbl0[3]*$ValorKwh), 2, ",","."); ?></td>                    
                         </tr>
                         <?php
 

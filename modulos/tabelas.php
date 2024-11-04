@@ -347,6 +347,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar (
    dataedit timestamp without time zone DEFAULT '3000-12-31' 
    ) 
 ");
+echo "Tabela ".$xProj.".controle_ar checada. <br>";
 
 pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
    id SERIAL PRIMARY KEY, 
@@ -372,6 +373,8 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
    datadel timestamp without time zone DEFAULT '3000-12-31'
    ) 
 ");
+echo "Tabela ".$xProj.".visitas_ar checada. <br>";
+
 
    //guarda os nomes das empresas de manutenção
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".empresas_ar (
@@ -386,6 +389,8 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
    if($row == 0){
       pg_query($Conec, "INSERT INTO ".$xProj.".empresas_ar (empresa, ativo) VALUES ('Empresa Contratada', 1)");
    }
+   echo "Tabela ".$xProj.".empresas_ar checada. <br>";
+
 
    //guarda os nomes para o menu Controle Ar Cond e Eletricidade
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".cesbmenu (
@@ -406,6 +411,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
       pg_query($Conec, "INSERT INTO ".$xProj.".cesbmenu (id, descr) VALUES (5, 'Controle Ar Cond 2') ");
       pg_query($Conec, "INSERT INTO ".$xProj.".cesbmenu (id, descr) VALUES (6, 'Controle Ar Cond 3') ");
    }
+   echo "Tabela ".$xProj.".cesbmenu checada. <br>";
    
    //coleciona o checklist para LRO (setor 1)
    //pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".livrocheck");
@@ -420,6 +426,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
       dataedit timestamp without time zone DEFAULT '3000-12-31' 
       )
    ");
+   echo "Tabela ".$xProj.".livrocheck checada. <br>";
    
    // coleta nomes para uso como substituto temporário no LRO (setor 1)
    //pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".coletnomes");
@@ -434,7 +441,8 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
       dataedit timestamp without time zone DEFAULT '3000-12-31' 
       )
    ");
-   
+   echo "Tabela ".$xProj.".coletnomes checada. <br>";
+
    //controle elevadores
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_el (
       id SERIAL PRIMARY KEY, 
@@ -448,7 +456,8 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
       dataedit timestamp without time zone DEFAULT '3000-12-31' 
       ) 
    ");
-  
+   echo "Tabela ".$xProj.".controle_el checada. <br>";
+
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_el (
       id SERIAL PRIMARY KEY, 
       controle_id integer NOT NULL DEFAULT 0,
@@ -473,7 +482,8 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
       datadel timestamp without time zone DEFAULT '3000-12-31'
       ) 
    ");
-  
+   echo "Tabela ".$xProj.".visitas_el checada. <br>";
+
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".empresas_el (
       id SERIAL PRIMARY KEY, 
       empresa VARCHAR(150),
@@ -487,7 +497,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
    if($row == 0){
       pg_query($Conec, "INSERT INTO ".$xProj.".empresas_el (empresa, ativo) VALUES ('Empresa Contratada', 1)");
    }
-
+   echo "Tabela ".$xProj.".empresas_el checada. <br>";
 
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar2 (
       id SERIAL PRIMARY KEY, 
@@ -501,7 +511,8 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
       dataedit timestamp without time zone DEFAULT '3000-12-31' 
       ) 
    ");
-  
+   echo "Tabela ".$xProj.".controle_ar2 checada. <br>";
+
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar2 (
       id SERIAL PRIMARY KEY, 
       controle_id integer NOT NULL DEFAULT 0,
@@ -526,7 +537,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
       datadel timestamp without time zone DEFAULT '3000-12-31'
       ) 
    ");
-  
+   echo "Tabela ".$xProj.".visitas_ar2 checada. <br>";
    
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".controle_ar3 (
       id SERIAL PRIMARY KEY, 
@@ -540,7 +551,8 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
       dataedit timestamp without time zone DEFAULT '3000-12-31' 
       ) 
    ");
-  
+   echo "Tabela ".$xProj.".controle_ar3 checada. <br>";
+
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar3 (
       id SERIAL PRIMARY KEY, 
       controle_id integer NOT NULL DEFAULT 0,
@@ -565,6 +577,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
       datadel timestamp without time zone DEFAULT '3000-12-31'
       ) 
    ");
+   echo "Tabela ".$xProj.".visitas_ar3 checada. <br>";
 
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf (
       id SERIAL PRIMARY KEY, 
@@ -576,6 +589,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
       dataedit timestamp without time zone DEFAULT '3000-12-31' 
       ) 
   ");
+  echo "Tabela ".$xProj.".escaladaf checada. <br>";
       pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_ins (
         id SERIAL PRIMARY KEY, 
         escaladaf_id bigint NOT NULL DEFAULT 0,
@@ -592,6 +606,8 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
         dataedit timestamp without time zone DEFAULT '3000-12-31' 
         )
     ");
+    echo "Tabela ".$xProj.".escaladaf_ins checada. <br>"; 
+
     pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_turnos (
       id SERIAL PRIMARY KEY, 
       letra VARCHAR(3), 
@@ -605,7 +621,8 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
       dataedit timestamp without time zone DEFAULT '3000-12-31' 
       ) 
   ");
-   
+
+
   $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_turnos LIMIT 3");
   $row2 = pg_num_rows($rs2);
   if($row2 == 0){
@@ -647,6 +664,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
           pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = cargahora, interv = '00:00' WHERE cargahora <= '06:00' And id = $Cod ");
       }
   }
+  echo "Tabela ".$xProj.".escaladaf_turnos checada. <br>";
 
   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_notas (
       id SERIAL PRIMARY KEY, 
@@ -671,6 +689,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
       pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, numnota, textonota, usuins, datains) 
       VALUES(4, 4, 'As segundas, quartas e sextas feiras, o horário de funcionamento da comunhão será das 07h00 até as 21h30. Os setores funcionarão conforme as escalas de serviço.', 3, NOW() )");
   }
+  echo "Tabela ".$xProj.".escaladaf_notas checada. <br>";
 
   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_fer (
       id SERIAL PRIMARY KEY, 
@@ -695,9 +714,10 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".visitas_ar (
       pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(7, '2024/11/15', 'Proclamação da República', 3, NOW() )");
       pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(8, '2024/12/25', 'Natal', 3, NOW() )");
   }
+  echo "Tabela ".$xProj.".escaladaf_fer checada. <br>";
 
 
 
-   echo "<br><br>";
+echo "<br><br>";
 
    

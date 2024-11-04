@@ -86,7 +86,7 @@
 }
 .modal-content-InsOcorIni{
     background: linear-gradient(180deg, white, #86c1eb);
-    margin: 7% auto;
+    margin: 10% auto;
     padding: 20px;
     border: 1px solid #888;
     border-radius: 15px;
@@ -94,7 +94,7 @@
 }
 .modal-content-InsOcor{
     background: linear-gradient(180deg, white, #86c1eb);
-    margin: 7% auto;
+    margin: 10% auto;
     padding: 20px;
     border: 1px solid #888;
     border-radius: 15px;
@@ -102,7 +102,7 @@
 }
 .modal-content-RegistroLRO{
     background: linear-gradient(180deg, white, #86c1eb);
-    margin: 7% auto;
+    margin: 10% auto;
     padding: 20px;
     border: 1px solid #888;
     border-radius: 15px;
@@ -111,7 +111,7 @@
 
 .modal-content-Leitura{
     background: linear-gradient(180deg, white, #86c1eb);
-    margin: 7% auto;
+    margin: 10% auto;
     padding: 10px;
     border: 1px solid #888;
     border-radius: 15px;
@@ -208,7 +208,7 @@
 }
 .modal-content-Escala{
     background: linear-gradient(180deg, white, #86c1eb);
-    margin: 7% auto;
+    margin: 10% auto;
     padding: 10px;
     border: 1px solid #888;
     border-radius: 15px;

@@ -207,14 +207,13 @@ if(!isset($_SESSION['AdmUsu'])){
     $lin = $pdf->GetY();
     $pdf->Line(10, $lin, 200, $lin);
     $VerTarefas = parAdm("vertarefa", $Conec, $xProj); // ver tarefas   1: todos - 2: só mandante e executante - 3: visualização por setor 
-    $CodSetorUsu = $_SESSION["CodSetorUsu"]; //para a visualização das tarefas por setores
+//    $CodSetorUsu = $_SESSION["CodSetorUsu"]; //para a visualização das tarefas por setores
+    $CodSetorUsu = parEsc("grupotarefa", $Conec, $xProj, $_SESSION["usuarioID"]);
     $UsuLogadoId = $_SESSION["usuarioID"];
-//    $VerTarefas = 2;
 
     if($Acao == "listamesTarefa" || $Acao == "listaanoTarefa" || $Acao == "listaMandante" || $Acao == "listaExecutante" || $Acao == "listaSitTarefa"){
         $pdf->ln();
         $pdf->SetFont('Arial', 'I', 14);
-//        $pdf->SetX(30);
         if($Acao == "listamesTarefa"){
             $Busca = addslashes(filter_input(INPUT_GET, 'mesano')); 
             $Proc = explode("/", $Busca);

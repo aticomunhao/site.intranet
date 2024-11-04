@@ -336,3 +336,57 @@ if($Acao=="transferemarcas"){
     echo $responseText;
 }
 
+if($Acao == "buscausuario"){
+    $Erro = 0;
+    $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de polog
+
+    $rs1 = pg_query($Conec, "SELECT grupotarefa, cpf FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
+    $row1 = pg_num_rows($rs1);
+    if($row1 > 0){
+        $tbl1 = pg_fetch_row($rs1);
+        $var = array("coderro"=>$Erro, "grupotarefa"=>$tbl1[0], "cpf"=>$tbl1[1]);
+    }else{
+        $Erro = 1;
+        $var = array("coderro"=>$Erro);
+    }        
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao == "buscacpfusuario"){
+    $Erro = 0;
+    $Cpf = filter_input(INPUT_GET, 'cpf'); 
+    $Cpf1 = addslashes($Cpf);
+    $Cpf2 = str_replace(".", "", $Cpf1);
+    $GuardaCpf = str_replace("-", "", $Cpf2);
+
+    $rs1 = pg_query($Conec, "SELECT grupotarefa, cpf, pessoas_id FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf'");
+    if(!$rs1){
+        $Erro = 1;
+        $var = array("coderro"=>$Erro);
+    }
+    $row1 = pg_num_rows($rs1);
+    if($row1 > 0){
+        $tbl1 = pg_fetch_row($rs1);
+        $var = array("coderro"=>$Erro, "grupotarefa"=>$tbl1[0], "cpf"=>$tbl1[1], "PosCod"=>$tbl1[2]);
+    }else{
+        $Erro = 2;
+        $var = array("coderro"=>$Erro);
+    }        
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+if($Acao == "salvagrupotar"){
+    $Erro = 0;
+    $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de polog
+    $CodGrupo = (int) filter_input(INPUT_GET, 'codgrupo'); //id de polog
+
+    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET grupotarefa = $CodGrupo, usumodifgrupo = ".$_SESSION["usuarioID"].", datamodifgrupo = NOW() WHERE pessoas_id = $Cod");
+    $row1 = pg_num_rows($rs1);
+    if(!$rs1){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);     
+    $responseText = json_encode($var);
+    echo $responseText;
+}

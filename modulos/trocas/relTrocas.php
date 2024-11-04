@@ -17,7 +17,7 @@ if(!isset($_SESSION["usuarioID"])){
         <style type="text/css">
             .modal-content-Trocas{
                 background: linear-gradient(180deg, white, #86c1eb);
-                margin: 5% auto; /* 10% do topo e centrado */
+                margin: 10% auto; /* 10% do topo e centrado */
                 padding: 10px;
                 border: 1px solid #888;
                 border-radius: 15px;
@@ -25,7 +25,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
             .modalMsg-content{
                 background: linear-gradient(180deg, white, #86c1eb);
-                margin: 7% auto; /* 10% do topo e centrado */
+                margin: 10% auto; /* 10% do topo e centrado */
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;

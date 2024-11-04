@@ -550,6 +550,34 @@
                 }
             }
 
+            function insModalCkList(){
+                document.getElementById("guardacod").value = 0;
+                document.getElementById("mudou").value = "0";
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/config/registr.php?acao=buscanumckList", true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) > 0){
+                                    alert("Houve erro ao salvar");
+                                }else{
+                                    document.getElementById("numitem").value = Resp.proxitem;
+                                    document.getElementById("descitem").value = "";
+                                    document.getElementById("atividadecklist1").checked = true;
+                                    document.getElementById("guardaAtivCkList").value = 1;
+                                    document.getElementById("relacmodalCkList").style.display = "block"; // está em carckListLRO.php
+                                    document.getElementById("descitem").focus();
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
             function salvaModalCkList(){
                 if(parseInt(document.getElementById("mudou").value) === 1){
                     if(document.getElementById("descitem").value === ""){

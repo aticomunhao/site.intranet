@@ -70,8 +70,8 @@ if($Acao=="buscaBem"){
     $Erro = 0;
     $NomeUsuRest = "";
 
-    $rs1 = pg_query($Conec, "SELECT to_char(datareceb, 'DD/MM/YYYY'), TO_CHAR(dataachou, 'DD/MM/YYYY'), descdobem, localachou, nomeachou, telefachou, numprocesso, codusuins, 
-    TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, destinonodestino, setordestino, nomerecebeudestino, nomepropriet, cpfpropriet, telefpropriet, usurestit FROM ".$xProj.".bensachados WHERE id = $Codigo ");
+    $rs1 = pg_query($Conec, "SELECT to_char(datareceb, 'DD/MM/YYYY'), TO_CHAR(dataachou, 'DD/MM/YYYY'), descdobem, localachou, nomeachou, telefachou, numprocesso, codusuins, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, destinonodestino, setordestino, 
+    nomerecebeudestino, nomepropriet, cpfpropriet, telefpropriet, usurestit FROM ".$xProj.".bensachados WHERE id = $Codigo ");
     //TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo  - procura o intervalo de 3 meses entre o recebimento e hoje
     if(!$rs1){
         $Erro = 1;
@@ -80,6 +80,7 @@ if($Acao=="buscaBem"){
         $tbl1 = pg_fetch_row($rs1);
         $CodUsuIns = $tbl1[7];
         $CodUsuRestit = $tbl1[15];
+        $CodDest = $tbl1[9];
 
         $rs2 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodUsuIns"); // usuário que inseriu no sistema
         $tbl2 = pg_fetch_row($rs2);
@@ -91,7 +92,12 @@ if($Acao=="buscaBem"){
             $tbl3 = pg_fetch_row($rs3);
             $NomeUsuRest = $tbl3[0];
         }
-        $var = array("coderro"=>$Erro, "datareg"=>$tbl1[0], "dataachou"=>$tbl1[1], "descdobem"=>nl2br($tbl1[2]), "localachou"=>$tbl1[3], "nomeachou"=>$tbl1[4], "telefachou"=>$tbl1[5], "numprocesso"=>$tbl1[6], "codusuins"=>$CodUsuIns, "nomeusuins"=>$NomeUsuIns, "intervalo"=>$tbl1[8], "destino"=>$tbl1[9], "setordestino"=>$tbl1[10], "nomerecebeu"=>$tbl1[11], "nomepropriet"=>$tbl1[12], "cpfpropriet"=>$tbl1[13], "telefpropriet"=>$tbl1[14], "nomeusurestit"=>$NomeUsuRest, "codusurestit"=>$CodUsuRestit);
+
+        $rs4 = pg_query($Conec, "SELECT descdest FROM ".$xProj.".bensdestinos WHERE numdest = $CodDest"); // usuário que inseriu no sistema
+        $tbl4 = pg_fetch_row($rs4);
+        $DescDest = $tbl4[0];
+
+        $var = array("coderro"=>$Erro, "datareg"=>$tbl1[0], "dataachou"=>$tbl1[1], "descdobem"=>nl2br($tbl1[2]), "localachou"=>$tbl1[3], "nomeachou"=>$tbl1[4], "telefachou"=>$tbl1[5], "numprocesso"=>$tbl1[6], "codusuins"=>$CodUsuIns, "nomeusuins"=>$NomeUsuIns, "intervalo"=>$tbl1[8], "destino"=>$tbl1[9], "setordestino"=>$tbl1[10], "nomerecebeu"=>$tbl1[11], "nomepropriet"=>$tbl1[12], "cpfpropriet"=>$tbl1[13], "telefpropriet"=>$tbl1[14], "nomeusurestit"=>$NomeUsuRest, "codusurestit"=>$CodUsuRestit, "setorrecebeu"=>$DescDest);
     }
     $responseText = json_encode($var);
     echo $responseText;
@@ -119,7 +125,8 @@ if($Acao=="restituiBem"){
     $Cpf = filter_input(INPUT_GET, 'cpfproprietario');
     $Telef = filter_input(INPUT_GET, 'telefproprietario');
     $Erro = 0;
-    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET nomepropriet = '$Nome', cpfpropriet = '$Cpf', telefpropriet = '$Telef', usurestit = ".$_SESSION["usuarioID"].", datarestit = NOW(), usuarquivou = ".$_SESSION["usuarioID"].", dataarquivou = NOW() WHERE id = $Cod");
+//    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET nomepropriet = '$Nome', cpfpropriet = '$Cpf', telefpropriet = '$Telef', usurestit = ".$_SESSION["usuarioID"].", datarestit = NOW(), usuarquivou = ".$_SESSION["usuarioID"].", dataarquivou = NOW() WHERE id = $Cod");
+    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET nomepropriet = '$Nome', cpfpropriet = '$Cpf', telefpropriet = '$Telef', usurestit = ".$_SESSION["usuarioID"].", datarestit = NOW() WHERE id = $Cod");
     if(!$rs1){
         $Erro = 1;
     }
@@ -140,13 +147,25 @@ if($Acao=="encamBemCsg"){
     echo $responseText;
 }
 
-if($Acao=="destinaBem"){
+if($Acao=="destinaBem__"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Setor = filter_input(INPUT_GET, 'setordestino');
     $NomeFunc = filter_input(INPUT_GET, 'nomefuncionario');
     $Destino = filter_input(INPUT_GET, 'selecdestino');
     $Erro = 0;
     $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET setordestino = '$Setor', nomerecebeudestino = '$NomeFunc', destinonodestino = '$Destino', datadestino = NOW(), dataarquivou = NOW(), usudestino = ".$_SESSION["usuarioID"].", usuarquivou = ".$_SESSION["usuarioID"]." WHERE id = $Cod");
+    if(!$rs1){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+if($Acao=="destinaBem"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Setor = filter_input(INPUT_GET, 'selecdestino');
+    $Erro = 0;
+    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET destinonodestino = $Setor, datadestino = NOW(), usudestino = ".$_SESSION["usuarioID"]." WHERE id = $Cod");
     if(!$rs1){
         $Erro = 1;
     }

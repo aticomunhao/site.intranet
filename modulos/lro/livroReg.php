@@ -23,7 +23,7 @@ if(!isset($_SESSION["usuarioID"])){
         <style>
             .modalMsg-content{
                 background: linear-gradient(180deg, white, #86c1eb);
-                margin: 7% auto; /* 10% do topo e centrado */
+                margin: 10% auto; /* 10% do topo e centrado */
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
@@ -31,7 +31,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
             .checkList-content{
                 background: linear-gradient(180deg, white, #00FF99);
-                margin: 7% auto; /* 10% do topo e centrado */
+                margin: 10% auto; /* 10% do topo e centrado */
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;

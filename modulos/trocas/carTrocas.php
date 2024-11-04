@@ -35,8 +35,6 @@ session_start();
                             echo "</td>";
                             echo "<td style='width: 80%; '><div style='margin: 10px; padding: 5px; border: 2px solid blue; border-radius: 15px;'>".$tbl[3]."</div></td>";
                         echo "</tr>";
-                        
-         
                     }
                 }
                 ?>

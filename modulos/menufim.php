@@ -172,6 +172,14 @@
 					</li>
 
 					<?php
+					//Bens encontrados
+					if(isset($_SESSION["AdmBens"])){
+						if($_SESSION["AdmBens"] == 1 || $_SESSION["FiscBens"] == 1 || $_SESSION["SoInsBens"] == 1 || $_SESSION["AdmUsu"] > 6){ 
+							echo "<li>";
+							echo "<a href='#' onclick='openhref(64);'>Bens Encontrados</a>";
+							echo "</li>";
+						}
+					}
 					//Claviculário da DAF
 					$Clav2 = parEsc("clav2", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
 					$FiscClav2 = parEsc("fisc_clav2", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
@@ -261,13 +269,7 @@
 						echo "<li>";
 							echo "<a href='#' onclick='openhref(62);'>Atualizar Senha</a>";
 						echo "</li>";
-						if(isset($_SESSION["AdmBens"])){
-							if($_SESSION["AdmBens"] == 1 || $_SESSION["FiscBens"] == 1 || $_SESSION["SoInsBens"] == 1 || $_SESSION["AdmUsu"] > 6){ 
-								echo "<li>";
-									echo "<a href='#' onclick='openhref(64);'>Bens Encontrados</a>";
-								echo "</li>";
-							}
-						}
+
 						if($Adm > 6){
 							echo "<li>";
 					   			echo "<a href='#' onclick='openhref(61);'>Cadastro de Usuários</a>";

@@ -8,11 +8,41 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <meta charset="UTF-8"> 
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title></title>
+        <style>
+            .fixed {
+                table-layout: fixed;
+                border-collapse: collapse;
+            }
+            .fixed th {
+                text-decoration: underline;
+            }
+            .fixed th,
+            .fixed td {
+                min-width: 20px;
+            }
+
+            .fixed thead {
+                background-color: #FFFAFA;
+            }
+            .fixed thead tr {
+                display: block;
+                position: relative;
+            }
+
+            .fixed tbody {
+                display: block;
+                overflow: auto;
+                width: 100%;
+                height: 800px;
+                overflow-y: scroll;
+                overflow-x: hidden;
+            }
+        </style>
         <script>
            new DataTable('#idTabela', {
                 lengthMenu: [
-                    [100, 200, 500],
-                    [100, 200, 500]
+                    [200, 500],
+                    [200, 500]
                 ],
                 language: {
                     info: 'Mostrando Página _PAGE_ of _PAGES_',
@@ -86,14 +116,14 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <tr>
                             <td style="display: none;"></td>
                             <td style="display: none;"><?php echo $Cod; ?></td>
-                            <td><?php echo $tbl0[1]; ?></td> <!-- data -->
-                            <td style="font-size: 80%;"><?php echo $Semana_Extract[$tbl0[10]]; ?></td> <!-- dia semana data -->
-                            <td style="<?php if($row1 > 0){echo 'color: red;'; } ?>" ><?php echo $tbl0[2]." - ".$tbl0[3]; ?></td> <!-- turno -->
-                            <td style="text-align: center;"><?php echo $tbl0[4]; ?></td> <!-- numocor -->
-                            <td style="text-align: center;"><?php echo $tbl0[5]; ?></td> <!-- ususvc -->
+                            <td title="Data do Registro"><?php echo $tbl0[1]; ?></td> <!-- data -->
+                            <td style="font-size: 80%;" title="Dia da Semana"><?php echo $Semana_Extract[$tbl0[10]]; ?></td> <!-- dia semana data -->
+                            <td style="<?php if($row1 > 0){echo 'color: red;'; } ?>" title="Turno" ><?php echo $tbl0[2]." - ".$tbl0[3]; ?></td> <!-- turno -->
+                            <td style="text-align: center;" title="Número do Registro"><?php echo $tbl0[4]; ?></td> <!-- numocor -->
+                            <td style="text-align: center;" title="Nome Funcionário"><?php echo $tbl0[5]; ?></td> <!-- ususvc -->
                             <td style="display: none;"><?php echo $tbl0[7]; ?></td> <!-- relato já enviado -->
                             <td style="display: none;"><?php echo $tbl0[8]; ?></td> <!-- codusu - quem inseriu o relato -->
-                            <td style="font-size: 80%; text-align: center;"><?php if($tbl0[9] == 1){echo "Sim";}else{echo "Não";} ?></td>
+                            <td style="font-size: 80%; text-align: center;" title="Houve Ocorrência?"><?php if($tbl0[9] == 1){echo "Sim";}else{echo "Não";} ?></td>
                         </tr>
                     <?php
                     }

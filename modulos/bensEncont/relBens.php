@@ -69,20 +69,24 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             }
 
             $Condic = $xProj.".bensachados.ativo = 1 ";
+            $vIndex = $xProj.".bensachados.datareceb DESC";
             if($Acao == "restit"){
                 $Condic = $xProj.".bensachados.ativo = 1 And usurestit > 0";
+                $vIndex = $xProj.".bensachados.datareceb DESC";
             }
             if($Acao == "destinados"){
                 $Condic = $xProj.".bensachados.ativo = 1 And usudestino > 0";
+                $vIndex = $xProj.".bensachados.datadestino DESC";
             }
             if($Acao == "destinar"){
-                $Condic = $xProj.".bensachados.ativo = 1 And usurestit = 0 And usudestino = 0 And (CURRENT_DATE-datareceb) > 90 ";
+                $Condic = $xProj.".bensachados.ativo = 1 And usurestit = 0 And usudestino = 0 And (CURRENT_DATE-datareceb) >= 90 ";
+                $vIndex = $xProj.".bensachados.datareceb DESC";
             }
 
             $rs0 = pg_query($Conec, "SELECT ".$xProj.".bensachados.id, to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, usuguarda, usurestit, usucsg, usuarquivou, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, usudestino, CURRENT_DATE-datareceb, codusuins, date_part('dow', datareceb)  
             FROM ".$xProj.".bensachados INNER JOIN ".$xProj.".poslog ON ".$xProj.".bensachados.codusuins = ".$xProj.".poslog.pessoas_id
             WHERE $Condic 
-            ORDER BY ".$xProj.".bensachados.datareceb DESC");
+            ORDER BY $vIndex ");
 
             //And AGE(CURRENT_DATE, ".$xProj.".bensachados.datareceb) <= '1 YEAR' 
 
@@ -131,7 +135,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         $GuardaCSG = $tbl0[6];
                         $Destino = $tbl0[9];
                         $Arquivado = $tbl0[7];
-                        $Intervalo = (int) $tbl0[8];
+//                        $Intervalo = (int) $tbl0[8];
                         $Dias = str_pad(($tbl0[10]), 2, "0", STR_PAD_LEFT);
                         ?>
                         <tr>
@@ -162,24 +166,33 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 //                                    echo "<button disabled class='botTable fundoCinza corAzulClaro'>Guarda</button>";
 //                                }
                                 if($Destino == 0){
-                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);' title='Formuário de restituição ao proprietário'>Restituição</button>";
+                                    if($Restit == 0){
+                                        echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);' title='Formuário de restituição ao proprietário'>Restituição</button>";
+                                    }else{
+                                        echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);' title='Formuário de restituição ao proprietário'>Restituído</button>";
+                                    }
                                 }else{
                                     echo "<button disabled class='botTable fundoCinza corAzulClaro'>Restituição</button>";
                                 }
 
-                                if($Edit == 1 && $Arquivado == 0 && $Intervalo > 2){
+                                if($Edit == 1 && $Arquivado == 0 && $Destino == 0 && $Dias >= 90){
                                     echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 4, $Restit);' title='Destinação após 90 dias'>Destinação</button>";
                                 }else{
                                     echo "<button disabled class='botTable fundoCinza corAzulClaro'>Destinação</button>";
                                 }
+
+                                if($Destino > 0 && $Arquivado == 0){
+                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 5, $Restit);' title='Recebimento no destino'>Recebimento</button>";
+                                }
+
+
+
                                 if($Impr == 1){ // nível adm para editar
                                     echo "<button class='botTable fundoAmarelo' onclick='imprProcesso($tbl0[0]);' title='Gerar PDF do processo'>PDF</button>";
                                 }
                                 echo "<br>";
                             }
-                            ?>
 
-                            <?php
 //                            echo "<div class='etiqResult' style='border: 0px;' title='Situação do processo'>Situação: </div>";
                             if($UsuIns > 0){
                                 echo "<div class='etiqResult' title='Registro inicial'>Registrado</div>";

@@ -11,8 +11,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <script type="text/javascript">
             new DataTable('#idTabela', {
                 lengthMenu: [
-                    [50, 100, 200, 500],
-                    [50, 100, 200, 500]
+                    [200, 500, 1000],
+                    [200, 500, 1000]
                 ],
                 language: {
                     info: 'Mostrando Página _PAGE_ of _PAGES_',
@@ -136,12 +136,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <tr>
                             <td style="display: none;"></td>
                             <td style="display: none;"><?php echo $tbl0[0]; ?></td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;"><?php echo $tbl0[1]; ?></td> <!-- Data -->
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;"><?php echo $Sem; ?></td> <!-- dia da semana --> 
-
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;"><?php echo $Leit07; ?></td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;"><?php echo $Cons1." kWh"; ?></td>
-<!--                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo number_format(($ConsDia), 3, ",","."); ?></td> -->
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;" title="Data"><?php echo $tbl0[1]; ?></td> <!-- Data -->
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 70%;" title="Dia da Semana"><?php echo $Sem; ?></td> <!-- dia da semana --> 
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;" title="Leitura"><?php echo $Leit07; ?></td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;" title="Consumo do dia"><?php echo $Cons1." kWh"; ?></td>
                         </tr>
                         <?php
                             $Cont = $Cont + $tbl0[3];

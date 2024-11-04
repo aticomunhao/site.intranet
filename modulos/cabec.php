@@ -19,6 +19,6 @@
             <div class="fontTrebuchet_Spacing" style="width: 99%; position: absolute; top: 2px; font-size: 1.3rem; letter-spacing: 2px; word-spacing: 2px;">Comunhão Espírita de Brasília</div>
             <div class="" style="width: 99%; position: absolute; font-size: .9rem; bottom: 0px; font-weight: bold;"><?php echo $diasemana[$diasemana_numero].", ".date('d/m/Y'); ?></div>
         </div>
-        <div class="form-control" id="container1Dir" style="width: 40%; border: 1px solid blue; border-radius: 20px; background-image: url('imagens/ComunBannerLongo2.jpg'); background-repeat: no-repeat; background-position-x: center; background-position-y: center;"></div>
+        <div id="container1Dir" style="width: 40%; border: 1px solid blue; border-radius: 20px; background-image: url('imagens/ComunBannerLongo2.jpg'); background-repeat: no-repeat; background-position-x: center; background-position-y: center;"></div>
     </body>
 </html>
