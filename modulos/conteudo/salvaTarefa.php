@@ -117,8 +117,10 @@ if($Acao=="salvaTarefa"){
     $textoExt = filter_input(INPUT_GET, 'textoExt');
     $Status = filter_input(INPUT_GET, 'selectStatus'); // adminstr pode mudar
     $Priorid = filter_input(INPUT_GET, 'priorid');
-    $SetorIns = $_SESSION["CodSetorUsu"];
-    $SetorExec = 0;
+ //   $SetorIns = $_SESSION["CodSetorUsu"];
+    $SetorIns = parEsc("grupotarefa", $Conec, $xProj, $_SESSION["usuarioID"]); // para funcionar em grupos
+//    $SetorExec = 0;
+    $SetorExec = $SetorIns; // funcionando por setores
     $Erro = 0;
     $row = 0;
 
@@ -140,12 +142,12 @@ if($Acao=="salvaTarefa"){
         if($row0 > 0){
             $Erro = 2; // tarefa já foi dada para o mesmo usuário
         }else{
-            $rs1 = pg_query($Conec, "SELECT codsetor FROM ".$xProj.".poslog WHERE pessoas_id = $usuExec");
-            $row1 = pg_num_rows($rs1);
-            if($row1 == 1){
-                $tbl1 = pg_fetch_row($rs1);
-                $SetorExec = $tbl1[0];
-            }
+//            $rs1 = pg_query($Conec, "SELECT codsetor FROM ".$xProj.".poslog WHERE pessoas_id = $usuExec");
+//            $row1 = pg_num_rows($rs1);
+//            if($row1 == 1){
+//                $tbl1 = pg_fetch_row($rs1);
+//                $SetorExec = $tbl1[0];
+//            }
 
             $rsCod = pg_query($Conec, "SELECT MAX(idtar) FROM ".$xProj.".tarefas");
             $tblCod = pg_fetch_row($rsCod);

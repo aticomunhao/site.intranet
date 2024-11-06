@@ -1298,7 +1298,7 @@ if(!isset($_SESSION["usuarioID"])){
         <div id="relacimprLRO" class="relacmodal">
             <div class="modal-content-imprLRO">
                 <span class="close" onclick="fechaImprLRO();">&times;</span>
-                <h5 id="titulomodal" style="text-align: center;color: #666;">Controle de Bens Encontrados</h5>
+                <h5 id="titulomodal" style="text-align: center;color: #666;">Livro de Registro de Ocorrências</h5>
                 <h6 id="titulomodal" style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
                 <div style="border: 2px solid #C6E2FF; border-radius: 10px;">
                     <table style="margin: 0 auto; width: 95%;">

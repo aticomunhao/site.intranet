@@ -24,7 +24,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
     $rs = pg_query($Conec, "SELECT to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, to_char(".$xProj.".bensachados.dataachou, 'DD/MM/YYYY'), localachou, nomeachou, telefachou, to_char(NOW(), 'DD/MM/YYYY'), usuguarda, to_char(".$xProj.".bensachados.dataguarda, 'DD/MM/YYYY'), nomepropriet, 
     cpfpropriet, telefpropriet, usurestit, to_char(".$xProj.".bensachados.datarestit, 'DD/MM/YYYY'), usucsg, to_char(".$xProj.".bensachados.datarcbcsg, 'DD/MM/YYYY'), setordestino, nomerecebeudestino, destinonodestino, to_char(".$xProj.".bensachados.datadestino, 'DD/MM/YYYY'), 
-    usuarquivou, to_char(".$xProj.".bensachados.dataarquivou, 'DD/MM/YYYY'), usudestino, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, CURRENT_DATE-datareceb As Dias
+    usuarquivou, to_char(".$xProj.".bensachados.dataarquivou, 'DD/MM/YYYY'), usudestino, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, CURRENT_DATE-datareceb As Dias, descencdestino, descencprocesso 
     FROM ".$xProj.".bensachados INNER JOIN ".$xProj.".poslog ON ".$xProj.".bensachados.codusuins = ".$xProj.".poslog.pessoas_id
     WHERE ".$xProj.".bensachados.id = $Num ");
     $row = pg_num_rows($rs);
@@ -38,6 +38,8 @@ if(!isset($_SESSION['AdmUsu'])){
     $UsuArquiv = $tbl[21];
 //    $Intervalo = (int) $tbl[24];
     $Dias = (int) $tbl[25];
+    $DestSetor = $tbl[26];
+    $DestProcesso = $tbl[27];
 //    8 e 9 usuguarda e dataguarda
 // 10 nomeprop
 //usurestit 13   data restit 14
@@ -83,7 +85,15 @@ if(!isset($_SESSION['AdmUsu'])){
     }else{
         $DescDestino = "";
     }
-    
+    $rs6 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $UsuDestino");
+    $row6 = pg_num_rows($rs6);
+    if($row6 > 0){
+        $tbl6 = pg_fetch_row($rs6);
+        $NomeUsuDestino = $tbl6[0];
+    }else{
+        $NomeUsuDestino = "";
+    }
+
     class PDF extends FPDF{
         function Footer(){
            // Vai para 1.5 cm da parte inferior
@@ -122,7 +132,7 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->SetFont('Arial', '' , 10);
     $pdf->SetTextColor(25, 25, 112);
     if($Acao == "impr" ){
-        $pdf->MultiCell(150, 3, "Bens Encontrados", 0, 'C', false);
+        $pdf->MultiCell(150, 3, "Achados e Perdidos", 0, 'C', false);
     }
 
     $pdf->SetTextColor(0, 0, 0);
@@ -137,7 +147,7 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->SetTextColor(125, 125, 125); //cinza  //   $pdf->SetTextColor(190, 190, 190); //cinza claro   //  $pdf->SetTextColor(204, 204, 204); //cinza mais claro
     $pdf->SetFillColor(232, 232, 232); // fundo cinza
     if($Acao == "imprProcesso"){
-        $pdf->MultiCell(0, 8, "REGISTRO DE RECEBIMENTO DE BENS ENCONTRADOS", 1, 'C', true);
+        $pdf->MultiCell(0, 8, "REGISTRO DE RECEBIMENTO DE ACHADOS E PERDIDOS", 1, 'C', true);
         $pdf->ln(3);
 
         $pdf->Cell(0, 4, "- Processo: ".$tbl[1]." registrado em ".$tbl[0], 0, 1, 'L');
@@ -331,21 +341,22 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->SetFont('Arial', 'I', 8);
             $pdf->Cell(30, 4, "Setor de destino: ", 0, 0, 'L');
             $pdf->SetFont('Arial', '', 10);
-            $pdf->MultiCell(0, 5, $tbl[17], 1, 'J', false);
+            $pdf->MultiCell(0, 5, $DestSetor, 1, 'J', false);
 
             $pdf->ln(1);
             $pdf->SetX(15); 
             $pdf->SetFont('Arial', 'I', 8);
-            $pdf->Cell(30, 4, "Funcionário do Setor: ", 0, 0, 'L');
+            $pdf->Cell(30, 4, "Finalidade: ", 0, 0, 'L');
             $pdf->SetFont('Arial', '', 10);
-            $pdf->MultiCell(0, 5, $tbl[18], 1, 'J', false);
+            $pdf->MultiCell(0, 5, $DestProcesso, 1, 'J', false);
 
             $pdf->ln(1);
             $pdf->SetX(15); 
             $pdf->SetFont('Arial', 'I', 8);
-            $pdf->Cell(30, 4, "Destino do bem: ", 0, 0, 'L');
+            $pdf->Cell(30, 4, "Recebido por: ", 0, 0, 'L');
             $pdf->SetFont('Arial', '', 10);
-            $pdf->MultiCell(0, 5, $DescDestino, 1, 'J', false);
+            $pdf->MultiCell(0, 5, $NomeUsuDestino, 1, 'J', false);
+
         }else{
             $pdf->ln(3);
             if($UsuRestit > 0){

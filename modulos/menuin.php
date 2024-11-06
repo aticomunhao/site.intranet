@@ -24,43 +24,52 @@
 			//Provisório
 			if(strtotime('2024/11/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-
-				//0049
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS clav2 smallint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS chave2 smallint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisc_clav2 smallint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS clav3 smallint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS chave3 smallint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisc_clav3 smallint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET clav2 = 1, chave2 = 1, fisc_clav2 = 1, clav3 = 1, chave3 = 1, fisc_clav3 = 1 WHERE pessoas_id = 3 ;");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET clav2 = 1, chave2 = 1, fisc_clav2 = 1, clav3 = 1, chave3 = 1, fisc_clav3 = 1 WHERE pessoas_id = 83 ;");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET clav2 = 1, chave2 = 1, fisc_clav2 = 1, clav3 = 1, chave3 = 1, fisc_clav3 = 1 WHERE pessoas_id = 22 ;");
-
-				//0050 - liberação dos claviculários DAF e Chaves Lacradas - OK
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS tempoinat smallint NOT NULL DEFAULT 1800 ");
-
 				//0057
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS grupotarefa smallint NOT NULL DEFAULT 0 ;");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS usumodifgrupo bigint NOT NULL DEFAULT 0 ;");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS datamodifgrupo timestamp without time zone DEFAULT '3000-12-31' ;");
-				$rs = pg_query($Conec, "SELECT grupotarefa FROM ".$xProj.".poslog WHERE grupotarefa > 0;");
+
+				//0058
+				//Modificação na destinação dos bens era: Descarte, Destruição, Doação, Venda
+				pg_query($Conec, "UPDATE ".$xProj.".bensdestinos SET descdest = 'Almoxarifado' WHERE id = 2 ;");
+				pg_query($Conec, "UPDATE ".$xProj.".bensdestinos SET descdest = 'Bazar' WHERE id = 3 ;");
+				pg_query($Conec, "UPDATE ".$xProj.".bensdestinos SET descdest = 'Livraria' WHERE id = 4 ;");
+				pg_query($Conec, "UPDATE ".$xProj.".bensdestinos SET descdest = 'Manutenção' WHERE id = 5 ;");
+
+				$rs = pg_query($Conec, "SELECT id FROM ".$xProj.".bensdestinos WHERE numdest = 5;");
 				$row = pg_num_rows($rs);
 				if($row == 0){
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET grupotarefa = codsetor WHERE codsetor = 7;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET grupotarefa = codsetor WHERE codsetor = 19;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET grupotarefa = 0 WHERE pessoas_id = 3;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET grupotarefa = 7 WHERE pessoas_id = 22;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET grupotarefa = 7 WHERE pessoas_id = 34;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET grupotarefa = 7 WHERE pessoas_id = 45;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET grupotarefa = 7 WHERE pessoas_id = 73;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET grupotarefa = 7 WHERE pessoas_id = 2057;");
+					pg_query($Conec, "INSERT INTO ".$xProj.".bensdestinos (id, numdest, descdest)  VALUES (6, 5, 'DIADM')");
+					pg_query($Conec, "INSERT INTO ".$xProj.".bensdestinos (id, numdest, descdest)  VALUES (7, 6, 'DIFIN')");
 				}
-				//Modificação na destinação dos bens era: Descarte, Destruição, Doação, Venda
-				pg_query($Conec, "UPDATE ".$xProj.".bensdestinos SET descdest = 'Descarte' WHERE id = 2 ;");
-				pg_query($Conec, "UPDATE ".$xProj.".bensdestinos SET descdest = 'Destruição' WHERE id = 3 ;");
-				pg_query($Conec, "UPDATE ".$xProj.".bensdestinos SET descdest = 'Doação' WHERE id = 4 ;");
-				pg_query($Conec, "UPDATE ".$xProj.".bensdestinos SET descdest = 'Bazar' WHERE id = 5 ;");
+				pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bensprocessos (
+					id SERIAL PRIMARY KEY, 
+					processo VARCHAR(50) ) 
+				 ");
 
+				$rs = pg_query($Conec, "SELECT id FROM ".$xProj.".bensprocessos WHERE processo != '';");
+				$row = pg_num_rows($rs);
+				if($row == 0){
+					pg_query($Conec, "INSERT INTO ".$xProj.".bensprocessos (id, processo)  VALUES (1, '')");
+					pg_query($Conec, "INSERT INTO ".$xProj.".bensprocessos (id, processo)  VALUES (2, 'Descarte')");
+					pg_query($Conec, "INSERT INTO ".$xProj.".bensprocessos (id, processo)  VALUES (3, 'Destruição')");
+					pg_query($Conec, "INSERT INTO ".$xProj.".bensprocessos (id, processo)  VALUES (4, 'Doação')");
+					pg_query($Conec, "INSERT INTO ".$xProj.".bensprocessos (id, processo)  VALUES (5, 'Venda')");
+				}
+
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS usuencdestino bigint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS dataencdestino timestamp without time zone DEFAULT '3000-12-31' ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS codencdestino smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS descencdestino VARCHAR(50) ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS codencprocesso smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS descencprocesso VARCHAR(50) ;");
+
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisc_agua smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisc_eletric smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET fisc_agua = 1, fisc_eletric = 1 WHERE pessoas_id = 2057 ;"); // Adilson
+
+				pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit1 = datains WHERE DATE_PART('YEAR', datasit1) = 3000");
+				pg_query($Conec, "UPDATE ".$xProj.".tarefas SET setorexec = 7 WHERE setorexec != 19");
 
 			} // fim data limite
         ?>

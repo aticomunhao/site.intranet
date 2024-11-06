@@ -1230,7 +1230,7 @@ if(!isset($_SESSION["usuarioID"])){
     $MesSalvo = parEsc("mes_escdaf", $Conec, $xProj, $_SESSION["usuarioID"]);
     if(is_null($MesSalvo) || $MesSalvo == ""){
         $MesSalvo = date("m")."/".date("Y");
-        pg_query($Conec, "UPDATE ".$xProj."poslog SET mes_escdaf = '$MesSalvo' WHERE pessoas_id = ". $_SESSION["usuarioID"]."" );
+        pg_query($Conec, "UPDATE ".$xProj.".poslog SET mes_escdaf = '$MesSalvo' WHERE pessoas_id = ". $_SESSION["usuarioID"]."" );
     }
     $Busca = addslashes($MesSalvo); 
     $Proc = explode("/", $Busca);

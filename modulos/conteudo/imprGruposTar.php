@@ -76,7 +76,7 @@ if(isset($_REQUEST["acao"])){
     $pdf->SetDrawColor(200); // cinza claro  
 
     if($Acao == "imprGrupos"){
-        $rs0 = pg_query($Conec, "SELECT grupotarefa, siglasetor, descsetor FROM ".$xProj.".poslog INNER JOIN ".$xProj.".setores ON ".$xProj.".poslog.grupotarefa = ".$xProj.".setores.codset WHERE grupotarefa != 0 
+        $rs0 = pg_query($Conec, "SELECT grupotarefa, siglasetor, descsetor FROM ".$xProj.".poslog INNER JOIN ".$xProj.".setores ON ".$xProj.".poslog.grupotarefa = ".$xProj.".setores.codset WHERE grupotarefa > 1 
         GROUP BY grupotarefa, siglasetor, descsetor ORDER BY ".$xProj.".poslog.grupotarefa");
         $row0 = pg_num_rows($rs0);
         $pdf->ln(5);

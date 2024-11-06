@@ -57,8 +57,8 @@ if(!isset($_SESSION["usuarioID"])){
                 if(parseInt(document.getElementById("guardaerro").value) === 0){
                     document.getElementById("botInserir").style.visibility = "hidden"; 
                     document.getElementById("botImprimir").style.visibility = "hidden"; 
-                    if(parseInt(document.getElementById("InsLeitura").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // se estiver marcado em cadusu para fazer a leitura
-                        if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
+                    if(parseInt(document.getElementById("InsLeitura").value) === 1 || parseInt(document.getElementById("FiscAgua").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // se estiver marcado em cadusu para fazer a leitura
+                        if(parseInt(document.getElementById("InsLeitura").value) === 1 || parseInt(document.getElementById("UsuAdm").value) >= 6){
                             document.getElementById("botInserir").style.visibility = "visible"; 
                             $("#container5").load("modulos/leituras/carAgua.php");
                             $("#container6").load("modulos/leituras/carEstatAgua.php");
@@ -71,6 +71,10 @@ if(!isset($_SESSION["usuarioID"])){
                         $("#container5").load("modulos/leituras/carMsg.php?msgtipo=1");
                         $("#container6").load("modulos/leituras/carMsg.php?msgtipo=1");
                     }
+                    if(parseInt(document.getElementById("InsLeitura").value) === 0){
+                        document.getElementById("botInserir").style.visibility = "hidden"; 
+                    }
+
                     //para editar obedece ao nivel administrativo
                     if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value)){
                         document.getElementById("botImprimir").style.visibility = "visible"; 
@@ -103,6 +107,9 @@ if(!isset($_SESSION["usuarioID"])){
             });
 
             function carregaModal(Cod){
+                if(parseInt(document.getElementById("InsLeitura").value) === 0){
+                    return false;
+                }
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/leituras/salvaLeitura.php?acao=buscaData&codigo="+Cod, true);
@@ -366,6 +373,7 @@ if(!isset($_SESSION["usuarioID"])){
             $admIns = parAdm("insleituraagua", $Conec, $xProj);   // nível para inserir 
             $admEdit = parAdm("editleituraagua", $Conec, $xProj); // nível para editar
             $InsAgua = parEsc("agua", $Conec, $xProj, $_SESSION["usuarioID"]); // procura agua em poslog 
+            $FiscAgua = parEsc("fisc_agua", $Conec, $xProj, $_SESSION["usuarioID"]); // procura fisc_agua em poslog 
 
             // Preenche caixa de escolha mes/ano para impressão
             $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataleitura, 'MM'), '/', TO_CHAR(dataleitura, 'YYYY')) 
@@ -380,6 +388,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" />
         <input type="hidden" id="InsLeitura" value="<?php echo $InsAgua; ?>" /> <!-- marca em cadusu para inserir as leituras -->
+        <input type="hidden" id="FiscAgua" value="<?php echo $FiscAgua; ?>" />
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->

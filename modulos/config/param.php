@@ -988,12 +988,12 @@
                 <label id="labeltempoocioso" style="color: gray; font-size: .8em;"> de tempo ocioso.</label>
             </div>
             
-<!-- Bens Encontrados  -->
+<!-- Achados e Perdidos  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
-                - <b>Bens Encontrados</b>: <label style="color: gray; font-size: .8em;"> Nível mínimo mais a marca no usuário autorizam a inserção.</label><br>
+                - <b>Achados e Perdidos</b>: <label style="color: gray; font-size: .8em;"> Nível mínimo mais a marca no usuário autorizam a inserção.</label><br>
                 <table style="margin: 0 auto;">
                     <tr>
-                        <td>Nível mínimo para INSERIR bens encontrados:</td>
+                        <td>Nível mínimo para INSERIR Achados e Perdidos:</td>
                         <td style="padding-left: 5px;">
                         <select onchange="salvaParam(value, 'insbens');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                             <option value="<?php echo $insBens; ?>"><?php echo $nomeInsBens; ?></option>
@@ -1013,7 +1013,7 @@
                         <td></td>
                     </tr>
                     <tr>
-                    <td>Nível mínimo para EDITAR bens encontrados:</td>
+                    <td>Nível mínimo para EDITAR Achados e Perdidos:</td>
                         <td style="padding-left: 5px;">
                         <select onchange="salvaParam(value, 'editBens');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                         <option value="<?php echo $editBens; ?>"><?php echo $nomeEditBens; ?></option>
@@ -1627,7 +1627,7 @@
                 <div style="margin-left: 70px; padding: 5px; text-align: left;">
                     <ul>
                         <li>Registros do Livro de Registros de Ocorrências.</li>
-                        <li>Registros de bens encontrados.</li>
+                        <li>Registros de Achados e Perdidos.</li>
                         <li>Registros das leituras do consumo de água.</li>
                         <li>Registros das leituras do consumo de eletricidade.</li>
                         <li>Registros de manutenção dos Condicionadores de Ar.</li>

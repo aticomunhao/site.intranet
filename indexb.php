@@ -136,14 +136,14 @@
                                     }
                                     if(parseInt(Resp.bens) > 0){
                                         if(parseInt(Resp.bens) === 1){
-                                            document.getElementById("temBens").innerHTML = "1 registro a processar em Bens Encontrados .";
+                                            document.getElementById("temBens").innerHTML = "1 registro a processar em Achados e Perdidos.";
                                         }else{
-                                            document.getElementById("temBens").innerHTML = Resp.bens+" registros a processar em Bens Encontrados.";
+                                            document.getElementById("temBens").innerHTML = Resp.bens+" registros a processar em Achados e Perdidos.";
                                         }
                                         document.getElementById("temBens").style.display = "block";
                                     }
                                     if(parseInt(Resp.bensdestinar) > 0){
-                                        document.getElementById("temBensPrazo").innerHTML = "Há registro em Bens Encontrados superando o prazo de 90 dias.";
+                                        document.getElementById("temBensPrazo").innerHTML = "Há registro em Achados e Perdidos superando o prazo de 90 dias.";
                                         document.getElementById("temBensPrazo").style.display = "block";
                                     }
                                     if(parseInt(Resp.contrato1) > 0 || parseInt(Resp.contrato2) > 0){
@@ -210,8 +210,8 @@
             function carregaPag(){ // atalho no aviso da página inicial
                 $('#container3').load('modulos/conteudo/tarefas.php');
             }
-            function carregaBens(){
-                $('#container3').load('modulos/bensEncont/pagBens.php');
+            function carregaBens(Valor){
+                $('#container3').load('modulos/bensEncont/pagBens.php?acao='+Valor);
             }
             function carregaContrato(){
                 $('#container3').load('modulos/contratos/contratos1.php');
@@ -396,8 +396,8 @@
                     <!-- tarja vermelha aviso de tarefa  -->
                     <div id="tarefa" class="blink" onclick="carregaPag();" style="display: none; font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 10px; color: red; font-size: 1.5em; font-weigth: bold; text-align: center; padding: 10px; border-radius: 10px;">TAREFA</div>
                     <div id="temTarefa" class="divTemTarefa" onclick="carregaPag();"></div>
-                    <div id="temBens" class="divTemBens" onclick="carregaBens();"></div>
-                    <div id="temBensPrazo" class="divTemBensPrazo" onclick="carregaBens();"></div>
+                    <div id="temBens" class="divTemBens" onclick="carregaBens('Guardar');"></div>
+                    <div id="temBensPrazo" class="divTemBensPrazo" onclick="carregaBens('Destinar');"></div>
                     <div id="temContrato" class="divTemContrato" onclick="carregaContrato();"></div>
 
                     <!-- texto da página inicial  -->

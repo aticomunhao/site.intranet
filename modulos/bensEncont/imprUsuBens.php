@@ -44,7 +44,7 @@ if(isset($_REQUEST["acao"])){
     $pdf->AliasNbPages(); // pega o número total de páginas
     $pdf->AddPage();
     $pdf->SetLeftMargin(30);
-    $pdf->SetTitle('Bens Encontrados', $isUTF8=TRUE);
+    $pdf->SetTitle('Achados e Perdidos', $isUTF8=TRUE);
     //Monta o arquivo pdf        
     $pdf->SetFont('Arial', '' , 12); 
     if($Dom != "" && $Dom != "NULL"){
@@ -65,7 +65,7 @@ if(isset($_REQUEST["acao"])){
     $pdf->SetFont('Arial', '' , 10);
     $pdf->SetTextColor(25, 25, 112);
     if($Acao == "listaUsuarios"){
-        $pdf->MultiCell(0, 3, "Gerenciamento de Bens Encontrados", 0, 'C', false);
+        $pdf->MultiCell(0, 3, "Gerenciamento de Achados e Perdidos", 0, 'C', false);
     }
 
     $pdf->SetTextColor(0, 0, 0);
@@ -80,7 +80,7 @@ if(isset($_REQUEST["acao"])){
         $row0 = pg_num_rows($rs0);
         $pdf->ln(5);
         $pdf->SetFont('Arial', 'I', 11);
-        $pdf->MultiCell(0, 3, "Usuários autorizados a registrar, administrar e dar destino aos Bens Encontrados:", 0, 'L', false);
+        $pdf->MultiCell(0, 3, "Usuários autorizados a registrar, administrar e dar destino aos Achados e Perdidos:", 0, 'L', false);
         $pdf->ln(3);
         if($row0 > 0){
             $pdf->SetFont('Arial', 'I', 8);
@@ -123,7 +123,7 @@ if(isset($_REQUEST["acao"])){
         $row0 = pg_num_rows($rs0);
         $pdf->ln(3);
         $pdf->SetFont('Arial', 'I', 11);
-        $pdf->MultiCell(0, 3, "Usuários autorizados a acompanhar a administração dos Bens Encontrados:", 0, 'L', false);
+        $pdf->MultiCell(0, 3, "Usuários autorizados a acompanhar a administração dos Achados e Perdidos:", 0, 'L', false);
         $pdf->ln(5);
         if($row0 > 0){
             $pdf->SetFont('Arial', 'I', 8);
@@ -165,7 +165,7 @@ if(isset($_REQUEST["acao"])){
         $row0 = pg_num_rows($rs0);
         $pdf->ln(3);
         $pdf->SetFont('Arial', 'I', 11);
-        $pdf->MultiCell(0, 3, "Usuários autorizados somente para registrar os Bens Encontrados:", 0, 'L', false);
+        $pdf->MultiCell(0, 3, "Usuários autorizados somente para registrar os Achados e Perdidos:", 0, 'L', false);
         $pdf->ln(5);
         if($row0 > 0){
             $pdf->SetFont('Arial', 'I', 8);

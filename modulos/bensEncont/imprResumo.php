@@ -35,7 +35,7 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->AddPage();
     //Monta o arquivo pdf        
     $pdf->SetFont('Arial', '' , 12); 
-    $pdf->SetTitle('Resumo Bens Encontrados', $isUTF8=TRUE);
+    $pdf->SetTitle('Resumo Achados e Perdidos', $isUTF8=TRUE);
     if($Dom != "" && $Dom != "NULL"){
         if(file_exists('../../imagens/'.$Dom)){
             if(getimagesize('../../imagens/'.$Dom)!=0){
@@ -51,7 +51,7 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->Cell(0, 5, 'Diretoria Administrativa e Financeira', 0, 2, 'C');
     $pdf->SetFont('Arial','' , 10); 
     $pdf->Cell(0, 5, $Cabec3, 0, 2, 'C');
-    $pdf->MultiCell(0, 3, "Bens Encontrados", 0, 'C', false);
+    $pdf->MultiCell(0, 3, "Achados e Perdidos", 0, 'C', false);
 
     $pdf->SetDrawColor(0);
     $pdf->SetTextColor(0, 0, 0);
@@ -64,7 +64,7 @@ if(!isset($_SESSION['AdmUsu'])){
         $pdf->SetTitle('Resumo Anual', $isUTF8=TRUE);
         $pdf->ln();
         $pdf->SetFont('Arial', 'I', 12);
-        $pdf->MultiCell(0, 5, "Resumo Anual de Bens Encontrados", 0, 'C', false);
+        $pdf->MultiCell(0, 5, "Resumo Anual de Achados e Perdidos", 0, 'C', false);
 
         $rs0 = pg_query($Conec, "SELECT DATE_PART('YEAR', datareceb) FROM ".$xProj.".bensachados WHERE ativo != 0 
         GROUP BY DATE_PART('YEAR', datareceb) ORDER BY DATE_PART('YEAR', datareceb) DESC");
@@ -82,7 +82,7 @@ if(!isset($_SESSION['AdmUsu'])){
                 $tbl1 = pg_fetch_row($rs1);
                 $pdf->SetFont('Arial', '' , 10); 
                 $pdf->SetX(50);
-                $pdf->Cell(55, 5, "Bens encontrados: ", 0, 0, 'L');
+                $pdf->Cell(55, 5, "Achados e Perdidos: ", 0, 0, 'L');
                 $pdf->SetFont('Arial', 'B' , 10); 
                 $pdf->Cell(10, 5, number_format($tbl1[0], 0, ",","."), 0, 1, 'R');
 

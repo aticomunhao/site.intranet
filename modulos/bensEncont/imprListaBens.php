@@ -78,7 +78,7 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->SetFont('Arial', '' , 10);
     $pdf->SetTextColor(25, 25, 112);
     if($Acao == "listamesBens" || $Acao == "listaanoBens"){
-        $pdf->MultiCell(0, 3, "Registros de Bens Encontrados", 0, 'C', false);
+        $pdf->MultiCell(0, 3, "Registros de Achados e Perdidos", 0, 'C', false);
     }
 
     $pdf->SetTextColor(0, 0, 0);

@@ -108,12 +108,29 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bensachados (
    $row = pg_num_rows($rs);
    if($row == 0){
       pg_query($Conec, "INSERT INTO ".$xProj.".bensdestinos (id, numdest, descdest)  VALUES (1, 0, '')");
-      pg_query($Conec, "INSERT INTO ".$xProj.".bensdestinos (id, numdest, descdest)  VALUES (2, 1, 'Descarte')");
-      pg_query($Conec, "INSERT INTO ".$xProj.".bensdestinos (id, numdest, descdest)  VALUES (3, 2, 'Destruição')");
-      pg_query($Conec, "INSERT INTO ".$xProj.".bensdestinos (id, numdest, descdest)  VALUES (4, 3, 'Doação')");
-      pg_query($Conec, "INSERT INTO ".$xProj.".bensdestinos (id, numdest, descdest)  VALUES (5, 4, 'Venda')");
+      pg_query($Conec, "INSERT INTO ".$xProj.".bensdestinos (id, numdest, descdest)  VALUES (2, 1, 'Almoxarifado')");
+      pg_query($Conec, "INSERT INTO ".$xProj.".bensdestinos (id, numdest, descdest)  VALUES (3, 2, 'Bazar')");
+      pg_query($Conec, "INSERT INTO ".$xProj.".bensdestinos (id, numdest, descdest)  VALUES (4, 3, 'Livraria')");
+      pg_query($Conec, "INSERT INTO ".$xProj.".bensdestinos (id, numdest, descdest)  VALUES (5, 4, 'Manutenção')");
+      pg_query($Conec, "INSERT INTO ".$xProj.".bensdestinos (id, numdest, descdest)  VALUES (6, 5, 'DIADM')");
+      pg_query($Conec, "INSERT INTO ".$xProj.".bensdestinos (id, numdest, descdest)  VALUES (7, 6, 'DIFIN')");
+
    }
 
+
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bensprocessos (
+      id SERIAL PRIMARY KEY, 
+      processo VARCHAR(50) ) 
+    ");
+
+   $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".bensprocessos WHERE processo != '';");
+   $row = pg_num_rows($rs);
+   if($row == 0){
+      pg_query($Conec, "INSERT INTO ".$xProj.".bensprocessos (id, processo)  VALUES (1, 'Descarte')");
+      pg_query($Conec, "INSERT INTO ".$xProj.".bensprocessos (id, processo)  VALUES (2, 'Destruição')");
+      pg_query($Conec, "INSERT INTO ".$xProj.".bensprocessos (id, processo)  VALUES (3, 'Doação')");
+      pg_query($Conec, "INSERT INTO ".$xProj.".bensprocessos (id, processo)  VALUES (4, 'Venda')");
+   }
 
 pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".paramsis (
    idpar integer NOT NULL,

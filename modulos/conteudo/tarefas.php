@@ -334,6 +334,24 @@ if(!isset($_SESSION["usuarioID"])){
 
             });
 
+            function escMultImprTarefas(){
+                if(document.getElementById("selecMultExecutante").value == ""){
+                    return false;
+                }
+//                if(document.getElementById("selecMultMes").value == ""){
+//                    return false;
+//                }
+                if(document.getElementById("selecMultAno").value == ""){
+                    return false;
+                }
+                if(document.getElementById("selecMultSit").value == ""){
+                    return false;
+                }
+//                window.open("modulos/conteudo/imprTarIndiv.php?acao=imprIndiv&codigo="+document.getElementById("selecMultExecutante").value+"&mes="+encodeURIComponent(document.getElementById("selecMultMes").value)+"&ano="+document.getElementById("selecMultAno").value+"&sit="+encodeURIComponent(document.getElementById("selecMultSit").value), document.getElementById("selecMultExecutante").value);
+                window.open("modulos/conteudo/imprTarIndiv.php?acao=imprIndiv&codigo="+document.getElementById("selecMultExecutante").value+"&ano="+document.getElementById("selecMultAno").value+"&sit="+encodeURIComponent(document.getElementById("selecMultSit").value), document.getElementById("selecMultExecutante").value);
+            }
+
+
             function relatTarefas(){
                 window.open("modulos/conteudo/imprTarefas.php?acao=estatTarefas", "Estatistica");
                 document.getElementById("relacimprTarefas").style.display = "none";
@@ -736,6 +754,12 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
 
 //        $CodSetorUsu = $_SESSION["CodSetorUsu"]; //para a visualização das tarefas por setores
         $CodSetorUsu = parEsc("grupotarefa", $Conec, $xProj, $_SESSION["usuarioID"]);
+        $rs7 = pg_query($Conec, "SELECT siglasetor FROM ".$xProj.".setores WHERE codset = $CodSetorUsu");
+        $row7 = pg_num_rows($rs7);
+        if($row7 > 0){
+            $tbl7 = pg_fetch_row($rs7);
+            $SiglaSetor = $tbl7[0];
+        }
 
         //Relacionar usuários - adm <= $Adm - só paga tarefa para nível adm menor ou igual
         if($VerTarefas == 3){ // 3 = visualização por setor 
@@ -753,14 +777,18 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
         FROM ".$xProj.".tarefas GROUP BY 1 ORDER BY 1 DESC ");
 
         if($VerTarefas == 3){ // 3 = visualização por setor 
-            $OpcoesUserMand = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And codsetor = $CodSetorUsu ORDER BY nomecompl, nomeusual");
+            $OpcoesUserMand = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And grupotarefa = $CodSetorUsu ORDER BY nomecompl, nomeusual");
+            $OpcoesUserExec = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And grupotarefa = $CodSetorUsu ORDER BY nomecompl, nomeusual");
+            $OpcoesUserData = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And grupotarefa = $CodSetorUsu ORDER BY nomecompl, nomeusual");
         }else{
             $OpcoesUserMand = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
+            $OpcoesUserExec = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
+            $OpcoesUserData = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
         }
 
-        $OpcoesUserExec = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
+        
         $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
-        $OpSetores = pg_query($Conec, "SELECT CodSet, siglasetor, descsetor FROM ".$xProj.".setores ORDER BY siglasetor");
+        $OpSetores = pg_query($Conec, "SELECT CodSet, siglasetor, descsetor FROM ".$xProj.".setores WHERE ativo = 1 ORDER BY siglasetor");
 
         //marca que foi visualizado nesta data - dataSit1
         pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit1 = NOW() WHERE usuexec = ".$_SESSION["usuarioID"]." And datasit1 = '3000/12/31' And ativo = 1");
@@ -786,7 +814,7 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
                 </div>
 
                 <div class="col" style="text-align: center;">
-                    <h4>Tarefas</h4>
+                    <h4>Tarefas <?php if($VerTarefas == 3){ echo "Grupo ".$SiglaSetor; } ?> </h4>
                     <?php if($row > 0){ echo "<label style='font-size: 90%;'>Arraste o quadro amarelo para a direita &#8594;</label>"; } ?>
                 </div> <!-- Central - espaçamento entre colunas  -->
                 <div class="col quadro" style="margin: 0 auto; text-align: right;">
@@ -817,13 +845,13 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
                 if($VerTarefas == 2){  // visualização só mandante e executante
                     $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
-                    WHERE ".$xProj.".tarefas.ativo > 0 And ".$xProj.".tarefas.usuexec = $UsuLogadoId Or ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.usuins = $UsuLogadoId
+                    WHERE ".$xProj.".tarefas.ativo > 0 And ".$xProj.".tarefas.usuexec = $UsuLogadoId Or ".$xProj.".tarefas.ativo > 0 And ".$xProj.".tarefas.usuins = $UsuLogadoId
                     ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
                 }
                 if($VerTarefas == 3){  // visualização por setor 
                     $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
-                    WHERE ".$xProj.".tarefas.ativo > 0 And ".$xProj.".tarefas.setorins = $CodSetorUsu Or ".$xProj.".tarefas.ativo > 0  And ".$xProj.".tarefas.setorexec = $CodSetorUsu
+                    WHERE ".$xProj.".tarefas.ativo > 0 And ".$xProj.".tarefas.setorins = $CodSetorUsu Or ".$xProj.".tarefas.ativo > 0 And ".$xProj.".tarefas.setorexec = $CodSetorUsu
                     ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
                 }
             }
@@ -1289,10 +1317,73 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="2" style="padding: 10px; text-align: center;">
-                            <button class="resetbotazul" style="font-size: 80%;" onclick="relatTarefas();" title="Demonstrativo anual das tarefas expedidas">Relatório Anual</button>
+                            <td colspan="2" style="padding-top: 10px; text-align: center;">
+                                <button class="resetbotazul" style="font-size: 80%;" onclick="relatTarefas();" title="Demonstrativo anual das tarefas expedidas">Relatório Anual</button>
                             </td>
                         </tr>
+
+                        <tr>
+                            <td colspan="2"><hr></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="text-align: center;">
+                            <label style="font-size: 80%;">Usuário: </label>
+                                <select id="selecMultExecutante" style="font-size: 1rem; width: 300px;" title="Selecione um Usuário.">
+                                    <option value=""></option>
+                                    <?php 
+                                    if($OpcoesUserData){
+                                        while ($Opcoes = pg_fetch_row($OpcoesUserData)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; if($Opcoes[2] != ""){echo " - ".$Opcoes[2];} ?></option>
+                                            <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="2" style="text-align: center;">
+                                <label style="font-size: 80%;">Ano/Situação:</label>
+<!--                                <select id="selecMultMes" style="font-size: 1rem; width: 90px; text-align: center;" title="Selecione o Mês.">
+                                    <option value=""></option>
+                                    <?php
+                                    $OpcoesMes = pg_query($Conec, "SELECT esc1, esc2 FROM ".$xProj.".escolhas WHERE codesc BETWEEN 2 And 13 ORDER BY codesc ");
+                                    if($OpcoesMes){
+                                        while ($Opcoes = pg_fetch_row($OpcoesMes)){ ?>
+                                            <option style="text-align: center;" value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                                            <?php
+                                        }
+                                    }
+                                    ?>
+                                </select>
+-->
+                                <select id="selecMultAno" style="font-size: 1rem; width: 90px;" title="Selecione o Ano.">
+                                    <option value=""></option>
+                                    <?php
+                                        $OpcoesAno = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".tarefas.datains)::text FROM ".$xProj.".tarefas GROUP BY 1 ORDER BY 1 DESC ");
+                                        if($OpcoesMes){
+                                            while ($Opcoes = pg_fetch_row($OpcoesAno)){ ?>
+                                                <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                                                <?php
+                                            }
+                                        }
+                                    ?>
+                                </select>
+                                <select id="selecMultSit" style="font-size: 1rem;" title="Selecione a situação.">
+                                    <option value=""></option>
+                                    <option value="1">Designada</option>
+                                    <option value="2">Aceita</option>
+                                    <option value="3">Andamento</option>
+                                    <option value="4">Terminada</option>
+                                </select>
+
+                                <button class="botpadrred" style="font-size: 80%;" id="botimprTarefas" onclick="escMultImprTarefas();">Vai</button>
+                            </td>
+                        </tr>
+
+
+
                     </table>
                 </div>
                 <div style="padding-bottom: 20px;"></div>
@@ -1351,7 +1442,6 @@ if(document.getElementById("guardaUsuCpf").value == "13652176049"){
                         <td class="etiq" title="Selecione um setor para agrupar usuários de tarefas.">Participa do Grupo de Tarefas:</td>
                         <td colspan="4">
                             <select id="configSelecSetor" style="max-width: 430px;" onchange="modif();" title="Selecione um setor para agrupar usuários de tarefas.">
-                                <option value=""></option>
                                 <?php 
                                 if($OpSetores){
                                     while ($Opcoes = pg_fetch_row($OpSetores)){ ?>

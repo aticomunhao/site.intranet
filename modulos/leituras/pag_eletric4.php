@@ -65,7 +65,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("botInserir").style.visibility = "hidden"; 
                     document.getElementById("botImprimir").style.visibility = "hidden"; 
                     document.getElementById("imgEletricconfig").style.visibility = "hidden"; 
-                    if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // // se estiver marcado em cadusu para fazer a leitura
+                    if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 || parseInt(document.getElementById("FiscEletric").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // // se estiver marcado em cadusu para fazer a leitura
                         if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
                             document.getElementById("botInserir").style.visibility = "visible"; 
                             $("#container5").load("modulos/leituras/carEletric4.php");
@@ -80,11 +80,14 @@ if(!isset($_SESSION["usuarioID"])){
                         $("#container6").load("modulos/leituras/carMsg.php?msgtipo=1");
                     }
                     //para editar obedece ao nivel administrativo
-                    if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 && parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) || parseInt(document.getElementById("UsuAdm").value) > 6){
+                    if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) || parseInt(document.getElementById("UsuAdm").value) > 6){
                         document.getElementById("botImprimir").style.visibility = "visible"; 
                         document.getElementById("imgEletricconfig").style.visibility = "visible"; 
                     }else{
                         document.getElementById("botImprimir").style.visibility = "hidden"; 
+                    }
+                    if(parseInt(document.getElementById("InsLeituraEletric").value) === 0){
+                        document.getElementById("botInserir").style.visibility = "hidden"; 
                     }
                 };
 
@@ -198,6 +201,9 @@ if(!isset($_SESSION["usuarioID"])){
             }); // fim do ready
 
             function carregaModal(Cod){
+                if(parseInt(document.getElementById("InsLeitura").value) === 0){
+                    return false;
+                }
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/leituras/salvaLeitura4.php?acao=buscaDataEletric&codigo="+Cod, true);
@@ -387,7 +393,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         obj.checked = true;
                                         $.confirm({
                                             title: 'Ação Suspensa!',
-                                            content: 'Não restaria outro marcado para gerenciar os bens encontrados.',
+                                            content: 'Não restaria outro marcado para gerenciar as permissões.',
                                             draggable: true,
                                             buttons: {
                                                 OK: function(){}
@@ -519,6 +525,7 @@ if(!isset($_SESSION["usuarioID"])){
             $admIns = parAdm("insleituraeletric", $Conec, $xProj);   // nível para inserir 
             $admEdit = parAdm("editleituraeletric", $Conec, $xProj); // nível para editar
             $InsEletric = parEsc("eletric", $Conec, $xProj, $_SESSION["usuarioID"]); // procura coluna eletric em poslog 
+            $FiscEletric = parEsc("fisc_eletric", $Conec, $xProj, $_SESSION["usuarioID"]); // procura fisc_eletric em poslog 
 
             $Menu1 = escMenu($Conec, $xProj, 1);
             $Menu2 = escMenu($Conec, $xProj, 2);
@@ -537,6 +544,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" />
         <input type="hidden" id="InsLeituraEletric" value="<?php echo $InsEletric; ?>" /> <!-- autorização para um só indivíduo inserir as leituras -->
+        <input type="hidden" id="FiscEletric" value="<?php echo $FiscEletric; ?>" />
         <input type="hidden" id="guardaUltLeitura" value = "0" />
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">

@@ -65,25 +65,46 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             if(isset($_REQUEST["acao"])){
                 $Acao = $_REQUEST["acao"];
             }else{
-                $Acao = "todos";
+                $Acao = "Todos";
             }
 
             $Condic = $xProj.".bensachados.ativo = 1 ";
             $vIndex = $xProj.".bensachados.datareceb DESC";
-            if($Acao == "restit"){
+            if($Acao == "Restituídos"){
                 $Condic = $xProj.".bensachados.ativo = 1 And usurestit > 0";
                 $vIndex = $xProj.".bensachados.datareceb DESC";
             }
-            if($Acao == "destinados"){
-                $Condic = $xProj.".bensachados.ativo = 1 And usudestino > 0";
-                $vIndex = $xProj.".bensachados.datadestino DESC";
+            if($Acao == "Destinados"){
+                $Condic = $xProj.".bensachados.ativo = 1 And usuencdestino > 0 And (CURRENT_DATE-datareceb) >= 90";
+                $vIndex = $xProj.".bensachados.dataencdestino DESC";
             }
-            if($Acao == "destinar"){
-                $Condic = $xProj.".bensachados.ativo = 1 And usurestit = 0 And usudestino = 0 And (CURRENT_DATE-datareceb) >= 90 ";
+            if($Acao == "Destinar"){
+                $Condic = $xProj.".bensachados.ativo = 1 And usurestit = 0 And usuencdestino = 0 And usudestino = 0 And (CURRENT_DATE-datareceb) >= 90 ";
                 $vIndex = $xProj.".bensachados.datareceb DESC";
             }
+            if($Acao == "Receber"){
+                $Condic = $xProj.".bensachados.ativo = 1 And usurestit = 0 And usuencdestino > 0 And usudestino = 0 And (CURRENT_DATE-datareceb) >= 90 ";
+                $vIndex = $xProj.".bensachados.dataencdestino DESC";
+            }
+            if($Acao == "Guardar"){
+                $Condic = $xProj.".bensachados.ativo = 1 And usucsg = 0 And usurestit = 0 ";
+                $vIndex = $xProj.".bensachados.datareceb DESC";
+            }
+            if($Acao == "Recebidos"){
+                $Condic = $xProj.".bensachados.ativo = 1 And usurestit = 0 And usuencdestino > 0 And usudestino > 0 And (CURRENT_DATE-datareceb) >= 90 ";
+                $vIndex = $xProj.".bensachados.dataencdestino DESC";
+            }
+            if($Acao == "Arquivar"){
+                $Condic = $xProj.".bensachados.ativo = 1 And usurestit = 0 And usuencdestino > 0 And usudestino > 0 And usuarquivou = 0 And (CURRENT_DATE-datareceb) >= 90 ";
+                $vIndex = $xProj.".bensachados.dataencdestino DESC";
+            }
+            if($Acao == "Arquivados"){
+                $Condic = $xProj.".bensachados.ativo = 1 And usurestit = 0 And usuencdestino > 0 And usudestino > 0 And usuarquivou > 0 And (CURRENT_DATE-datareceb) >= 90 ";
+                $vIndex = $xProj.".bensachados.dataencdestino DESC";
+            }
 
-            $rs0 = pg_query($Conec, "SELECT ".$xProj.".bensachados.id, to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, usuguarda, usurestit, usucsg, usuarquivou, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, usudestino, CURRENT_DATE-datareceb, codusuins, date_part('dow', datareceb)  
+            $rs0 = pg_query($Conec, "SELECT ".$xProj.".bensachados.id, to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, usuguarda, usurestit, usucsg, usuarquivou, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, usudestino, CURRENT_DATE-datareceb, 
+            codusuins, date_part('dow', datareceb), usuencdestino  
             FROM ".$xProj.".bensachados INNER JOIN ".$xProj.".poslog ON ".$xProj.".bensachados.codusuins = ".$xProj.".poslog.pessoas_id
             WHERE $Condic 
             ORDER BY $vIndex ");
@@ -106,7 +127,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             $Impr = 1; // relatório liberado 
 
             if($Marca == 0 && $SoInsBens == 1){ // só para registrar (portaria nos fins de semana) - Só mostra os do dia
-                $rs0 = pg_query($Conec, "SELECT ".$xProj.".bensachados.id, to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, usuguarda, usurestit, usucsg, usuarquivou, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, usudestino, CURRENT_DATE-datareceb, codusuins, date_part('dow', datareceb) 
+                $rs0 = pg_query($Conec, "SELECT ".$xProj.".bensachados.id, to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, usuguarda, usurestit, usucsg, usuarquivou, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, usudestino, CURRENT_DATE-datareceb, 
+                codusuins, date_part('dow', datareceb), usuencdestino 
                 FROM ".$xProj.".bensachados INNER JOIN ".$xProj.".poslog ON ".$xProj.".bensachados.codusuins = ".$xProj.".poslog.pessoas_id
                 WHERE ".$xProj.".bensachados.ativo = 1 And usucsg = 0 And ".$xProj.".bensachados.datareceb = CURRENT_DATE 
                 ORDER BY ".$xProj.".bensachados.datareceb DESC");
@@ -134,8 +156,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         $Restit = $tbl0[5];
                         $GuardaCSG = $tbl0[6];
                         $Destino = $tbl0[9];
+                        $EncDestino = $tbl0[13];
                         $Arquivado = $tbl0[7];
-//                        $Intervalo = (int) $tbl0[8];
                         $Dias = str_pad(($tbl0[10]), 2, "0", STR_PAD_LEFT);
                         ?>
                         <tr>
@@ -145,75 +167,77 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td style="font-size: 80%;"><?php echo $Semana_Extract[$tbl0[12]]; ?></td> <!-- dia semana -->
                             <td style="text-align: center;"><?php echo $tbl0[2]; ?></td> <!-- num processo -->
                             <td><?php echo nl2br($tbl0[3]); ?>
-                            <hr style="margin: 0; padding: 0px;">
-                            <?php
-                            if($Edit == 1){
-//                                if($_SESSION["usuarioID"] == 86){
+                                <hr style="margin: 0; padding: 0px;">
+                                <?php
+                                if($Edit == 1){
                                     if($Edit == 1 && $SobGuarda == 0 && $GuardaCSG == 0 && $Restit == 0 && $Arquivado == 0){
                                         echo "<button class='botTable fundoAmarelo' onclick='verRegistroRcb($tbl0[0]);' title='Editar o registro de recebimento'>Editar</button>";
                                     }else{
                                         echo "<button disabled class='botTable fundoCinza corAzulClaro'>Editar</button>";
                                     }
-//                                }
-                                if($Edit == 1 && $Restit == 0 && $GuardaCSG == 0 && $Arquivado == 0 ){
-                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 3, $Restit);' title='Encaminhamento para guarda do Setor de Serviços'>SSV</button>";
-                                }else{
-                                    echo "<button disabled class='botTable fundoCinza corAzulClaro'>SSV</button>";
-                                }
-//                                if($Edit == 1 && $SobGuarda == 0 && $Restit == 0 && $Arquivado == 0){
-//                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 1, $Restit);'  title='Transferir para a guarda da DAF'>Guarda</button>";
-//                                } else{
-//                                    echo "<button disabled class='botTable fundoCinza corAzulClaro'>Guarda</button>";
-//                                }
-                                if($Destino == 0){
-                                    if($Restit == 0){
-                                        echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);' title='Formuário de restituição ao proprietário'>Restituição</button>";
+                                    if($Edit == 1 && $Restit == 0 && $GuardaCSG == 0 && $Arquivado == 0 ){
+                                        echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 3, $Restit);' title='Encaminhamento para guarda do Setor de Serviços'>SSV</button>";
                                     }else{
-                                        echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);' title='Formuário de restituição ao proprietário'>Restituído</button>";
+                                        echo "<button disabled class='botTable fundoCinza corAzulClaro'>SSV</button>";
                                     }
-                                }else{
-                                    echo "<button disabled class='botTable fundoCinza corAzulClaro'>Restituição</button>";
+
+                                    if($EncDestino == 0){
+                                        if($Restit == 0){
+                                            echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);' title='Formuário de restituição ao proprietário'>Restituição</button>";
+                                        }else{
+                                            echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);' title='Formuário de restituição ao proprietário'>Restituído</button>";
+                                        }
+                                    }else{
+                                        echo "<button disabled class='botTable fundoCinza corAzulClaro'>Restituição</button>";
+                                    }
+
+                                    if($Edit == 1 && $Restit == 0 && $Arquivado == 0 && $EncDestino == 0 && $Dias >= 90 && $_SESSION["AdmUsu"] >= 6){
+                                        echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 4, $Restit);' title='Destinação após 90 dias'>Destinação</button>";
+                                    }else{
+                                        echo "<button disabled class='botTable fundoCinza corAzulClaro'>Destinação</button>";
+                                    }
+
+                                    if($Edit == 1 && $Restit == 0 && $Arquivado == 0 && $EncDestino > 0 && $Destino == 0 && $Dias >= 90){
+                                        echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 5, $Restit);' title='Recebimento no destino'>Recebimento</button>";
+                                    }else{
+                                        echo "<button disabled class='botTable fundoCinza corAzulClaro' title='Recebimento no destino'>Recebimento</button>";
+                                    }
+
+                                    if($Edit == 1 && $Arquivado == 0 && $EncDestino > 0 && $Destino > 0 && $Dias >= 90 && $_SESSION["AdmUsu"] >= 6){
+                                        echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 6, $Restit);' title='Nível Revisor.'>Arquivar</button>";
+                                    }else{
+                                        if($Arquivado == 0){
+                                        echo "<button disabled class='botTable fundoCinza corAzulClaro' title='Nível Revisor.'>Arquivar</button>";
+                                        }else{
+                                            echo "<button disabled class='botTable fundoCinza corAzulClaro'>Arquivado</button>";
+                                        }
+                                    }
+
+                                    if($Impr == 1){ // nível adm para editar
+                                        echo "<button class='botTable fundoAmarelo' onclick='imprProcesso($tbl0[0]);' title='Gerar PDF do processo'>PDF</button>";
+                                    }
+                                    echo "<br>";
                                 }
 
-                                if($Edit == 1 && $Arquivado == 0 && $Destino == 0 && $Dias >= 90){
-                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 4, $Restit);' title='Destinação após 90 dias'>Destinação</button>";
-                                }else{
-                                    echo "<button disabled class='botTable fundoCinza corAzulClaro'>Destinação</button>";
+                                if($UsuIns > 0){
+                                    echo "<div class='etiqResult' title='Registro inicial'>Registrado</div>";
                                 }
-
-                                if($Destino > 0 && $Arquivado == 0){
-                                    echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 5, $Restit);' title='Recebimento no destino'>Recebimento</button>";
+                                if($GuardaCSG > 0){
+                                    echo "<div class='etiqResult' title='Sob guarda do SSV'>SSV</div>";
                                 }
-
-
-
-                                if($Impr == 1){ // nível adm para editar
-                                    echo "<button class='botTable fundoAmarelo' onclick='imprProcesso($tbl0[0]);' title='Gerar PDF do processo'>PDF</button>";
+                                if($Restit > 0){
+                                    echo "<div class='etiqResult'style='border-color: red;' title='Bem restituído'>Restituído</div>";
                                 }
-                                echo "<br>";
-                            }
-
-//                            echo "<div class='etiqResult' style='border: 0px;' title='Situação do processo'>Situação: </div>";
-                            if($UsuIns > 0){
-                                echo "<div class='etiqResult' title='Registro inicial'>Registrado</div>";
-                            }
-                            if($GuardaCSG > 0){
-                                echo "<div class='etiqResult' title='Sob guarda do SSV'>SSV</div>";
-                            }
-//                            if($SobGuarda > 0){
-//                                echo "<div class='etiqResult' title='Entregue à DAF'>DAF</div>";
-//                            }
-                            if($Restit > 0){
-                                echo "<div class='etiqResult'style='border-color: red;' title='Bem restituído'>Restituído</div>";
-                            }
-
-                            if($Destino > 0){
-                                echo "<div class='etiqResult' title='Bem já destinado'>Destinado</div>";
-                            }
-                            if($Arquivado > 0){
-                                echo "<div class='etiqResult' style='border-color: red;' title='Processo arquivado'>Arquivado</div>";
-                            }
-                            ?>
+                                if($EncDestino > 0){
+                                    echo "<div class='etiqResult'style='border-color: red;' title='Bem restituído'>Destinado</div>";
+                                }
+                                if($Destino > 0){
+                                    echo "<div class='etiqResult' title='Bem já destinado'>Recebido</div>";
+                                }
+                                if($Arquivado > 0){
+                                    echo "<div class='etiqResult' style='border-color: red;' title='Processo arquivado'>Arquivado</div>";
+                                }
+                                ?>
                             </td> <!-- descrição do bem -->
  
                             <td style="text-align: center; font-size: 80%;"><?php

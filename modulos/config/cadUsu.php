@@ -141,6 +141,15 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                                     }else{
                                         document.getElementById("leituraAgua").checked = false;
                                     }
+
+                                    if(parseInt(Resp.fisc_agua) === 1){
+                                        document.getElementById("fisc_Agua").checked = true;
+                                    }else{
+                                        document.getElementById("fisc_Agua").checked = false;
+                                    }
+
+
+
                                     if(parseInt(Resp.leituraEletric) === 1){
                                         document.getElementById("leituraEletric").checked = true;
                                     }else{
@@ -156,6 +165,12 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                                     }else{
                                         document.getElementById("leituraEletric3").checked = false;
                                     }
+                                    if(parseInt(Resp.fisc_eletric) === 1){
+                                        document.getElementById("fisc_Eletric").checked = true;
+                                    }else{
+                                        document.getElementById("fisc_Eletric").checked = false;
+                                    }
+
                                     if(parseInt(Resp.regarcond) === 1){
                                         document.getElementById("registroArCond").checked = true;
                                     }else{
@@ -299,6 +314,12 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                 if(document.getElementById("leituraAgua").checked === true){
                     Agua = 1;
                 }
+                FicAgua = 0;
+                if(document.getElementById("fisc_Agua").checked === true){
+                    FiscAgua = 1;
+                }
+
+
                 Eletric = 0;
                 if(document.getElementById("leituraEletric").checked === true){
                     Eletric = 1;
@@ -311,6 +332,10 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                 Eletric3 = 0;
                 if(document.getElementById("leituraEletric3").checked === true){
                     Eletric3 = 1;
+                }
+                FiscEletric = 0;
+                if(document.getElementById("fisc_Eletric").checked === true){
+                    FiscEletric = 1;
                 }
 
                 ArCond = 0;
@@ -406,9 +431,11 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                         +"&soinsbens="+SoInsBens
                         +"&fiscbens="+FiscBens
                         +"&agua="+Agua
+                        +"&fiscagua="+FiscAgua
                         +"&eletric="+Eletric
                         +"&eletric2="+Eletric2
                         +"&eletric3="+Eletric3
+                        +"&fisceletric="+FiscEletric
                         +"&arcond="+ArCond
                         +"&arcond2="+ArCond2
                         +"&arcond3="+ArCond3
@@ -761,7 +788,7 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     Texto = "Com esta marca o usuário tem acesso a todos os registros do LRO. Não precisa ter a marca para preencher o LRO. <br>Se o usuário tiver esta marca poderá gerar PDF dos registros. <br>Nenhum registro pode ser editado.";
                 }
                 if(parseInt(Cod) === 4){
-                    Titulo = "Acesso ao registro de Bens Encontrados";
+                    Titulo = "Acesso ao registro de Achados e Perdidos";
                     Texto = "Além desta marca é necessário que o usuário tenha o nível administrativo mínimo previsto em Parâmetros do Sistema.<br>Esta marca se aplica aos funcionários e voluntários da DAF, responsáveis pela guarda dos objetos encontrados. <br>Nos parâmetros do sistema pode ficar apontado o nível mínimo para inserção associado a esta marca. <br>Se o usuário estiver no nível administrativo para editar, poderá gerar PDF do processo completo.";
                 }
                 if(parseInt(Cod) === 5){
@@ -809,7 +836,14 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     Titulo = "Contratos DAF";
                     Texto = "Esta marca permite apenas verificar e fiscalizar os contratos da casa como Contratante e Contratada. Não pode editar ou modificar.";
                 }
-
+                if(parseInt(Cod) === 16){
+                    Titulo = "Leitura Hidrômetro";
+                    Texto = "Esta marca permite apenas verificar e fiscalizar os registros do consumo de água. Não pode editar ou modificar.";
+                }
+                if(parseInt(Cod) === 17){
+                    Titulo = "Leitura Eletricidade";
+                    Texto = "Esta marca permite apenas verificar e fiscalizar os registros do consumo de eletricidade. Não pode editar ou modificar.";
+                }
                 document.getElementById("textoInfo").innerHTML = Texto;
                 document.getElementById("textoTitulo").innerHTML = Titulo;
                 document.getElementById("infomensagem").style.display = "block"; // está em modais.php
@@ -994,28 +1028,28 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     </tr>
 
                     <tr>
-                        <td class="etiq80" title="Registrar recebimento e destino de bens encontrados">Bens Achados:</td>
+                        <td class="etiq80" title="Registrar recebimento e destino de Achados e Perdidos">Bens Achados:</td>
                         <td colspan="4">
-                            <input type="checkbox" id="preencheBens" title="Registrar recebimento e destino de bens encontrados" onchange="modif();" >
-                            <label for="preencheBens" title="Registrar recebimento e destino de bens encontrados">acesso ao Registro e Destino de Bens Encontrados</label>
+                            <input type="checkbox" id="preencheBens" title="Registrar recebimento e destino de Achados e Perdidos" onchange="modif();" >
+                            <label for="preencheBens" title="Registrar recebimento e destino de Achados e Perdidos">acesso ao Registro e Destino de Achados e Perdidos</label>
                         </td>
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(4);" title="Guia rápido"></td>
                     </tr>
 
                     <tr>
-                        <td class="etiq80" title="Apenas registrar o recebimento de bens encontrados">Bens Achados:</td>
+                        <td class="etiq80" title="Apenas registrar o recebimento de Achados e Perdidos">Bens Achados:</td>
                         <td colspan="4" style="padding-left: 20px;">
-                            <input type="checkbox" id="soPreencheBens" title="Apenas registrar recebimento de bens encontrados" onchange="modif();" >
-                            <label for="soPreencheBens" title="Apenas registrar recebimento de bens encontrados">apenas registrar Bens Encontrados</label>
+                            <input type="checkbox" id="soPreencheBens" title="Apenas registrar recebimento de Achados e Perdidos" onchange="modif();" >
+                            <label for="soPreencheBens" title="Apenas registrar recebimento de Achados e Perdidos">apenas registrar Achados e Perdidos</label>
                         </td>
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(4);" title="Guia rápido"></td>
                     </tr>
 
                     <tr>
-                        <td class="etiq80" style="border-bottom: 1px solid;" title="Fiscalizar os registros de bens encontrados - Só fiscaliza. Não pode registrar os bens encontrados.">Bens Achados:</td>
+                        <td class="etiq80" style="border-bottom: 1px solid;" title="Fiscalizar os registros de Achados e Perdidos - Só fiscaliza. Não pode registrar os Achados e Perdidos.">Bens Achados:</td>
                         <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
-                            <input type="checkbox" id="fiscBens" title="Fiscalizar os registros de bens encontrados - Só fiscaliza. Não pode registrar os bens encontrados." onchange="modif();" >
-                            <label for="fiscBens" title="Fiscalizar os registros de bens encontrados">fiscalizar os registros de Bens Encontrados</label>
+                            <input type="checkbox" id="fiscBens" title="Fiscalizar os registros de Achados e Perdidos - Só fiscaliza. Não pode registrar os Achados e Perdidos." onchange="modif();" >
+                            <label for="fiscBens" title="Fiscalizar os registros de Achados e Perdidos">fiscalizar os registros de Achados e Perdidos</label>
                         </td>
                         <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(4);" title="Guia rápido"></td>
                     </tr>
@@ -1028,6 +1062,16 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                         </td>
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(2);" title="Guia rápido"></td>
                     </tr>
+
+                    <tr>
+                        <td class="etiq80" style="border-bottom: 1px solid;" title="Ver os registros de leituras do consumo de água - Só fiscaliza. Não pode registrar.">Hidrômetro:</td>
+                        <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
+                            <input type="checkbox" id="fisc_Agua" title="Visualizar os registros de leitura do hidrômetro - Só fiscaliza. Não pode registrar." onchange="modif();" >
+                            <label for="fisc_Agua" title="Visualizar os registros de leitura do hidrômetro">Visualizar as leituras do hidrômetro</label>
+                        </td>
+                        <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(16);" title="Guia rápido"></td>
+                    </tr>
+
                     <tr>
                         <td class="etiq80" title="Pode registrar as leituras diárias do consumo de eletricidade">Energia Elétrica:</td>
                         <td colspan="4">
@@ -1046,13 +1090,23 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(2);" title="Guia rápido"></td>
                     </tr>
                     <tr>
-                        <td class="etiq80" style="border-bottom: 1px solid;" title="Pode registrar as leituras diárias do consumo de eletricidade">Energia Elétrica:</td>
-                        <td colspan="4" style="border-bottom: 1px solid;">
+                        <td class="etiq80" title="Pode registrar as leituras diárias do consumo de eletricidade">Energia Elétrica:</td>
+                        <td colspan="4">
                             <input type="checkbox" id="leituraEletric3" title="Pode registrar as leituras diárias do consumo de energia elétrica" onchange="modif();" >
                             <label for="leituraEletric3" title="Pode registrar as leituras diárias do consumo de energia elétrica do medidor da operadora">registrar leitura do Medidor de Energia Elétrica - <?php echo $Menu3; ?></label>
                         </td>
                         <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(2);" title="Guia rápido"></td>
                     </tr>
+
+                    <tr>
+                        <td class="etiq80" style="border-bottom: 1px solid;" title="Ver os registros de leituras do consumo de eletricidade - Só fiscaliza. Não pode registrar.">Eletricidade:</td>
+                        <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
+                            <input type="checkbox" id="fisc_Eletric" title="Visualizar os registros dos medidores do consumo de eletricidade - Só fiscaliza. Não pode registrar." onchange="modif();" >
+                            <label for="fisc_Eletric" title="Visualizar os registros dos medidores do consumo de eletricidade">Visualizar o consumo de eletricidade</label>
+                        </td>
+                        <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(17);" title="Guia rápido"></td>
+                    </tr>
+
 
                     <tr>
                         <td class="etiq80" title="Registrar as visitas técnicas da empresa contratada para manutenção dos Condicionadores de Ar">Condicionadores de Ar:</td>
