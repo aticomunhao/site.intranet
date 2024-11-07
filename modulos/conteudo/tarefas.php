@@ -493,9 +493,9 @@ if(!isset($_SESSION["usuarioID"])){
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
-if(document.getElementById("guardaUsuCpf").value == "13652176049"){
-    alert(ajax.responseText);
-}
+//if(document.getElementById("guardaUsuCpf").value == "13652176049"){
+//alert(ajax.responseText);
+//}
                                     Resp = eval("(" + ajax.responseText + ")");
                                     if(parseInt(Resp.coderro) === 0){
                                         document.getElementById("mudou").value = "0";

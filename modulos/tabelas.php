@@ -443,6 +443,42 @@ echo "Tabela ".$xProj.".visitas_ar checada. <br>";
       dataedit timestamp without time zone DEFAULT '3000-12-31' 
       )
    ");
+
+   $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".livrocheck LIMIT 3");
+	$row = pg_num_rows($rs);
+	if($row == 0){
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (1, 0, 1, 'Bebedouro com Garrafão', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (2, 0, 2, 'Cadeira', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (3, 0, 3, 'Câmera', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (4, 0, 4, 'Chaves do Claviculário', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (5, 0, 5, 'Carregador dos Rádiocomunicadores', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (6, 0, 6, 'Chaves lacradas do claviculário', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (7, 0, 7, 'Computador', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (8, 0, 8, 'Correspondências ou encomendas entregues para a Casa', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (9, 0, 9, 'Doações recebidas dentro da Guarita', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (10, 0, 10, 'Extintor de incêndio', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (11, 0, 11, 'Formulário de Achados e Perdidos', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (12, 0, 12, 'Formulário de Controle do Claviculário', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (13, 0, 13, 'Formulário de Controle dos Rádiocomunicadores', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (14, 0, 14, 'Formulário de Controle de viaturas - pernoite', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (15, 0, 15, 'Formulário de Utilização de Vagas', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (16, 0, 16, 'Formulário de Utilização de Vagas no Estacionamento', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (17, 0, 17, 'LRO - Formulários', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (18, 0, 18, 'Monitor Câmera', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (19, 0, 19, 'Objetos Perdidos', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (20, 0, 20, 'Pasta com Normas', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (21, 0, 21, 'Problemas com elevadores', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (22, 0, 22, 'Problemas nas instalações - Portas, janelas, etc.', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (23, 0, 23, 'Rádiocomunicadores', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (24, 0, 24, 'Relógio de parede', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (25, 0, 25, 'Telefone Celular', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (26, 0, 26, 'Telefone Ramal 1804', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (27, 0, 27, 'Veículos e moto da Comunhão pernoitando na Casa', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (28, 0, 28, 'Veículos particulares pernoitando na casa', 1, 3, NOW()); ");
+		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (29, 0, 29, 'Ventilador', 1, 3, NOW()); ");
+	}
+
+   
    echo "Tabela ".$xProj.".livrocheck checada. <br>";
    
    // coleta nomes para uso como substituto temporário no LRO (setor 1)

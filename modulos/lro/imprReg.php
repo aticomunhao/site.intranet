@@ -64,15 +64,18 @@ if(!isset($_SESSION['AdmUsu'])){
     $lin = $pdf->GetY();
     $pdf->Line(10, $lin, 200, $lin);
    
-    $rs = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), turno, descturno, numrelato, nomecompl, usuant, relato, ocor, nomeusual, relsubstit 
+    $rs = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), turno, descturno, numrelato, nomecompl, usuant, relato, ocor, nomeusual, relsubstit, usuprox 
     FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id
     WHERE ".$xProj.".livroreg.ativo = 1 And ".$xProj.".livroreg.id =  $Num");
 
     $row = pg_num_rows($rs);
     $tbl = pg_fetch_row($rs);
     $CodAnt = $tbl[0];
-    
-    $rs0 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodAnt ");
+
+    $UsuAnt = $tbl[6];
+    $UsuProx = $tbl[11];
+
+    $rs0 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $UsuAnt ");
     $tbl0 = pg_fetch_row($rs0);
     $row0 = pg_num_rows($rs0);
     if($row0 > 0){
@@ -80,21 +83,22 @@ if(!isset($_SESSION['AdmUsu'])){
     }else{
         $NomeAnt = "";
     }
+    $rs1 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $UsuProx ");
+    $tbl1 = pg_fetch_row($rs1);
+    $row1 = pg_num_rows($rs1);
+    if($row1 > 0){
+        $NomeProx = $tbl1[0];
+    }else{
+        $NomeProx = "";
+    }
+
+
     $DescTurno = $tbl[3];
-//    $rs1 = pg_query($Conec, "SELECT descturno FROM ".$xProj.".livroturnos WHERE codturno = $tbl[2] ");
-//    $tbl1 = pg_fetch_row($rs1);
-//    $row1 = pg_num_rows($rs1);
-//    if($row1 > 0){
-//        $DescTurno = $tbl1[0];
-//    }else{
-//        $DescTurno = "";
-//    }
 
     $pdf->SetFont('Arial', 'B', 9);
     $pdf->ln(7);
 
     $pdf->SetTextColor(125, 125, 125); //cinza  //   $pdf->SetTextColor(190, 190, 190); //cinza claro   //  $pdf->SetTextColor(204, 204, 204); //cinza mais claro
-    //$pdf->Cell(0, 4, "- Registro: ".$tbl[4]." de ".$tbl[1]." - Turno: ".$DescTurno, 0, 1, 'L');
 
     $pdf->SetFont('Arial', '', 9);
     $pdf->Cell(16, 4, "- Registro: ", 0, 0, 'L');
@@ -107,15 +111,23 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->SetFont('Arial', 'B', 9);
     $pdf->Cell(14, 4, $tbl[1], 0, 0, 'L');
     $pdf->SetFont('Arial', '', 9);
-    $pdf->Cell(60, 4, " - Turno: ".$DescTurno, 0, 0, 'L');
+    $pdf->Cell(60, 4, " - Turno: ".$DescTurno, 0, 1, 'L');
 
     $pdf->ln(5);
     $pdf->SetFont('Arial', '', 10);
     $pdf->SetDrawColor(200); // cinza claro
 
+
+    $pdf->SetX(20); 
+    $pdf->Cell(60, 4, "I - Recebí do serviço de: ".$NomeAnt, 0, 1, 'L');
+    $pdf->ln(2);
+    $lin = $pdf->GetY();
+    $pdf->Line(10, $lin, 200, $lin);
+
     $pdf->ln(5);
+    $pdf->SetX(20); 
     $pdf->SetFont('Arial', 'B', 10);
-    $pdf->Cell(0, 4, "- Relato: ", 0, 1, 'L');
+    $pdf->Cell(0, 4, "II - Relato: ", 0, 1, 'L');
 
     $pdf->SetFont('Arial', '', 10);
     $pdf->ln(3);
@@ -123,6 +135,7 @@ if(!isset($_SESSION['AdmUsu'])){
     $RelSubst = $tbl[10];
 
     if($tbl[8] == 0){
+        $pdf->SetX(25); 
         $pdf->Cell(0, 4, "Não houve ocorrências", 0, 1, 'L');
         if($RelSubst != ""){
             $pdf->SetFont('Arial', '', 7);
@@ -131,6 +144,7 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->SetFont('Arial', '', 8);
         }
     }else{
+        $pdf->SetX(20); 
         $pdf->MultiCell(0, 5, $tbl[7], 0, 'J', false); //relato
         if($RelSubst != ""){
             $pdf->SetFont('Arial', '', 7);
@@ -139,11 +153,19 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->SetFont('Arial', '', 8);
         }
     }
+    $pdf->ln(2);
 
+    $lin = $pdf->GetY();
+    $pdf->Line(10, $lin, 200, $lin);
+    $pdf->ln(5);
+    $pdf->SetX(20); 
+    $pdf->Cell(60, 4, "III - Passei o serviço para: ".$NomeProx, 0, 1, 'L');
+
+    
     $pdf->ln(3);
     $lin = $pdf->GetY();
     $pdf->Line(10, $lin, 200, $lin);
-    $pdf->ln(3);
+    $pdf->ln(10);
     $pdf->MultiCell(0, 5, "(a) ".$tbl[5], 0, 'C', false); //assinatura
  }
  $pdf->Output();

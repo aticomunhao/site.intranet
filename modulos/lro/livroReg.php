@@ -15,10 +15,8 @@ if(!isset($_SESSION["usuarioID"])){
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/relacmod.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/indlog.css" />
-        <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
         <script src="class/dataTable/datatables.min.js"></script>
         <script src="comp/js/jquery-confirm.min.js"></script> <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
-        <script src="comp/js/jquery-confirm.min.js"></script> 
         <script src="comp/js/jquery.mask.js"></script>
         <style>
             .modalMsg-content{
@@ -164,7 +162,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById('ocorrencia2').checked = true; // não houve ocorr
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/lro/salvaReg.php?acao=buscaAcessoLro&geradata="+document.getElementById("guardahoje").value+"&geraturno="+document.getElementById("selecturno").value, true);
+                    ajax.open("POST", "modulos/lro/salvaReg.php?acao=buscaAcessoLro&geradata="+document.getElementById("dataocor").value+"&geraturno="+document.getElementById("selecturno").value, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -178,6 +176,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("dataocor").value = document.getElementById("guardahoje").value;
                                         document.getElementById("nomeusuario").innerHMTL = "";
                                         document.getElementById("selectusuant").value = "";
+                                        document.getElementById("selectusuprox").value = "";
                                         document.getElementById("relato").value = "";
                                         document.getElementById("relato").disabled = true;
                                         document.getElementById("relatosubstit").value = "";
@@ -247,6 +246,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("mostraselecturno").value = Resp.descturno;
                                         document.getElementById("mostranomeusuario").innerHTML = Resp.nomeusuins;
                                         document.getElementById("mostraselectusuant").value = Resp.nomeusuant;
+                                        document.getElementById("mostraselectusuprox").value = Resp.nomeusuprox;
                                         document.getElementById("mostrarelato").value = Resp.relato;
                                         document.getElementById("numrelato").value = Resp.numrelato;
                                         document.getElementById("guardausuins").value = Resp.codusuins; // usuário que inseriu o relato
@@ -308,6 +308,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("dataocor").value = Resp.data;
                                     document.getElementById("selecturno").value = Resp.turno;
                                     document.getElementById("selectusuant").value = Resp.usuant;
+                                    document.getElementById("selectusuprox").value = Resp.usuprox;
                                     if(parseInt(Resp.ocor) === 0){
                                         document.getElementById('ocorrencia2').checked = true;  // não houve ocorr
                                         document.getElementById('relato').disabled = true; 
@@ -342,6 +343,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("compldataocor").value = Resp.data;
                                     document.getElementById("complselecturno").value = Resp.turno;
                                     document.getElementById("complselectusuant").value = Resp.usuant;
+                                    document.getElementById("complselectusuprox").value = Resp.nomeusuprox;
                                     document.getElementById("complnomeusuario").innerHTML = Resp.nomeusuins;
                                     document.getElementById("numrelato").value = Resp.numrelato;
                                     document.getElementById("numrelatoCompl").innerHTML = "Complementando Relato: "+Resp.numrelato;
@@ -373,6 +375,11 @@ if(!isset($_SESSION["usuarioID"])){
                     if(document.getElementById("selectusuant").value == ""){
                         let element = document.getElementById('selectusuant');
                         element.classList.add('destacaBorda');
+                    }
+                    if(document.getElementById("selectusuprox").value == ""){
+                        let element = document.getElementById('selectusuprox');
+                        element.classList.add('destacaBorda');
+                        return false;
                     }
                     if(document.getElementById("selecturno").value !== "" && document.getElementById("selectusuant").value !== ""){
                         $.confirm({
@@ -530,6 +537,16 @@ if(!isset($_SESSION["usuarioID"])){
                     $('#mensagem').fadeOut(5000);
                     return false;
                 }
+                if(document.getElementById("selectusuprox").value === ""){
+                    let element = document.getElementById('selectusuprox');
+                    element.classList.add('destacaBorda');
+                    document.getElementById("selectusuprox").focus();
+                    $('#mensagem').fadeIn("slow");
+                    document.getElementById("mensagem").innerHTML = "Selecione o funcionário que vai assumir o serviços";
+                    $('#mensagem').fadeOut(5000);
+                    return false;
+                }
+
                 if(document.getElementById('ocorrencia1').checked == true){ // houve ocorrência
                     Ocor = 1;
                     if(document.getElementById("relato").value === ""){
@@ -563,6 +580,7 @@ if(!isset($_SESSION["usuarioID"])){
                     "&datareg="+encodeURIComponent(document.getElementById("dataocor").value)+
                     "&turno="+document.getElementById("selecturno").value+
                     "&usuant="+document.getElementById("selectusuant").value+
+                    "&usuprox="+document.getElementById("selectusuprox").value+
                     "&ocor="+Ocor+
                     "&envia="+Envia+
                     "&jatem="+document.getElementById("jatem").value+
@@ -661,20 +679,32 @@ if(!isset($_SESSION["usuarioID"])){
                                             return false;
                                         }else{
                                             $.confirm({
-                                                title: 'Confirmação!',
-                                                content: 'Parece que este turno já foi lançado. Confirma redigir outro registro?',
+                                                title: 'Informação!',
+                                                content: 'Este turno já foi lançado.',
                                                 draggable: true,
                                                 buttons: {
-                                                    Sim: function () {
-                                                        //continua
-                                                    },
-                                                    Não: function () {
-                                                        document.getElementById("mudou").value = "0";
+                                                    OK: function(){
+//                                                        document.getElementById("relacmodalReg").style.display = "none";
                                                         document.getElementById("selecturno").value = "";
-                                                        document.getElementById("relacmodalReg").style.display = "none";
                                                     }
                                                 }
                                             });
+                                            return false;
+//                                            $.confirm({
+//                                                title: 'Confirmação!',
+//                                                content: 'Parece que este turno já foi lançado. Confirma redigir outro registro?',
+//                                                draggable: true,
+//                                                buttons: {
+//                                                    Sim: function () {
+//                                                        //continua
+//                                                    },
+//                                                    Não: function () {
+//                                                        document.getElementById("mudou").value = "0";
+//                                                        document.getElementById("selecturno").value = "";
+//                                                        document.getElementById("relacmodalReg").style.display = "none";
+//                                                    }
+//                                                }
+//                                            });
                                         }
                                     }
                                 }
@@ -912,66 +942,6 @@ if(!isset($_SESSION["usuarioID"])){
             return false;
         }
 
-
-//Provisório
-
-			$rs1 = pg_query($Conec, "SELECT column_name, data_type FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'livrocheck' AND COLUMN_NAME = 'itemnum'");
-			$row1 = pg_num_rows($rs1);
-			if($row1 == 0){
-				pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".livrocheck");
-			}
-
-			pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livrocheck (
-				id SERIAL PRIMARY KEY,
-				marca smallint NOT NULL DEFAULT 0,
-				itemnum smallint NOT NULL DEFAULT 0,
-				itemverif VARCHAR(250),
-				ativo smallint NOT NULL DEFAULT 1,
-				usuins bigint NOT NULL DEFAULT 0,
-				datains timestamp without time zone DEFAULT '3000-12-31',
-				usuedit bigint NOT NULL DEFAULT 0,
-				dataedit timestamp without time zone DEFAULT '3000-12-31'
-				)
-			");
-
-
-	$rs = pg_query($Conec, "SELECT id FROM ".$xProj.".livrocheck LIMIT 3");
-	$row = pg_num_rows($rs);
-	if($row == 0){
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (1, 0, 1, 'Bebedouro com Garrafão', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (2, 0, 2, 'Cadeira', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (3, 0, 3, 'Câmera', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (4, 0, 4, 'Chaves do Claviculário', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (5, 0, 5, 'Carregador dos Rádiocomunicadores', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (6, 0, 6, 'Chaves lacradas do claviculário', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (7, 0, 7, 'Computador', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (8, 0, 8, 'Correspondências ou encomendas entregues para a Casa', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (9, 0, 9, 'Doações recebidas dentro da Guarita', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (10, 0, 10, 'Extintor de incêndio', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (11, 0, 11, 'Formulário de Achados e Perdidos', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (12, 0, 12, 'Formulário de Controle do Claviculário', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (13, 0, 13, 'Formulário de Controle dos Rádiocomunicadores', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (14, 0, 14, 'Formulário de Controle de viaturas - pernoite', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (15, 0, 15, 'Formulário de Utilização de Vagas', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (16, 0, 16, 'Formulário de Utilização de Vagas no Estacionamento', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (17, 0, 17, 'LRO - Formulários', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (18, 0, 18, 'Monitor Câmera', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (19, 0, 19, 'Objetos Perdidos', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (20, 0, 20, 'Pasta com Normas', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (21, 0, 21, 'Problemas com elevadores', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (22, 0, 22, 'Problemas nas instalações - Portas, janelas, etc.', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (23, 0, 23, 'Rádiocomunicadores', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (24, 0, 24, 'Relógio de parede', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (25, 0, 25, 'Telefone Celular', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (26, 0, 26, 'Telefone Ramal 1804', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (27, 0, 27, 'Veículos e moto da Comunhão pernoitando na Casa', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (28, 0, 28, 'Veículos particulares pernoitando na casa', 1, 3, NOW()); ");
-		pg_query($Conec, "INSERT INTO ".$xProj.".livrocheck (id, marca, itemnum, itemverif, ativo, usuins, datains) VALUES (29, 0, 29, 'Ventilador', 1, 3, NOW()); ");
-	}
-
-
-//-------------------
-
         $rs = pg_query($Conec, "UPDATE ".$xProj.".livroreg SET enviado = 1 WHERE datains < (NOW() - interval '13 hour') "); // marca enviado após 13 horas de inserido - o turno 3 tem 12 horas
 
         $admIns = parAdm("insocor", $Conec, $xProj);   // nível para inserir 
@@ -982,8 +952,6 @@ if(!isset($_SESSION["usuarioID"])){
 
         $OpUsuAnt = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE lro = 1 And ativo = 1 And pessoas_id != ".$_SESSION["usuarioID"]." ORDER BY nomeusual, nomecompl"); // And codsetor = 
         $OpUsuAnt2 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE lro = 1 And ativo = 1 And pessoas_id != ".$_SESSION["usuarioID"]." ORDER BY nomeusual, nomecompl"); 
-//        $OpUsuAnt3 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And pessoas_id != ".$_SESSION["usuarioID"]." ORDER BY nomeusual, nomecompl"); //  lro = 1 And 
-//        $OpUsuAnt4 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And pessoas_id != ".$_SESSION["usuarioID"]." ORDER BY nomeusual, nomecompl"); 
         $OpUsuAnt3 = pg_query($Conec, "SELECT id, nomecolet FROM ".$xProj.".coletnomes WHERE ativo = 1 ORDER BY nomecolet");
         $OpUsuAnt4 = pg_query($Conec, "SELECT id, nomecolet FROM ".$xProj.".coletnomes WHERE ativo = 1 ORDER BY nomecolet");
         $OpTurnos = pg_query($Conec, "SELECT codturno, descturno FROM ".$xProj.".livroturnos WHERE descturno != '' ORDER BY codturno;"); 
@@ -992,6 +960,7 @@ if(!isset($_SESSION["usuarioID"])){
         FROM ".$xProj.".livroreg GROUP BY TO_CHAR(dataocor, 'MM'), TO_CHAR(dataocor, 'YYYY') ORDER BY TO_CHAR(dataocor, 'YYYY') DESC, TO_CHAR(dataocor, 'MM') DESC ");
         $OpcoesEscAno = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".livroreg.dataocor)::text 
         FROM ".$xProj.".livroreg GROUP BY 1 ORDER BY 1 DESC ");
+        $OpUsuProx = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE lro = 1 And ativo = 1 And pessoas_id != ".$_SESSION["usuarioID"]." ORDER BY nomeusual, nomecompl");
 
         ?>
         <input type="hidden" id="UsuAdm" value = "<?php echo $_SESSION["AdmUsu"] ?>" />
@@ -1089,11 +1058,26 @@ if(!isset($_SESSION["usuarioID"])){
 
                             <br>
                             <div class="col-xs-6">
-                                <textarea class="form-control" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="8" cols="90" id="relato" onclick="tiraBorda(id);" onchange="modif();"></textarea>
+                                <textarea class="form-control" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="6" cols="90" id="relato" onclick="tiraBorda(id);" onchange="modif();"></textarea>
                             </div>
                         </div>
-                        <br>
                     </div>
+                    <div style="margin-top: 10px; margin-bottom: 10px;">
+                        <label class="etiqAzul"> - Passei o serviço para: </label>
+                        <select id="selectusuprox" style="min-width: 120px;" onclick="tiraBorda(id);" onchange="modif();" title="Selecione um usuário.">
+                            <option value=""></option>
+                            <?php 
+                            if($OpUsuProx){
+                                while ($Opcoes = pg_fetch_row($OpUsuProx)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php if(!is_null($Opcoes[2]) && $Opcoes[2] != ""){ echo $Opcoes[2]." - ".$Opcoes[1];}else{echo $Opcoes[1];} ?></option>
+                                <?php 
+                                }
+                            }
+                            ?>
+                        </select>
+                        <label class="etiqAzul" style="padding-right: 280px;"></label>
+                    </div>
+                    <hr>
 
                     <div style="text-align: left;">
                         <label class="etiqAzul"> - Substituições temporárias: </label>
@@ -1153,7 +1137,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <br>
                         <div style="text-align: center;">
                             <label class="etiqAzul"> - Recebi o serviço de: </label>
-                            <input disabled type="text" id="mostraselectusuant" value="" >
+                            <input disabled type="text" id="mostraselectusuant" value="" style="width: 300px;">
 
                             <label class="etiqAzul"> ciente das alterações dos turnos anteriores. </label>
                             <br>
@@ -1162,10 +1146,16 @@ if(!isset($_SESSION["usuarioID"])){
                             <input disabled type="radio" name="mostraocorrencia" id="mostraocorrencia2" value="0" CHECKED title="Nada aconteceu que seja digno de nota"><label for="mostraocorrencia2" class="etiqAzul" style="padding-left: 3px;"> Não Houve</label>
                             <br>
                             <div class="col-xs-6">
-                                <textarea class="form-control" disabled id="mostrarelato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="10" cols="90"></textarea>
+                                <textarea class="form-control" disabled id="mostrarelato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="7" cols="90"></textarea>
                             </div>
                         </div>
                     </div>
+                    <div style="margin-top: 10px; margin-bottom: 10px;">
+                        <label class="etiqAzul"> - Passei o serviço para: </label>
+                        <input disabled type="text" id="mostraselectusuprox" value="" style="width: 300px;">
+                        <label class="etiqAzul" style="padding-right: 270px;"></label>
+                    </div>
+                    <hr>
                     <div class="aEsq"><label class="etiqAzul"> - Substituições temporárias: </label></div>
                     <div class="col-xs-6 style="text-align: center; padding-bottom: 10px;">
                         <textarea class="form-control" disabled id="mostrarelatosubstit" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="4" cols="80" ></textarea>
@@ -1235,26 +1225,30 @@ if(!isset($_SESSION["usuarioID"])){
                             <input type="radio" name="complocorrencia" id="complocorrencia2" value="0" title="Nada aconteceu que seja digno de nota"><label for="complocorrencia2" class="etiqAzul" style="padding-left: 3px;"> Não Houve</label> 
                             <br>
                             <div class="col-xs-6">
-                                <textarea class="form-control" id="complrelato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="8" cols="90" onclick="tiraBorda(id);" onchange="modif();"></textarea>
+                                <textarea class="form-control" id="complrelato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="7" cols="90" onclick="tiraBorda(id);" onchange="modif();"></textarea>
                             </div>
                         </div>
                         <br>
                     </div>
-
+                    <div style="margin-top: 10px; margin-bottom: 10px;">
+                        <label class="etiqAzul"> - Passei o serviço para: </label>
+                        <input disabled type="text" id="complselectusuprox" value="" style="width: 300px;">
+                        <label class="etiqAzul" style="padding-right: 270px;"></label>
+                    </div>
+                    <hr>
                     <div style="text-align: left;">
                         <label class="etiqAzul"> - Substituições temporárias: </label>
-                            <select id="complselectsubstit" style="width: 25px;" onchange="insComplSubstit();" title="Selecione um nome.">
-                                <option value=""></option>
+                        <select id="complselectsubstit" style="width: 25px;" onchange="insComplSubstit();" title="Selecione um nome.">
+                            <option value=""></option>
+                            <?php 
+                            if($OpUsuAnt4){
+                                while ($Opcoes = pg_fetch_row($OpUsuAnt4)){ ?>
+                                    <option value="<?php echo $Opcoes[1]; ?>"><?php echo $Opcoes[1]; ?></option>
                                 <?php 
-                                if($OpUsuAnt4){
-                                    while ($Opcoes = pg_fetch_row($OpUsuAnt4)){ ?>
-                                        <option value="<?php echo $Opcoes[1]; ?>"><?php echo $Opcoes[1]; ?></option>
-                                    <?php 
-                                    }
                                 }
-                                ?>
-                            </select>
-                            
+                            }
+                            ?>
+                        </select> 
                     </div>
                     <div class="col-xs-6" style="text-align: center; padding-bottom: 10px;">
                         <textarea class="form-control" id="complrelatosubstit" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="4" cols="80" onchange="modif();"></textarea>

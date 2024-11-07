@@ -11,9 +11,11 @@ if(!isset($_SESSION["usuarioID"])){
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1"> 
         <title></title>
+        <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/relacmod.css" />
         <script src="class/tinymce5/tinymce.min.js"></script>
         <script src="comp/js/jquery.min.js"></script> <!-- versão 3.6.3 -->
+        <script src="comp/js/jquery-confirm.min.js"></script>
         <style type="text/css">
             .modal-content-Trocas{
                 background: linear-gradient(180deg, white, #86c1eb);
@@ -172,6 +174,40 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 }
             }
+
+            function apagaTroca(Cod){
+                $.confirm({
+                    title: 'Confirmação!',
+                    content: "Não haverá possibilidade de recuperação. Continua?",
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/trocas/salvaTrocas.php?acao=apagaTroca&numero="+Cod, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 0){
+                                                $("#contentPag").load("modulos/trocas/carTrocas.php?admEdit="+document.getElementById("admEdit").value);
+                                            }else{
+                                                alert("Houve um erro no servidor");
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                        }
+                    }
+                });
+            }
+
             function insTroca(){
                 tinyMCE.activeEditor.setContent(""); // importante
                 document.getElementById("titulomodal").innerHTML = "Inserção de Anúncio";
@@ -253,6 +289,8 @@ if(!isset($_SESSION["usuarioID"])){
                 </div>
             </div>
         </div> <!-- Fim Modal Confirmação-->
+
+
 
         <!-- div modal para leitura instruções -->
         <div id="relacHelpTrocas" class="relacmodal">

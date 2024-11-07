@@ -30,7 +30,8 @@ session_start();
                         echo "<tr>";
                             echo "<td style='width: 30px; texto-align: center;'><div style='margin: 10px; text-alig: center; padding: 10px; border: 2px solid blue; border-radius: 20px;'>$LadoEsq</div>";
                             if($idSetor == $_SESSION["CodSetorUsu"] && $_SESSION["AdmUsu"] >= $admEdit || $_SESSION["AdmUsu"] > 6){
-                                echo"<div style='padding-left: 20px; padding-right: 20px;'>&nbsp;<div class='iContainer' style='width: 70%; font-size: 1.1rem;' onclick='abreEdit($Cod)' title='Editar anúncio'> Editar </div><div class='modalConfirm' data-bs-toggle='modal' data-bs-target='#deletaModal' onclick='guardaCod($Cod)' title='Apagar anúncio'> &#10008; </div></div>";
+                                echo"<div style='padding-left: 20px; padding-right: 20px;'>&nbsp;<div class='iContainer' style='width: 70%; font-size: 1.1rem;' onclick='abreEdit($Cod)' title='Editar anúncio'> Editar </div>
+                                <div class='modalConfirm' onclick='apagaTroca($Cod)' title='Apagar anúncio'> &#10008; </div></div>";
                             }
                             echo "</td>";
                             echo "<td style='width: 80%; '><div style='margin: 10px; padding: 5px; border: 2px solid blue; border-radius: 15px;'>".$tbl[3]."</div></td>";
