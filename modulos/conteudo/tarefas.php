@@ -521,7 +521,6 @@ if(!isset($_SESSION["usuarioID"])){
                         ajax.send(null);
                     }
                 }else{
-//                    document.getElementById("mudou").value = "0";
                     document.getElementById("relacmodalTarefa").style.display = "none";
                 }
             }

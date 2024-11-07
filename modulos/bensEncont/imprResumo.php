@@ -166,7 +166,6 @@ if(!isset($_SESSION['AdmUsu'])){
                     $pdf->SetFont('Arial', 'B' , 10); 
                     $pdf->Cell(10, 4, number_format($rowP5, 0, ",","."), 0, 1, 'R');
                 }
-  
                 $pdf->ln(5);
                 $pdf->SetDrawColor(0);
                 $lin = $pdf->GetY();

@@ -28,7 +28,6 @@
 				pg_query($Conec, "UPDATE ".$xProj.".coletnomes SET ativo = 0 WHERE id = 8 ;");
 				pg_query($Conec, "UPDATE ".$xProj.".coletnomes SET ativo = 0 WHERE id = 10 ;");
 				pg_query($Conec, "UPDATE ".$xProj.".coletnomes SET ativo = 0 WHERE id = 12 ;");
-
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

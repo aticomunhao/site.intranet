@@ -356,7 +356,6 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->Cell(30, 4, "Recebido por: ", 0, 0, 'L');
             $pdf->SetFont('Arial', '', 10);
             $pdf->MultiCell(0, 5, $NomeUsuDestino, 1, 'J', false);
-
         }else{
             $pdf->ln(3);
             if($UsuRestit > 0){

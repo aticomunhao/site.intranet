@@ -160,9 +160,15 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("quantjatem").value = "0";
                 document.getElementById("numrelato").value = "";
                 document.getElementById('ocorrencia2').checked = true; // não houve ocorr
+
+                //Situação: o operador deixou para fazer o livro depois da meia noite.
+                if(parseInt(Resp.hora) >= 0 && parseInt(Resp.hora) <= 7){
+//                    document.getElementById("dataocor").value = Resp.dataontem;
+                    document.getElementById("selecturno").value = "3";
+                }
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/lro/salvaReg.php?acao=buscaAcessoLro&geradata="+document.getElementById("dataocor").value+"&geraturno="+document.getElementById("selecturno").value, true);
+                    ajax.open("POST", "modulos/lro/salvaReg.php?acao=buscaAcessoLro&geradata="+document.getElementById("guardahoje").value+"&geraturno="+document.getElementById("selecturno").value, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -188,7 +194,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById("numrelato").value = Resp.numrelato;
                                             $.confirm({
                                                 title: "Atenção!",
-                                                content: "Este turno "+document.getElementById("dataocor").value+" - "+Resp.descturno+"  já foi lançado.",
+                                                content: "Este turno "+Resp.descturno+"  já foi lançado.",
                                                 draggable: true,
                                                 buttons: {
                                                     OK: function(){
@@ -199,13 +205,11 @@ if(!isset($_SESSION["usuarioID"])){
                                         }
                                         //Condição aqui: período entre 00 e 07 horas, turnos 1 e 2 do dia anterior já foram lançados, 
                                         //já passou da meia noite e faltou o turno 3 -> voltar a data 1 dia
-//                                        if(parseInt(Resp.turno1) > 0 && parseInt(Resp.turno2) > 0 && parseInt(Resp.turno3) === 0){
-
 
                                         //Situação: o operador deixou para fazer o livro depois da meia noite.
                                         if(parseInt(Resp.hora) >= 0 && parseInt(Resp.hora) <= 7){
                                             document.getElementById("dataocor").value = Resp.dataontem;
-                                            document.getElementById("selecturno").value = "3";
+//                                            document.getElementById("selecturno").value = "3";
                                         }
                                     }else{
                                         $.confirm({
@@ -265,7 +269,6 @@ if(!isset($_SESSION["usuarioID"])){
                                                     document.getElementById("botRedigirCompl").style.visibility = "visible";
                                                 }
                                             }
-
                                         }
                                         document.getElementById("mostrarelatosubstit").value = Resp.substit;
                                         document.getElementById("relacMostramodalReg").style.display = "block";
@@ -504,10 +507,10 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function salvaModalReg(Envia){
-                if(parseInt(document.getElementById("mudou").value) === 0){
-                    document.getElementById("relacmodalReg").style.display = "none";
-                    return false;
-                }
+//                if(parseInt(document.getElementById("mudou").value) === 0){
+//                    document.getElementById("relacmodalReg").style.display = "none";
+//                    return false;
+//                }
                 if(document.getElementById("dataocor").value === ""){
                     let element = document.getElementById('dataocor');
                     element.classList.add('destacaBorda');

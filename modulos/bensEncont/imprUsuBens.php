@@ -118,7 +118,6 @@ if(isset($_REQUEST["acao"])){
             $pdf->ln(10);
         }
 
-
         $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE fiscbens = 1 And ativo = 1 ORDER BY nomecompl");
         $row0 = pg_num_rows($rs0);
         $pdf->ln(3);
@@ -159,7 +158,6 @@ if(isset($_REQUEST["acao"])){
             $pdf->Line(20, $lin, 200, $lin);
             $pdf->ln(10);
         }
-
 
         $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE soinsbens = 1 And ativo = 1 ORDER BY nomecompl");
         $row0 = pg_num_rows($rs0);
