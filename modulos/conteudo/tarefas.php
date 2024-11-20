@@ -1062,7 +1062,7 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 }else{
                     echo "<tr>";
-                        echo "<td colspan='8' style='text-align: center; font-weight: 800; color: blue; border: 1px solid; padding: 10px;'>Nenhuma Tarefa Designada para $UsuLogadoNome</td>";
+                        echo "<td colspan='8' style='text-align: center; font-weight: 800; color: blue; border: 1px solid; padding: 10px;'>Nenhuma tarefa designada para $UsuLogadoNome</td>";
                     echo "</tr>";
                 }
                 ?>

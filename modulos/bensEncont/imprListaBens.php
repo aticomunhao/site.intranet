@@ -20,13 +20,13 @@ if(!isset($_SESSION['AdmUsu'])){
     $Cabec3 = $tblCabec[2];
 
     $semana = array(
-        '0' => 'DOM', 
-        '1' => 'SEG',
-        '2' => 'TER',
-        '3' => 'QUA',
-        '4' => 'QUI',
-        '5' => 'SEX',
-        '6' => 'SAB'
+        '0' => 'Dom', 
+        '1' => 'Seg',
+        '2' => 'Ter',
+        '3' => 'Qua',
+        '4' => 'Qui',
+        '5' => 'Sex',
+        '6' => 'Sab'
     );
     $mes_extenso = array(
         '01' => 'Janeiro',
@@ -95,12 +95,14 @@ if(!isset($_SESSION['AdmUsu'])){
             $Mes = "0".$Mes;
         }
         $Ano = $Proc[1];
-        $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(datareceb, 'DD/MM/YYYY'), date_part('dow', datareceb), numprocesso, descdobem, codusuins, usuguarda, usurestit, usucsg, usudestino, usuarquivou, CURRENT_DATE-datareceb, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, localachou, nomeachou, telefachou FROM ".$xProj.".bensachados WHERE ativo = 1 And DATE_PART('MONTH', datareceb) = '$Mes' And DATE_PART('YEAR', datareceb) = '$Ano' ORDER BY datareceb DESC, id DESC ");
+        $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(datareceb, 'DD/MM/YYYY'), date_part('dow', datareceb), numprocesso, descdobem, codusuins, usuguarda, usurestit, usucsg, usudestino, usuarquivou, 
+        CURRENT_DATE-datareceb, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, localachou, nomeachou, telefachou, dataarquivou-datareceb As tempoTot FROM ".$xProj.".bensachados WHERE ativo = 1 And DATE_PART('MONTH', datareceb) = '$Mes' And DATE_PART('YEAR', datareceb) = '$Ano' ORDER BY datareceb DESC, id DESC ");
     }
 
     if($Acao == "listaanoBens"){
         $Ano = filter_input(INPUT_GET, 'ano'); 
-        $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(datareceb, 'DD/MM/YYYY'), date_part('dow', datareceb), numprocesso, descdobem, codusuins, usuguarda, usurestit, usucsg, usudestino, usuarquivou, CURRENT_DATE-datareceb, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, localachou, nomeachou, telefachou FROM ".$xProj.".bensachados WHERE ativo = 1 And DATE_PART('YEAR', datareceb) = '$Ano' ORDER BY datareceb DESC, id DESC ");
+        $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(datareceb, 'DD/MM/YYYY'), date_part('dow', datareceb), numprocesso, descdobem, codusuins, usuguarda, usurestit, usucsg, usudestino, usuarquivou, 
+        CURRENT_DATE-datareceb, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, localachou, nomeachou, telefachou, dataarquivou-datareceb As tempoTot FROM ".$xProj.".bensachados WHERE ativo = 1 And DATE_PART('YEAR', datareceb) = '$Ano' ORDER BY datareceb DESC, id DESC ");
     }
 
     if($Acao == "listamesBens" || $Acao == "listaanoBens"){
@@ -147,6 +149,11 @@ if(!isset($_SESSION['AdmUsu'])){
                 $Intervalo = (int) $tbl0[12];
                 $Dias = str_pad(($tbl0[11]), 2, "0", STR_PAD_LEFT);
 
+                if(!is_null($tbl0[16])){
+                    $TempoTotal = str_pad(($tbl0[16]), 2, "0", STR_PAD_LEFT);
+                }else{
+                    $TempoTotal = "";
+                }
                 $pdf->Cell(20, 5, $tbl0[1], 0, 0, 'L');
                 $pdf->SetFont('Arial', '', 7);
                 $pdf->Cell(10, 5, $semana[$tbl0[2]], 0, 0, 'L');
@@ -196,8 +203,21 @@ if(!isset($_SESSION['AdmUsu'])){
                     $pdf->Cell(17, 5, "", 1, 0, 'C'); 
                 }
                 $pdf->SetX(270);
-                if($Dias <= 90){
-                    $pdf->Cell(17, 5, $Dias." dias", 1, 0, 'C'); 
+
+                if($Arquivado > 0){
+                    if($TempoTotal == '01' || $TempoTotal == '00'){
+                        $pdf->Cell(17, 5, $TempoTotal." dia", 1, 0, 'C'); 
+                    }else{
+                        $pdf->Cell(17, 5, $TempoTotal." dias", 1, 0, 'C'); 
+                    }
+                }else{
+//                    if($Dias <= 90){
+                    if($Dias == '01' || $Dias == '00'){
+                        $pdf->Cell(17, 5, $Dias." dia", 1, 0, 'C'); 
+                    }else{
+                        $pdf->Cell(17, 5, $Dias." dias", 1, 0, 'C'); 
+                    }
+//                    }
                 }
 
                 $pdf->SetX(290);

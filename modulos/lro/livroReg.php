@@ -540,15 +540,15 @@ if(!isset($_SESSION["usuarioID"])){
                     $('#mensagem').fadeOut(5000);
                     return false;
                 }
-                if(document.getElementById("selectusuprox").value === ""){
-                    let element = document.getElementById('selectusuprox');
-                    element.classList.add('destacaBorda');
-                    document.getElementById("selectusuprox").focus();
-                    $('#mensagem').fadeIn("slow");
-                    document.getElementById("mensagem").innerHTML = "Selecione o funcionário que vai assumir o serviços";
-                    $('#mensagem').fadeOut(5000);
-                    return false;
-                }
+//                if(document.getElementById("selectusuprox").value === ""){
+//                    let element = document.getElementById('selectusuprox');
+//                    element.classList.add('destacaBorda');
+//                    document.getElementById("selectusuprox").focus();
+//                    $('#mensagem').fadeIn("slow");
+//                    document.getElementById("mensagem").innerHTML = "Selecione o funcionário que vai assumir o serviços";
+//                    $('#mensagem').fadeOut(5000);
+//                    return false;
+//                }
 
                 if(document.getElementById('ocorrencia1').checked == true){ // houve ocorrência
                     Ocor = 1;
@@ -1066,7 +1066,7 @@ if(!isset($_SESSION["usuarioID"])){
                         </div>
                     </div>
                     <div style="margin-top: 10px; margin-bottom: 10px;">
-                        <label class="etiqAzul"> - Passei o serviço para: </label>
+                        <label class="etiqAzul"> - Passagem do serviço para: </label>
                         <select id="selectusuprox" style="min-width: 120px;" onclick="tiraBorda(id);" onchange="modif();" title="Selecione um usuário.">
                             <option value=""></option>
                             <?php 

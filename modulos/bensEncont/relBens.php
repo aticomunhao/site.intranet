@@ -8,6 +8,12 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <meta charset="UTF-8"> 
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title></title>
+        <style>
+            .caption-top {
+                caption-side: top;
+            }
+        </style>
+
         <script>
            new DataTable('#idTabela', {
                 columnDefs: [
@@ -60,7 +66,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             }
         ?>
          <!-- Apresenta os usuários do setor com o nível administrativo -->
-        <div style="padding: 10px;">
+        <div style="padding: 10px; padding-top: 2px;">
             <?php
             if(isset($_REQUEST["acao"])){
                 $Acao = $_REQUEST["acao"];
@@ -69,7 +75,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             }
 
             $Condic = $xProj.".bensachados.ativo = 1 ";
-            $vIndex = $xProj.".bensachados.datareceb DESC";
+            $vIndex = $xProj.".bensachados.datareceb DESC, id DESC";
             if($Acao == "Restituídos"){
                 $Condic = $xProj.".bensachados.ativo = 1 And usurestit > 0";
                 $vIndex = $xProj.".bensachados.datareceb DESC";
@@ -99,8 +105,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 $vIndex = $xProj.".bensachados.dataencdestino DESC";
             }
             if($Acao == "Arquivados"){
-                $Condic = $xProj.".bensachados.ativo = 1 And usurestit = 0 And usuencdestino > 0 And usudestino > 0 And usuarquivou > 0 And (CURRENT_DATE-datareceb) >= 90 ";
-                $vIndex = $xProj.".bensachados.dataencdestino DESC";
+                $Condic = $xProj.".bensachados.ativo = 1 And usurestit = 0 And usuencdestino > 0 And usudestino > 0 And usuarquivou > 0 And (CURRENT_DATE-datareceb) >= 90 Or ".$xProj.".bensachados.ativo = 1 And usurestit > 0 And usuencdestino = 0 And usudestino = 0 And usuarquivou > 0 ";
+                $vIndex = $xProj.".bensachados.datareceb DESC";
             }
 
             $rs0 = pg_query($Conec, "SELECT ".$xProj.".bensachados.id, to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, usuguarda, usurestit, usucsg, usuarquivou, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, usudestino, CURRENT_DATE-datareceb, 
@@ -135,8 +141,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             }
             $row0 = pg_num_rows($rs0);
             ?>
+            <div style="text-align: center;"><label class="etiqAzul">Seleção: &nbsp;</label><label class="etiqAzul" id="ordemIndex"> <?php echo $Acao."  (".$row0." registros)"; ?></label></div>
             <table id="idTabela" class="display" style="width:85%;">
-                <caption><?php echo $row0." registros"; ?></caption>
+                <caption style="text-align: center;"><?php echo $row0." registros"; ?></caption>
                 <thead>
                     <tr>
                         <th style="display: none;"></th>
@@ -185,7 +192,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                         if($Restit == 0){
                                             echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);' title='Formuário de restituição ao proprietário'>Restituição</button>";
                                         }else{
-                                            echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);' title='Formuário de restituição ao proprietário'>Restituído</button>";
+                                            echo "<button class='botTable fundoAmareloCl' onclick='mostraBem($tbl0[0], 2, $Restit);' title='Formuário de restituição preenchido'>Restituído</button>";
                                         }
                                     }else{
                                         echo "<button disabled class='botTable fundoCinza corAzulClaro'>Restituição</button>";
@@ -194,7 +201,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     if($Edit == 1 && $Restit == 0 && $Arquivado == 0 && $EncDestino == 0 && $Dias >= 90 && $_SESSION["AdmUsu"] >= 6){
                                         echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 4, $Restit);' title='Destinação após 90 dias'>Destinação</button>";
                                     }else{
-                                        echo "<button disabled class='botTable fundoCinza corAzulClaro'>Destinação</button>";
+                                        if($EncDestino == 0){
+                                            echo "<button disabled class='botTable fundoCinza corAzulClaro'>Destinação</button>";
+                                        }else{
+                                            echo "<button disabled class='botTable fundoCinza corAzulClaro'>Destinado</button>";
+                                        }
                                     }
 
                                     if($Edit == 1 && $Restit == 0 && $Arquivado == 0 && $EncDestino > 0 && $Destino == 0 && $Dias >= 90){
@@ -237,6 +248,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                 if($Arquivado > 0){
                                     echo "<div class='etiqResult' style='border-color: red;' title='Processo arquivado'>Arquivado</div>";
                                 }
+
+                                if($Edit == 0 && $Impr == 1){
+                                    echo "<div class='etiqResult' style='border-color: blue; cursor: pointer;' onclick='imprProcesso($tbl0[0]);' title='Gerar PDF do processo'>PDF</div>";
+                                }
+
                                 ?>
                             </td> <!-- descrição do bem -->
  

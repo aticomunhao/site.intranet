@@ -28,8 +28,7 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 70%; /* acertar de acordo com a tela */
-/*                max-width: 900px;  */
+                width: 70%;
             }
             .quadro{
                 position: relative; float: left; text-align: center; margin: 5px; width: 95%; padding: 2px; padding-top: 5px;
@@ -100,7 +99,6 @@ if(!isset($_SESSION["usuarioID"])){
                 if(parseInt(document.getElementById("guardaescEdit").value) === 1){ // tem que estar autorizado no cadastro de usuários
                     if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
                         document.getElementById("botInsReg").style.visibility = "visible"; 
-                        document.getElementById("imgBensconfig").style.visibility = "visible";
                     }
                     if(parseInt(document.getElementById("UsuAdm").value) > 6){
                         document.getElementById("botInsReg").style.visibility = "visible";
@@ -655,7 +653,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 $.confirm({
                     title: 'Restituição',
-                    content: 'Confirma a restituição deste objeto?',
+                    content: 'Confirma a restituição deste objeto e arquivar o processo?',
                     autoClose: 'Não|10000',
                     draggable: true,
                     buttons: {
@@ -1138,10 +1136,8 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             //mostra a ação quando clicar na mensagem da página inicial
-            document.getElementById("ordemIndex").innerHTML = document.getElementById("guardaIndex").value;
             function mostraBens(Valor){
                 $("#carregaBens").load("modulos/bensEncont/relBens.php?acao="+Valor);
-                document.getElementById("ordemIndex").innerHTML = Valor;
             }
         </script>
     </head>
@@ -1199,8 +1195,6 @@ if(!isset($_SESSION["usuarioID"])){
                     <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Arquivar');" title="Processo que aguarda encerramento. Nível Revisor." >Arquivar</button>
                     <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Arquivados');" title="Processo encerrado." >Arquivados</button>
 
-                    <div style="text-align: center;"><label class="etiqAzul">Seleção: &nbsp;</label><label class="etiqAzul" id="ordemIndex">Todos</label></div>
-
                 </div> <!-- Central - espaçamento entre colunas  -->
                 <div class="col quadro" style="text-align: right;">
                     <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="abreImprBens();">PDF</button>
@@ -1227,7 +1221,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" /> <!-- nível mínimo para editar -->
         <input type="hidden" id="guardaIndex" value="<?php echo $Acao; ?>" /> <!-- ordem do índex -->
 
-        <div style="margin: 1px; border: 2px solid blue; border-radius: 15px; padding: 10px;">
+        <div style="margin: 1px; border: 2px solid blue; border-radius: 15px; padding: 10px; padding-top: 2px;">
             <div id="carregaBens"></div>
         </div>
 
@@ -1761,8 +1755,8 @@ if(!isset($_SESSION["usuarioID"])){
                     <tr>
                         <td class="etiq80" title="Registrar recebimento e destino de Achados e Perdidos">DAF:</td>
                         <td colspan="4">
-                            <input type="checkbox" id="preencheBens" title="Administrar, prover a guarda e dar destino aos Achados e Perdidos." onchange="marcaBem(this, 'bens');" >
-                            <label for="preencheBens" title="Administrar, prover a guarda e dar destino aos Achados e Perdidos.">administrar, prover a guarda e dar destino aos Achados e Perdidos.</label>
+                            <input type="checkbox" id="preencheBens" title="Administrar e prover a guarda dos Achados e Perdidos." onchange="marcaBem(this, 'bens');" >
+                            <label for="preencheBens" title="Administrar e prover a guarda dos Achados e Perdidos.">administrar e prover a guarda dos Achados e Perdidos.</label>
                         </td>
                     </tr>
                     <tr>

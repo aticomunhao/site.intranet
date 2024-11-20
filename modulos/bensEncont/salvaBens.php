@@ -136,8 +136,8 @@ if($Acao=="restituiBem"){
     $Cpf = filter_input(INPUT_GET, 'cpfproprietario');
     $Telef = filter_input(INPUT_GET, 'telefproprietario');
     $Erro = 0;
-//    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET nomepropriet = '$Nome', cpfpropriet = '$Cpf', telefpropriet = '$Telef', usurestit = ".$_SESSION["usuarioID"].", datarestit = NOW(), usuarquivou = ".$_SESSION["usuarioID"].", dataarquivou = NOW() WHERE id = $Cod");
-    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET nomepropriet = '$Nome', cpfpropriet = '$Cpf', telefpropriet = '$Telef', usurestit = ".$_SESSION["usuarioID"].", datarestit = NOW() WHERE id = $Cod");
+    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET nomepropriet = '$Nome', cpfpropriet = '$Cpf', telefpropriet = '$Telef', usurestit = ".$_SESSION["usuarioID"].", datarestit = NOW(), usuarquivou = ".$_SESSION["usuarioID"].", dataarquivou = NOW() WHERE id = $Cod");
+//    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET nomepropriet = '$Nome', cpfpropriet = '$Cpf', telefpropriet = '$Telef', usurestit = ".$_SESSION["usuarioID"].", datarestit = NOW() WHERE id = $Cod");
     if(!$rs1){
         $Erro = 1;
     }

@@ -24,7 +24,6 @@
         <script src="class/bootstrap/js/bootstrap.min.js"></script>
         <script src="comp/js/jquery-confirm.min.js"></script>   <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
         <script src="comp/js/eventos.js"></script>
-<!--        <script src="modulos/config/icustomb.js"></script> -->
         <style>
             .bContainer{ /* botão upload */
                 position: absolute; 

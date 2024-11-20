@@ -181,7 +181,7 @@ if(isset($_REQUEST["acao"])){
 
     if($Acao == "buscausuario"){
         $Erro = 0;
-        $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de polog
+        $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de poslog
 
         $rs1 = pg_query($Conec, "SELECT contr, fisc_contr, cpf FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
         $row1 = pg_num_rows($rs1);
@@ -249,7 +249,7 @@ if(isset($_REQUEST["acao"])){
 
     if($Acao == "apagaContrato"){
         $Erro = 0;
-        $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de polog
+        $Cod = (int) filter_input(INPUT_GET, 'codigo');
         $Tipo = (int) filter_input(INPUT_GET, 'tipo');
         $rs1 = pg_query($Conec, "UPDATE ".$xProj.".contratos".$Tipo." SET ativo = 0 WHERE id = $Cod");
         if(!$rs1){
@@ -260,5 +260,50 @@ if(isset($_REQUEST["acao"])){
         echo $responseText;
     }
 
+    if($Acao == "buscaempresa"){
+        $Cod = (int) filter_input(INPUT_GET, 'codigo');
+        $Erro = 0;
+        $rs = pg_query($Conec, "SELECT empresa FROM ".$xProj.".contrato_empr WHERE id = $Cod And ativo = 1");
+        if(!$rs){
+            $Erro = 1;
+        }
+        $tbl = pg_fetch_row($rs);
+        $var = array("coderro"=>$Erro, "nome"=>$tbl[0] );
+        $responseText = json_encode($var);
+        echo $responseText;
+    }
+
+    if($Acao=="salvanomeempresa"){
+        $Cod = (int) filter_input(INPUT_GET, 'codigo');
+        $Nome = filter_input(INPUT_GET, 'nomeempresa');
+        $Erro = 0;
+        if($Cod > 0){ // salvar
+            $rs = pg_query($Conec, "UPDATE ".$xProj.".contrato_empr SET empresa = '$Nome', usuedit = ".$_SESSION['usuarioID'].", dataedit = NOW() WHERE id = $Cod ");
+        }else{ // inserir
+            $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".contrato_empr");
+            $tblCod = pg_fetch_row($rsCod);
+            $Codigo = $tblCod[0];
+            $CodigoNovo = ($Codigo+1);
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".contrato_empr (id, empresa, ativo, usuins, datains) VALUES ($CodigoNovo, '$Nome', 1, ".$_SESSION['usuarioID'].", NOW() )");
+        }
+        if(!$rs){
+            $Erro = 1;
+        }
+        $var = array("coderro"=>$Erro);
+        $responseText = json_encode($var);
+        echo $responseText;
+    }
+
+    if($Acao == "buscarelempresas"){  // vem de controleAr.php
+        $rsEmpr = pg_query($Conec, "SELECT id, empresa FROM ".$xProj.".contrato_empr WHERE ativo = 1 ORDER BY empresa");
+    
+        while ($tbl = pg_fetch_row($rsEmpr)){
+           $Empr[] = array(
+           'Cod' => $tbl[0],
+           'Nome' => $tbl[1]);
+        }
+        $responseText = json_encode($Empr);
+        echo $responseText;
+     }
 
 }

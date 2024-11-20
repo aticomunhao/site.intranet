@@ -319,7 +319,6 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     FiscAgua = 1;
                 }
 
-
                 Eletric = 0;
                 if(document.getElementById("leituraEletric").checked === true){
                     Eletric = 1;
@@ -376,6 +375,7 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     document.getElementById("grupoEscala").focus();
                     return false;
                 }
+
                 Escalante = 0;
                 if(document.getElementById("escalante").checked === true){
                     Escalante = 1;

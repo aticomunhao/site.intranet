@@ -97,13 +97,13 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             if($Contr == 1){
                         ?>
                         <td><div class="quadrinhoClick" onclick="editContrato(2, <?php echo $Cod; ?>);" title="Data Assinatura"><?php echo $tbl[2]; ?></div></td>
-                        <td><div class="quadrinhoClick" style="font-size: 70%;" onclick="editContrato(2, <?php echo $Cod; ?>);" title="Número do contrato"><?php echo $tbl[1]; ?></div></td>
+                        <td><div class="quadrinhoClick" style="font-size: 65%;" onclick="editContrato(2, <?php echo $Cod; ?>);" title="Número do contrato"><?php echo $tbl[1]; ?></div></td>
                         <td><div class="quadrinhoClick" style="<?php if($tbl[10] == 'aviso'){echo 'color: red;';}else{echo 'color: black;';} ?>" onclick="editContrato(2, <?php echo $Cod; ?>);" title="Data Vencimento"><?php echo $tbl[3]; ?></div></td>
                         <?php
                             }else{
                             ?>
                         <td><div class="quadrinho" title="Data Assinatura"><?php echo $tbl[2]; ?></div></td>
-                        <td><div class="quadrinho" style="font-size: 70%;" title="Número do contrato"><?php echo $tbl[1]; ?></div></td>
+                        <td><div class="quadrinho" style="font-size: 65%;" title="Número do contrato"><?php echo $tbl[1]; ?></div></td>
                         <td><div class="quadrinho" style="<?php if($tbl[10] == 't'){echo 'color: red;';}else{echo 'color: black;';} ?>" title="Data Vencimento"><?php echo $tbl[3]; ?></div></td>
 
                             <?php

@@ -167,7 +167,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
         $pdf->SetX(15); 
         $pdf->SetFont('Arial', 'I', 8);
-        $pdf->Cell(0, 4, "Descrição do bem encontrado: ", 0, 1, 'L');
+        $pdf->Cell(0, 4, "Descrição do Objeto encontrado: ", 0, 1, 'L');
         $pdf->SetX(25); 
         $pdf->SetFont('Arial', '', 10);
         $pdf->MultiCell(0, 5, $tbl[2], 0, 'J', true); //relato
@@ -214,7 +214,7 @@ if(!isset($_SESSION['AdmUsu'])){
 //
 //        $pdf->SetX(15); 
 //        $pdf->SetFont('Arial', 'I', 9);
-//        $pdf->MultiCell(0, 5, "     Declaro que recebi o Bem acima descrito, ao qual efetuarei a guarda pelo período de 90 (noventa) dias. Após esse prazo, a destinação do bem seguirá o caminho estabelecido na NI-4.05-B (DAF).", 1, 'J', false);
+//        $pdf->MultiCell(0, 5, "     Declaro que recebi o objeto acima descrito, ao qual efetuarei a guarda pelo período de 90 (noventa) dias. Após esse prazo, a destinação do objeto seguirá o caminho estabelecido na NI-4.05-B (DAF).", 1, 'J', false);
 //        $pdf->ln(1);
 //
 //        $pdf->SetFont('Arial', 'I', 8);
@@ -237,7 +237,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
         $pdf->SetX(15); 
         $pdf->SetFont('Arial', 'I', 9);
-        $pdf->MultiCell(0, 5, "     Declaro que recebi o Bem acima descrito, ao qual efetuarei a guarda pelo período de 90 (noventa) dias. Após esse prazo, a destinação do bem seguirá o caminho estabelecido na NI-4.05-B (DAF).", 1, 'J', false);
+        $pdf->MultiCell(0, 5, "     Declaro que recebi o objeto acima descrito, ao qual efetuarei a guarda pelo período de 90 (noventa) dias. Após esse prazo, a destinação do objeto seguirá o caminho estabelecido na NI-4.05-B (DAF).", 1, 'J', false);
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'I', 8);
@@ -259,7 +259,7 @@ if(!isset($_SESSION['AdmUsu'])){
         if($UsuRestit > 0){
             $pdf->SetFillColor(247, 196, 181); // 
         }
-        $pdf->MultiCell(0, 5, "REGISTRO DE RESTITUIÇÃO DOS BENS DESCRITOS NESTE PROCESSO", 1, 'L', true);
+        $pdf->MultiCell(0, 5, "REGISTRO DE RESTITUIÇÃO DOS OBJETOS DESCRITOS NESTE PROCESSO", 1, 'L', true);
         $pdf->SetFillColor(232, 232, 232); // fundo cinza
 
         if($UsuRestit > 0){
@@ -296,7 +296,7 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->MultiCell(0, 4, "(a): ". $NomeRestit, 0, 'C', false);
 
         }else{
-            $pdf->MultiCell(0, 5, "Bem não procurado", 0, 'C', false);
+            $pdf->MultiCell(0, 5, "Objeto ainda não procurado", 0, 'C', false);
             $pdf->ln(10);
         }
 
@@ -309,7 +309,7 @@ if(!isset($_SESSION['AdmUsu'])){
 //        $pdf->ln(3);
 //        $pdf->SetX(15); 
 //        $pdf->SetFont('Arial', 'I', 9);
-//        $pdf->MultiCell(0, 5, "     Declaro que recebi, nesta SSV, o bem constante do processo ".$tbl[1]." para armazenamento e destinação do Bem ou arquivamento do processo.", 1, 'J', false);
+//        $pdf->MultiCell(0, 5, "     Declaro que recebi, nesta SSV, o objeto constante do processo ".$tbl[1]." para armazenamento e destinação do objeto ou arquivamento do processo.", 1, 'J', false);
 //        $pdf->ln(1);
 //
 //        $pdf->SetX(20); 
@@ -359,9 +359,9 @@ if(!isset($_SESSION['AdmUsu'])){
         }else{
             $pdf->ln(3);
             if($UsuRestit > 0){
-                $pdf->MultiCell(0, 5, "Bem foi restituído.", 0, 'C', false);
+                $pdf->MultiCell(0, 5, "Não houve. O objeto foi restituído em ".$tbl[14], 0, 'C', false);
             }else{
-                $pdf->MultiCell(0, 5, "Bem não destinado.", 0, 'C', false);
+                $pdf->MultiCell(0, 5, "Objeto ainda não destinado.", 0, 'C', false);
             }
         }
         $pdf->ln(5);
@@ -388,7 +388,7 @@ if(!isset($_SESSION['AdmUsu'])){
         $CpfPropriet = $_REQUEST["cpfproprietario"];
         $TelfPropriet = $_REQUEST["telefproprietario"];
 
-        $pdf->MultiCell(0, 8, "RECIBO DE RESTITUIÇÃO DE BEM ENCONTRADO", 1, 'C', true);
+        $pdf->MultiCell(0, 8, "RECIBO DE RESTITUIÇÃO DE OBJETO ENCONTRADO", 1, 'C', true);
         $pdf->ln(3);
 
         $pdf->Cell(0, 4, "- Processo: ".$tbl[1]." registrado em ".$tbl[0], 0, 1, 'L');
@@ -408,7 +408,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
         $pdf->SetX(15); 
         $pdf->SetFont('Arial', 'I', 8);
-        $pdf->Cell(0, 4, "Descrição do bem encontrado: ", 0, 1, 'L');
+        $pdf->Cell(0, 4, "Descrição do Objeto encontrado: ", 0, 1, 'L');
         $pdf->SetX(25); 
         $pdf->SetFont('Arial', '', 10);
         $pdf->MultiCell(0, 5, $tbl[2], 0, 'J', true); //relato
@@ -481,9 +481,9 @@ if(!isset($_SESSION['AdmUsu'])){
         $pdf->ln(10);
         $pdf->SetFont('Arial', 'I', 8);
         if($UsuRestit > 0){ // já foi feita a restit
-            $pdf->MultiCell(0, 4, "Informo ter recebido o bem acima descrito em ".$tbl[14], 0, 'C', false);
+            $pdf->MultiCell(0, 4, "Informo ter recebido o Objeto acima descrito em ".$tbl[14], 0, 'C', false);
         }else{
-            $pdf->MultiCell(0, 4, "Informo ter recebido o bem acima descrito em ".$Hoje, 0, 'C', false);
+            $pdf->MultiCell(0, 4, "Informo ter recebido o Objeto acima descrito em ".$Hoje, 0, 'C', false);
         }
         $pdf->ln(10);
         $pdf->MultiCell(0, 4, "______________________________________________________", 0, 'C', false);

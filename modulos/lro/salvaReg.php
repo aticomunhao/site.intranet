@@ -169,7 +169,7 @@ if($Acao=="salvaReg"){
         if($Envia == 1){
             pg_query($Conec, "UPDATE ".$xProj.".livroreg SET usuant = $UsuAnt, usuprox = $UsuProx, turno = $Turno, descturno = '$DescTurno', relato = '$Relato', relsubstit = '$Subst', enviado = $Envia, dataenviado = NOW(), usumodif = ".$_SESSION['usuarioID'].", datamodif = NOW(), ocor = $Ocor WHERE id = $Codigo");
         }else{
-            pg_query($Conec, "UPDATE ".$xProj.".livroreg SET usuant = $UsuAnt, turno = $Turno, descturno = '$DescTurno', relato = '$Relato', relsubstit = '$Subst', enviado = $Envia, usumodif = ".$_SESSION['usuarioID'].", datamodif = NOW(), ocor = $Ocor WHERE id = $Codigo");
+            pg_query($Conec, "UPDATE ".$xProj.".livroreg SET usuant = $UsuAnt, usuprox = $UsuProx, turno = $Turno, descturno = '$DescTurno', relato = '$Relato', relsubstit = '$Subst', enviado = $Envia, usumodif = ".$_SESSION['usuarioID'].", datamodif = NOW(), ocor = $Ocor WHERE id = $Codigo");
         }
     }
 

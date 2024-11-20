@@ -301,7 +301,7 @@ if($Acao=="salvanomeempresa"){
 }
 
 if($Acao == "buscarelempresas"){  // vem de controleAr.php
-    $rsEmpr = pg_query($Conec, "SELECT id, empresa FROM ".$xProj.".empresas_ar WHERE ativo = 1");
+    $rsEmpr = pg_query($Conec, "SELECT id, empresa FROM ".$xProj.".empresas_ar WHERE ativo = 1 ORDER BY empresa");
 
     while ($tbl = pg_fetch_row($rsEmpr)){
        $Empr[] = array(

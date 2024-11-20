@@ -59,7 +59,7 @@ if(isset($_REQUEST["acao"])){
     $pdf->SetTitle('Relação de Contratos', $isUTF8=TRUE);
     //Monta o arquivo pdf        
     $pdf->SetFont('Arial', '' , 12); 
-    $pdf->SetTitle('Claviculário Portaria', $isUTF8=TRUE);
+    $pdf->SetTitle('Contratos', $isUTF8=TRUE);
     if($Dom != "" && $Dom != "NULL"){
         if(file_exists('../../imagens/'.$Dom)){
             if(getimagesize('../../imagens/'.$Dom)!=0){
@@ -67,7 +67,6 @@ if(isset($_REQUEST["acao"])){
             }
         }
     }
-//    $pdf->SetX(40); 
     $pdf->SetFont('Arial','' , 14); 
     $pdf->Cell(0, 5, $Cabec1, 0, 2, 'C');
     $pdf->SetFont('Arial','' , 12); 
@@ -85,8 +84,6 @@ if(isset($_REQUEST["acao"])){
     $lin = $pdf->GetY();
     $pdf->Line(10, $lin, 290, $lin);
     $pdf->SetDrawColor(200); // cinza claro  
-
-    $Mes = "08";
 
     if($Acao == "listaContratos"){
 //Contratadas
@@ -269,7 +266,9 @@ if(isset($_REQUEST["acao"])){
                 $Cod = $tbl0[0];
                 $pdf->SetX(25); 
                 $pdf->Cell(20, 5, $tbl0[2], 0, 0, 'C');
+                $pdf->SetFont('Arial', '', 8);
                 $pdf->Cell(30, 5, $tbl0[1], 0, 0, 'C');
+                $pdf->SetFont('Arial', '', 10);
                 $pdf->Cell(20, 5, $tbl0[3], 0, 0, 'C');
 
                 $rs1 = pg_query($Conec, "SELECT empresa FROM ".$xProj.".contrato_empr WHERE id = $tbl0[6]");
@@ -345,7 +344,9 @@ if(isset($_REQUEST["acao"])){
                 $Cod = $tbl0[0];
                 $pdf->SetX(25); 
                 $pdf->Cell(20, 5, $tbl0[2], 0, 0, 'C');
+                $pdf->SetFont('Arial', '', 8);
                 $pdf->Cell(30, 5, $tbl0[1], 0, 0, 'C');
+                $pdf->SetFont('Arial', '', 10);
                 $pdf->Cell(20, 5, $tbl0[3], 0, 0, 'C');
 
                 $rs1 = pg_query($Conec, "SELECT empresa FROM ".$xProj.".contrato_empr WHERE id = $tbl0[6]");

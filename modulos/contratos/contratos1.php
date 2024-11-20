@@ -45,7 +45,15 @@ if(!isset($_SESSION["usuarioID"])){
                 width: 60%; /* acertar de acordo com a tela */
                 max-width: 900px;
             }
-
+            .modal-content-Empresa{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 10% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 55%;
+                max-width: 900px;
+            }
             .quadrinho {
                 font-size: 90%;
                 border: 1px solid #C0C0C0;
@@ -61,6 +69,29 @@ if(!isset($_SESSION["usuarioID"])){
                 padding-right: 4px;
                 cursor: pointer;
             }
+            .modal-content-editEmpresas{
+                background: linear-gradient(180deg, white, #0099FF);
+                margin: 10% auto; /* 10% do topo e centrado */
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 55%; /* acertar de acordo com a tela */
+                max-width: 900px;
+            }
+            .divbot{
+                position: relative; 
+                float: left;
+                margin-top: -20px; 
+                border: 1px solid blue;
+                background-color: blue;
+                color: white;
+                cursor: pointer;
+                border-radius: 10px; 
+                padding-left: 10px; 
+                padding-right: 10px;
+                font-size: 80%;
+            }
+
             tr td {
                 border: 0px solid;
             }
@@ -104,6 +135,8 @@ if(!isset($_SESSION["usuarioID"])){
                 $('#dataAssinat').datepicker({ uiLibrary: 'bootstrap4', locale: 'pt-br', format: 'dd/mm/yyyy' });
                 $("#dataVencim").mask("99/99/9999");
                 $("#configCpfUsuario").mask("999.999.999-99");
+
+                carregaEmpresas();
 
                 $("#configselecUsuario").change(function(){
                     if(document.getElementById("configselecUsuario").value == ""){
@@ -186,8 +219,8 @@ if(!isset($_SESSION["usuarioID"])){
                 
             }); // fim do ready
 
-
             function insContrato(Tipo){
+                document.getElementById("botApagaBem").style.visibility = "hidden"; 
                 if(parseInt(Tipo) === 1){
                     document.getElementById("titmodaledit").innerHTML = "Empresas Contratadas";
                 }
@@ -219,6 +252,8 @@ if(!isset($_SESSION["usuarioID"])){
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 if(parseInt(Resp.coderro) === 0){
                                     document.getElementById("numsequencia").innerHTML = Resp.contratoNum;
+                                    botApagaBem
+
                                     document.getElementById("editaModalContratos").style.display = "block";
                                 }else{
                                     alert("Houve um erro no servidor.")
@@ -231,6 +266,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function editContrato(Tipo, Cod){
+                document.getElementById("botApagaBem").style.visibility = "visible"; 
                 document.getElementById("guardaTipo").value = Tipo;
                 document.getElementById("guardaCod").value = Cod;
                 document.getElementById("guardaPrazo").value = "";
@@ -631,6 +667,93 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
             }
+            function Empresas(){
+                document.getElementById("relacmodalEmpresas").style.display = "block";
+                $("#configEmpr").load("modulos/contratos/jEmpr.php");
+            }
+
+            function editaEmpresa(Cod){
+                document.getElementById("guardaCodEmpr").value = Cod;
+                document.getElementById("titulomodalEdit").innerHTML = "Editar Nome da Empresa";
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/contratos/salvaContrato.php?acao=buscaempresa&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    document.getElementById("editNomeEmpr").value = Resp.nome;
+                                    document.getElementById("relacEditEmpresa").style.display = "block";
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function salvaEditEmpr(){
+                if(document.getElementById("mudou").value != "0"){
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/contratos/salvaContrato.php?acao=salvanomeempresa&codigo="+document.getElementById("guardaCodEmpr").value 
+                        +"&nomeempresa="+encodeURIComponent(document.getElementById("editNomeEmpr").value), true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 0){
+                                        document.getElementById("relacEditEmpresa").style.display = "none";
+                                        $("#configEmpr").load("modulos/contratos/jEmpr.php");
+
+                                        carregaEmpresas();
+
+                                    }else{
+                                        alert("Houve um erro no servidor.")
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                }else{
+                    document.getElementById("relacEditEmpresa").style.display = "none";
+                }
+            }
+
+            function carregaEmpresas(){
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/contratos/salvaContrato.php?acao=buscarelempresas", true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                var options = "";  //Cria array
+                                options += "<option value='0'></option>";
+                                $.each(Resp, function(key, Resp){
+                                    options += '<option value="' + Resp.Cod + '">'+Resp.Nome + '</option>';
+                                });
+                                $("#selecEmpresa").html(options);
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function insEmpresa(){
+                document.getElementById("guardaCodEmpr").value = "0";
+                document.getElementById("editNomeEmpr").value = "";
+                document.getElementById("relacEditEmpresa").style.display = "block";
+                document.getElementById("titulomodalEdit").innerHTML = "Adicionar Empresa";
+            }
 
             function resumoUsuContratos(){
                 window.open("modulos/contratos/imprUsuContr1.php?acao=listaUsuarios", "ContrUsu");
@@ -648,9 +771,14 @@ if(!isset($_SESSION["usuarioID"])){
             function fechaContratosConfig(){
                 document.getElementById("modalContratosConfig").style.display = "none";
             }
-
             function fechaInsContrato(){
                 document.getElementById("editaModalContratos").style.display = "none";
+            }
+            function fechaEmpresas(){
+                document.getElementById("relacmodalEmpresas").style.display = "none";
+            }
+            function fechaEditEmpr(){
+                document.getElementById("relacEditEmpresa").style.display = "none";
             }
             function modif(){
                 document.getElementById("mudou").value = "1";
@@ -729,31 +857,6 @@ if(!isset($_SESSION["usuarioID"])){
         dataedit timestamp without time zone DEFAULT '3000-12-31' 
         )
     ");
-    $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".contratos1 LIMIT 3 ");
-    $row = pg_num_rows($rs);
-    if($row == 0){
-        pg_query($Conec, "INSERT INTO ".$xProj.".contratos1 (id, dataassinat, datavencim, dataaviso, numcontrato, codsetor, codempresa, objetocontr, vigencia, notific, diasnotific, ativo, usuins, datains ) 
-        VALUES (1, '2024/01/01', '2024/12/31', '3000-12-31', '1', 17, 1, 'Prestação de Serviços de Vigilância e Segurança Desarmada', '12 meses', 0, 0, 1, 3, NOW()) ");
-
-        pg_query($Conec, "INSERT INTO ".$xProj.".contratos1 (id, dataassinat, datavencim, dataaviso, numcontrato, codsetor, codempresa, objetocontr, vigencia, notific, diasnotific, ativo, usuins, datains ) 
-        VALUES (2, '2024/02/23', '2025/02/22', '3000-12-31', '2', 4, 2, 'Fornecimento de uniformes para funcionários', '12 meses', 0, 0, 1, 3, NOW()) ");
-
-        pg_query($Conec, "INSERT INTO ".$xProj.".contratos1 (id, dataassinat, datavencim, dataaviso, numcontrato, codsetor, codempresa, objetocontr, vigencia, notific, diasnotific, ativo, usuins, datains ) 
-        VALUES (3, '2024/02/27', '2024/04/26', '3000-12-31', '3', 4, 3, 'Prestação de serviços de marcenaria', '2 meses', 0, 0, 1, 3, NOW()) ");
-
-        pg_query($Conec, "INSERT INTO ".$xProj.".contratos1 (id, dataassinat, datavencim, dataaviso, numcontrato, codsetor, codempresa, objetocontr, vigencia, notific, diasnotific, ativo, usuins, datains ) 
-        VALUES (4, '2024/02/27', '2025/02/26', '3000-12-31', '4', 10, 4, 'Prestação de serviços de diagramação de livros', '12 meses', 0, 0, 1, 3, NOW()) ");
-
-        pg_query($Conec, "INSERT INTO ".$xProj.".contratos1 (id, dataassinat, datavencim, dataaviso, numcontrato, codsetor, codempresa, objetocontr, vigencia, notific, diasnotific, ativo, usuins, datains ) 
-        VALUES (5, '2024/03/05', '2025/03/25', '3000-12-31', '5', 2, 5, 'Montagem de câmara de resfriados', '20 dias', 0, 0, 1, 3, NOW()) ");
-
-        pg_query($Conec, "INSERT INTO ".$xProj.".contratos1 (id, dataassinat, datavencim, dataaviso, numcontrato, codsetor, codempresa, objetocontr, vigencia, notific, diasnotific, ativo, usuins, datains ) 
-        VALUES (6, '2023/01/06', '2024/03/01', '3000-12-31', '6', 5, 6, 'Prestação de serviços especializados em medicina do trabalho', '12 meses', 0, 0, 1, 3, NOW()) ");
-
-        pg_query($Conec, "INSERT INTO ".$xProj.".contratos1 (id, dataassinat, datavencim, dataaviso, numcontrato, codsetor, codempresa, objetocontr, vigencia, notific, diasnotific, ativo, usuins, datains ) 
-        VALUES (7, '2024/08/01', '2024/09/01', '2024-08-12', '7', 5, 1, 'Prestação de serviços aleatórios', '1 mês', 1, 20, 1, 3, NOW()) ");
-    }
-
 
 //    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".contratos2");
     pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".contratos2 (
@@ -777,19 +880,6 @@ if(!isset($_SESSION["usuarioID"])){
         dataedit timestamp without time zone DEFAULT '3000-12-31' 
         )
     ");
-    $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".contratos2 LIMIT 3 ");
-    $row = pg_num_rows($rs);
-    if($row == 0){
-        pg_query($Conec, "INSERT INTO ".$xProj.".contratos2 (id, dataassinat, datavencim, dataaviso, numcontrato, codsetor, codempresa, objetocontr, vigencia, notific, diasnotific, ativo, usuins, datains ) 
-        VALUES (1, '2019/12/05', '2025/12/05', '3000-12-31', 'BR67037-A', 2, 7, 'Contrato de locação - Antenas', '60 meses', 0, 0, 1, 3, NOW()) ");
-
-        pg_query($Conec, "INSERT INTO ".$xProj.".contratos2 (id, dataassinat, datavencim, dataaviso, numcontrato, codsetor, codempresa, objetocontr, vigencia, notific, diasnotific, ativo, usuins, datains ) 
-        VALUES (2, '2008/05/05', '2013/05/04', '3000-12-31', 'DFSQS03 A', 2, 8, 'Contrato de locação - Antenas', '60 meses', 0, 210, 1, 3, NOW()) ");
-
-        pg_query($Conec, "INSERT INTO ".$xProj.".contratos2 (id, dataassinat, datavencim, dataaviso, numcontrato, codsetor, codempresa, objetocontr, vigencia, notific, diasnotific, ativo, usuins, datains ) 
-        VALUES (3, '2021/06/21', '2024/06/15', '3000-12-31', 'DFSQS03 A', 2, 9, 'Contrato de internet', '36 meses', 0, 210, 1, 3, NOW()) ");
-    }
-
 
 //    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".contrato_empr");
     pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".contrato_empr (
@@ -801,23 +891,7 @@ if(!isset($_SESSION["usuarioID"])){
         ) 
      ");
 
-     $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".contrato_empr LIMIT 3 ");
-     $row = pg_num_rows($rs);
-     if($row == 0){
-        pg_query($Conec, "INSERT INTO ".$xProj.".contrato_empr (id, empresa, tipo, ativo) VALUES (1, 'Griffo Serviços de Segurança e Vigilância Ltda.', 1, 1)");
-        pg_query($Conec, "INSERT INTO ".$xProj.".contrato_empr (id, empresa, tipo, ativo) VALUES (2, 'ARTEVESTE Confecções e Uniformes.', 1, 1)");
-        pg_query($Conec, "INSERT INTO ".$xProj.".contrato_empr (id, empresa, tipo, ativo) VALUES (3, 'Cleuber Divino Gomes da Silva', 1, 1)");
-        pg_query($Conec, "INSERT INTO ".$xProj.".contrato_empr (id, empresa, tipo, ativo) VALUES (4, 'Aurélio Marcos de Macedo', 1, 1)");
-        pg_query($Conec, "INSERT INTO ".$xProj.".contrato_empr (id, empresa, tipo, ativo) VALUES (5, 'GR Soluções em Refigeração Ltda.', 1, 1)");
-        pg_query($Conec, "INSERT INTO ".$xProj.".contrato_empr (id, empresa, tipo, ativo) VALUES (6, 'BRASILMED Auditoria Médica e Serviços Ltda.', 1, 1)");
-        pg_query($Conec, "INSERT INTO ".$xProj.".contrato_empr (id, empresa, tipo, ativo) VALUES (7, 'SBA TORRES BRASIL LTDA.', 2, 1)");
-        pg_query($Conec, "INSERT INTO ".$xProj.".contrato_empr (id, empresa, tipo, ativo) VALUES (8, 'AMERICEL S/A (CLARO)', 2, 1)");
-        pg_query($Conec, "INSERT INTO ".$xProj.".contrato_empr (id, empresa, tipo, ativo) VALUES (9, 'EMBRATEL (CLARO)', 2, 1)");
-     }
-
-
 //------------------------
-
 
         $rs = pg_query($Conec, "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'contratos1'");
         $row = pg_num_rows($rs);
@@ -830,7 +904,6 @@ if(!isset($_SESSION["usuarioID"])){
         $FiscContr = parEsc("fisc_contr", $Conec, $xProj, $_SESSION["usuarioID"]);
 
         $OpSetor = pg_query($ConecPes, "SELECT id, sigla FROM ".$xPes.".setor WHERE dt_fim IS NULL ORDER BY sigla");
-        $OpEmpr = pg_query($Conec, "SELECT id, empresa FROM ".$xProj.".contrato_empr WHERE ativo = 1 ORDER BY empresa");
         $OpDias = pg_query($Conec, "SELECT codesc FROM ".$xProj.".escolhas WHERE codesc <= 120 ORDER BY codesc");
         $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
         ?>
@@ -840,6 +913,8 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardaCod" value = "0" />
         <input type="hidden" id="guardaTipo" value = "0" />
         <input type="hidden" id="guardaPrazo" value = "" />
+        <input type="hidden" id="guardaCodEmpr" value="0" />
+        <input type="hidden" id="mudou" value="0" />
 
         <div style="margin: 20px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
@@ -847,6 +922,9 @@ if(!isset($_SESSION["usuarioID"])){
                 if($Contr == 1){
                 ?>
                 <img src="imagens/settings.png" height="20px;" style="cursor: pointer; padding-left: 30px;" onclick="abreContratosConfig();" title="Configurar o acesso aos contratos">
+
+                <button class="botpadrblue" id="botInsEmpr" onclick="Empresas();" title="Editar/Adicionar empresas">Empresas</button>
+
                 <?php
                 }else{
                     echo "&nbsp;";
@@ -915,17 +993,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <tr>
                             <td class="etiq">Empresa: </td>
                             <td colspan="3" style="min-width: 200px;">
-                                <select id="selecEmpresa" style="min-width: 150px;" onchange="modif();" title="Selecione uma empresa.">
-                                    <option value=""></option>
-                                    <?php 
-                                    if($OpEmpr){
-                                        while ($Opcoes = pg_fetch_row($OpEmpr)){ ?>
-                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
-                                        <?php 
-                                        }
-                                    }
-                                    ?>
-                                </select>
+                                <select id="selecEmpresa" onchange="modif();" style="font-size: 1rem; min-width: 150px;" title="Selecione uma empresa."></select>
                             </td>
                             <td></td>
                         </tr>
@@ -1040,7 +1108,6 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
         </div> <!-- Fim Modal-->
 
-
          <!-- Modal configuração-->
         <div id="modalContratosConfig" class="relacmodal">
             <div class="modal-content-ContratosControle">
@@ -1108,6 +1175,39 @@ if(!isset($_SESSION["usuarioID"])){
                         <td colspan="5" style="text-align: center; padding-top: 5px;"></td>
                     <tr>
                 </table>
+            </div>
+        </div> <!-- Fim Modal-->
+
+        <!-- div para editar nome das empresas  -->
+        <div id="relacmodalEmpresas" class="relacmodal">
+            <div class="modal-content-Empresa">
+                <span class="close" onclick="fechaEmpresas();">&times;</span>
+                <h5 id="titulomodalEmpr" style="text-align: center; color: #666;">Empresas Contratadas e Contratantes</h5>
+                <div class='divbot corFundo' onclick='insEmpresa()' title="Adicionar nova empresa"> Inserir </div>
+
+                <div id="configEmpr" style="text-align: center;"></div>
+
+            </div>
+        </div> <!-- Fim Modal-->
+
+        <div id="relacEditEmpresa" class="relacmodal">
+            <div class="modal-content-editEmpresas">
+                <span class="close" onclick="fechaEditEmpr();">&times;</span>
+                <h5 id="titulomodalEdit" style="text-align: center; color: #666;">Editar Nome da Empresa</h5>
+                <div id="subtitulomodal" style="text-align: center; color: red;"></div>
+                    <table style="margin: 0 auto; width: 90%">
+                        <tr>
+                            <td class="etiq aDir">Empresa: </td>
+                            <td><input type="text" id="editNomeEmpr" valor="" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 90%;"></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                    <br>
+                    <div style="text-align: center;">
+                        <button id="botSalvarEditEmpr" class="resetbot" style="font-size: .9rem;" onclick="salvaEditEmpr();">Salvar</button>
+                    </div>
+                </div>
             </div>
         </div> <!-- Fim Modal-->
 
