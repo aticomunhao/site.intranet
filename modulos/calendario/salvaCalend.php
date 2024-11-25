@@ -247,7 +247,12 @@ if($Acao =="msgAviso"){
     if($row0 > 0 && $AvisoObrig == 1 && $AvisoObrigCfm == 1){
         $Aviso = 2;
     }
-    $var = array("coderro"=>$Erro, "Quant"=>$row0, "msg"=>$Msg, "avisocalend"=>$Aviso, "codMsg"=>$CodMsg);
+    //Aproveitando o temporizador em indexb.php - checaCalend() - para informar uma nova tarefa
+    $rowTar = 0;
+    $rsTar = pg_query($Conec, "SELECT idtar, sit FROM ".$xProj.".tarefas WHERE usuexec = '".$_SESSION["usuarioID"]."' And sit = 1 And ativo = 1");
+    $rowTar = pg_num_rows($rsTar);
+
+    $var = array("coderro"=>$Erro, "Quant"=>$row0, "msg"=>$Msg, "avisocalend"=>$Aviso, "codMsg"=>$CodMsg, "temTarefa"=>$rowTar);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -268,7 +273,7 @@ if($Acao =="semAvisoHoje"){ // pára os avisos da agenda só por hoje - é reati
     echo $responseText;
 }
 
-    if($Acao =="semAviso"){ // pára os avisos da agenda 
+    if($Acao =="semAviso"){ // párar os avisos da agenda 
         $Valor = (int) filter_input(INPUT_GET, 'param');
         $Erro = 0;
         $rs0 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET avcalend = $Valor WHERE pessoas_id = ".$_SESSION["usuarioID"]." ");

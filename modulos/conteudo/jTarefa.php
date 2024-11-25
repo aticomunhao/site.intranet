@@ -84,9 +84,9 @@
                 <td style="width: 10%;"></td>
             </tr>
             <?php
-            $rs = pg_query($Conec, "SELECT idmsg, ".$xProj.".tarefas_msg.iduser, nomecompl, idtarefa, textomsg, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataMensagem, nomeusual 
+            $rs = pg_query($Conec, "SELECT idmsg, ".$xProj.".tarefas_msg.iduser, nomecompl, idtarefa, textomsg, to_char(".$xProj.".tarefas_msg.datamsg, 'DD/MM/YYYY HH24:MI') AS DataMensagem, nomeusual 
             FROM ".$xProj.".poslog INNER JOIN (".$xProj.".tarefas INNER JOIN ".$xProj.".tarefas_msg ON ".$xProj.".tarefas.idtar = ".$xProj.".tarefas_msg.idtarefa) ON ".$xProj.".poslog.pessoas_id = ".$xProj.".tarefas_msg.idUser 
-            WHERE ".$xProj.".tarefas_msg.elim = 0 And idtarefa = $IdTarefa");
+            WHERE ".$xProj.".tarefas_msg.elim = 0 And idtarefa = $IdTarefa ORDER BY ".$xProj.".tarefas_msg.datamsg");
             $row = pg_num_rows($rs);
             if($row > 0){
                 While ($tbl = pg_fetch_row($rs)){
@@ -100,8 +100,14 @@
                     $Msg = nl2br($tbl[4]); // textoMsg
 
                     echo "<tr>";
-                    echo "<td style='font-size: .7rem; text-align: center;'>$DataMsg <br>  $Nome</td>";
-                    echo "<td><div style='border: 1px outset; border-radius: 5px; padding: 4px;'>$Msg</div></td>";
+                    
+                    if($MsgUser == $UsuLogadoId){ // quem escreveu
+                        echo "<td style='font-size: .7rem; text-align: center; color: #828282'>$DataMsg <br>  $Nome</td>";
+                        echo "<td><div style='border: 1px outset; border-radius: 5px; padding: 4px; color: #828282'>$Msg</div></td>";
+                    }else{
+                        echo "<td style='font-size: .7rem; text-align: center;'>$DataMsg <br>  $Nome</td>";
+                        echo "<td><div style='border: 1px outset; border-radius: 5px; padding: 4px;'>$Msg</div></td>";
+                    }
                     if($MsgUser == $UsuLogadoId){ // quem escreveu a msg pode apagar
                         echo "<td style='text-align: center;'><div style='cursor: pointer;' onclick='apagaMsg($Cod, $IdTarefa, $UsuLogadoId);' title='Apagar mensagem'> &#128465; </div></td>"; // Wastebasket &#128465;
                     }else{
@@ -121,7 +127,7 @@
                 <td class="etiq">Mensagem:</td>
                 <td>
                     <div class="col-xs-6">
-                        <textarea class="form-control" id='novamensagem' placeholder='Mensagem' rows='4' cols='55'></textarea>
+                        <textarea class="form-control" id='novamensagem' placeholder='Mensagem' rows='2' cols='65'></textarea>
                     </div>
                 </td>
                 <td style="text-align: center;"><input type="button" class="resetbot" style="color: blue; font-weight: bold; font-size: .7rem;" id="botenviar" value="Enviar" onclick="enviaMsg(<?php echo $IdTarefa; ?>, <?php echo $UsuLogadoId; ?>);" title="Enviar mensagem."></td>

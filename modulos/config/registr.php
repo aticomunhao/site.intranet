@@ -298,16 +298,33 @@ if($Acao =="buscaacesso"){
         $rowTar = pg_num_rows($rsTar);
         if($rowTar > 0){
             if($rowTar == 1){
-                $msgTar = "Tarefa expedida para ". $_SESSION["NomeCompl"].".<br> Clique em <u style='cursor: pointer;'>Tarefas</u> para verificar.";
+                $msgTar = "Tarefa expedida para ". $_SESSION["NomeCompl"].".<br> Clique aqui para verificar.";
             }else{
-                $msgTar= $rowTar." tarefas expedidas para ". $_SESSION["NomeCompl"].".<br> Clique em <u style='cursor: pointer;'>Tarefas</u> para verificar.";
+                $msgTar = $rowTar." tarefas expedidas para ". $_SESSION["NomeCompl"].".<br> Clique aqui para verificar.";
             }
         }else{
             $msgTar = "";
         }
+
+        $recadoTar = "";
+        $TemRecado = 0;
+        $CodTar = 0;
+        $Selec = 5;
+        $rs4 = pg_query($Conec, "SELECT idtarefa, inslido, execlido FROM ".$xProj.".tarefas_msg WHERE usuexectar = '".$_SESSION["usuarioID"]."' And execlido = 0 Or usuinstar = '".$_SESSION["usuarioID"]."' And inslido = 0"); // procura mensagens não lidas como usuExec 
+        $TemRecado = pg_num_rows($rs4); // quantid mensagens não lidas
+        if($TemRecado > 0){
+            $recadoTar = "Mensagem não lida nas Tarefa.";
+            $tbl4 = pg_fetch_row($rs4);
+            $CodTar = $tbl4[0];
+            if($tbl4[1] == 0){
+                $Selec = 6; // Selecionar Meus Pedidos
+            }else{
+                $Selec = 5; // Selecionar Minhas Tarefas
+            }
+        }
+
         $rowBens = 0;
         $rowDest = 0;
-//        if($_SESSION["AdmBens"] == 1 || $_SESSION["FiscBens"] == 1){ 
         if($_SESSION["AdmBens"] == 1){ 
             $rsBens = pg_query($Conec, "SELECT id FROM ".$xProj.".bensachados WHERE codusuins > 0 And usurestit = 0 And usucsg = 0");
             $rowBens = pg_num_rows($rsBens);
@@ -334,7 +351,7 @@ if($Acao =="buscaacesso"){
         }
     }
 
-    $var = array("coderro"=>$Erro, "marca"=>$Marca, "acessos"=>$NumAcessos, "msg"=>$msg, "temTarefa"=>$rowTar, "msgTar"=>$msgTar, "bens"=>$rowBens, "bensdestinar"=>$rowDest, "contrato1"=>$rowContr1, "contrato2"=>$rowContr2);
+    $var = array("coderro"=>$Erro, "marca"=>$Marca, "acessos"=>$NumAcessos, "msg"=>$msg, "temTarefa"=>$rowTar, "msgTar"=>$msgTar, "bens"=>$rowBens, "bensdestinar"=>$rowDest, "contrato1"=>$rowContr1, "contrato2"=>$rowContr2, "temRecado"=>$TemRecado, "recadoTar"=>$recadoTar, "CodTarefa"=>$CodTar, "selecionar"=>$Selec);
     $responseText = json_encode($var);
     echo $responseText;
 }

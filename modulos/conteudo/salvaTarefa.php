@@ -388,7 +388,14 @@ if($Acao == "salvagrupotar"){
     if(!$rs1){
         $Erro = 1;
     }
-    $var = array("coderro"=>$Erro);     
+    $SiglaSetor = "";
+    $rs2 = pg_query($Conec, "SELECT siglasetor FROM ".$xProj.".setores WHERE codset = $CodGrupo");
+    $row2 = pg_num_rows($rs2);
+    if($row2 > 0){
+        $tbl2 = pg_fetch_row($rs2);
+        $SiglaSetor = $tbl2[0];
+    }
+    $var = array("coderro"=>$Erro, "siglasetor"=>$SiglaSetor);     
     $responseText = json_encode($var);
     echo $responseText;
 }

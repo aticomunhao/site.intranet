@@ -139,7 +139,8 @@ function openhref(Num){
         $('#container3').load('modulos/trocas/relTrocas.php');
     }
     if(parseInt(Num) === 90){
-        $('#container3').load('modulos/conteudo/tarefas.php');
+//        $('#container3').load('modulos/conteudo/tarefas.php');
+        $('#container3').load('modulos/conteudo/pagTarefas.php');
     }
 
 

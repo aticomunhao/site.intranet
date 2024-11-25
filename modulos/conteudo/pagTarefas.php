@@ -29,10 +29,6 @@ if(!isset($_SESSION["usuarioID"])){
                 height: 90px;
                 border: 1px solid;
                 margin: 0 auto;
-/*                 
-                display: flex;
-                align-items: center;
-  */
                 padding: 2px;
                 font-size: .8rem;
                 border-radius: 7px;
@@ -41,7 +37,6 @@ if(!isset($_SESSION["usuarioID"])){
                 overflow: auto;
             }
             .etiqLat{
-/*                font-size: 1.5rem;  */
                 font-size: .55rem; 
                 font-weight: bold;
                 margin: 0;
@@ -102,7 +97,7 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 60%; /* acertar de acordo com a tela */
+                width: 70%; /* acertar de acordo com a tela */
             }
             .modalTransf-content{
                 background: linear-gradient(180deg, white, #86c1eb);
@@ -160,6 +155,11 @@ if(!isset($_SESSION["usuarioID"])){
                 if(parseInt(document.getElementById("UsuAdm").value) < parseInt(document.getElementById("admEdit").value)){ // nível administrativo
                     document.getElementById("botimprTarefas").style.visibility = "hidden"; // botão de inserir
                 }
+
+                //Para mensagens não lidas nas Tarefas  - Tem um comando desses em indexb.php aproveitando o temporizador em checaCalend() a cada hora
+                document.getElementById("verTipo"+document.getElementById("selecSit").value).checked = true;
+                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("selecSit").value+"&numtarefa="+document.getElementById("selecTarefa").value);
+
                 //Fecha caixa ao clicar na página
                 modalMsg = document.getElementById('relacmodalMsg'); //span[0]
                 spanMsg = document.getElementsByClassName("close")[0];
@@ -322,7 +322,10 @@ if(!isset($_SESSION["usuarioID"])){
                                                 draggable: true,
                                                 buttons: {
                                                     Sim: function () {
-                                                        $('#container3').load('modulos/conteudo/tarefas.php?selec='+document.getElementById("selecSit").value);
+                                                        $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("selecSit").value);
+                                                        if(parseInt(document.getElementById("guardaGrupoTar").value === 3)){ // em grupo
+                                                            document.getElementById("etiqGrupoTar").innerHTML = "Tarefas Grupo "+Resp.siglasetor;
+                                                        }
                                                     },
                                                     Não: function () {
                                                     }
@@ -423,7 +426,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     if(parseInt(Resp.coderro) === 1){
                                         alert("Houve um erro no servidor.")
                                     }else{
-                                        $('#container3').load('modulos/conteudo/tarefas.php?selec='+document.getElementById("selecSit").value);
+                                        $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("selecSit").value);
                                         ev.preventDefault();
                                         var data = ev.dataTransfer.getData("text");
                                         ev.target.appendChild(document.getElementById(data));
@@ -513,7 +516,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     if(parseInt(Resp.coderro) === 0){
                                         document.getElementById("mudou").value = "0";
                                         document.getElementById("relacmodalTarefa").style.display = "none";
-                                        $('#container3').load('modulos/conteudo/tarefas.php?selec='+document.getElementById("selecSit").value);
+                                        $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("selecSit").value);
                                     }else if(parseInt(Resp.coderro) === 2){
                                         $.confirm({
                                             title: 'Atenção!',
@@ -574,7 +577,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             }else{
                                                 document.getElementById("mudou").value = "0";
                                                 document.getElementById("relacmodalTarefa").style.display = "none";
-                                                $('#container3').load('modulos/conteudo/tarefas.php?selec='+document.getElementById("selecSit").value);
+                                                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("selecSit").value);
                                             }
                                         }
                                     }
@@ -583,7 +586,6 @@ if(!isset($_SESSION["usuarioID"])){
                             }
                         },
                         Não: function () {
-//                            alert("Cancelado");
                         }
                     }
                 });
@@ -621,7 +623,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor ao fechar as mensagens. Informe à ATI.")
                                 }
-                                $('#container3').load('modulos/conteudo/tarefas.php?selec='+document.getElementById("selecSit").value); // para parar de piscar a ícone de tem mensagem
+                                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("selecSit").value); // para parar de piscar a ícone de tem mensagem
                             }
                         }
                     };
@@ -683,7 +685,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                                 if(ajax.responseText){
 //alert(ajax.responseText);
                                                                     document.getElementById("relacmodalTransf").style.display = "none";
-                                                                    $('#container3').load('modulos/conteudo/tarefas.php?selec='+document.getElementById("selecSit").value);
+                                                                    $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("selecSit").value);
                                                                 }
                                                             }
                                                             };
@@ -711,6 +713,11 @@ if(!isset($_SESSION["usuarioID"])){
                     };
                     ajax.send(null);
                 }
+            }
+
+            function carregaTipo(Valor){
+                document.getElementById("selecSit").value = Valor;
+                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("selecSit").value);
             }
 
             function abreTarefasConfig(){
@@ -748,10 +755,20 @@ if(!isset($_SESSION["usuarioID"])){
     <body>
         <?php
         require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
-
         $Adm = $_SESSION["AdmUsu"];
         $UsuLogadoId = $_SESSION["usuarioID"];
         $UsuLogadoNome = $_SESSION["NomeCompl"];
+
+        if(isset($_REQUEST["selec"])){ // vem de indexb.php ao clicar em tem mensagem nas Tarefas
+            $Sit = $_REQUEST["selec"];
+        }else{
+            $Sit = 5; // carregar página em Minhas Tarefas
+        }
+        if(isset($_REQUEST["numtarefa"])){ // vem da indexb.php ao clicar em tem mensagem nas Tarefas
+            $NumTarefa = $_REQUEST["numtarefa"];
+        }else{
+            $NumTarefa = 0;
+        }
 
         $rs = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'tarefas' ");
         $row = pg_num_rows($rs);
@@ -764,7 +781,6 @@ if(!isset($_SESSION["usuarioID"])){
         $admEdit = parAdm("edittarefa", $Conec, $xProj); // nível para editar
         $VerTarefas = parAdm("vertarefa", $Conec, $xProj); // ver tarefas   1: todos - 2: só mandante e executante - 3: visualização por setor 
 
-//        $CodSetorUsu = $_SESSION["CodSetorUsu"]; //para a visualização das tarefas por setores
         $CodSetorUsu = parEsc("grupotarefa", $Conec, $xProj, $_SESSION["usuarioID"]);
         $rs7 = pg_query($Conec, "SELECT siglasetor FROM ".$xProj.".setores WHERE codset = $CodSetorUsu");
         $row7 = pg_num_rows($rs7);
@@ -802,7 +818,6 @@ if(!isset($_SESSION["usuarioID"])){
             $OpcoesExecutante = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
         }
 
-        
         $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
         $OpSetores = pg_query($Conec, "SELECT CodSet, siglasetor, descsetor FROM ".$xProj.".setores WHERE ativo = 1 ORDER BY siglasetor");
 
@@ -821,18 +836,20 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardaUsuExec" value="0" />
         <input type="hidden" id="grupotarefa" value="1" />
         <input type="hidden" id="guardaUsuCpf" value="<?php echo $_SESSION["usuarioCPF"]; ?>" />
-        <input type="hidden" id="selecSit" value="0" />
+        <input type="hidden" id="guardaGrupoTar" value="<?php echo $VerTarefas; ?>" /> 
+        <input type="hidden" id="selecSit" value="<?php echo $Sit; ?>" />
+        <input type="hidden" id="selecTarefa" value="<?php echo $NumTarefa; ?>" />
 
         <!-- div três colunas -->
         <div class="container" style="margin: 0 auto; padding-top: 10px;">
             <div class="row">
-                <div class="col quadro" style="margin: 0 auto;"> <input type="button" class="botpadrblue" id="botinserir" value="Inserir Tarefa" onclick="abreModal();">
-                <img src="imagens/settings.png" height="20px;" id="imgTarefasconfig" style="cursor: pointer; padding-left: 30px;" onclick="abreTarefasConfig();" title="Configurar grupos de Tarefas">
+                <div class="col quadro" style="margin: 0 auto;"> 
+                    <input type="button" class="botpadrblue" id="botinserir" value="Inserir Tarefa" onclick="abreModal();">
+                    <img src="imagens/settings.png" height="20px;" id="imgTarefasconfig" style="cursor: pointer; padding-left: 20px;" onclick="abreTarefasConfig();" title="Configurar grupos de Tarefas">
                 </div>
 
                 <div class="col" style="text-align: center;">
-                    <h4>Tarefas <?php if($VerTarefas == 3){ echo "Grupo ".$SiglaSetor; } ?> </h4>
-                    <?php if($row > 0){ echo "<label style='font-size: 90%;'>Arraste o quadro amarelo para a direita &#8594;</label>"; } ?>
+                    <h4 id="etiqGrupoTar">Tarefas <?php if($VerTarefas == 3){ echo "Grupo ".$SiglaSetor; } ?> </h4>
                 </div> <!-- Central - espaçamento entre colunas  -->
                 <div class="col quadro" style="margin: 0 auto; text-align: right;">
                     <button class="botpadrred" style="font-size: 80%;" id="botimprTarefas" onclick="escImprTarefas();">Gerar PDF</button>
@@ -843,263 +860,18 @@ if(!isset($_SESSION["usuarioID"])){
                 </div> 
             </div>
         </div>
-
-        <div style='margin: 20px; border: 3px solid green; border-radius: 10px;'>
-            <?php
-            if($Adm > 10){ // Superusuários - confusão
-                $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI')  
-                FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
-                WHERE ".$xProj.".tarefas.ativo > 0 
-                ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
-            }else{
-                if($VerTarefas == 1){ // 1 = Todos - Liberar a visualização das tarefas para todos
-                    $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
-                    FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
-                    WHERE ".$xProj.".tarefas.ativo > 0 
-                    ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
-                }
-                if($VerTarefas == 2){  // visualização só mandante e executante
-                    $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
-                    FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
-                    WHERE ".$xProj.".tarefas.ativo > 0 And ".$xProj.".tarefas.usuexec = $UsuLogadoId Or ".$xProj.".tarefas.ativo > 0 And ".$xProj.".tarefas.usuins = $UsuLogadoId
-                    ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
-                }
-                if($VerTarefas == 3){  // visualização por setor 
-                    $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
-                    FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
-                    WHERE ".$xProj.".tarefas.ativo > 0 And ".$xProj.".tarefas.setorins = $CodSetorUsu Or ".$xProj.".tarefas.ativo > 0 And ".$xProj.".tarefas.setorexec = $CodSetorUsu
-                    ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
-                }
-            }
-
-            $row = pg_num_rows($resultT);
-            ?>
-            <table style="margin: 0 auto; border: 0; width: 90%;" >
-                <?php
-                echo "<tr>";
-                echo "<td></td>";
-                echo "<td style='text-align: center; font-weight: 600;'>Tarefa Designada</td>";
-                echo "<td></td>";
-                echo "<td style='text-align: center; font-weight: 600;'>Tarefa Aceita</td>";
-                echo "<td></td>";
-                echo "<td style='text-align: center; font-weight: 600;'>Tarefa em Andamento</td>";
-                echo "<td></td>";
-                echo "<td style='text-align: center; font-weight: 600;'>Tarefa Terminada</td>";
-                echo "<td></td>";
-                echo "</tr>";
-
-                if($row > 0){
-                    While ($tbl = pg_fetch_row($resultT)){
-                        $idTar = $tbl[1];   // idtar
-                        $usuIns = $tbl[2];  // usuins
-                        $usuExec = $tbl[3]; // usuexec
-                        $Status = $tbl[6];  // sit
-                        $Titulo = $tbl[4];  // TitTarefa
-                        $Texto = $tbl[5];   // TextoTarefa
-                        $Ativo = $tbl[7];   // ativo  0 = Apagado   1 = Ativo   2 = arquivado
-                        $DataInsert = $tbl[8];  //DataInsert
-                        $DataVisu = $tbl[9];  //DataVista
-                        if($DataVisu == "31/12/3000 00:00"){
-                            $DataVisu = "";
-                        }
-                        $Priorid = $tbl[10];  //Prio
-                        $DataSit2= $tbl[11];
-                        if($DataSit2 == "31/12/3000 00:00"){
-                            $DataSit2 = "";
-                        }
-                        $DataSit3= $tbl[12];
-                        if($DataSit3 == "31/12/3000 00:00"){
-                            $DataSit3 = "";
-                        }
-                        $DataSit4= $tbl[13];
-                        if($DataSit4 == "31/12/3000 00:00"){
-                            $DataSit4 = "";
-                        }
-
-                        $rs1 = pg_query($Conec, "SELECT nomecompl, nomeusual FROM ".$xProj.".poslog WHERE pessoas_id = $usuIns"); //mandante
-                        $row1 = pg_num_rows($rs1);
-                        if($row1 > 0){
-                            $Proc1 = pg_fetch_row($rs1);
-                            $NomeIns = $Proc1[1];
-                            if(is_null($Proc1[1]) || $Proc1[1] == ""){
-                                $NomeIns = $Proc1[0];
-                            }
-                        }else{
-                            $NomeIns = "";
-                        }
-
-                        $rs2 = pg_query($Conec, "SELECT nomecompl, nomeusual FROM ".$xProj.".poslog WHERE pessoas_id = $usuExec"); // executor
-                        $row2 = pg_num_rows($rs2);
-                        if($row2 > 0){
-                            $Proc2 = pg_fetch_row($rs2);
-                            $NomeExec = $Proc2[1];
-                            if(is_null($Proc2[1]) || $Proc2[1] == ""){
-                                $NomeExec = $Proc2[0];
-                            }
-                        }else{
-                            $NomeExec = "";
-                        }
-
-                        $rs3 = pg_query($Conec, "SELECT idmsg FROM ".$xProj.".tarefas_msg WHERE idtarefa = $idTar");
-                        $TemMsg = pg_num_rows($rs3); // ver se tem mensagem para essa tarefa
-
-                        $row4 = 0;
-                        $row6 = 0;
-                        $rs3 = pg_query($Conec, "SELECT usuins FROM ".$xProj.".tarefas WHERE idtar = $idTar And usuins = ".$_SESSION["usuarioID"]);
-                        $row3 = pg_num_rows($rs3); // ver se foi o usu logado que inseriu a tarefa
-                        if($row3 > 0){ // foi o usuário logado que inseriu
-                            $rs4 = pg_query($Conec, "SELECT inslido FROM ".$xProj.".tarefas_msg WHERE idtarefa = $idTar And inslido = 0"); // procura mensagens não lidas como usuIns para essa tarefa
-                            $row4 = pg_num_rows($rs4); // quantid mensagens não lidas como usuIns
-                        }
-                        $rs5 = pg_query($Conec, "SELECT usuexec FROM ".$xProj.".tarefas WHERE idtar = $idTar And usuexec = ".$_SESSION["usuarioID"]);
-                        $row5 = pg_num_rows($rs5); // ver se foi o usu logado que recebeu a tarefa
-                        if($row5 > 0){ // foi o usuário logado que recebeu
-                            $rs6 = pg_query($Conec, "SELECT execlido FROM ".$xProj.".tarefas_msg WHERE idtarefa = $idTar And execlido = 0"); // procura mensagens não lidas como usuIns para essa tarefa
-                            $row6 = pg_num_rows($rs6); // quantid mensagens não lidas como usuExec
-                        }
-
-                        echo "<tr>";  //Primeira coluna à esquerda - data e nomes
-                            echo "<td style='vertical-align: top;'><div style='padding-bottom: 8px; padding-top: 2px;' title='Tarefa expedida para $NomeExec'><sub>Em $DataInsert para:</sub></div>";
-                                echo "<div class='etiqLat'>";
-                                    echo "<div style='position: relative; font-size: 2.5em; text-align: center;'>" . $NomeExec . "</div>";
-                                echo "</div>";
-                                echo "<div title='Tarefa expedida por $NomeIns'><sup>de: " . $NomeIns . "</sup></div>";
-                            echo "</td>";
-
-                            echo "<td style='text-align: center;'>";
-                                if($Status == 1 && $Ativo != 2){
-                                    echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' ondrag='PegaCod($idTar, $Ativo, $usuExec);' ondrop='drop(event)' ondragover='allowDrop(event)' title='Tarefa Designada'>$Titulo</div>";
-                                }elseif($Status == 1 && $Ativo == 2){
-                                    echo "<div class='etiqueta etiqInativa' draggable='false' droppable='false'>$Titulo</div>";
-                                }else{
-                                    echo "<div class='etiqueta etiqInat' draggable='false' droppable='true' ondrop='drop(event, 1)' ondragover='allowDrop(event)'> </div>";
-                                }
-                            echo "</td>";
-
-                            echo "<td style='text-align: center; width: 30px;' title='Arraste o quadro amarelo para a direita'>&#10144;</td>";
-
-                            echo "<td style='text-align: center;'>";
-                                if($Status == 2 && $Ativo != 2){
-                                    echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' ondrag='PegaCod($idTar, $Ativo, $usuExec);' ondrop='drop(event)' ondragover='allowDrop(event)' title='Tarefa Aceita'>$Titulo</div>";
-                                }elseif($Status == 2 && $Ativo == 2){
-                                    echo "<div class='etiqueta etiqInativa' draggable='false' droppable='false'>$Titulo</div>";
-                                }else{
-                                    echo "<div class='etiqueta etiqInat' draggable='false' droppable='true' ondrop='drop(event, 2)' ondragover='allowDrop(event)'>   </div>";
-                                }
-                            echo "</td>";
-
-                            echo "<td style='text-align: center; width: 30px;' title='Arraste o quadro amarelo para a direita'>&#10144;</td>";
-
-                            echo "<td style='text-align: center;'>";
-                                if($Status == 3 && $Ativo != 2){
-                                    echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' ondrag='PegaCod($idTar, $Ativo, $usuExec);' ondrop='drop(event)' ondragover='allowDrop(event)' title='Tarefa em Andamento'>$Titulo</div>";
-                                }elseif($Status == 3 && $Ativo == 2){
-                                    echo "<div class='etiqueta etiqInativa' draggable='false' droppable='false'>$Titulo</div>";
-                                }else{
-                                    echo "<div class='etiqueta etiqInat' draggable='false' droppable='true' ondrop='drop(event, 3)' ondragover='allowDrop(event)'>   </div>";
-                                }
-                            echo "</td>";
-
-                            echo "<td style='text-align: center; width: 30px;' title='Arraste o quadro amarelo para a direita'>&#10144;</td>";
-
-                            echo "<td style='text-align: center;'>";
-                                if($Status == 4 && $Ativo != 2){
-                                    echo "<div class='etiqueta etiqAtiva' draggable='true' droppable='true' ondrag='PegaCod($idTar, $Ativo, $usuExec);' ondrop='drop(dr)' ondragover='allowDrop(event)' title='Tarefa Terminada'>$Titulo</div>";
-                                }elseif($Status == 4 && $Ativo == 2){
-                                    echo "<div class='etiqueta etiqInativa' draggable='false' droppable='false' title='Tarefa Terminada'>$Titulo</div>";
-                                }else{
-                                    // Info URGENTE, IMPORTANTE no quadro do statos4 (Terminado)
-                                    echo "<div class='etiqueta etiqInat' draggable='false' droppable='true' ondrop='drop(event, 4)' ondragover='allowDrop(event)'>";
-                                    if($Priorid == 0){
-                                        echo "<br><p class='blink' style='font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 5px; color: red; font-size: 1.5em; font-weigth: bold; margin: 0; padding: 0;'>URGENTE</p>";
-                                    }
-                                    if($Priorid == 1){
-                                        echo "<p style='font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 5px; color: red; font-size: 1.2em; font-weigth: bold; margin: 0; padding: 0;'><br>MUITO IMPORTANTE</p>";
-                                    }
-                                    if($Priorid == 2){
-                                        echo "<p style='font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 5px; color: red; font-size: 1.2em; font-weigth: bold; margin: 0; padding: 0;'><br>IMPORTANTE</p>";
-                                    }
-                                    echo "</div>";
-                                }
-                            echo "</td>";
-
-                            echo "<td>";  
-                                if($Adm >= $admEdit && $usuIns == $UsuLogadoId || $usuExec == $UsuLogadoId && $usuExec == $usuIns || $Adm > 6){ // Adm >= nível estipulado nos parâmetros e usuins igual ao logado, executante é o mesmo do ins, ou superusuario
-                                    echo "<div title='Editar' style='cursor: pointer;' onclick='carregaModal($idTar);'>&#9997;</div>";
-                                }
-                                echo "<div title='Mensagens' style='cursor: pointer;' onclick='carregaMsg($idTar);'>";
-                                    if($row4 > 0 || $row6 > 0){
-                                        echo "<p class='blink'>&#9993;</p>";
-                                    }else{
-                                        echo "<p>&#9993;</p>";
-                                    }
-                                    echo "</div>";
-                            echo "</td>";
-                        echo "</tr>";
-
-                        //Entrelinhas - informação de datas nas entrelinhas
-                        echo "<tr>";
-                            echo "<td><div></div>";
-                            echo "</td>";
-
-                            echo "<td style='text-align: center;'>";
-                                if($DataVisu != ""){
-                                    echo "<div style='font-size: 70%; font-weight: bold;'><sup>Ciência: ".$DataVisu."</sup></div>";
-                                }else{
-                                    echo "<div style='font-size: 70%;'><sup>Designada: ".$DataInsert."</sup></div>";
-                                }
-                            echo "</td>";
-
-                            echo "<td style='text-align: center;'>";
-                                echo "<div></div>";
-                            echo "</td>";
-
-                            echo "<td style='text-align: center;'>";
-                                if($DataSit2 != ""){
-                                    echo "<div style='font-size: 70%; font-weight: bold;'><sup>Aceita: ".$DataSit2."</sup></div>";
-                                }else{
-                                    echo "<div style='font-size: 70%;'><sup>Aceita</sup></div>";
-                                }
-                            echo "</td>";
-
-                            echo "<td style='text-align: center;'>";
-                                echo "<div></div>";
-                            echo "</td>";
-
-                            echo "<td style='text-align: center;'>";
-                                if($DataSit3 != ""){
-                                    echo "<div style='font-size: 70%; font-weight: bold;'><sup>em Andamento: ".$DataSit3."</sup></div>";
-                                }else{
-                                    echo "<div style='font-size: 70%;'><sup>em Andamento</sup></div>";
-                                }
-
-                            echo "</td>";
-                            echo "<td style='text-align: center;'>";
-                                echo "<div> </div>";
-                            echo "</td>";
-
-                            echo "<td style='text-align: center;'>";
-                                if($DataSit4 != ""){
-                                    echo "<div style='font-size: 70%; font-weight: bold;'><sup>Terminada: ".$DataSit4."</sup></div>";
-                                }else{
-                                    echo "<div style='font-size: 70%;'><sup>Terminada</sup></div>";
-                                }
-                            echo "</td>";
-
-                            echo "<td style='text-align: center;'>";
-                            echo "<div></div>";
-                            echo "</td>";
-
-                        echo "</tr>";
-                    }
-                }else{
-                    echo "<tr>";
-                        echo "<td colspan='8' style='text-align: center; font-weight: 800; color: blue; border: 1px solid; padding: 10px;'>Nenhuma tarefa designada para $UsuLogadoNome</td>";
-                    echo "</tr>";
-                }
-                ?>
-            </table>
+        <div class="container" style="margin: 0 auto; padding-top: 2px; text-align: center;">
+            <label class="etiqAzul" style="padding-right: 10px;">Visualizar Tarefas: </label>
+            <input type="radio" name="verTipo" id="verTipo0" value="0" CHECKED onclick="carregaTipo(value);"><label for="verTipo0" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Todas</label>
+            <input type="radio" name="verTipo" id="verTipo1" value="1" onclick="carregaTipo(value);"><label for="verTipo1" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Designadas</label>
+            <input type="radio" name="verTipo" id="verTipo2" value="2" onclick="carregaTipo(value);"><label for="verTipo2" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Aceitas</label>
+            <input type="radio" name="verTipo" id="verTipo3" value="3" onclick="carregaTipo(value);"><label for="verTipo3" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> em Andamento</label>
+            <input type="radio" name="verTipo" id="verTipo4" value="4" onclick="carregaTipo(value);"><label for="verTipo4" style="font-size: 12px; padding-left: 3px; padding-right: 25px;"> Terminadas</label>
+            <input type="radio" name="verTipo" id="verTipo5" value="5" onclick="carregaTipo(value);"><label for="verTipo5" style="font-size: 12px; padding-left: 3px; padding-right: 25px; color: #FF6600; font-weight: bold;"> Minhas Tarefas</label>
+            <input type="radio" name="verTipo" id="verTipo6" value="6" onclick="carregaTipo(value);"><label for="verTipo6" style="font-size: 12px; padding-left: 3px; padding-right: 10px; color: #0000CD; font-weight: bold;"> Meus Pedidos</label>
         </div>
+
+        <div id="faixaTarefa"></div>
 
         <!-- div modal para edição e inserção de tarefa -->
         <div id="relacmodalTarefa" class="relacmodal">  <!-- ("close")[0] -->

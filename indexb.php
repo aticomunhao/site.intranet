@@ -68,7 +68,6 @@
                 text-align: center; padding: 10px; border: 2px solid; border-radius: 10px;
                 cursor: pointer;
             }
-
             .blink{
                 animation: blink 1.2s infinite;
             }
@@ -133,6 +132,12 @@
                                         document.getElementById("temTarefa").style.display = "block";
                                         document.getElementById("tarefa").style.display = "block";
                                     }
+                                    if(parseInt(Resp.temRecado) > 0){
+                                        document.getElementById("TemRecado").innerHTML = Resp.recadoTar;
+                                        document.getElementById("numTarefa").value = Resp.CodTarefa;
+                                        document.getElementById("selecionar").value = Resp.selecionar;
+                                        document.getElementById("TemRecado").style.display = "block";
+                                    }
                                     if(parseInt(Resp.bens) > 0){
                                         if(parseInt(Resp.bens) === 1){
                                             document.getElementById("temBens").innerHTML = "1 registro a processar em Achados e Perdidos.";
@@ -149,6 +154,7 @@
                                         document.getElementById("temContrato").innerHTML = "Há contrato com prazo para notificação.";
                                         document.getElementById("temContrato").style.display = "block";
                                     }
+
                                 }else{
                                     alert("Houve erro ao salvar");
                                 }
@@ -207,7 +213,10 @@
             };
 
             function carregaPag(){ // atalho no aviso da página inicial
-                $('#container3').load('modulos/conteudo/tarefas.php');
+                $('#container3').load('modulos/conteudo/pagTarefas.php?selec=5');
+            }
+            function carregaMsgTar(){ // carrega tarefa com mensagem não lida
+                $('#container3').load('modulos/conteudo/pagTarefas.php?selec='+document.getElementById('selecionar').value+'&numtarefa='+document.getElementById("numTarefa").value);
             }
             function carregaBens(Valor){
                 $('#container3').load('modulos/bensEncont/pagBens.php?acao='+Valor);
@@ -251,6 +260,13 @@
                                         mostraMsg(Resp.msg);
                                     }
                                 }
+                                //Aproveitando o temporizador
+                                if(parseInt(Resp.temTarefa) > 0){
+//                                    $('#container3').load('modulos/conteudo/pagTarefas.php?selec=5');
+                                    document.getElementById("textoTit").innerHTML = "TAREFA";
+                                    document.getElementById("textoMsg").innerHTML = "Uma nova Tarefa foi inserida.";
+                                    document.getElementById("relacmensagem").style.display = "block"; // está em modais.php
+                                }
                             }
                         }
                     };
@@ -262,7 +278,6 @@
                 $.confirm({
                     title: 'Evento do Calendário',
                     content: Msg,
-//                    autoClose: 'Fechar|15000',
                     buttons: {
                         notificUser: {
                             text: 'Não Mostrar mais por hoje',
@@ -314,7 +329,7 @@
             //para veriricar se usuário está on line
             checaFim = setInterval("checaLogFim()", 60000); // 1 minuto
             //Aviso de eventos do calendário
-            AvisoCalend = setInterval("checaCalend()", 3600000);  // 3 600 000 milessegundos- > 1 hora; 1 800 000 1/2 hora; 900000 15 minutos; 300000 5 minutos;
+            AvisoCalend = setInterval("checaCalend()", 3600000);  // 3600000 = 3 600 000 milessegundos -> 1 hora;  1 800 000 -> 1/2 hora; 900000 -> 15 minutos; 300000 -> 5 minutos;
 
             seg = 0;
             document.addEventListener("mousemove", function(){
@@ -368,6 +383,8 @@
         <input type="hidden" id="guardamsgcalend" value="0"/>
         <input type="hidden" id="guardatempo" value="<?php echo $TempoInat; ?>"/>
         <input type="hidden" id="teste" value=""/>
+        <input type="hidden" id="numTarefa" value = "0"/>
+        <input type="hidden" id="selecionar" value = "0"/>
 
         <div id="container0" class="container-fluid"> <!-- página toda -->
             <div id="container1" class="container-fluid corFundo"></div> <!-- cabec.php banner superior dividido em 3 -->
@@ -395,6 +412,7 @@
                     <!-- tarja vermelha aviso de tarefa  -->
                     <div id="tarefa" class="blink" onclick="carregaPag();" style="display: none; font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 10px; color: red; font-size: 1.5em; font-weigth: bold; text-align: center; padding: 10px; border-radius: 10px;">TAREFA</div>
                     <div id="temTarefa" class="divTemTarefa" onclick="carregaPag();"></div>
+                    <div id="TemRecado" class="divTemTarefa" onclick="carregaMsgTar();"></div>
                     <div id="temBens" class="divTemBens" onclick="carregaBens('Guardar');"></div>
                     <div id="temBensPrazo" class="divTemBensPrazo" onclick="carregaBens('Destinar');"></div>
                     <div id="temContrato" class="divTemContrato" onclick="carregaContrato();"></div>

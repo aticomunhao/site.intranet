@@ -24,13 +24,7 @@
 			//Provisório
 			if(strtotime('2024/11/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//0061
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".contrato_empr ADD COLUMN IF NOT EXISTS usuins bigint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".contrato_empr ADD COLUMN IF NOT EXISTS datains timestamp without time zone DEFAULT '3000-12-31';");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".contrato_empr ADD COLUMN IF NOT EXISTS usuedit bigint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".contrato_empr ADD COLUMN IF NOT EXISTS dataedit timestamp without time zone DEFAULT '3000-12-31';");
-				pg_query($Conec, "UPDATE ".$xProj.".bensachados SET usuarquivou = usurestit, dataarquivou = datarestit WHERE usurestit > 0 And id > 200;");
-				pg_query($Conec, "UPDATE ".$xProj.".bensachados SET usuencdestino = 37, descencdestino = 'DIADM', descencprocesso = 'Doação' WHERE id = 16;"); // Processo 0249/2024 já encerrado
+
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->
