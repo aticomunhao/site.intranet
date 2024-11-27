@@ -212,11 +212,11 @@ if($Acao == "buscausuario"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de poslog
     //bens, fiscbens, soinsbens
 
-    $rs1 = pg_query($Conec, "SELECT bens, fiscbens, soinsbens, cpf FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
+    $rs1 = pg_query($Conec, "SELECT bens, fiscbens, soinsbens, encbens, cpf FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
     $row1 = pg_num_rows($rs1);
     if($row1 > 0){
         $tbl1 = pg_fetch_row($rs1);
-        $var = array("coderro"=>$Erro, "bens"=>$tbl1[0], "fiscbens"=>$tbl1[1], "soinsbens"=>$tbl1[2], "cpf"=>$tbl1[3]);
+        $var = array("coderro"=>$Erro, "bens"=>$tbl1[0], "fiscbens"=>$tbl1[1], "soinsbens"=>$tbl1[2], "encbens"=>$tbl1[3], "cpf"=>$tbl1[4]);
     }else{
         $Erro = 1;
         $var = array("coderro"=>$Erro);

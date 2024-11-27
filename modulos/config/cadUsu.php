@@ -273,9 +273,6 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                 if(document.getElementById("usulogin").value === ""){
                     return false;
                 }
-                if(document.getElementById("usuarioNome").value === ""){
-//                    return false;
-                }
                 if(document.getElementById("setor").value === ""){
                     $('#mensagem').fadeIn("slow");
                     document.getElementById("mensagem").innerHTML = "Preencha o campo <u>Setor de Trabalho/Diretoria/Assessoria</u>";
@@ -314,7 +311,7 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                 if(document.getElementById("leituraAgua").checked === true){
                     Agua = 1;
                 }
-                FicAgua = 0;
+                FiscAgua = 0;
                 if(document.getElementById("fisc_Agua").checked === true){
                     FiscAgua = 1;
                 }
@@ -455,9 +452,9 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
-if(document.getElementById("guardausu_cpf").value == "13652176049"){
-    alert(ajax.responseText);
-}
+//if(document.getElementById("guardausu_cpf").value == "13652176049"){
+//    alert(ajax.responseText);
+//}
                                     Resp = eval("(" + ajax.responseText + ")");
                                     if(parseInt(Resp.coderro) === 2){
                                         $('#mensagem').fadeIn("slow");

@@ -140,6 +140,11 @@ if(!isset($_SESSION["usuarioID"])){
                                         }else{
                                             document.getElementById("soPreencheBens").checked = false;
                                         }
+                                        if(parseInt(Resp.encbens) === 1){
+                                            document.getElementById("encaminhaBens").checked = true;
+                                        }else{
+                                            document.getElementById("encaminhaBens").checked = false;
+                                        }
                                     }else{
                                         alert("Houve um erro no servidor.")
                                     }
@@ -1168,6 +1173,7 @@ if(!isset($_SESSION["usuarioID"])){
         $admEdit = parAdm("editbens", $Conec, $xProj); // nível para editar -> foi para relBens.php
         $escEdit = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // está marcado no cadastro de usuários
         $SoInsBens = parEsc("soinsbens", $Conec, $xProj, $_SESSION["usuarioID"]); // está marcado no cadastro de usuários
+        $EncBens = parEsc("encbens", $Conec, $xProj, $_SESSION["usuarioID"]);
 
         $OpDestBens = pg_query($Conec, "SELECT numdest, descdest FROM ".$xProj.".bensdestinos ORDER BY descdest");
         $OpProcesso = pg_query($Conec, "SELECT id, processo FROM ".$xProj.".bensprocessos ORDER BY processo");
@@ -1753,10 +1759,17 @@ if(!isset($_SESSION["usuarioID"])){
 
                 <table style="margin: 0 auto; width: 85%;">
                     <tr>
-                        <td class="etiq80" title="Registrar recebimento e destino de Achados e Perdidos">DAF:</td>
+                        <td class="etiq80" title="Registrar recebimento e guardar os Achados e Perdidos">DAF:</td>
                         <td colspan="4">
-                            <input type="checkbox" id="preencheBens" title="Administrar e prover a guarda dos Achados e Perdidos." onchange="marcaBem(this, 'bens');" >
-                            <label for="preencheBens" title="Administrar e prover a guarda dos Achados e Perdidos.">administrar e prover a guarda dos Achados e Perdidos.</label>
+                            <input type="checkbox" id="preencheBens" title="Registrar e prover a guarda dos Achados e Perdidos." onchange="marcaBem(this, 'bens');" >
+                            <label for="preencheBens" title="Registrar e prover a guarda dos Achados e Perdidos.">registrar e prover a guarda dos Achados e Perdidos.</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="etiq80" title="Encaminhar bens após o prazo estabelecido">DAF:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="encaminhaBens" title="Dar destino aos Achados e Perdidos após o prazo estabelecido e Arquivar o processo." onchange="marcaBem(this, 'encbens');" >
+                            <label for="encaminhaBens" title="Dar destino e arquivar.">dar destino após prazo estabelecido e arquivar o processo.</label>
                         </td>
                     </tr>
                     <tr>

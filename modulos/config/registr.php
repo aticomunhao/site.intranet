@@ -294,7 +294,9 @@ if($Acao =="buscaacesso"){
                 $Marca = 1;
             }
         }
-        $rsTar = pg_query($Conec, "SELECT idtar, sit FROM ".$xProj.".tarefas WHERE usuexec = '".$_SESSION["usuarioID"]."' And sit = 1 And ativo = 1");
+        //tem Tarefa
+        $rowTar = 0;
+        $rsTar = pg_query($Conec, "SELECT idtar, sit FROM ".$xProj.".tarefas WHERE usuexec = ".$_SESSION["usuarioID"]." And sit = 1 And ativo = 1");
         $rowTar = pg_num_rows($rsTar);
         if($rowTar > 0){
             if($rowTar == 1){
@@ -351,7 +353,7 @@ if($Acao =="buscaacesso"){
         }
     }
 
-    $var = array("coderro"=>$Erro, "marca"=>$Marca, "acessos"=>$NumAcessos, "msg"=>$msg, "temTarefa"=>$rowTar, "msgTar"=>$msgTar, "bens"=>$rowBens, "bensdestinar"=>$rowDest, "contrato1"=>$rowContr1, "contrato2"=>$rowContr2, "temRecado"=>$TemRecado, "recadoTar"=>$recadoTar, "CodTarefa"=>$CodTar, "selecionar"=>$Selec);
+    $var = array("coderro"=>$Erro, "marca"=>$Marca, "acessos"=>$NumAcessos, "msg"=>$msg, "temTarefa"=>$rowTar, "msgTar"=>$msgTar, "bens"=>$rowBens, "bensdestinar"=>$rowDest, "contrato1"=>$rowContr1, "contrato2"=>$rowContr2, "temRecado"=>$TemRecado, "recadoTar"=>$recadoTar, "CodTarefa"=>$CodTar, "selecionar"=>$Selec, "usuario"=>$_SESSION["usuarioID"]);
     $responseText = json_encode($var);
     echo $responseText;
 }

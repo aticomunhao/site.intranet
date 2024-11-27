@@ -11,7 +11,7 @@ if(!isset($_SESSION['AdmUsu'])){
     require_once('../../class/fpdf/fpdf.php'); // adaptado ao PHP 7.2 - 8.2
     define('FPDF_FONTPATH', '../../class/fpdf/font/');  
     $Dom = "logo_comunhao_completa_cor_pos_150px.png";
-
+    date_default_timezone_set('America/Sao_Paulo'); 
     $rsCabec = pg_query($Conec, "SELECT cabec1, cabec2, cabec3 FROM ".$xProj.".setores WHERE codset = ".$_SESSION["CodSetorUsu"]." ");
     $rowCabec = pg_num_rows($rsCabec);
     $tblCabec = pg_fetch_row($rsCabec);
@@ -26,7 +26,8 @@ if(!isset($_SESSION['AdmUsu'])){
            // Seleciona a fonte Arial itálico 8
            $this->SetFont('Arial','I',8);
            // Imprime o número da página corrente e o total de páginas
-           $this->Cell(0,10,'Pag '.$this->PageNo().'/{nb}',0,0,'R');
+//           $this->Cell(0,10,'Pag '.$this->PageNo().'/{nb}',0,0,'R');
+           $this->Cell(0, 10, 'Impresso: '.date("d/m/Y H:i").'       Pag '.$this->PageNo().'/{nb}', 0, 0, 'R');
          }
     }
 

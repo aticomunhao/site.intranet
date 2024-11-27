@@ -146,9 +146,16 @@ if(!isset($_SESSION["usuarioID"])){
         <script type="text/javascript">
             $(document).ready(function(){
                 document.getElementById("imgTarefasconfig").style.visibility = "hidden"; // configurar grupos para tarefas
+                document.getElementById("imgOrgTarefasConfig").style.visibility = "hidden"; // configurar níveis para tarefas baseado no organograma
                 if(parseInt(document.getElementById("UsuAdm").value) >= 6){ // nível revisor
-                    document.getElementById("imgTarefasconfig").style.visibility = "visible"; 
+                    if(parseInt(document.getElementById("guardaGrupoTar").value) === 3){
+                        document.getElementById("imgTarefasconfig").style.visibility = "visible"; //gerenciar setores
+                    } 
+                    if(parseInt(document.getElementById("guardaGrupoTar").value) === 4){
+                        document.getElementById("imgOrgTarefasConfig").style.visibility = "visible"; // gerenciar posição no organograma
+                    }
                 }
+
                 if(parseInt(document.getElementById("UsuAdm").value) < parseInt(document.getElementById("admIns").value)){ // nível administrativo
                     document.getElementById("botinserir").style.visibility = "hidden"; // botão de inserir
                 }
@@ -157,9 +164,12 @@ if(!isset($_SESSION["usuarioID"])){
                 }
 
                 //Para mensagens não lidas nas Tarefas  - Tem um comando desses em indexb.php aproveitando o temporizador em checaCalend() a cada hora
-                document.getElementById("verTipo"+document.getElementById("selecSit").value).checked = true;
-                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("selecSit").value+"&numtarefa="+document.getElementById("selecTarefa").value);
+                document.getElementById("verTipo"+document.getElementById("guardaSelecSit").value).checked = true;
+//                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value+"&numtarefa="+document.getElementById("selecTarefa").value);
 
+                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
+
+                
                 //Fecha caixa ao clicar na página
                 modalMsg = document.getElementById('relacmodalMsg'); //span[0]
                 spanMsg = document.getElementsByClassName("close")[0];
@@ -260,7 +270,6 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("configselecSolicitante").value = "";
                     document.getElementById("configcpfsolicitante").value = "";
                     document.getElementById("configSelecSetor").value = "";
-
                 });
                 $("#configcpfsolicitante").change(function(){
                     document.getElementById("configselecSolicitante").value = "";
@@ -322,8 +331,8 @@ if(!isset($_SESSION["usuarioID"])){
                                                 draggable: true,
                                                 buttons: {
                                                     Sim: function () {
-                                                        $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("selecSit").value);
-                                                        if(parseInt(document.getElementById("guardaGrupoTar").value === 3)){ // em grupo
+                                                        $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
+                                                        if(parseInt(document.getElementById("guardaGrupoTar").value) === 3){ // em grupo
                                                             document.getElementById("etiqGrupoTar").innerHTML = "Tarefas Grupo "+Resp.siglasetor;
                                                         }
                                                     },
@@ -342,7 +351,63 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
 
-            });
+
+                $("#configselecUsuOrg").change(function(){
+                    if(document.getElementById("configselecUsuOrg").value == ""){
+                        return false;
+                    }
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/conteudo/salvaTarefa.php?acao=buscausuarioorg&codigo="+document.getElementById("configselecUsuOrg").value, true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 0){
+                                        document.getElementById("configSelecOrg").value = Resp.orgtarefa;
+                                    }else{
+                                        alert("Houve um erro no servidor.")
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                });
+
+                $("#configSelecOrg").change(function(){
+                    if(document.getElementById("configselecUsuOrg").value == ""){
+                        return false;
+                    }
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/conteudo/salvaTarefa.php?acao=salvaorgtar&codigo="+document.getElementById("configselecUsuOrg").value+"&valororg="+document.getElementById("configSelecOrg").value, true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 0){
+                                        $('#mensagemConfigOrg').fadeIn("slow");
+                                        document.getElementById("mensagemConfigOrg").innerHTML = "Valor salvo.";
+                                        $('#mensagemConfigOrg').fadeOut(2000);
+                                        //Se for atualizar o próprio nível, reinicializar
+                                        if(parseInt(document.getElementById("configselecUsuOrg").value) === parseInt(document.getElementById("usu_Logado_id").value)){
+                                            $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value); 
+                                        }
+                                    }else{
+                                        alert("Houve um erro no servidor.")
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                });
+
+
+            }); // fim do ready
 
             function escMultImprTarefas(){
                 if(document.getElementById("selecMultExecutante").value == ""){
@@ -426,7 +491,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     if(parseInt(Resp.coderro) === 1){
                                         alert("Houve um erro no servidor.")
                                     }else{
-                                        $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("selecSit").value);
+                                        $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
                                         ev.preventDefault();
                                         var data = ev.dataTransfer.getData("text");
                                         ev.target.appendChild(document.getElementById(data));
@@ -506,6 +571,7 @@ if(!isset($_SESSION["usuarioID"])){
                         +"&priorid="+document.getElementById("selecprio").value
                         +"&textoEvid="+encodeURIComponent(document.getElementById("textoEvid").value)
                         +"&textoExt="+encodeURIComponent(document.getElementById("textoExt").value), true);
+                        
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -516,7 +582,8 @@ if(!isset($_SESSION["usuarioID"])){
                                     if(parseInt(Resp.coderro) === 0){
                                         document.getElementById("mudou").value = "0";
                                         document.getElementById("relacmodalTarefa").style.display = "none";
-                                        $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("selecSit").value);
+//                                        $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
+                                        $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec=6'); // Meus Pedidos
                                     }else if(parseInt(Resp.coderro) === 2){
                                         $.confirm({
                                             title: 'Atenção!',
@@ -577,7 +644,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             }else{
                                                 document.getElementById("mudou").value = "0";
                                                 document.getElementById("relacmodalTarefa").style.display = "none";
-                                                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("selecSit").value);
+                                                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
                                             }
                                         }
                                     }
@@ -623,7 +690,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor ao fechar as mensagens. Informe à ATI.")
                                 }
-                                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("selecSit").value); // para parar de piscar a ícone de tem mensagem
+                                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value); // para parar de piscar a ícone de tem mensagem
                             }
                         }
                     };
@@ -685,7 +752,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                                 if(ajax.responseText){
 //alert(ajax.responseText);
                                                                     document.getElementById("relacmodalTransf").style.display = "none";
-                                                                    $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("selecSit").value);
+                                                                    $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
                                                                 }
                                                             }
                                                             };
@@ -716,8 +783,8 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function carregaTipo(Valor){
-                document.getElementById("selecSit").value = Valor;
-                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("selecSit").value);
+                document.getElementById("guardaSelecSit").value = Valor;
+                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
             }
 
             function abreTarefasConfig(){
@@ -726,8 +793,18 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("configSelecSetor").value = "";
                 document.getElementById("modalTarefasConfig").style.display = "block";
             }
+
+            function abreOrgTarefasConfig(){
+                document.getElementById("configSelecOrg").value = "";
+                document.getElementById("configselecUsuOrg").value = "";
+                document.getElementById("modalTarefasConfigOrg").style.display = "block";
+            }
+            
             function fechaModalConfig(){
                 document.getElementById("modalTarefasConfig").style.display = "none";
+            }
+            function fechaOrgModalConfig(){
+                document.getElementById("modalTarefasConfigOrg").style.display = "none";
             }
             function fechaModalTransf(){
                 document.getElementById("relacmodalTransf").style.display = "none";
@@ -740,6 +817,9 @@ if(!isset($_SESSION["usuarioID"])){
             }
             function resumoGrupoTarefas(){
                 window.open("modulos/conteudo/imprGruposTar.php?acao=imprGrupos", "Grupos");
+            }
+            function resumoOrgTarefas(){
+                window.open("modulos/conteudo/imprGruposTar.php?acao=imprOrganogr", "Organogr");
             }
             function format_CnpjCpf(value){
                 //https://gist.github.com/davidalves1/3c98ef866bad4aba3987e7671e404c1e
@@ -779,7 +859,8 @@ if(!isset($_SESSION["usuarioID"])){
 
         $admIns = parAdm("instarefa", $Conec, $xProj);   // nível para inserir
         $admEdit = parAdm("edittarefa", $Conec, $xProj); // nível para editar
-        $VerTarefas = parAdm("vertarefa", $Conec, $xProj); // ver tarefas   1: todos - 2: só mandante e executante - 3: visualização por setor 
+        $VerTarefas = parAdm("vertarefa", $Conec, $xProj); // ver tarefas   1: todos - 2: só mandante e executante - 3: visualização por setor - 4: por Organograma
+        
 
         $CodSetorUsu = parEsc("grupotarefa", $Conec, $xProj, $_SESSION["usuarioID"]);
         $rs7 = pg_query($Conec, "SELECT siglasetor FROM ".$xProj.".setores WHERE codset = $CodSetorUsu");
@@ -788,15 +869,7 @@ if(!isset($_SESSION["usuarioID"])){
             $tbl7 = pg_fetch_row($rs7);
             $SiglaSetor = $tbl7[0];
         }
-
-        //Relacionar usuários - adm <= $Adm - só paga tarefa para nível adm menor ou igual
-        if($VerTarefas == 3){ // 3 = visualização por setor 
-            $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm <= $Adm And grupotarefa = $CodSetorUsu ORDER BY nomeusual, nomecompl");
-            $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm >= $admIns And grupotarefa = $CodSetorUsu And pessoas_id != $UsuLogadoId ORDER BY nomeusual, nomecompl");
-        }else{
-            $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm <= $Adm ORDER BY nomeusual, nomecompl");
-            $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm >= $admIns And pessoas_id != $UsuLogadoId ORDER BY nomeusual, nomecompl");
-        }
+        $MeuOrg = parEsc("orgtarefa", $Conec, $xProj, $_SESSION["usuarioID"]); // nível no organograma
 
         // Preenche caixa de escolha mes/ano para impressão - ano antes para indexar primeiro pelo ano
         $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(datains, 'MM'), '/', TO_CHAR(datains, 'YYYY')) 
@@ -804,22 +877,34 @@ if(!isset($_SESSION["usuarioID"])){
         $OpcoesEscAno = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".tarefas.datains)::text 
         FROM ".$xProj.".tarefas GROUP BY 1 ORDER BY 1 DESC ");
 
-        if($VerTarefas == 3){ // 3 = visualização por setor 
-            $OpcoesUserMand = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And grupotarefa = $CodSetorUsu ORDER BY nomecompl, nomeusual");
-            $OpcoesUserExec = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And grupotarefa = $CodSetorUsu ORDER BY nomecompl, nomeusual");
-            $OpcoesUserData = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And grupotarefa = $CodSetorUsu ORDER BY nomecompl, nomeusual");
-            $OpcoesMandante = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And grupotarefa = $CodSetorUsu ORDER BY nomecompl, nomeusual");
-            $OpcoesExecutante = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And grupotarefa = $CodSetorUsu ORDER BY nomecompl, nomeusual");
-        }else{
+        if($VerTarefas == 1 || $VerTarefas == 2){
+            //Relacionar usuários - adm <= $Adm - só paga tarefa para nível adm menor ou igual
+            $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm <= $Adm ORDER BY nomeusual, nomecompl");
+            $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm >= $admIns And pessoas_id != $UsuLogadoId ORDER BY nomeusual, nomecompl");
             $OpcoesUserMand = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
             $OpcoesUserExec = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
             $OpcoesUserData = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
             $OpcoesMandante = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
             $OpcoesExecutante = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
         }
-
-        $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
-        $OpSetores = pg_query($Conec, "SELECT CodSet, siglasetor, descsetor FROM ".$xProj.".setores WHERE ativo = 1 ORDER BY siglasetor");
+        if($VerTarefas == 3){ // 3 = visualização por setor 
+            $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm <= $Adm And grupotarefa = $CodSetorUsu ORDER BY nomeusual, nomecompl");
+            $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And grupotarefa = $CodSetorUsu And pessoas_id != $UsuLogadoId ORDER BY nomeusual, nomecompl");
+            $OpcoesUserMand = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And grupotarefa = $CodSetorUsu ORDER BY nomecompl, nomeusual");
+            $OpcoesUserExec = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And grupotarefa = $CodSetorUsu ORDER BY nomecompl, nomeusual");
+            $OpcoesUserData = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And grupotarefa = $CodSetorUsu ORDER BY nomecompl, nomeusual");
+            $OpcoesMandante = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And grupotarefa = $CodSetorUsu ORDER BY nomecompl, nomeusual");
+            $OpcoesExecutante = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And grupotarefa = $CodSetorUsu ORDER BY nomecompl, nomeusual");
+        }
+        if($VerTarefas == 4){ // 4 = visualização pela posição no organograma 
+            $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And orgtarefa >= $MeuOrg ORDER BY nomeusual, nomecompl");
+            $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And pessoas_id != $UsuLogadoId ORDER BY nomeusual, nomecompl");
+            $OpcoesUserMand = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And orgtarefa >= $MeuOrg ORDER BY nomecompl, nomeusual");
+            $OpcoesUserExec = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And orgtarefa >= $MeuOrg ORDER BY nomecompl, nomeusual");
+            $OpcoesUserData = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And orgtarefa >= $MeuOrg ORDER BY nomecompl, nomeusual");
+            $OpcoesMandante = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And orgtarefa >= $MeuOrg ORDER BY nomecompl, nomeusual");
+            $OpcoesExecutante = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And orgtarefa >= $MeuOrg ORDER BY nomecompl, nomeusual");
+        }
 
         //marca que foi visualizado nesta data - dataSit1
         pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit1 = NOW() WHERE usuexec = ".$_SESSION["usuarioID"]." And datasit1 = '3000/12/31' And ativo = 1");
@@ -837,21 +922,23 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="grupotarefa" value="1" />
         <input type="hidden" id="guardaUsuCpf" value="<?php echo $_SESSION["usuarioCPF"]; ?>" />
         <input type="hidden" id="guardaGrupoTar" value="<?php echo $VerTarefas; ?>" /> 
-        <input type="hidden" id="selecSit" value="<?php echo $Sit; ?>" />
+        <input type="hidden" id="guardaSelecSit" value="<?php echo $Sit; ?>" />
         <input type="hidden" id="selecTarefa" value="<?php echo $NumTarefa; ?>" />
 
         <!-- div três colunas -->
         <div class="container" style="margin: 0 auto; padding-top: 10px;">
             <div class="row">
-                <div class="col quadro" style="margin: 0 auto;"> 
+                <div class="col" style="margin: 0 auto;"> 
                     <input type="button" class="botpadrblue" id="botinserir" value="Inserir Tarefa" onclick="abreModal();">
                     <img src="imagens/settings.png" height="20px;" id="imgTarefasconfig" style="cursor: pointer; padding-left: 20px;" onclick="abreTarefasConfig();" title="Configurar grupos de Tarefas">
+
+                    <img src="imagens/settings.png" height="20px;" id="imgOrgTarefasConfig" style="cursor: pointer; padding-left: 20px;" onclick="abreOrgTarefasConfig();" title="Configurar Níveis de Usuários pelo Organograma">
                 </div>
 
                 <div class="col" style="text-align: center;">
                     <h4 id="etiqGrupoTar">Tarefas <?php if($VerTarefas == 3){ echo "Grupo ".$SiglaSetor; } ?> </h4>
                 </div> <!-- Central - espaçamento entre colunas  -->
-                <div class="col quadro" style="margin: 0 auto; text-align: right;">
+                <div class="col" style="margin: 0 auto; text-align: right;">
                     <button class="botpadrred" style="font-size: 80%;" id="botimprTarefas" onclick="escImprTarefas();">Gerar PDF</button>
                     <label style="padding-left: 20px;"></label>
                     <button class="botpadr" id="botTransfIns" onclick="carregaTransf();" title="Transferir tarefas designadas para acompanhamento por outro usuário">Transferir</button>
@@ -861,7 +948,10 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
         </div>
         <div class="container" style="margin: 0 auto; padding-top: 2px; text-align: center;">
-            <label class="etiqAzul" style="padding-right: 10px;">Visualizar Tarefas: </label>
+            <label class="etiqAzul" style="padding-right: 10px;">Visualizar Tarefas 
+                <?php if($VerTarefas == 3){echo "(Grupos)";};
+                      if($VerTarefas == 4){echo "(Organograma)";}; ?>
+            </label>
             <input type="radio" name="verTipo" id="verTipo0" value="0" CHECKED onclick="carregaTipo(value);"><label for="verTipo0" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Todas</label>
             <input type="radio" name="verTipo" id="verTipo1" value="1" onclick="carregaTipo(value);"><label for="verTipo1" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Designadas</label>
             <input type="radio" name="verTipo" id="verTipo2" value="2" onclick="carregaTipo(value);"><label for="verTipo2" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Aceitas</label>
@@ -1169,7 +1259,6 @@ if(!isset($_SESSION["usuarioID"])){
                             </td>
                             <td>&nbsp;&nbsp;</td>
                         </tr>
-
                         <tr>   
                             <td colspan="3" style="text-align: center;"> <label style="font-size: 80%;">Ano/Situação:</label>
                                 <select id="selecComboAno" style="font-size: 1rem; width: 90px;" title="Selecione o Ano.">
@@ -1194,11 +1283,7 @@ if(!isset($_SESSION["usuarioID"])){
 
                                 <button class="botpadrred" style="font-size: 80%;" id="botimprCombo" onclick="escMultImprCombo();">Vai</button>
                             </td>
-
                         </tr>
-
-
-
                         <tr>
                             <td colspan="3" style="padding: 0px;"><hr></td>
                         </tr>
@@ -1295,6 +1380,7 @@ if(!isset($_SESSION["usuarioID"])){
                             <select id="configselecSolicitante" style="max-width: 330px;" onchange="modif();" title="Selecione um usuário.">
                                 <option value=""></option>
                                 <?php 
+                                $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
                                 if($OpConfig){
                                     while ($Opcoes = pg_fetch_row($OpConfig)){ ?>
                                         <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; if($Opcoes[2] != ""){echo " - ".$Opcoes[2];} ?></option>
@@ -1320,6 +1406,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td colspan="4">
                             <select id="configSelecSetor" style="max-width: 430px;" onchange="modif();" title="Selecione um setor para agrupar usuários de tarefas.">
                                 <?php 
+                                $OpSetores = pg_query($Conec, "SELECT CodSet, siglasetor, descsetor FROM ".$xProj.".setores WHERE ativo = 1 ORDER BY siglasetor");
                                 if($OpSetores){
                                     while ($Opcoes = pg_fetch_row($OpSetores)){ ?>
                                         <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; if($Opcoes[2] != ""){echo " - ".$Opcoes[2];} ?></option>
@@ -1335,24 +1422,101 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
         </div> <!-- Fim Modal-->
 
+        <!-- Modal configuração-->
+         <div id="modalTarefasConfigOrg" class="relacmodal">
+            <div class="modalTarefas-content">
+                <span class="close" onclick="fechaOrgModalConfig();">&times;</span>
+                <!-- div três colunas -->
+                <div class="container" style="textf-align: center;">
+                    <div class="row">
+                        <div class="col" style="margin: 0 auto;"></div>
+                        <div class="col" style="width: 50%; textf-align: center;"><h5 style="text-align: center; color: #666;">Config Tarefas</h5></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col" style="margin: 0 auto; text-align: center;"><button class="botpadrred" style="font-size: 70%;" onclick="resumoOrgTarefas();">Resumo em PDF</button></div> 
+                    </div>
+                </div>
+                <div style="width: 100%; text-align: center; padding-bottom: 10px;"><label class="etiqAzul">Níveis tipo Organograma</label></div>
+                <label class="etiqAzul">Selecione um usuário para configurar sua posição para tarefas:</label>
+                
+                <table style="margin: 0 auto; width: 85%;">
+                    <tr>
+                        <td colspan="4" style="text-align: center;"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align: center;">Busca Nome do Usuário</td>
+                        <td style="text-align: center;">Organograma</td>
+                    </tr>
+                    <tr>
+                        <td class="etiqAzul">Procura nome: </td>
+                        <td style="width: 100px;">
+                            <select id="configselecUsuOrg" style="max-width: 330px;" onchange="modif();" title="Selecione um usuário.">
+                                <option value=""></option>
+                                <?php 
+                                $OpConfigOrg = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
+                                if($OpConfigOrg){
+                                    while ($Opcoes = pg_fetch_row($OpConfigOrg)){ ?>
+                                        <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; if($Opcoes[2] != ""){echo " - ".$Opcoes[2];} ?></option>
+                                    <?php 
+                                    }
+                                }
+                                ?>
+                            </select>
+                        </td>
+                        <td class="etiqAzul"><label class="etiqAzul">&nbsp;&nbsp;&nbsp; </label></td>
+                        <td style="text-align: center;">
+                            <select id="configSelecOrg" style="font-size: 1rem;" title="Selecione a posição do usuário no Organograma.">
+                                <option value="10">Conselho</option>
+                                <option value="20">Presidência</option>
+                                <option value="30">Diretoria</option>
+                                <option value="30">Assessoria</option>
+                                <option value="40">Divisão</option>
+                                <option value="50">Gerência</option>
+                                <option value="60">Funcionário</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding-top: 10px;"></td>
+                    </tr>
+                </table>
+
+                <div style="text-align: center; color: red; font-weight: bold;" id="mensagemConfigOrg"></div>
+            </div>
+        </div> <!-- Fim Modal-->
+
 
         <!-- div modal para leitura instruções -->
         <div id="relacHelpTarefas" class="relacmodal">
             <div class="modalMsg-content">
                 <span class="close" onclick="fechaModalHelp();">&times;</span>
                 <h3 style="text-align: center; color: #666;">Informações</h3>
-                <h4 style="text-align: center; color: #666;">Tarefas</h4>
+                <h4 style="text-align: center; color: #666;">Tarefas
+                    <?php if($VerTarefas == 3){echo " Grupos";}; 
+                        if($VerTarefas == 4){echo " Organograma";}; 
+                    ?>
+                </h4>
                 <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
                     Regras inseridas:
                     <ul>
-                        <li>1 - Um usuário pode emitir tarefa para outros usuários do seu nível administrativo ou inferior, observado o nível administrativo mínimo adequado.</li>
-                        <li>2 - Uma tarefa só aparece para o usuário que a inseriu e para o usuário designado para executá-la, ou para todos, ou para os usuários do setor, a depender da configuração adotada.</li>
-                        <li>3 - Apenas o usuário designado para a execução pode arrastar os quadros.</li>
+                        <?php
+                            if($VerTarefas == 1){echo "<li>1 - Um usuário pode emitir tarefa para outros usuários do seu nível administrativo (do site) ou inferior.</li>";};  
+                            if($VerTarefas == 2){echo "<li>1 - Um usuário pode emitir tarefa para outros usuários do seu nível administrativo (do site) ou inferior.</li>";};  
+                            if($VerTarefas == 3){echo "<li>1 - Um usuário pode emitir tarefa para outros usuários do seu grupo de usuários. O grupo é definido pela administração.</li>";}; 
+                            if($VerTarefas == 4){echo "<li>1 - Um usuário pode emitir tarefa para outros usuários do seu nível administrativo ou inferior, conforme o organograma.</li>";}; 
+                        ?>
+                        <?php
+                            if($VerTarefas == 1){echo "<li>2 - Uma tarefa inserida aparece para todos os usuários.</li>";};  
+                            if($VerTarefas == 2){echo "<li>2 - Uma tarefa inserida só aparece para o usuário que a inseriu e para o usuário designado para executá-la.</li>";};  
+                            if($VerTarefas == 3){echo "<li>2 - Uma tarefa inserida só aparece para os usuários do grupo.</li>";}; 
+                            if($VerTarefas == 4){echo "<li>2 - Uma tarefa inserida aparece para os usuários conforme os níveis definidos no organograma. A tarefa aparecerá se o Solicitante ou o Executante estiver no seu nível. Em consequência, os relatórios terão números diferentes, conforme o nível em que foi solicitado. A tarefa inserida por um usuário do nível mais alto para um usuário do nível mais baixo fica visível nos níveis intermediários.</li>";}; 
+                        ?>
+
+                        <li>3 - Apenas o usuário designado para a execução pode arrastar os quadros para a direita.</li>
                         <li>4 - Uma vez arrastados para a direita, os quadros não voltam. Mas o usuário que inseriu a tarefa, se tiver o nível administrativo adequado, pode editá-la e reposicioná-la nos quadros, mesmo se já estiver concluída.</li>
-                        <li>5 - Mensagens podem ser trocadas entre os usuários. Elas são relativas a uma tarefa. Um ícone pisca para indicar que há mensagem não lida naquela tarefa.</li>
+                        <li>5 - Mensagens podem ser trocadas entre os usuários. Elas são relativas a uma tarefa específica. Um ícone pisca para indicar que há mensagem não lida naquela tarefa. Uma mensagem aparece na página inicial informando que há mensagem não lida nas tarefas.</li>
                         <li>6 - As tarefas classificadas como urgentes se posicionam no topo da relação.</li>
                         <li>7 - As tarefas concluídas vão para o final da relação</li>
-                        <li>8 - Um usuário pode emitir tarefa para si próprio.</li>
+                        <li>8 - Um usuário pode emitir tarefa para si mesmo.</li>
+                        <li>9 - Uma mensagem indicando que há tarefas ainda não vistas aparece na página inicial. Nas outras páginas aparece uma vez a cada hora.</li>
                     </ul>
                 </div>
             </div>

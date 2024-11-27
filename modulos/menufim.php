@@ -319,11 +319,11 @@
 							echo "</li>";
 						}
 
-						if($_SESSION["AdmUsu"] > 6){ // superusuário
-							echo "<li>";
-								echo "<a href='#' onclick='openhref(33);'>Registro de Ocorrências</a>";
-							echo "</li>";
-						}
+//						if($_SESSION["AdmUsu"] > 6){ // superusuário
+//							echo "<li>";
+//								echo "<a href='#' onclick='openhref(33);'>Registro de Ocorrências</a>";
+//							echo "</li>";
+//						}
 						echo "<li>";
 							echo "<a href='#' onclick='openhref(30);'>Tráfego de Arquivos</a>";
 						echo "</li>";

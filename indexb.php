@@ -49,7 +49,7 @@
                 display: none; 
                 margin-bottom: 0px; 
                 color: white; font-weight: bold; 
-                background-color: red; 
+                background-color: #A52A2A; 
                 text-align: center; padding: 10px; border-radius: 10px;
                 cursor: pointer;
             }

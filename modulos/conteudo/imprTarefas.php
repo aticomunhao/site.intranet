@@ -25,7 +25,7 @@ if(!isset($_SESSION['AdmUsu'])){
     require_once('../../class/fpdf/fpdf.php'); // adaptado ao PHP 7.2 - 8.2
     define('FPDF_FONTPATH', '../../class/fpdf/font/');  
     $Dom = "logo_comunhao_completa_cor_pos_150px.png";
-
+    date_default_timezone_set('America/Sao_Paulo'); 
     function CalcData($Ano, $Mes, $Dia, $Hora, $Min){
         if($Ano == 0 ){
             $Ano = ""; 
@@ -167,7 +167,8 @@ if(!isset($_SESSION['AdmUsu'])){
            // Seleciona a fonte Arial itálico 8
            $this->SetFont('Arial','I',8);
            // Imprime o número da página corrente e o total de páginas
-           $this->Cell(0,10,'Pag '.$this->PageNo().'/{nb}',0,0,'R');
+//           $this->Cell(0,10,'Pag '.$this->PageNo().'/{nb}',0,0,'R');
+           $this->Cell(0, 10, 'Impresso: '.date("d/m/Y H:i").'       Pag '.$this->PageNo().'/{nb}', 0, 0, 'R');
          }
     }
         
@@ -210,6 +211,10 @@ if(!isset($_SESSION['AdmUsu'])){
 //    $CodSetorUsu = $_SESSION["CodSetorUsu"]; //para a visualização das tarefas por setores
     $CodSetorUsu = parEsc("grupotarefa", $Conec, $xProj, $_SESSION["usuarioID"]);
     $UsuLogadoId = $_SESSION["usuarioID"];
+    $MeuOrg = parEsc("orgtarefa", $Conec, $xProj, $_SESSION["usuarioID"]); // nível no organograma
+
+
+$VerTarefas = 4;
 
     if($Acao == "listamesTarefa" || $Acao == "listaanoTarefa" || $Acao == "listaMandante" || $Acao == "listaExecutante" || $Acao == "listaSitTarefa" || $Acao == "listaCombo"){
         $pdf->ln();
@@ -256,7 +261,15 @@ if(!isset($_SESSION['AdmUsu'])){
                 GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 ORDER BY ".$xProj.".poslog.nomecompl"); 
             }
-
+            if($VerTarefas == 4){ // 3 = visualização por organograma 
+                $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgexec >= $MeuOrg ");
+                $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
+                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgexec >= $MeuOrg 
+                GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                ORDER BY ".$xProj.".poslog.nomecompl"); 
+            }
             $tblCont = pg_fetch_row($rsCont);
             $pdf->SetTextColor(120, 120, 120);  
             $pdf->SetFont('Arial', 'I', 9);
@@ -304,6 +317,16 @@ if(!isset($_SESSION['AdmUsu'])){
                 $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
                 WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And setorins = $CodSetorUsu Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And setorexec = $CodSetorUsu 
+                GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                ORDER BY ".$xProj.".poslog.nomecompl"); 
+            }
+            if($VerTarefas == 4){ // 4 = visualização por organograma 
+                $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+
+                $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
+                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgexec >= $MeuOrg 
                 GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 ORDER BY ".$xProj.".poslog.nomecompl"); 
             }
@@ -420,6 +443,16 @@ if(!isset($_SESSION['AdmUsu'])){
                 $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
                 WHERE ".$xProj.".tarefas.ativo != 0 And setorins = $CodSetorUsu And sit = $Sit Or ".$xProj.".tarefas.ativo != 0 And setorexec = $CodSetorUsu And sit = $Sit 
+                GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                ORDER BY ".$xProj.".poslog.nomecompl");
+            }
+            if($VerTarefas == 4){ // 4 = visualização por organograma 
+                $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                WHERE ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.orgins >= $MeuOrg And ".$xProj.".tarefas.sit = $Sit Or ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.orgexec >= $MeuOrg And ".$xProj.".tarefas.sit = $Sit ");
+
+                $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
+                FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
+                WHERE ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.orgins >= $MeuOrg And ".$xProj.".tarefas.sit = $Sit Or ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.orgexec >= $MeuOrg And ".$xProj.".tarefas.sit = $Sit 
                 GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 ORDER BY ".$xProj.".poslog.nomecompl");
             }
@@ -837,7 +870,40 @@ if(!isset($_SESSION['AdmUsu'])){
                     WHERE DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 And setorins = $CodSetorUsu Or DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 And setorexec = $CodSetorUsu 
                     ORDER BY (CURRENT_DATE - ".$xProj.".tarefas.datains) DESC");
                 }
-                
+                if($VerTarefas == 4){ // 3 = visualização por organograma 
+                    $rs1 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+
+                    $rsP1 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.prio = 0 And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.prio = 0 And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+
+                    $rsP3 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And prio = 2 And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And prio = 2 And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+
+                    $rsP4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.prio = 3 And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.prio = 3 And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+
+                    $rs2 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 1 And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR',".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 1 And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+
+                    $rs3 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 2 And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 2 And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+
+                    $rs4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 3 And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 3 And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+
+                    $rs5 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
+                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 4 And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 4 And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+
+                    $rsCalc = pg_query($Conec, "SELECT tempototal FROM ".$xProj.".tarefas 
+                    WHERE DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 4 And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.tempototal IS NOT NULL And ".$xProj.".tarefas.orgins >= $MeuOrg Or DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 4 And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.tempototal IS NOT NULL And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+
+                    $rs6 = pg_query($Conec, "SELECT TO_CHAR(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI'), TO_CHAR((CURRENT_DATE - ".$xProj.".tarefas.datains), 'DD'), tittarefa, ".$xProj.".poslog.nomecompl, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.sit 
+                    FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id 
+                    WHERE DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.orgins >= $MeuOrg Or DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.orgexec >= $MeuOrg 
+                    ORDER BY (CURRENT_DATE - ".$xProj.".tarefas.datains) DESC");
+                }
+
                 $tbl1 = pg_fetch_row($rs1);
                 $pdf->SetFont('Arial', '' , 10); 
                 $pdf->SetX(50);

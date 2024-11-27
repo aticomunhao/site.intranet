@@ -123,6 +123,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             $admEdit = parAdm("editbens", $Conec, $xProj); // nível administrativo para editar
             $Marca = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // ver se está marcado no cadastro de usu
             $SoInsBens = parEsc("soinsbens", $Conec, $xProj, $_SESSION["usuarioID"]); // está marcado no cadastro de usuários
+            $EncBens = parEsc("encbens", $Conec, $xProj, $_SESSION["usuarioID"]); // para encaminhar bens
 
             if($Marca == 1 && $_SESSION["AdmUsu"] >= $admIns || $_SESSION["AdmUsu"] > 6){
                 $Edit = 1;
@@ -198,7 +199,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                         echo "<button disabled class='botTable fundoCinza corAzulClaro'>Restituição</button>";
                                     }
 
-                                    if($Edit == 1 && $Restit == 0 && $Arquivado == 0 && $EncDestino == 0 && $Dias >= 90 && $_SESSION["AdmUsu"] >= 6){
+                                    if($Edit == 1 && $Restit == 0 && $Arquivado == 0 && $EncDestino == 0 && $Dias >= 90 && $EncBens == 1){
                                         echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 4, $Restit);' title='Destinação após 90 dias'>Destinação</button>";
                                     }else{
                                         if($EncDestino == 0){
@@ -214,11 +215,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                         echo "<button disabled class='botTable fundoCinza corAzulClaro' title='Recebimento no destino'>Recebimento</button>";
                                     }
 
-                                    if($Edit == 1 && $Arquivado == 0 && $EncDestino > 0 && $Destino > 0 && $Dias >= 90 && $_SESSION["AdmUsu"] >= 6){
+                                    if($Edit == 1 && $Arquivado == 0 && $EncDestino > 0 && $Destino > 0 && $Dias >= 90 && $EncBens == 1){
                                         echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 6, $Restit);' title='Nível Revisor.'>Arquivar</button>";
                                     }else{
                                         if($Arquivado == 0){
-                                        echo "<button disabled class='botTable fundoCinza corAzulClaro' title='Nível Revisor.'>Arquivar</button>";
+                                        echo "<button disabled class='botTable fundoCinza corAzulClaro' title='Arquivar o processo.'>Arquivar</button>";
                                         }else{
                                             echo "<button disabled class='botTable fundoCinza corAzulClaro'>Arquivado</button>";
                                         }

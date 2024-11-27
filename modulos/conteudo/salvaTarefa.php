@@ -117,18 +117,26 @@ if($Acao=="salvaTarefa"){
     $textoExt = filter_input(INPUT_GET, 'textoExt');
     $Status = filter_input(INPUT_GET, 'selectStatus'); // adminstr pode mudar
     $Priorid = filter_input(INPUT_GET, 'priorid');
- //   $SetorIns = $_SESSION["CodSetorUsu"];
     $SetorIns = parEsc("grupotarefa", $Conec, $xProj, $_SESSION["usuarioID"]); // para funcionar em grupos
-//    $SetorExec = 0;
     $SetorExec = $SetorIns; // funcionando por setores
+
+    //Funcionando por Organograma
+    $rs1 = pg_query($Conec, "SELECT orgtarefa FROM ".$xProj.".poslog WHERE pessoas_id = $usuLogado;");
+    $tbl1 = pg_fetch_row($rs1);
+    $ValorOrgIns = $tbl1[0];
+
+    $rs2 = pg_query($Conec, "SELECT orgtarefa FROM ".$xProj.".poslog WHERE pessoas_id = $usuExec;");
+    $tbl2 = pg_fetch_row($rs2);
+    $ValorOrgExec = $tbl2[0];
+
     $Erro = 0;
     $row = 0;
 
     if($idTarefa != 0){
         if($Status == 4){
-            $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET usuexec = $usuExec, tittarefa = '$textoEvid', textotarefa = '$textoExt', sit = $Status, prio = $Priorid, ativo = 2, usumodif = $usuLogado, datamodif = NOW() WHERE idtar = $idTarefa"); 
+            $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET usuexec = $usuExec, tittarefa = '$textoEvid', textotarefa = '$textoExt', sit = $Status, prio = $Priorid, ativo = 2, usumodif = $usuLogado, datamodif = NOW(), orgins = $ValorOrgIns, orgexec = $ValorOrgExec WHERE idtar = $idTarefa"); 
         }else{
-            $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET usuexec = $usuExec, tittarefa = '$textoEvid', textotarefa = '$textoExt', sit = $Status, prio = $Priorid, ativo = 1, usumodif = $usuLogado, datamodif = NOW() WHERE idtar = $idTarefa"); 
+            $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET usuexec = $usuExec, tittarefa = '$textoEvid', textotarefa = '$textoExt', sit = $Status, prio = $Priorid, ativo = 1, usumodif = $usuLogado, datamodif = NOW(), orgins = $ValorOrgIns, orgexec = $ValorOrgExec WHERE idtar = $idTarefa"); 
             if($Status == 1){ // póde ser modificação para voltar a designada
                 $Sql = pg_query($Conec, "UPDATE ".$xProj.".tarefas SET datasit2 = '3000-12-31', datasit3 = '3000-12-31', datasit4 = '3000-12-31' WHERE idtar = $idTarefa"); 
             }
@@ -142,19 +150,12 @@ if($Acao=="salvaTarefa"){
         if($row0 > 0){
             $Erro = 2; // tarefa já foi dada para o mesmo usuário
         }else{
-//            $rs1 = pg_query($Conec, "SELECT codsetor FROM ".$xProj.".poslog WHERE pessoas_id = $usuExec");
-//            $row1 = pg_num_rows($rs1);
-//            if($row1 == 1){
-//                $tbl1 = pg_fetch_row($rs1);
-//                $SetorExec = $tbl1[0];
-//            }
-
             $rsCod = pg_query($Conec, "SELECT MAX(idtar) FROM ".$xProj.".tarefas");
             $tblCod = pg_fetch_row($rsCod);
             $Codigo = $tblCod[0];
             $CodigoNovo = ($Codigo+1); //usuinsorig para possib transferir tarefa para outro mandante
-            $Sql = pg_query($Conec, "INSERT INTO ".$xProj.".tarefas (idtar, usuins, usuexec, tittarefa, textotarefa, datains, sit, prio, setorins, setorexec) 
-            VALUES($CodigoNovo, $usuLogado, $usuExec, '$textoEvid', '$textoExt', NOW(), 1, $Priorid, $SetorIns, $SetorExec)"); 
+            $Sql = pg_query($Conec, "INSERT INTO ".$xProj.".tarefas (idtar, usuins, usuexec, tittarefa, textotarefa, datains, sit, prio, setorins, setorexec, orgins, orgexec) 
+            VALUES($CodigoNovo, $usuLogado, $usuExec, '$textoEvid', '$textoExt', NOW(), 1, $Priorid, $SetorIns, $SetorExec, $ValorOrgIns, $ValorOrgExec)"); 
             if(!$Sql){
                 $Erro = 1;
             }
@@ -340,7 +341,7 @@ if($Acao=="transferemarcas"){
 
 if($Acao == "buscausuario"){
     $Erro = 0;
-    $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de polog
+    $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de poslog
 
     $rs1 = pg_query($Conec, "SELECT grupotarefa, cpf FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
     $row1 = pg_num_rows($rs1);
@@ -378,10 +379,11 @@ if($Acao == "buscacpfusuario"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
 if($Acao == "salvagrupotar"){
     $Erro = 0;
-    $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de polog
-    $CodGrupo = (int) filter_input(INPUT_GET, 'codgrupo'); //id de polog
+    $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de poslog
+    $CodGrupo = (int) filter_input(INPUT_GET, 'codgrupo'); 
 
     $rs1 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET grupotarefa = $CodGrupo, usumodifgrupo = ".$_SESSION["usuarioID"].", datamodifgrupo = NOW() WHERE pessoas_id = $Cod");
     $row1 = pg_num_rows($rs1);
@@ -396,6 +398,41 @@ if($Acao == "salvagrupotar"){
         $SiglaSetor = $tbl2[0];
     }
     $var = array("coderro"=>$Erro, "siglasetor"=>$SiglaSetor);     
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+if($Acao == "salvaorgtar"){
+    $Erro = 0;
+    $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de poslog
+    $ValorOrg = (int) filter_input(INPUT_GET, 'valororg');
+
+    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET orgtarefa = $ValorOrg, usumodiforg = ".$_SESSION["usuarioID"].", datamodiforg = NOW() WHERE pessoas_id = $Cod");
+    $row1 = pg_num_rows($rs1);
+    if(!$rs1){
+        $Erro = 1;
+    }
+    //Atualizar em tarefas
+    pg_query($Conec, "UPDATE ".$xProj.".tarefas SET orgins = $ValorOrg WHERE usuins = $Cod;");
+    pg_query($Conec, "UPDATE ".$xProj.".tarefas SET orgexec = $ValorOrg WHERE usuexec = $Cod;");
+
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao == "buscausuarioorg"){
+    $Erro = 0;
+    $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de poslog
+
+    $rs1 = pg_query($Conec, "SELECT orgtarefa FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
+    $row1 = pg_num_rows($rs1);
+    if($row1 > 0){
+        $tbl1 = pg_fetch_row($rs1);
+        $var = array("coderro"=>$Erro, "orgtarefa"=>$tbl1[0]);
+    }else{
+        $Erro = 1;
+        $var = array("coderro"=>$Erro);
+    }        
     $responseText = json_encode($var);
     echo $responseText;
 }

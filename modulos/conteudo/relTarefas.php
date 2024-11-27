@@ -71,6 +71,7 @@ if(!isset($_SESSION["usuarioID"])){
                 $tbl7 = pg_fetch_row($rs7);
                 $SiglaSetor = $tbl7[0];
             }
+            $MeuOrg = parEsc("orgtarefa", $Conec, $xProj, $_SESSION["usuarioID"]); // nível no organograma
             ?>
             <div style='margin: 20px; border: 3px solid green; border-radius: 10px;'>
             <?php
@@ -97,6 +98,12 @@ if(!isset($_SESSION["usuarioID"])){
                     $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
                     WHERE $Condic And ".$xProj.".tarefas.setorins = $CodSetorUsu Or $Condic And ".$xProj.".tarefas.setorexec = $CodSetorUsu
+                    ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
+                }
+                if($VerTarefas == 4){  // visualização por posição no organograma 
+                    $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
+                    FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
+                    WHERE $Condic And ".$xProj.".tarefas.orgins >= $MeuOrg Or $Condic And ".$xProj.".tarefas.orgexec >= $MeuOrg
                     ORDER BY ".$xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl");
                 }
             }

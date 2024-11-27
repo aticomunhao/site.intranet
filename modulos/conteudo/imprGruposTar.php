@@ -46,10 +46,8 @@ if(isset($_REQUEST["acao"])){
     $pdf->AliasNbPages(); // pega o número total de páginas
 //    $pdf->AddPage("L", "A4"); // L landscape
     $pdf->AddPage();
-    $pdf->SetLeftMargin(30);
-    //Monta o arquivo pdf        
+    $pdf->SetLeftMargin(30);       
     $pdf->SetFont('Arial', '' , 12); 
-    $pdf->SetTitle('Grupos Tarefas', $isUTF8=TRUE);
     if($Dom != "" && $Dom != "NULL"){
         if(file_exists('../../imagens/'.$Dom)){
             if(getimagesize('../../imagens/'.$Dom)!=0){
@@ -66,7 +64,15 @@ if(isset($_REQUEST["acao"])){
     $pdf->Cell(0, 5, $Cabec3, 0, 2, 'C');
     $pdf->SetFont('Arial', '' , 10);
     $pdf->SetTextColor(25, 25, 112);
-    $pdf->MultiCell(0, 3, "Grupos Tarefas", 0, 'C', false);
+
+    if($Acao == "imprGrupos"){
+        $pdf->SetTitle('Grupos Tarefas', $isUTF8=TRUE);
+        $pdf->MultiCell(0, 3, "Grupos Tarefas", 0, 'C', false);
+    }
+    if($Acao == "imprOrganogr"){
+        $pdf->SetTitle('Níveis Tarefas', $isUTF8=TRUE);
+        $pdf->MultiCell(0, 3, "Níveis para Tarefas - Tipo Organograma", 0, 'C', false);
+    }
 
     $pdf->SetTextColor(0, 0, 0);
     $pdf->SetFont('Arial', '', 6);
@@ -131,5 +137,81 @@ if(isset($_REQUEST["acao"])){
             $pdf->SetFont('Arial', '', 10);
         }
     }
+
+
+    if($Acao == "imprOrganogr"){
+        $rs0 = pg_query($Conec, "SELECT orgtarefa FROM ".$xProj.".poslog WHERE orgtarefa > 0 
+        GROUP BY orgtarefa ORDER BY orgtarefa");
+        $row0 = pg_num_rows($rs0);
+        $pdf->ln(5);
+        $pdf->SetX(15);
+        $pdf->SetFont('Arial', 'I', 11);
+        $pdf->ln(2);
+        if($row0 > 0){
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->SetX(20);
+            $pdf->SetFont('Arial', '', 10);
+            while($tbl0 = pg_fetch_row($rs0)){
+                $Cod = $tbl0[0];
+                $pdf->SetX(20); 
+                $Cod = $tbl0[0];
+                    switch ($Cod){
+                        case 10:
+                            $Desc = "Conselho";
+                            break;
+                        case 20:
+                            $Desc = "Presidência";
+                            break;
+                        case 30:
+                            $Desc = "Diretoria/Assessoria";
+                            break;
+                        case 40:
+                            $Desc = "Divisão";
+                            break;
+                        case 50:
+                            $Desc = "Gerência";
+                            break;
+                        case 60:
+                            $Desc = "Funcionário";
+                            break;
+                    }
+                
+                $pdf->Cell(40, 5, "Nível ".$Desc, 0, 1, 'L');
+                $rs1 = pg_query($Conec, "SELECT nomeusual, nomecompl, pessoas_id FROM ".$xProj.".poslog WHERE orgtarefa = $Cod And ativo = 1 ORDER BY nomecompl");
+                $row1 = pg_num_rows($rs1);
+                if($row1 > 0){
+                    while($tbl1 = pg_fetch_row($rs1)){
+                        $pdf->SetX(50); 
+                        $pdf->Cell(40, 5, $tbl1[0], 0, 0, 'L');
+                        $pdf->Cell(150, 5, $tbl1[1], 0, 1, 'L');
+                    }
+                    $pdf->SetX(50);
+                    $pdf->SetFont('Arial', 'I', 8);
+                    $pdf->Cell(150, 5, "Total: ".$row1, 0, 1, 'L');
+                    $pdf->ln(10);
+                    $pdf->SetFont('Arial', '', 10);
+                }
+                $lin = $pdf->GetY();
+                $pdf->Line(20, $lin, 200, $lin);
+            }
+            $pdf->SetX(20);
+
+
+            $lin = $pdf->GetY();               
+            $pdf->Line(20, $lin, 200, $lin);
+            $pdf->ln(10);
+       
+        }else{
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->SetX(50);
+            $pdf->Cell(40, 5, 'Nada foi encontrado.', 0, 1, 'L');
+            $lin = $pdf->GetY();
+            $pdf->Line(20, $lin, 200, $lin);
+            $pdf->SetFont('Arial', '', 10);
+        }
+    }
+
+
+
  }
  $pdf->Output();
