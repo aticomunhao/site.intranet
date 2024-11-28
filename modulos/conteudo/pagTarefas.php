@@ -168,7 +168,7 @@ if(!isset($_SESSION["usuarioID"])){
 //                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value+"&numtarefa="+document.getElementById("selecTarefa").value);
 
                 $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
-
+                ContaTarefa();
                 
                 //Fecha caixa ao clicar na página
                 modalMsg = document.getElementById('relacmodalMsg'); //span[0]
@@ -584,6 +584,8 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("relacmodalTarefa").style.display = "none";
 //                                        $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
                                         $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec=6'); // Meus Pedidos
+                                        ContaTarefa();
+                                        document.getElementById("verTipo6").checked = true;
                                     }else if(parseInt(Resp.coderro) === 2){
                                         $.confirm({
                                             title: 'Atenção!',
@@ -645,6 +647,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                 document.getElementById("mudou").value = "0";
                                                 document.getElementById("relacmodalTarefa").style.display = "none";
                                                 $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
+                                                ContaTarefa();
                                             }
                                         }
                                     }
@@ -786,6 +789,28 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("guardaSelecSit").value = Valor;
                 $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
             }
+
+            function ContaTarefa(){
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/conteudo/salvaTarefa.php?acao=contaTarefas", true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    document.getElementById("quantMinhas").innerHTML = Resp.quantExecutante;
+                                    document.getElementById("quantPagas").innerHTML = Resp.quantMandante;
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+
 
             function abreTarefasConfig(){
                 document.getElementById("configcpfsolicitante").value = "";
@@ -931,7 +956,6 @@ if(!isset($_SESSION["usuarioID"])){
                 <div class="col" style="margin: 0 auto;"> 
                     <input type="button" class="botpadrblue" id="botinserir" value="Inserir Tarefa" onclick="abreModal();">
                     <img src="imagens/settings.png" height="20px;" id="imgTarefasconfig" style="cursor: pointer; padding-left: 20px;" onclick="abreTarefasConfig();" title="Configurar grupos de Tarefas">
-
                     <img src="imagens/settings.png" height="20px;" id="imgOrgTarefasConfig" style="cursor: pointer; padding-left: 20px;" onclick="abreOrgTarefasConfig();" title="Configurar Níveis de Usuários pelo Organograma">
                 </div>
 
@@ -957,8 +981,8 @@ if(!isset($_SESSION["usuarioID"])){
             <input type="radio" name="verTipo" id="verTipo2" value="2" onclick="carregaTipo(value);"><label for="verTipo2" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Aceitas</label>
             <input type="radio" name="verTipo" id="verTipo3" value="3" onclick="carregaTipo(value);"><label for="verTipo3" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> em Andamento</label>
             <input type="radio" name="verTipo" id="verTipo4" value="4" onclick="carregaTipo(value);"><label for="verTipo4" style="font-size: 12px; padding-left: 3px; padding-right: 25px;"> Terminadas</label>
-            <input type="radio" name="verTipo" id="verTipo5" value="5" onclick="carregaTipo(value);"><label for="verTipo5" style="font-size: 12px; padding-left: 3px; padding-right: 25px; color: #FF6600; font-weight: bold;"> Minhas Tarefas</label>
-            <input type="radio" name="verTipo" id="verTipo6" value="6" onclick="carregaTipo(value);"><label for="verTipo6" style="font-size: 12px; padding-left: 3px; padding-right: 10px; color: #0000CD; font-weight: bold;"> Meus Pedidos</label>
+            <input type="radio" name="verTipo" id="verTipo5" value="5" onclick="carregaTipo(value);"><label for="verTipo5" style="font-size: 12px; padding-left: 3px; color: #FF6600; font-weight: bold;"> Minhas Tarefas</label> <label id="quantMinhas" style="padding-right: 25px; font-size: 65%; color: #036; font-style: italic; vertical-align: super;" title="Minhas tarefas ainda não terminadas"></label>
+            <input type="radio" name="verTipo" id="verTipo6" value="6" onclick="carregaTipo(value);"><label for="verTipo6" style="font-size: 12px; padding-left: 3px; color: #0000CD; font-weight: bold;"> Meus Pedidos</label> <label id="quantPagas" style="font-size: 65%; color: #036; font-style: italic; vertical-align: super;" title="Meus pedidos ainda não terminados"></label>
         </div>
 
         <div id="faixaTarefa"></div>
@@ -1097,11 +1121,12 @@ if(!isset($_SESSION["usuarioID"])){
         <div id="relacmodalTransf" class="relacmodal">  <!-- ("close")[0] -->
             <div class="modalTransf-content">
                 <span class="close" onclick="fechaModalTransf();">&times;</span>
-                <h3 id="tituloMsgTransf" style="text-align: center; color: #666;">Transferir Tarefas</h3>
-                <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
-                    <table>
+                <h3 id="tituloMsgTransf" style="text-align: center; color: #666;">Transferir Acompanhamento</h3>
+                <div style="text-align: center;"><label class="etiqAqul">Transferir o acompanhamento das Tarefas para outro usuário</label></div>
+                <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px; text-align: center;">
+                    <table style="margin: 0 auto; width: 95%;">
                         <tr>
-                            <td class="etiq">Transferir o acompanhamento das Tarefas para: </td>
+                            <td class="etiq">Transferir para: </td>
                             <td>
                                 <select id="TransfUsuSelect" style="font-size: 1rem; min-width: 300px;" title="Selecione um usuário.">
                                     <option value= ""></option>
@@ -1115,7 +1140,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     ?>
                                 </select>
                             </td>
-                            <td style="padding-left: 20px;"><button class="botpadr" id="botTransfTar" onclick="tranfereTarefa();" title="Transferir tarefas designadas para acompanhamento por outro usuário">Transferir</button></td>
+                            <td style="text-align: center;"><button class="botpadr" id="botTransfTar" onclick="tranfereTarefa();" title="Transferir tarefas designadas para acompanhamento por outro usuário">Transferir</button></td>
                         </tr>
                     </table>
                 </div>

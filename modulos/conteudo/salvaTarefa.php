@@ -436,3 +436,21 @@ if($Acao == "buscausuarioorg"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
+if($Acao=="contaTarefas"){
+    $Tipo = (int) filter_input(INPUT_GET, 'valor');
+    $Erro = 0;
+    $row = 0;
+    $rs = pg_query($Conec, "SELECT idTar FROM ".$xProj.".tarefas WHERE usuexec = ".$_SESSION["usuarioID"]." And ativo = 1 ");
+    $Executante = pg_num_rows($rs);
+
+    $rs1 = pg_query($Conec, "SELECT idTar FROM ".$xProj.".tarefas WHERE usuins = ".$_SESSION["usuarioID"]." And ativo = 1 ");
+    $Mandante = pg_num_rows($rs1);
+
+    if(!$rs || !$rs1){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro, "quantExecutante"=>$Executante, "quantMandante"=>$Mandante);
+    $responseText = json_encode($var);
+    echo $responseText;
+}

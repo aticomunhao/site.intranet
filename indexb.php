@@ -262,9 +262,12 @@
                                 }
                                 //Aproveitando o temporizador
                                 if(parseInt(Resp.temTarefa) > 0){
-//                                    $('#container3').load('modulos/conteudo/pagTarefas.php?selec=5');
-                                    document.getElementById("textoTit").innerHTML = "TAREFA";
-                                    document.getElementById("textoMsg").innerHTML = "Uma nova Tarefa foi inserida.";
+                                    document.getElementById("textoTit").innerHTML = "Tarefa";
+                                    if(parseInt(Resp.temTarefa) === 1){
+                                        document.getElementById("textoMsg").innerHTML = "1 Tarefa Designada.";
+                                    }else{
+                                        document.getElementById("textoMsg").innerHTML = Resp.temTarefa+" Tarefas Designadas.";
+                                    }
                                     document.getElementById("relacmensagem").style.display = "block"; // está em modais.php
                                 }
                             }
