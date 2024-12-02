@@ -57,8 +57,7 @@ $Mes_Extract = array(
         $Ano = date("Y");
     }
 
-//echo $Mes."<br>";
-    
+    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
     ?>
     <div style="text-align: center;">
         <h5>Carga Mensal e Semanal</h5>
@@ -73,7 +72,7 @@ $Mes_Extract = array(
                         </tr>
 
                         <?php
-                        $rs = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 ORDER BY nomeusual, nomecompl"); 
+                        $rs = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl"); 
                         $row = pg_num_rows($rs);
                         if($row > 0){
                             while($tbl = pg_fetch_row($rs)){
@@ -85,7 +84,7 @@ $Mes_Extract = array(
                                 $CargaMes = 0;
                                 $rs1 = pg_query($Conec, "SELECT TO_CHAR(SUM(cargatime), 'HH24:MI') 
                                 FROM ".$xProj.".escaladaf_ins 
-                                WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
+                                WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                                 $row1 = pg_num_rows($rs1);
                                 if($row1 > 0){
                                     $tbl1 = pg_fetch_row($rs1);
@@ -108,7 +107,7 @@ $Mes_Extract = array(
                 <?php
                 //Seleciona as semanas do mês e ano para os escalados do grupo
                 $rs = pg_query($Conec, "SELECT DISTINCT TO_CHAR(dataescala, 'WW') FROM ".$xProj.".escaladaf 
-                WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ORDER BY TO_CHAR(dataescala, 'WW') ");
+                WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY TO_CHAR(dataescala, 'WW') ");
                 $row = pg_num_rows($rs);
 
                 while($tbl = pg_fetch_row($rs)){
@@ -135,7 +134,7 @@ $Mes_Extract = array(
                                 <td colspan='2' class="etiq aEsq">Semana: <?php echo $DiaIniSem." a ".$DiaFimSem; ?></td>
                             </tr>
                             <?php
-                            $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1  ORDER BY nomeusual, nomecompl"); 
+                            $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl"); 
                             $row0 = pg_num_rows($rs0);
                             if($row0 > 0){
                                 while($tbl0 = pg_fetch_row($rs0)){
@@ -150,7 +149,7 @@ $Mes_Extract = array(
                                     //Carga Semanal turno1
                                     $rs1 = pg_query($Conec, "SELECT TO_CHAR(SUM(cargatime), 'HH24:MI') 
                                     FROM ".$xProj.".escaladaf LEFT JOIN ".$xProj.".escaladaf_ins ON ".$xProj.".escaladaf.id = ".$xProj.".escaladaf_ins.escaladaf_id 
-                                    WHERE poslog_id = $Cod1 And TO_CHAR(dataescala, 'WW') = '$SemanaNum' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
+                                    WHERE poslog_id = $Cod1 And TO_CHAR(dataescala, 'WW') = '$SemanaNum' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         $tbl1 = pg_fetch_row($rs1);

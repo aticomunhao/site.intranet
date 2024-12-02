@@ -111,6 +111,22 @@ if(!isset($_SESSION["usuarioID"])){
                 border-radius: 3px;
                 background-color: yellow;
             }
+            .quadroletraBlue {
+                text-align: center;
+                font-size: 90%;
+                min-width: 10px;
+                border: 1px solid;
+                border-radius: 3px;
+                background-color: #00BFFF;
+            }
+            .quadroletraGreen {
+                text-align: center;
+                font-size: 90%;
+                min-width: 10px;
+                border: 1px solid;
+                border-radius: 3px;
+                background-color: #00FF7F;
+            }
             .bContainer{ /* encapsula uma frase no topo de uma div */
                 position: absolute; 
                 right: 50px;
@@ -129,7 +145,6 @@ if(!isset($_SESSION["usuarioID"])){
         </style>
         <script>
             $(document).ready(function(){
-
                 //Não vai liberar para os escalados - só o pdf impresso
                 document.getElementById("evliberames").style.visibility = "hidden"; 
                 document.getElementById("etiqevliberames").style.visibility = "hidden"; 
@@ -138,7 +153,9 @@ if(!isset($_SESSION["usuarioID"])){
                 if(parseInt(document.getElementById("escalante").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // // se estiver marcado
                     document.getElementById("imgEscalaConfig").style.visibility = "visible"; 
                 }
+
                 document.getElementById("selecMesAnoEsc").value = document.getElementById("guardamesano").value;
+
                 if(parseInt(document.getElementById("liberadoefetivo").value) === 0 && parseInt(document.getElementById("escalante").value) === 0){
                     $("#faixacentral").load("modulos/escaladaf/infoAgd1.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                     $("#faixaquadro").load("modulos/escaladaf/infoAgd2.php");
@@ -202,6 +219,18 @@ if(!isset($_SESSION["usuarioID"])){
                 });
 
                 $("#transfMesAnoEsc").change(function(){
+                    if(document.getElementById("transfMesAnoEsc").value == document.getElementById("selecMesAnoEsc").value){
+                        $.confirm({
+                            title: 'Ação Suspensa!',
+                            content: 'Selecione outro mês.',
+                            draggable: true,
+                            buttons: {
+                                OK: function(){}
+                            }
+                        });
+                        document.getElementById("transfMesAnoEsc").value = "";
+                        return false;
+                    }
                     if(parseInt(document.getElementById("transfMesAnoEsc").value) > 0){
                         $.confirm({
                             title: 'Transferir escala.',
@@ -210,16 +239,27 @@ if(!isset($_SESSION["usuarioID"])){
                             draggable: true,
                             buttons: {
                                 Sim: function () {
-
-                        ajaxIni();
-                        if(ajax){
-                            ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=transfmesano&mesano="+encodeURIComponent(document.getElementById("transfMesAnoEsc").value)
-                            +"&transfde="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value), true);
-                            ajax.onreadystatechange = function(){
+                                    ajaxIni();
+                                    if(ajax){
+                                        ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=transfmesano&mesano="+encodeURIComponent(document.getElementById("transfMesAnoEsc").value)
+                                        +"&transfde="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value), true);
+                                        ajax.onreadystatechange = function(){
                                 if(ajax.readyState === 4 ){
                                     if(ajax.responseText){
 //alert(ajax.responseText);
                                         Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                        if(parseInt(Resp.coderro) === 2){
+                                                $.confirm({
+                                                    title: 'Ação Suspensa!',
+                                                    content: 'O preenchimento não está completo.',
+                                                    draggable: true,
+                                                    buttons: {
+                                                        OK: function(){}
+                                                    }
+                                                });
+                                                document.getElementById("transfMesAnoEsc").value = "";
+                                                return false;
+                                            }
                                         if(parseInt(Resp.coderro) === 0){
                                             if(parseInt(Resp.mesliberado) === 0 && parseInt(document.getElementById("escalante").value) === 0){
                                                 $("#faixacentral").load("modulos/escaladaf/infoAgd1.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
@@ -252,7 +292,6 @@ if(!isset($_SESSION["usuarioID"])){
                             ajax.send(null);
                         }
 
-
                             },
                                 Não: function () {
                                     document.getElementById("transfMesAnoEsc").value = "";
@@ -262,14 +301,13 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
 
-
                 $("#configSelecEscala").change(function(){
                     if(document.getElementById("configSelecEscala").value == ""){
                         document.getElementById("configCpfEscala").value = "";
                         document.getElementById("checkefetivo").checked = false;
                         document.getElementById("checkescalante").checked = false;
-                        document.getElementById("checkEncarreg").checked = false;
-                        document.getElementById("checkChefeADM").checked = false;
+//                        document.getElementById("checkEncarreg").checked = false;
+//                        document.getElementById("checkChefeADM").checked = false;
                         return false;
                     }
                     ajaxIni();
@@ -292,16 +330,16 @@ if(!isset($_SESSION["usuarioID"])){
                                         }else{
                                             document.getElementById("checkescalante").checked = false;
                                         }
-                                        if(parseInt(Resp.encarreg) === 1){
-                                            document.getElementById("checkEncarreg").checked = true;
-                                        }else{
-                                            document.getElementById("checkEncarreg").checked = false;
-                                        }
-                                        if(parseInt(Resp.chefeadm) === 1){
-                                            document.getElementById("checkChefeADM").checked = true;
-                                        }else{
-                                            document.getElementById("checkChefeADM").checked = false;
-                                        }
+//                                        if(parseInt(Resp.encarreg) === 1){
+//                                            document.getElementById("checkEncarreg").checked = true;
+//                                        }else{
+//                                            document.getElementById("checkEncarreg").checked = false;
+//                                        }
+//                                        if(parseInt(Resp.chefeadm) === 1){
+//                                            document.getElementById("checkChefeADM").checked = true;
+//                                        }else{
+//                                            document.getElementById("checkChefeADM").checked = false;
+//                                        }
                                     }else{
                                         alert("Houve um erro no servidor.")
                                     }
@@ -317,8 +355,8 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("configCpfEscala").value = "";
                     document.getElementById("checkefetivo").checked = false;
                     document.getElementById("checkescalante").checked = false;
-                    document.getElementById("checkEncarreg").checked = false;
-                    document.getElementById("checkChefeADM").checked = false;
+//                    document.getElementById("checkEncarreg").checked = false;
+//                    document.getElementById("checkChefeADM").checked = false;
                 });
 
                 $("#configCpfEscala").change(function(){
@@ -344,16 +382,16 @@ if(!isset($_SESSION["usuarioID"])){
                                         }else{
                                             document.getElementById("checkescalante").checked = false;
                                         }
-                                        if(parseInt(Resp.encarreg) === 1){
-                                            document.getElementById("checkEncarreg").checked = true;
-                                        }else{
-                                            document.getElementById("checkEncarreg").checked = false;
-                                        }
-                                        if(parseInt(Resp.chefeadm) === 1){
-                                            document.getElementById("checkChefeADM").checked = true;
-                                        }else{
-                                            document.getElementById("checkChefeADM").checked = false;
-                                        }
+//                                        if(parseInt(Resp.encarreg) === 1){
+//                                            document.getElementById("checkEncarreg").checked = true;
+//                                        }else{
+//                                            document.getElementById("checkEncarreg").checked = false;
+//                                        }
+//                                        if(parseInt(Resp.chefeadm) === 1){
+//                                            document.getElementById("checkChefeADM").checked = true;
+//                                        }else{
+//                                            document.getElementById("checkChefeADM").checked = false;
+//                                        }
                                     }
                                     if(parseInt(Resp.coderro) === 1){
                                         alert("Houve um erro no servidor.");
@@ -361,8 +399,8 @@ if(!isset($_SESSION["usuarioID"])){
                                     if(parseInt(Resp.coderro) === 2){
                                         document.getElementById("checkefetivo").checked = false;
                                         document.getElementById("checkescalante").checked = false;
-                                        document.getElementById("checkEncarreg").checked = false;
-                                        document.getElementById("checkChefeADM").checked = false;
+//                                        document.getElementById("checkEncarreg").checked = false;
+//                                        document.getElementById("checkChefeADM").checked = false;
                                         $('#mensagemConfig').fadeIn("slow");
                                         document.getElementById("mensagemConfig").innerHTML = "Não encontrado";
                                         $('#mensagemConfig').fadeOut(2000);
@@ -374,6 +412,44 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
 
+                $("#configSelecChefeDiv").change(function(){
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvachefediv&codigo="+document.getElementById("configSelecChefeDiv").value, true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 1){
+                                        alert("Houve um erro no servidor.");
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                });
+                $("#configSelecEncarreg").change(function(){
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaencarreg&codigo="+document.getElementById("configSelecEncarreg").value, true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 1){
+                                        alert("Houve um erro no servidor.");
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                });
+
+                
             }); // fim do ready
 
             function ajaxIni(){
@@ -396,7 +472,7 @@ if(!isset($_SESSION["usuarioID"])){
             function abreEdit(DiaId, DataDia){
                 document.getElementById("guardaDiaId").value = DiaId; // id do dia em escaladaf
                 document.getElementById("titulomodal").innerHTML = DataDia;
-                $("#relacaoParticip").load("modulos/escaladaf/equipe.php");
+                $("#relacaoParticip").load("modulos/escaladaf/equipe.php?diaid="+DiaId);
                 document.getElementById("relacParticip").style.display = "block";
             }
 
@@ -423,6 +499,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     alert("Houve um erro no servidor.");
                                 }else{
                                     $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php");
+                                    $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                                 }
                             }
                         }
@@ -658,10 +735,10 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
             
-            function marcaTurno(Cod){ // vem de destacDia.php
+            function marcaTurno(Cod, Cor){ // vem de destacDia.php
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=marcaTurno&codigo="+Cod, true);
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=marcaTurno&codigo="+Cod+"&cor="+Cor, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -909,6 +986,18 @@ if(!isset($_SESSION["usuarioID"])){
                                             }
                                         });
                                         return false;
+                                    }else if(parseInt(Resp.coderro) === 3){
+                                        obj.checked = false;
+                                        $.confirm({
+                                            title: 'Atenção!',
+                                            content: 'Usuário participa de outra escala: '+Resp.outrogrupo+".<br>Solicite à ATI modificar o grupo, se for o caso.",
+                                            autoClose: 'OK|10000',
+                                            draggable: true,
+                                            buttons: {
+                                                OK: function(){}
+                                            }
+                                        });
+                                        return false;
                                     }else{
                                         $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                                         $('#mensagemConfig').fadeIn("slow");
@@ -916,7 +1005,6 @@ if(!isset($_SESSION["usuarioID"])){
                                         $('#mensagemConfig').fadeOut(1000);
                                     }
                                 }
-
                             }
                         }
                     };
@@ -935,9 +1023,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 Resp = eval("(" + ajax.responseText + ")");
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
-                                }else{
-//                                    $("#relacaoParticip").load("modulos/quadroHorario/jEquipes.php?codigo="+document.getElementById("guardanumgrupo").value);
-                               }
+                                }
                             }
                         }
                     };
@@ -999,13 +1085,35 @@ if(!isset($_SESSION["usuarioID"])){
 
 
             function abreEscalaConfig(){
-                document.getElementById("checkefetivo").checked = false;
-                document.getElementById("checkescalante").checked = false;
-                document.getElementById("checkEncarreg").checked = false;
-                document.getElementById("checkChefeADM").checked = false;
-                document.getElementById("configCpfEscala").value = "";
-                document.getElementById("configSelecEscala").value = "";
-                document.getElementById("modalEscalaConfig").style.display = "block";
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=procChefeDiv", true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    document.getElementById("checkefetivo").checked = false;
+                                    document.getElementById("checkescalante").checked = false;
+                                    document.getElementById("configSelecChefeDiv").value = Resp.chefe;
+                                    document.getElementById("configSelecEncarreg").value = Resp.encarreg;
+//                document.getElementById("checkEncarreg").checked = false;
+//                document.getElementById("checkChefeADM").checked = false;
+                                    document.getElementById("configCpfEscala").value = "";
+                                    document.getElementById("configSelecEscala").value = "";
+                                    document.getElementById("modalEscalaConfig").style.display = "block";
+                               }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+
+
+
             }
             function fechaEscalaConfig(){
                 document.getElementById("modalEscalaConfig").style.display = "none";
@@ -1076,13 +1184,86 @@ if(!isset($_SESSION["usuarioID"])){
     <body>
         <?php
             require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
+            $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+            $rs = pg_query($Conec, "SELECT siglagrupo FROM ".$xProj.".escalas_gr WHERE id = $NumGrupo;");
+            $row = pg_num_rows($rs);
+            if($row > 0){
+                $tbl = pg_fetch_row($rs);
+                $SiglaGrupo = $tbl[0];
+            }else{
+                $SiglaGrupo = "";
+            }
+
+
+            $rsIni = pg_query($Conec, "SELECT MAX(TO_CHAR(dataescalains, 'DD')) 
+            FROM ".$xProj.".escaladaf_ins 
+            WHERE TO_CHAR(dataescalains, 'MM') = '10' And TO_CHAR(dataescalains, 'YYYY') = '2024' ");
+            $tblIni = pg_fetch_row($rsIni);
+            $UltDia = $tblIni[0];
+
+            $rsIni = pg_query($Conec, "SELECT date_part('dow', dataescalains) 
+            FROM ".$xProj.".escaladaf_ins 
+            WHERE TO_CHAR(dataescalains, 'MM') = '10' And TO_CHAR(dataescalains, 'YYYY') = '2024' And TO_CHAR(dataescalains, 'DD') = '$UltDia' ");
+            $tblIni = pg_fetch_row($rsIni);
+            $UltDiaSem = $tblIni[0];
+
+            $rsIni = pg_query($Conec, "SELECT TO_CHAR(dataescalains, 'WW') 
+            FROM ".$xProj.".escaladaf_ins 
+            WHERE TO_CHAR(dataescalains, 'MM') = '10' And TO_CHAR(dataescalains, 'YYYY') = '2024' And TO_CHAR(dataescalains, 'DD') = '01' ");
+            $tblIni = pg_fetch_row($rsIni);
+            $SemNum = $tblIni[0];
+
+            $rsIni = pg_query($Conec, "SELECT TO_CHAR(dataescalains, 'DD') 
+            FROM ".$xProj.".escaladaf_ins 
+            WHERE TO_CHAR(dataescalains, 'MM') = '10' And TO_CHAR(dataescalains, 'YYYY') = '2024' And TO_CHAR(dataescalains, 'WW') = '$SemNum' And date_part('dow', dataescalains) = '$UltDiaSem' ");
+            $tblIni = pg_fetch_row($rsIni);
+            $DiaSemNum = $tblIni[0];
+
+            $rsIni = pg_query($Conec, "SELECT MAX(TO_CHAR(dataescala, 'DD')) 
+            FROM ".$xProj.".escaladaf 
+            WHERE TO_CHAR(dataescala, 'MM') = '11' And TO_CHAR(dataescala, 'YYYY') = '2024' ");
+            $tblIni = pg_fetch_row($rsIni);
+            $UltDiaProxMes = $tblIni[0];
+
+
+//echo $UltDia."<br>";
+//echo $UltDiaSem."<br>";
+//echo $SemNum."<br>";
+//echo $DiaSemNum."<br>";
+//echo $UltDiaProxMes."<br>";
+            
+
+//            $rsIni = pg_query($Conec, "SELECT date_part('dow', dataescalains), TO_CHAR(dataescalains, 'DD')
+//            FROM ".$xProj.".escaladaf_ins 
+//            WHERE TO_CHAR(dataescalains, 'MM') = '11' And TO_CHAR(dataescalains, 'YYYY') = '2024' And TO_CHAR(dataescalains, 'DD') = '01' ");
+//            $tblIni = pg_fetch_row($rsIni);
+//            $DiaS = $tblIni[0];
+//            $Dia01 = $tblIni[1];
+
+//echo $DiaS."<br>";
+//echo $tblIni[1]."<br>";
+
+//$rsAnt = pg_query($Conec, "SELECT date_part('dow', dataescalains), TO_CHAR(dataescalains, 'DD')
+//FROM ".$xProj.".escaladaf_ins 
+//WHERE TO_CHAR(dataescalains, 'MM') = '10' And TO_CHAR(dataescalains, 'YYYY') = '2024' And date_part('dow', dataescalains) = '$DiaS' ");
+//$tblAnt = pg_fetch_row($rsAnt);
+//$DiaIni = $tblAnt[0];
+//$DiaAnt = $tblAnt[1];
+
+//echo $DiaIni."<br>";
+//echo $DiaAnt."<br>";
+
+//echo $NumGrupo;
 
 //Provisórios
 //    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf");
     pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf (
         id SERIAL PRIMARY KEY, 
         dataescala date DEFAULT '3000-12-31',
+        grupo_id integer NOT NULL DEFAULT 0, 
+        feriado smallint NOT NULL DEFAULT 0, 
         ativo smallint DEFAULT 1 NOT NULL, 
+        liberames smallint NOT NULL DEFAULT 0, 
         usuins integer DEFAULT 0 NOT NULL,
         datains timestamp without time zone DEFAULT '3000-12-31',
         usuedit integer DEFAULT 0 NOT NULL,
@@ -1090,15 +1271,16 @@ if(!isset($_SESSION["usuarioID"])){
         ) 
     ");
 
-    $rs1 = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'escaladaf_ins' AND COLUMN_NAME = 'destaque'");               
-    $row1 = pg_num_rows($rs1);
-    if($row1 == 0){
-        pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_ins");
-    }
+//    $rs1 = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'escaladaf_ins' AND COLUMN_NAME = 'destaque'");
+//    $row1 = pg_num_rows($rs1);
+//    if($row1 == 0){
+//        pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_ins");
+//    }
 
     pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_ins (
         id SERIAL PRIMARY KEY, 
         escaladaf_id bigint NOT NULL DEFAULT 0,
+        grupo_ins integer NOT NULL DEFAULT 0, 
         dataescalains date DEFAULT '3000-12-31',
         poslog_id INT NOT NULL DEFAULT 0,
         letraturno VARCHAR(3), 
@@ -1106,6 +1288,7 @@ if(!isset($_SESSION["usuarioID"])){
         destaque smallint NOT NULL DEFAULT 0,
         marcadaf smallint NOT NULL DEFAULT 0,
         ativo smallint NOT NULL DEFAULT 1, 
+        cargatime time without time zone NOT NULL DEFAULT '00:00', 
         usuins bigint NOT NULL DEFAULT 0, 
         datains timestamp without time zone DEFAULT '3000-12-31', 
         usuedit bigint NOT NULL DEFAULT 0, 
@@ -1113,16 +1296,18 @@ if(!isset($_SESSION["usuarioID"])){
         )
     ");
 
-    $rs1 = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'escaladaf_turnos' AND COLUMN_NAME = 'destaq'");               
-    $row1 = pg_num_rows($rs1);
-    if($row1 == 0){
-        pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_turnos");
-    }
 
+//    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_turnos");
     pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_turnos (
         id SERIAL PRIMARY KEY, 
+        grupo_turnos integer NOT NULL DEFAULT 0, 
         letra VARCHAR(3), 
         horaturno VARCHAR(30), 
+        calcdataini timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+        calcdatafim timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+        interv time without time zone NOT NULL DEFAULT '00:00',
+        cargacont time without time zone NOT NULL DEFAULT '00:00',
+        cargahora time without time zone NOT NULL DEFAULT '00:00',
         ordemletra smallint NOT NULL DEFAULT 0,
         destaq smallint NOT NULL DEFAULT 0,
         ativo smallint NOT NULL DEFAULT 1, 
@@ -1132,45 +1317,51 @@ if(!isset($_SESSION["usuarioID"])){
         dataedit timestamp without time zone DEFAULT '3000-12-31' 
         ) 
     ");
-    $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_turnos LIMIT 3");
+    $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_turnos WHERE grupo_turnos = $NumGrupo LIMIT 2");
     $row2 = pg_num_rows($rs2);
     if($row2 == 0){
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(1, 'F', 'FÉRIAS', 13, 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(2, 'X', 'FOLGA', 14, 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(3, 'Y', 'INSS', 15, 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(4, 'Q', 'AULA IAQ', 16, 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(5, 'A', '08:00 / 17:00', 1, 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(6, 'B', '07:00 / 16:00', 2, 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(7, 'C', '07:00 / 17:00', 3, 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(8, 'E', '09:00 / 18:00', 5, 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(9, 'H', '14:00 / 18:00', 7, 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(10, 'D', '11:00 / 15:00', 4, 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(11, 'K', '08:00 / 14:15', 9, 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(12, 'J', '06:50 / 15:50', 8, 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(13, 'G', '10:50 / 19:50', 6, 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(14, 'L', '07:00 / 13:15', 10, 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(15, 'M', '13:35 / 19:50', 11, 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(16, 'O', '08:00 / 18:00', 12, 3, NOW() )");
+        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_turnos");
+        $tblCod = pg_fetch_row($rsCod);
+        $Codigo = $tblCod[0];
+        
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+1), $NumGrupo, 'F', 'FÉRIAS', 13, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+2), $NumGrupo, 'X', 'FOLGA', 14, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+3), $NumGrupo, 'Y', 'INSS', 15, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+4), $NumGrupo, 'Q', 'AULA IAQ', 16, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+5), $NumGrupo, 'A', '08:00 / 17:00', 1, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+6), $NumGrupo, 'B', '07:00 / 16:00', 2, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+7), $NumGrupo, 'C', '07:00 / 17:00', 3, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+8), $NumGrupo, 'E', '09:00 / 18:00', 5, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+9), $NumGrupo, 'H', '14:00 / 18:00', 7, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+10), $NumGrupo, 'D', '11:00 / 15:00', 4, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+11), $NumGrupo, 'K', '08:00 / 14:15', 9, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+12), $NumGrupo, 'J', '06:50 / 15:50', 8, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+13), $NumGrupo, 'G', '10:50 / 19:50', 6, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+14), $NumGrupo, 'L', '07:00 / 13:15', 10, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+15), $NumGrupo, 'M', '13:35 / 19:50', 11, 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+16), $NumGrupo, 'O', '08:00 / 18:00', 12, 3, NOW() )");
     }
 
     //Acerta as colunas auxiliares para os turnos
-    $rsT = pg_query($Conec, "SELECT id, horaturno FROM ".$xProj.".escaladaf_turnos WHERE id > 4 And ativo = 1 And cargahora < '00:01' And cargahora IS NOT NULL ORDER BY letra");
+    $rsT = pg_query($Conec, "SELECT id, horaturno, letra FROM ".$xProj.".escaladaf_turnos WHERE id > 4 And ativo = 1 And cargahora < '00:01' And cargahora IS NOT NULL And grupo_turnos = $NumGrupo ORDER BY letra");
     $rowT = pg_num_rows($rsT);
     if($rowT > 0){
         $Hoje = date('d/m/Y');
         while($tblT = pg_fetch_row($rsT)){  //Calcular carga horaria
             $Cod = $tblT[0];
             $Hora = $tblT[1]; 
-            $Proc = explode("/", $Hora);
-            $HoraI = $Proc[0];
-            $HoraF = $Proc[1];
-            $TurnoIni = $Hoje." ".$HoraI;
-            $TurnoFim = $Hoje." ".$HoraF;
-            pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET calcdataini = '$TurnoIni', calcdatafim = '$TurnoFim' WHERE id = $Cod");
-            pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargahora = (calcdatafim - calcdataini) WHERE id = $Cod");
-            pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '01:00'), interv = '01:00' WHERE cargahora >= '08:00' And id = $Cod ");
-            pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '00:15'), interv = '00:15' WHERE cargahora >= '06:00' And cargahora < '08:00' And id = $Cod ");
-            pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = cargahora, interv = '00:00' WHERE cargahora <= '06:00' And id = $Cod ");
+            if($tblT[2] != "F" && $tblT[2] != "X" && $tblT[2] != "Y" && $tblT[2] != "Q"){
+                $Proc = explode("/", $Hora);
+                $HoraI = $Proc[0];
+                $HoraF = $Proc[1];
+                $TurnoIni = $Hoje." ".$HoraI;
+                $TurnoFim = $Hoje." ".$HoraF;
+                pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET calcdataini = '$TurnoIni', calcdatafim = '$TurnoFim' WHERE id = $Cod");
+                pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargahora = (calcdatafim - calcdataini) WHERE id = $Cod");
+                pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '01:00'), interv = '01:00' WHERE cargahora >= '08:00' And id = $Cod ");
+                pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '00:15'), interv = '00:15' WHERE cargahora >= '06:00' And cargahora < '08:00' And id = $Cod ");
+                pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = cargahora, interv = '00:00' WHERE cargahora <= '06:00' And id = $Cod ");
+            }
         }
     }
 
@@ -1178,6 +1369,7 @@ if(!isset($_SESSION["usuarioID"])){
     pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_notas (
         id SERIAL PRIMARY KEY, 
         numnota smallint NOT NULL DEFAULT 0,
+        grupo_notas integer NOT NULL DEFAULT 0, 
         textonota text, 
         ativo smallint NOT NULL DEFAULT 1, 
         usuins bigint NOT NULL DEFAULT 0,
@@ -1186,17 +1378,21 @@ if(!isset($_SESSION["usuarioID"])){
         dataedit timestamp without time zone DEFAULT '3000-12-31' 
         ) 
     ");
-    $rs3 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_notas LIMIT 2");
+    $rs3 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_notas WHERE grupo_notas = $NumGrupo LIMIT 2");
     $row3 = pg_num_rows($rs3);
     if($row3 == 0){
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, numnota, textonota, usuins, datains) 
-        VALUES(1, 1, 'Durante os turnos de 6 horas de duração, o funcionário deverá tirar 15 minutos de descanso, entre a terceira e quinta hora. Em consequência, o horário do turno de serviço deverá ser acrescido de 15 minutos  (Art. 71 - §1º e $2º da CLT). Nesses turnos não será necessário bater ponto quando do inicio e término do descanso. Exemplo: inicio do turno às 07h00 e saída para o descanso às 10h00. Regresso do descanso 10h15 e término do turno às 13h15.', 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, numnota, textonota, usuins, datains) 
-        VALUES(2, 2, 'Durante os turnos de 8 horas de duração, o funcionário deverá tirar 1 h de descanso, entre a quarta e sexta hora. O horário de descanso de cada empregado será definido e obrigatoriamente informado à DAF pelo chefe responsável do setor, por email, até o dia 25 do mês que antecede o início da escala de serviço. É obrigatório bater o ponto quando do início e término do descanso.', 3, NOW() )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, numnota, textonota, usuins, datains) 
-        VALUES(3, 3, 'É obrigatório bater o ponto quando do início e término da jornada de trabalho.  Horas extras somente serão realizadas quando expressamente autorizadas pelo diretor da Área ou da Presidência. A utilização do banco de horas somente será possível para os empregados que assinaram o acordo individual - AI - NI-4.18-a DAF.', 3, NOW() ) ");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, numnota, textonota, usuins, datains) 
-        VALUES(4, 4, 'As segundas, quartas e sextas feiras, o horário de funcionamento da comunhão será das 07h00 até as 21h30. Os setores funcionarão conforme as escalas de serviço.', 3, NOW() )");
+        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_notas");
+        $tblCod = pg_fetch_row($rsCod);
+        $Codigo = $tblCod[0];
+
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, grupo_notas, numnota, textonota, usuins, datains) 
+        VALUES(($Codigo+1), $NumGrupo, 1, 'Durante os turnos de 6 horas de duração, o funcionário deverá tirar 15 minutos de descanso, entre a terceira e quinta hora. Em consequência, o horário do turno de serviço deverá ser acrescido de 15 minutos  (Art. 71 - §1º e $2º da CLT). Nesses turnos não será necessário bater ponto quando do inicio e término do descanso. Exemplo: inicio do turno às 07h00 e saída para o descanso às 10h00. Regresso do descanso 10h15 e término do turno às 13h15.', 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, grupo_notas, numnota, textonota, usuins, datains) 
+        VALUES(($Codigo+2), $NumGrupo, 2, 'Durante os turnos de 8 horas de duração, o funcionário deverá tirar 1 h de descanso, entre a quarta e sexta hora. O horário de descanso de cada empregado será definido e obrigatoriamente informado à DAF pelo chefe responsável do setor, por email, até o dia 25 do mês que antecede o início da escala de serviço. É obrigatório bater o ponto quando do início e término do descanso.', 3, NOW() )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, grupo_notas, numnota, textonota, usuins, datains) 
+        VALUES(($Codigo+3), $NumGrupo, 3, 'É obrigatório bater o ponto quando do início e término da jornada de trabalho.  Horas extras somente serão realizadas quando expressamente autorizadas pelo diretor da Área ou da Presidência. A utilização do banco de horas somente será possível para os empregados que assinaram o acordo individual - AI - NI-4.18-a DAF.', 3, NOW() ) ");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, grupo_notas, numnota, textonota, usuins, datains) 
+        VALUES(($Codigo+4), $NumGrupo, 4, 'As segundas, quartas e sextas feiras, o horário de funcionamento da comunhão será das 07h00 até as 21h30. Os setores funcionarão conforme as escalas de serviço.', 3, NOW() )");
     }
 
 //    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_fer");
@@ -1223,43 +1419,34 @@ if(!isset($_SESSION["usuarioID"])){
         pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(7, '2024/11/15', 'Proclamação da República', 3, NOW() )");
         pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(8, '2024/12/25', 'Natal', 3, NOW() )");
     }
+    //pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escalas_gr");
+    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escalas_gr (
+        id SERIAL PRIMARY KEY, 
+        siglagrupo VARCHAR(20),
+        descgrupo VARCHAR(100),
+        descescala VARCHAR(200),
+        guardaescala VARCHAR(20),
+        qtd_turno smallint NOT NULL DEFAULT 1,
+        ativo smallint NOT NULL DEFAULT 1, 
+        chefe_escdaf bigint NOT NULL DEFAULT 0, 
+        enc_escdaf bigint NOT NULL DEFAULT 0, 
+        usuins bigint NOT NULL DEFAULT 0,
+        datains timestamp without time zone DEFAULT '3000-12-31',
+        usuedit bigint NOT NULL DEFAULT 0,
+        dataedit timestamp without time zone DEFAULT '3000-12-31' 
+        ) 
+    ");
 //------------
-
-
-    $Escalante = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
-    $MesSalvo = parEsc("mes_escdaf", $Conec, $xProj, $_SESSION["usuarioID"]);
-    if(is_null($MesSalvo) || $MesSalvo == ""){
-        $MesSalvo = date("m")."/".date("Y");
-        pg_query($Conec, "UPDATE ".$xProj.".poslog SET mes_escdaf = '$MesSalvo' WHERE pessoas_id = ". $_SESSION["usuarioID"]."" );
-    }
-    $Busca = addslashes($MesSalvo); 
-    $Proc = explode("/", $Busca);
-    $Mes = $Proc[0];
-    if(strLen($Mes) < 2){
-        $Mes = "0".$Mes;
-    }
-    $Ano = $Proc[1];
-
-    //ver se a escala do mes está liberada para os participantes da escala
-    $MesLiberado = 0;
-    $rsLib = pg_query($Conec, "SELECT liberames FROM ".$xProj.".escaladaf WHERE DATE_PART('MONTH', dataescala) = '$Mes' And DATE_PART('YEAR', dataescala) = '$Ano' And liberames != 0 ");
-    $rowLib = pg_num_rows($rsLib);
-    if($rowLib > 0){
-        $MesLiberado = 1;
-    }
-
-
-    $MesLiberado = 0; // só o escalante verá a página
 
 
     $DiaIni = strtotime(date('Y/m/01')); // número - para começar com o dia 1
     $DiaIni = strtotime("-1 day", $DiaIni); // para começar com o dia 1 no loop for
 
     $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataescala, 'MM'), '/', TO_CHAR(dataescala, 'YYYY')) 
-    FROM ".$xProj.".escaladaf GROUP BY TO_CHAR(dataescala, 'MM'), TO_CHAR(dataescala, 'YYYY') ORDER BY TO_CHAR(dataescala, 'YYYY') DESC, TO_CHAR(dataescala, 'MM') DESC ");
+    FROM ".$xProj.".escaladaf WHERE grupo_id = $NumGrupo GROUP BY TO_CHAR(dataescala, 'MM'), TO_CHAR(dataescala, 'YYYY') ORDER BY TO_CHAR(dataescala, 'YYYY') DESC, TO_CHAR(dataescala, 'MM') DESC ");
 
     $OpcoesTransfMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataescala, 'MM'), '/', TO_CHAR(dataescala, 'YYYY')) 
-    FROM ".$xProj.".escaladaf WHERE CONCAT(TO_CHAR(dataescala, 'MM'), '/', TO_CHAR(dataescala, 'YYYY')) != '$MesSalvo' 
+    FROM ".$xProj.".escaladaf WHERE grupo_id = $NumGrupo  
     GROUP BY TO_CHAR(dataescala, 'MM'), TO_CHAR(dataescala, 'YYYY') ORDER BY TO_CHAR(dataescala, 'YYYY') DESC, TO_CHAR(dataescala, 'MM') DESC ");
 
     $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
@@ -1269,10 +1456,10 @@ if(!isset($_SESSION["usuarioID"])){
         $Amanha = strtotime("+1 day", $DiaIni);
         $DiaIni = $Amanha;
         $Data = date("Y/m/d", $Amanha); // data legível
-        $rs0 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf WHERE dataescala = '$Data' ");
+        $rs0 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf WHERE dataescala = '$Data' And grupo_id = $NumGrupo ");
         $row0 = pg_num_rows($rs0);
         if($row0 == 0){
-            pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf (dataescala) VALUES ('$Data')");
+            pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf (dataescala, grupo_id) VALUES ('$Data', $NumGrupo)");
         }
     }
 
@@ -1283,15 +1470,45 @@ if(!isset($_SESSION["usuarioID"])){
         while($tblFer = pg_fetch_row($rsFer)){
             $DiaFer = $tblFer[0];
             $MesFer = $tblFer[1];
-            pg_query($Conec, "UPDATE ".$xProj.".escaladaf SET feriado = 1 WHERE TO_CHAR(dataescala, 'DD') = '$DiaFer' And TO_CHAR(dataescala, 'MM') = '$MesFer' ");
+            pg_query($Conec, "UPDATE ".$xProj.".escaladaf SET feriado = 1 WHERE TO_CHAR(dataescala, 'DD') = '$DiaFer' And TO_CHAR(dataescala, 'MM') = '$MesFer' And grupo_id = $NumGrupo ");
         }
     }
 
-    ?>
 
-        <input type="hidden" id="guardamesano" value="<?php echo $MesSalvo; ?>" />
+    $Escalante = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
+    $MesSalvo = parEsc("mes_escdaf", $Conec, $xProj, $_SESSION["usuarioID"]);
+
+    //Ver se o que está guardado em poslog corresponde a algum mes salvo em escaladaf
+    $rsMes = pg_query($Conec, "SELECT id 
+    FROM ".$xProj.".escaladaf WHERE grupo_id = $NumGrupo And CONCAT(TO_CHAR(dataescala, 'MM'), '/', TO_CHAR(dataescala, 'YYYY')) = '$MesSalvo' ");
+    $rowMes = pg_num_rows($rsMes);
+
+    if(is_null($MesSalvo) || $MesSalvo == "" || $rowMes == 0){
+        $MesSalvo = date("m")."/".date("Y");
+        pg_query($Conec, "UPDATE ".$xProj.".poslog SET mes_escdaf = '$MesSalvo' WHERE pessoas_id = ". $_SESSION["usuarioID"]."" );
+    }
+    $Busca = addslashes($MesSalvo); 
+    $Proc = explode("/", $Busca);
+    $Mes = $Proc[0];
+    if(strLen($Mes) < 2){
+        $Mes = "0".$Mes;
+    }
+    $Ano = $Proc[1];
+    //ver se a escala do mes está liberada para os participantes da escala
+    $MesLiberado = 0;
+    $rsLib = pg_query($Conec, "SELECT liberames FROM ".$xProj.".escaladaf WHERE DATE_PART('MONTH', dataescala) = '$Mes' And DATE_PART('YEAR', dataescala) = '$Ano' And liberames != 0 And grupo_id = $NumGrupo");
+    $rowLib = pg_num_rows($rsLib);
+    if($rowLib > 0){
+        $MesLiberado = 1;
+    }
+
+    $MesLiberado = 0; // só o escalante verá a página
+
+    ?>
+        <input type="hidden" id="guardamesano" value="<?php echo addslashes($MesSalvo); ?>" />
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>" />
         <input type="hidden" id="escalante" value="<?php echo $Escalante; ?>" />
+        <input type="hidden" id="guardanumgrupo" value="<?php echo $NumGrupo; ?>" />
         <input type="hidden" id="guardaDiaId" value="" />
         <input type="hidden" id="guardaUsuId" value="" />
         <input type="hidden" id="guardacod" value="" />
@@ -1327,7 +1544,7 @@ if(!isset($_SESSION["usuarioID"])){
                     ?>
                 </div> <!-- quadro -->
 
-                <div class="col" style="text-align: center;">Escala de Serviço DAF</div> <!-- espaçamento entre colunas  -->
+                <div class="col" style="text-align: center;">Escala de Serviço <?php echo $SiglaGrupo; ?></div> <!-- espaçamento entre colunas  -->
                 <div class="col" style="margin: 0 auto; text-align: center;">
 
                 <label style="padding-left: 40px;">Transferir para o mês: </label>
@@ -1348,7 +1565,6 @@ if(!isset($_SESSION["usuarioID"])){
                 </div> <!-- quadro -->
             </div>
         </div>
-
 
         <div style="margin: 10px; border: 2px solid green; border-radius: 15px; padding: 10px; min-height: 70px; text-align: center;">
             <table style="margin: 0 auto; width: 90%;">
@@ -1456,7 +1672,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <div class="container" style="margin: 0 auto;">
                     <div class="row">
                         <div class="col quadro" style="margin: 0 auto;"></div>
-                        <div class="col quadro"><h5 style="text-align: center; color: #666;">Escala DAF</h5></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col quadro"><h5 style="text-align: center; color: #666;">Escala <?php echo $SiglaGrupo; ?></h5></div> <!-- Central - espaçamento entre colunas  -->
                         <div class="col quadro" style="margin: 0 auto; text-align: center;"><button class="botpadrred" style="font-size: 70%;" onclick="resumoUsuEscala();">Resumo em PDF</button></div> 
                     </div>
                 </div>
@@ -1510,22 +1726,50 @@ if(!isset($_SESSION["usuarioID"])){
                             <label for="checkescalante">escalante</label>
                         </td>
                     </tr>
-
+                    <tr>
+                        <td colspan="5"><hr style="margin: 0; padding: 2px;"></td>
+                    </tr>
                     <tr>
                         <td class="etiq80">Encarregado ADM:</td>
                         <td colspan="4">
-                            <input type="checkbox" id="checkEncarreg" onchange="marcaConfigEscala(this, 'enc_escdaf');" >
+<!--                            <input type="checkbox" id="checkEncarreg" onchange="marcaConfigEscala(this, 'enc_escdaf');" >
                             <label for="checkEncarreg">Chefe Imediato</label>
+-->
+                            <select id="configSelecEncarreg" style="max-width: 230px;" onchange="modif();" title="Selecione um usuário.">
+                                <option value=""></option>
+                                <?php 
+                                $OpEncarreg = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
+                                if($OpEncarreg){
+                                    while ($Opcoes = pg_fetch_row($OpEncarreg)){ ?>
+                                        <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; if($Opcoes[2] != ""){echo " - ".$Opcoes[2];} ?></option>
+                                    <?php 
+                                    }
+                                }
+                                ?>
+                            </select>
                         </td>
                     </tr>
                     <tr>
                         <td class="etiq80">Chefe DIV ADM:</td>
                         <td colspan="4">
-                            <input type="checkbox" id="checkChefeADM" onchange="marcaConfigEscala(this, 'chefe_escdaf');" >
+<!--                            <input type="checkbox" id="checkChefeADM" onchange="marcaConfigEscala(this, 'chefe_escdaf');" >
                             <label for="checkChefeADM">Chefe Div Adm</label>
+-->
+                            <select id="configSelecChefeDiv" style="max-width: 230px;" onchange="modif();" title="Selecione um usuário.">
+                                <option value=""></option>
+                                <?php 
+                                $OpChefeDiv = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
+                                if($OpEncarreg){
+                                    while ($Opcoes = pg_fetch_row($OpChefeDiv)){ ?>
+                                        <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; if($Opcoes[2] != ""){echo " - ".$Opcoes[2];} ?></option>
+                                    <?php 
+                                    }
+                                }
+                                ?>
+                            </select>
+
                         </td>
                     </tr>
-
                 </table>
             </div>
         </div> <!-- Fim Modal-->

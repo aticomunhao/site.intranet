@@ -148,8 +148,6 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                                         document.getElementById("fisc_Agua").checked = false;
                                     }
 
-
-
                                     if(parseInt(Resp.leituraEletric) === 1){
                                         document.getElementById("leituraEletric").checked = true;
                                     }else{
@@ -453,7 +451,7 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
 //if(document.getElementById("guardausu_cpf").value == "13652176049"){
-//    alert(ajax.responseText);
+//alert(ajax.responseText);
 //}
                                     Resp = eval("(" + ajax.responseText + ")");
                                     if(parseInt(Resp.coderro) === 2){

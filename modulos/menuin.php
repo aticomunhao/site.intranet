@@ -83,6 +83,60 @@
 					pg_query($Conec, "UPDATE ".$xProj.".poslog SET adm = 4 WHERE pessoas_id = 86;");
 				}
 
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf ADD COLUMN IF NOT EXISTS grupo_id int NOT NULL DEFAULT 0 ;");
+				$rs = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf WHERE grupo_id > 0;");
+				$row = pg_num_rows($rs);
+                if($row == 0){
+					pg_query($Conec, "UPDATE ".$xProj.".escaladaf SET grupo_id = 1 "); // 1 = DAF
+				}
+
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_ins ADD COLUMN IF NOT EXISTS grupo_ins int NOT NULL DEFAULT 0 ;");
+				$rs = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_ins WHERE grupo_ins > 0;");
+				$row = pg_num_rows($rs);
+                if($row == 0){
+					pg_query($Conec, "UPDATE ".$xProj.".escaladaf_ins SET grupo_ins= 1 ");
+				}
+
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS grupo_turnos int NOT NULL DEFAULT 0 ;");
+				$rs = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_turnos WHERE grupo_turnos > 0;");
+				$row = pg_num_rows($rs);
+                if($row == 0){
+					pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET grupo_turnos= 1 ");
+				}
+
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_notas ADD COLUMN IF NOT EXISTS grupo_notas int NOT NULL DEFAULT 0 ;");
+				$rs = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_notas WHERE grupo_notas > 0;");
+				$row = pg_num_rows($rs);
+                if($row == 0){ // roda só uma vez
+					pg_query($Conec, "UPDATE ".$xProj.".escaladaf_notas SET grupo_notas= 1 ");
+					pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_grupo = 2 WHERE pessoas_id = 22 "); // Elton
+					pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_grupo = 3 WHERE pessoas_id = 2 ");  // Moi
+					pg_query($Conec, "UPDATE ".$xProj.".escalas_gr SET siglagrupo = 'DIADM' WHERE id = 2 ");
+					$Amanha = strtotime("+1 day", $DiaIni);
+					$DiaIni = $Amanha;
+					$Data = date("Y/m/d", $Amanha); // data legível
+					$rs0 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf WHERE dataescala = '$Data' And grupo_id = 2 ");
+					$row0 = pg_num_rows($rs0);
+					if($row0 == 0){
+						pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf (dataescala, grupo_id) VALUES ('$Data', 2");
+						pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf (dataescala, grupo_id) VALUES ('$Data', 3");
+					}
+				}
+
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_ins ADD COLUMN IF NOT EXISTS turnos_id smallint NOT NULL DEFAULT 0 ;");
+
+				$rs3 = pg_query($Conec, "SELECT id, letra FROM ".$xProj.".escaladaf_turnos WHERE grupo_turnos = 1 ORDER BY letra");
+				While ($tbl3 = pg_fetch_row($rs3)){
+					$Cod = $tbl3[0];
+					$Letra = $tbl3[1];
+					pg_query($Conec, "UPDATE ".$xProj.".escaladaf_ins SET turnos_id = $Cod WHERE letraturno = '$Letra' ;");
+				}
+
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escalas_gr ADD COLUMN IF NOT EXISTS chefe_escdaf bigint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escalas_gr ADD COLUMN IF NOT EXISTS enc_escdaf bigint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "UPDATE ".$xProj.".escalas_gr SET chefe_escdaf = 83, enc_escdaf = 22 WHERE chefe_escdaf = 0 ;");
+				 
+
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

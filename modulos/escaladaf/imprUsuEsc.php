@@ -21,6 +21,19 @@ if(isset($_REQUEST["acao"])){
     require_once('../../class/fpdf/fpdf.php'); // adaptado ao PHP 7.2 - 8.2
     define('FPDF_FONTPATH', '../../class/fpdf/font/');  
     $Dom = "logo_comunhao_completa_cor_pos_150px.png";
+    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    $rsSig = pg_query($Conec, "SELECT siglagrupo, chefe_escdaf, enc_escdaf FROM ".$xProj.".escalas_gr WHERE id = $NumGrupo;");
+    $rowSig = pg_num_rows($rsSig);
+    if($rowSig > 0){
+        $tblSig = pg_fetch_row($rsSig);
+        $SiglaGrupo = $tblSig[0];
+        $ChefeDiv = $tblSig[1];
+        $Encarreg = $tblSig[2];
+    }else{
+        $SiglaGrupo = "";
+    }
+
+
 
     $rsCabec = pg_query($Conec, "SELECT cabec1, cabec2, cabec3 FROM ".$xProj.".setores WHERE codset = ".$_SESSION["CodSetorUsu"]." ");
     $rowCabec = pg_num_rows($rsCabec);
@@ -65,7 +78,7 @@ if(isset($_REQUEST["acao"])){
     $pdf->SetFont('Arial', '' , 10);
     $pdf->SetTextColor(25, 25, 112);
     if($Acao == "listaUsuarios"){
-        $pdf->MultiCell(0, 3, "Escala de Serviço DAF", 0, 'C', false);
+        $pdf->MultiCell(0, 3, "Escala de Serviço ".$SiglaGrupo, 0, 'C', false);
     }
 
     $pdf->SetTextColor(0, 0, 0);
@@ -76,14 +89,15 @@ if(isset($_REQUEST["acao"])){
     $pdf->SetDrawColor(200); // cinza claro  
 
     if($Acao == "listaUsuarios"){
-
-        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chefe_escdaf = 1 And ativo = 1 ORDER BY nomecompl");
+        $rs0 = pg_query($Conec, "SELECT nomecompl, nomeusual FROM ".$xProj.".poslog WHERE pessoas_id = $ChefeDiv");
         $row0 = pg_num_rows($rs0);
+       
         $pdf->ln(5);
         $pdf->SetFont('Arial', 'I', 11);
         $pdf->MultiCell(0, 3, "Chefe da Divisão Administrativa:", 0, 'L', false);
         $pdf->ln(3);
         if($row0 > 0){
+            $tbl0 = pg_fetch_row($rs0);
             $pdf->SetFont('Arial', 'I', 8);
             $pdf->SetX(50);
             $pdf->Cell(40, 3, "Nome", 0, 0, 'L');
@@ -93,23 +107,12 @@ if(isset($_REQUEST["acao"])){
             $pdf->Line(50, $lin, 200, $lin);
             $pdf->SetFont('Arial', '', 10);
 
-            while($tbl0 = pg_fetch_row($rs0)){
-                $Cod = $tbl0[0];
-                $pdf->SetX(50); 
-                $pdf->Cell(40, 5, $tbl0[2], 0, 0, 'L');
-                $pdf->Cell(150, 5, $tbl0[1], 0, 1, 'L');
-
-                $lin = $pdf->GetY();
-                $pdf->Line(50, $lin, 200, $lin);
-            }
-            $pdf->SetX(50);
-            $pdf->SetFont('Arial', 'I', 8);
-            $pdf->Cell(150, 5, "Total: ".$row0, 0, 1, 'L');
-            $pdf->SetFont('Arial', '', 10);
-            $lin = $pdf->GetY();               
-            $pdf->Line(20, $lin, 200, $lin);
+            $pdf->SetX(50); 
+            $pdf->Cell(40, 5, $tbl0[1], 0, 0, 'L');
+            $pdf->Cell(150, 5, $tbl0[0], 0, 1, 'L');
+            $lin = $pdf->GetY();
+            $pdf->Line(50, $lin, 200, $lin);
             $pdf->ln(10);
-       
         }else{
             $pdf->SetFont('Arial', 'I', 10);
             $pdf->SetX(50);
@@ -120,14 +123,14 @@ if(isset($_REQUEST["acao"])){
         }
 
 
-
-        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE enc_escdaf = 1 And ativo = 1 ORDER BY nomecompl");
+        $rs0 = pg_query($Conec, "SELECT nomecompl, nomeusual FROM ".$xProj.".poslog WHERE pessoas_id = $Encarreg");
         $row0 = pg_num_rows($rs0);
         $pdf->ln(5);
         $pdf->SetFont('Arial', 'I', 11);
         $pdf->MultiCell(0, 3, "Chefe Imediato:", 0, 'L', false);
         $pdf->ln(3);
         if($row0 > 0){
+            $tbl0 = pg_fetch_row($rs0);
             $pdf->SetFont('Arial', 'I', 8);
             $pdf->SetX(50);
             $pdf->Cell(40, 3, "Nome", 0, 0, 'L');
@@ -137,23 +140,12 @@ if(isset($_REQUEST["acao"])){
             $pdf->Line(50, $lin, 200, $lin);
             $pdf->SetFont('Arial', '', 10);
 
-            while($tbl0 = pg_fetch_row($rs0)){
-                $Cod = $tbl0[0];
-                $pdf->SetX(50); 
-                $pdf->Cell(40, 5, $tbl0[2], 0, 0, 'L');
-                $pdf->Cell(150, 5, $tbl0[1], 0, 1, 'L');
-
-                $lin = $pdf->GetY();
-                $pdf->Line(50, $lin, 200, $lin);
-            }
-            $pdf->SetX(50);
-            $pdf->SetFont('Arial', 'I', 8);
-            $pdf->Cell(150, 5, "Total: ".$row0, 0, 1, 'L');
-            $pdf->SetFont('Arial', '', 10);
-            $lin = $pdf->GetY();               
-            $pdf->Line(20, $lin, 200, $lin);
+            $pdf->SetX(50); 
+            $pdf->Cell(40, 5, $tbl0[1], 0, 0, 'L');
+            $pdf->Cell(150, 5, $tbl0[0], 0, 1, 'L');
+            $lin = $pdf->GetY();
+            $pdf->Line(50, $lin, 200, $lin);
             $pdf->ln(10);
-       
         }else{
             $pdf->SetFont('Arial', 'I', 10);
             $pdf->SetX(50);
@@ -164,13 +156,11 @@ if(isset($_REQUEST["acao"])){
         }
 
 
-
-
-        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE esc_daf = 1 And ativo = 1 ORDER BY nomecompl");
+        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE esc_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo  ORDER BY nomecompl");
         $row0 = pg_num_rows($rs0);
         $pdf->ln(5);
         $pdf->SetFont('Arial', 'I', 11);
-        $pdf->MultiCell(0, 3, "Usuários autorizados a editar a escala de serviço DAF:", 0, 'L', false);
+        $pdf->MultiCell(0, 3, "Escalantes:", 0, 'L', false);
         $pdf->ln(3);
         if($row0 > 0){
             $pdf->SetFont('Arial', 'I', 8);
@@ -209,11 +199,11 @@ if(isset($_REQUEST["acao"])){
         }
 
 
-        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 ORDER BY nomecompl");
+        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomecompl");
         $row0 = pg_num_rows($rs0);
         $pdf->ln(3);
         $pdf->SetFont('Arial', 'I', 11);
-        $pdf->MultiCell(0, 3, "Usuários que concorrem à escala de serviço DAF: ", 0, 'L', false);
+        $pdf->MultiCell(0, 3, "Usuários que concorrem à escala de serviço ".$SiglaGrupo, 0, 'L', false);
         $pdf->ln(5);
         if($row0 > 0){
             $pdf->SetFont('Arial', 'I', 8);

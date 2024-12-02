@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
+$NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -15,7 +16,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <div style="margin: 10px; padding: 10px; text-align: center; border: 2px solid green; border-radius: 15px;">
             <?php
                 $EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
-                $rs3 = pg_query($Conec, "SELECT id, numnota, textonota, ativo FROM ".$xProj.".escaladaf_notas WHERE ativo = 1 ORDER BY numnota");
+                $rs3 = pg_query($Conec, "SELECT id, numnota, textonota, ativo FROM ".$xProj.".escaladaf_notas WHERE ativo = 1 And grupo_notas = $NumGrupo ORDER BY numnota");
             ?>
             <div style="position: relative; float: right; color: red; font-weight: bold;" ></div>
             <table style="margin: 0 auto; width: 90%;">

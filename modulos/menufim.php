@@ -282,13 +282,13 @@
 						echo "</li>";
 
 						//usado para o Quadro Horário
-						$Efet = parEsc("esc_eft", $Conec, $xProj, $_SESSION["usuarioID"]); // procura marca Efetivo da escala em poslog
-						$FiscEscala = parEsc("esc_fisc", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de escala
-						$Escalante = parEsc("esc_edit", $Conec, $xProj, $_SESSION["usuarioID"]); // escalante do grupo
-						$NumGrupo = 0;
-						if($Efet == 1){
-							$NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]); // procurar a que grupo de escala pertence
-						}  // Essas variáveis foram para o Quadro Horário
+//						$Efet = parEsc("esc_eft", $Conec, $xProj, $_SESSION["usuarioID"]); // procura marca Efetivo da escala em poslog
+//						$FiscEscala = parEsc("esc_fisc", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de escala
+//						$Escalante = parEsc("esc_edit", $Conec, $xProj, $_SESSION["usuarioID"]); // escalante do grupo
+//						$NumGrupo = 0;
+//						if($Efet == 1){
+//							$NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]); // procurar a que grupo de escala pertence
+//						}  // Essas variáveis foram para o Quadro Horário
 
 //						if($_SESSION["AdmUsu"] > 6){ // superusuário
 //							if($NumGrupo > 0 || $FiscEscala > 0 || $Escalante > 0){
@@ -298,10 +298,12 @@
 //							}
 //						}
 
+						$NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]); // procurar a que grupo de escala pertence
+						//Só o escalante vê a escala
 						$EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
-						$EfetivoEscalaDAF = parEsc("eft_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
+//						$EfetivoEscalaDAF = parEsc("eft_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
 //						if($EscalanteDAF == 1 || $EfetivoEscalaDAF == 1){
-						if($EscalanteDAF == 1){
+						if($NumGrupo > 0 && $EscalanteDAF == 1){
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(77);'>Escala DAF</a>";
 							echo "</li>";
@@ -313,11 +315,11 @@
 							echo "</li>";
 						}
 
-						if($NumGrupo > 0 || $FiscEscala > 0 || $Escalante > 0){
-							echo "<li>";
-								echo "<a href='#' onclick='openhref(74);'>Quadro Horário</a>";
-							echo "</li>";
-						}
+//						if($NumGrupo > 0 || $FiscEscala > 0 || $Escalante > 0){
+//							echo "<li>";
+//								echo "<a href='#' onclick='openhref(74);'>Quadro Horário</a>";
+//							echo "</li>";
+//						}
 
 //						if($_SESSION["AdmUsu"] > 6){ // superusuário
 //							echo "<li>";

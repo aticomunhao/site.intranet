@@ -22,20 +22,21 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     </head>
     <body> 
         <div style="margin-top: 15px; text-align: center; font-weight: bold;">Horários de Trabalho<br>
-            <label style="font-size: 90%; font-weight: normal;">Modificações aqui não são passadas para a escala já inserida afim de preservar o passado.</label>
+            <label style="font-size: 90%; font-weight: normal;">Modificações aqui <b>NÃO</b> são passadas para a escala já inserida afim de preservar o passado.</label>
         </div>
         <div style="margin: 10px; padding: 10px; text-align: center; border: 2px solid green; border-radius: 15px;">
             <?php
-            $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, ordemletra, destaq, TO_CHAR(cargahora, 'HH24:MI'), TO_CHAR(cargacont, 'HH24:MI'), TO_CHAR(interv, 'HH24:MI') FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 ORDER BY ordemletra");
+            $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+            $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, ordemletra, destaq, TO_CHAR(cargahora, 'HH24:MI'), TO_CHAR(cargacont, 'HH24:MI'), TO_CHAR(interv, 'HH24:MI') FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And grupo_turnos = $NumGrupo ORDER BY ordemletra");
             ?>
             <div style="position: relative; float: right; color: red; font-weight: bold;" id="mensagemQuadroHorario"></div>
-            <table style="margin: 0 auto; width: 85%;">
+            <table style="margin: 0 auto; width: 95%;">
                 <tr>
                     <td style="display: none;"></td>
                     <td style="display: none;"></td>
-                    <td title="Ordem de apresentação no quadro de horários">Ordem</td>
+                    <td title="Ordem de apresentação no quadro de horários. Organiza a apresentação na primeira tela.">Ordem</td>
                     <td>Letra</td>
-                    <td title="Destaque fundo amarelo">Dest</td>
+                    <td title="Destaque fundo: Transparente - Amarelo - Azul - Verde">Destaque</td>
                     <td>Turno</td>
                     <td>Horas</td>
                     <td>Intervalo</td>
@@ -49,12 +50,23 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     <tr>
                         <td style="display: none;"></td>
                         <td style="display: none;"><?php echo $tbl3[0]; ?></td>
-                        <td><input type="text" value="<?php echo $tbl3[3]; ?>" style="width: 70px; text-align: center; border: 1px solid; border-radius: 3px;" onchange="editaOrdem(<?php echo $Cod; ?>, value);" title="Ordem de apresentação no quadro de horários"/></td>
-                        <td><input type="text" value="<?php echo $tbl3[1]; ?>" style="width: 70px; text-align: center; border: 1px solid; border-radius: 3px; <?php if($tbl3[4] == 1){echo "background-color: yellow;";} ?>" onchange="editaLetra(<?php echo $Cod; ?>, value);"/></td>
-                        <td><input type="checkbox" id="ev" title="Marca para destacar" onClick="marcaTurno(<?php echo $Cod ?>);" <?php if($tbl3[4] == 1) {echo "checked";} ?> ></td>
+                        <td><input type="text" value="<?php echo $tbl3[3]; ?>" style="width: 70px; text-align: center; border: 1px solid; border-radius: 3px;" onchange="editaOrdem(<?php echo $Cod; ?>, value);" title="Ordem de apresentação no quadro de horários. Organiza a apresentação na primeira tela."/></td>
+                        <td><input type="text" value="<?php echo $tbl3[1]; ?>" style="width: 70px; text-align: center; border: 1px solid; border-radius: 3px; 
+                            <?php
+                            if($tbl3[4] == 0){echo "background-color: white;";}  
+                            if($tbl3[4] == 1){echo "background-color: yellow;";} 
+                            if($tbl3[4] == 2){echo "background-color: #00BFFF;";} 
+                            if($tbl3[4] == 3){echo "background-color: #00FF7F;";} 
+                            ?>" onchange="editaLetra(<?php echo $Cod; ?>, value);"/></td>
+                        <td>
+                            <input type="checkbox" id="ev" title="Sem destaque" onClick="marcaTurno(<?php echo $Cod ?>, 0);" <?php if($tbl3[4] == 0) {echo "checked";} ?> >
+                            <input type="checkbox" id="ev" title="Marca para destacar Amarelo" onClick="marcaTurno(<?php echo $Cod ?>, 1);" <?php if($tbl3[4] == 1) {echo "checked";} ?> >
+                            <input type="checkbox" id="ev" title="Marca para destacar Azul" onClick="marcaTurno(<?php echo $Cod ?>, 2);" <?php if($tbl3[4] == 2) {echo "checked";} ?> >
+                            <input type="checkbox" style="border: 1px solid #00FF7F;" id="ev" title="Marca para destacar Verde" onClick="marcaTurno(<?php echo $Cod ?>, 3);" <?php if($tbl3[4] == 3) {echo "checked";} ?> >
+                        </td>
                         <td><input type="text" value="<?php echo $tbl3[2]; ?>" style="width: 170px; text-align: center; border: 1px solid; border-radius: 3px;" onchange="editaTurno(<?php echo $Cod; ?>, value);" <?php if($Cod > 4){echo "title='Formatação: 00:00 / 00:00 '";} ?>/></td>
                         <?php
-                        if($Cod < 5){
+                        if($tbl3[1] == "F" || $tbl3[1] == "X" || $tbl3[1] == "Y"){
                             echo "<td></td>";
                             echo "<td></td>";
                             echo "<td></td>";

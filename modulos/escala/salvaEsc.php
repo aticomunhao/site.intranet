@@ -143,6 +143,14 @@ if(isset($_REQUEST["acao"])){
             $CodigoNovo = ($Codigo+1);
             $rs = pg_query($Conec, "INSERT INTO ".$xProj.".escalas_gr (id, siglagrupo, descgrupo, descescala, qtd_turno) 
             VALUES ($CodigoNovo, '$Sigla', '$Nome', '$Descr', $Turnos) ");
+
+            //Inserir um para a primeira abertura
+            $DiaIni = strtotime(date('Y/m/01'));
+            $Amanha = strtotime("+1 day", $DiaIni);
+            $DiaIni = $Amanha;
+            $Data = date("Y/m/d", $Amanha); // data legível
+            pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf (dataescala, grupo_id) VALUES ('$Data', $CodigoNovo)");
+
         }
         $var = array("coderro"=>$Erro);
         $responseText = json_encode($var);
