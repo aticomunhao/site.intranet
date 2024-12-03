@@ -129,24 +129,31 @@ if($Acao == "configMarcaEscala___"){
             $Erro = 1;
         }
     }else{
-        $rs = pg_query($Conec, "SELECT siglagrupo FROM ".$xProj.".escalas_gr WHERE id = $CodGrupo;");
-        $row = pg_num_rows($rs);
-        if($row > 0){
-            $tbl = pg_fetch_row($rs);
-            $SiglaGrupo = $tbl[0];
+        //Está em outro grupo - Verifica está marcado como efetivo naquele grupo
+        $rs2 = pg_query($Conec, "SELECT eft_daf FROM ".$xProj.".poslog WHERE id = $Cod;");
+        $tbl2 = pg_fetch_row($rs2);
+        $MarcaEft = $tbl2[0];
+        if($MarcaEft == 0){ // não está marcado como efetivo -> muda o grupo e marca como efetivo no meu grupo
+            pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_grupo = $NumGrupo, $Campo = $Valor, daf_turno = 0, datamodif = NOW(), usumodif = $UsuIns WHERE pessoas_id = $Cod");
+            $CodGrupo = $NumGrupo;
+        }else{ // está em outro grupo e está marcado como efetivo
+            $rs = pg_query($Conec, "SELECT siglagrupo FROM ".$xProj.".escalas_gr WHERE id = $CodGrupo;");
+            $row = pg_num_rows($rs);
+            if($row > 0){
+                $tbl = pg_fetch_row($rs);
+                $SiglaGrupo = $tbl[0];
+            }
+            $Erro = 3;
         }
-        $Erro = 3;
     }
     if($Valor == 0){ // desmarcar se for o caso
         pg_query($Conec, "UPDATE ".$xProj.".poslog SET $Campo = $Valor, datamodif = NOW(), usumodif = $UsuIns WHERE pessoas_id = $Cod");
     }
-//    if($Campo == "esc_daf"){
-//        pg_query($Conec, "UPDATE ".$xProj.".poslog SET $Campo = $Valor, datamodif = NOW(), usumodif = $UsuIns WHERE pessoas_id = $Cod");
-//    }
     $var = array("coderro"=>$Erro, "codgrupo"=>$CodGrupo, "outrogrupo"=>$SiglaGrupo);
     $responseText = json_encode($var);
     echo $responseText;
 }
+
 
 if($Acao == "configMarcaEscala"){
     $Erro = 0;
@@ -158,32 +165,45 @@ if($Acao == "configMarcaEscala"){
     $CodGrupo = parEsc("esc_grupo", $Conec, $xProj, $Cod); // grupo do selecionado
     $SiglaGrupo = "";
 
-    if($Campo == "esc_daf" && $Valor == 0){ // não pode ficar sem escalante
-        $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE esc_daf = 1 And esc_grupo = $NumGrupo");
-        $row = pg_num_rows($rs);
-        if($row == 1){
-            $Erro = 2;
-            $var = array("coderro"=>$Erro);
-            $responseText = json_encode($var);
-            echo $responseText;
-            return false;
-        }
+    if($CodGrupo == 0){ // está sem grupo - põe no seu grupo
+        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_grupo = $NumGrupo, daf_turno = 0, datamodif = NOW(), usumodif = $UsuIns WHERE pessoas_id = $Cod");
+        $CodGrupo = $NumGrupo;
     }
 
-    if($CodGrupo == 0 || $CodGrupo == $NumGrupo){ 
+    if($CodGrupo == $NumGrupo){ 
         $rs1 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET $Campo = $Valor, datamodif = NOW(), usumodif = $UsuIns WHERE pessoas_id = $Cod");
-        if(!$rs1){
-            $Erro = 1;
+
+        if($Campo == "esc_daf"){ // verifica se vai ficar algum escalante - não pode ficar sem escalante
+            $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE esc_daf = 1 And esc_grupo = $NumGrupo");
+            $row = pg_num_rows($rs);
+            if($row == 0){
+                pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_daf = 1 WHERE pessoas_id = $Cod");
+                $Erro = 2;
+                $var = array("coderro"=>$Erro);
+                $responseText = json_encode($var);
+                echo $responseText;
+                return false;
+            }
         }
-    }
-    if($CodGrupo != 0 && $CodGrupo != $NumGrupo){ 
-        $rs = pg_query($Conec, "SELECT siglagrupo FROM ".$xProj.".escalas_gr WHERE id = $CodGrupo;");
-        $row = pg_num_rows($rs);
-        if($row > 0){
-            $tbl = pg_fetch_row($rs);
-            $SiglaGrupo = $tbl[0];
+    }else{ // está em outro grupo
+        //Verifica se está marcado como efetivo naquele grupo
+        $rs2 = pg_query($Conec, "SELECT eft_daf, esc_daf FROM ".$xProj.".poslog WHERE pessoas_id = $Cod;");
+        $tbl2 = pg_fetch_row($rs2);
+        $MarcaEft = $tbl2[0];
+        $MarcaEsc = $tbl2[0];
+        if($MarcaEft == 0 && $MarcaEsc == 0){ // não está marcado como efetivo nem como escalange -> muda o grupo e marca como efetivo no meu grupo
+            pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_grupo = $NumGrupo, $Campo = $Valor, daf_turno = 0, datamodif = NOW(), usumodif = $UsuIns WHERE pessoas_id = $Cod");
+            $CodGrupo = $NumGrupo;
         }
-        $Erro = 3;
+        if($MarcaEft == 1 || $MarcaEsc == 1){ // está em outro grupo e está marcado como efetivo ou escalante
+            $rs = pg_query($Conec, "SELECT siglagrupo FROM ".$xProj.".escalas_gr WHERE id = $CodGrupo;");
+            $row = pg_num_rows($rs);
+            if($row > 0){
+                $tbl = pg_fetch_row($rs);
+                $SiglaGrupo = $tbl[0];
+            }
+            $Erro = 3;
+        }
     }
 
     $var = array("coderro"=>$Erro, "codgrupo"=>$CodGrupo, "outrogrupo"=>$SiglaGrupo);
@@ -606,6 +626,7 @@ if($Acao =="apagadatafer"){
 
 if($Acao =="transfmesano"){
     $Erro = 0;
+
     $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
     $MesAno = addslashes(filter_input(INPUT_GET, 'mesano')); // mes a transferir
     $Proc = explode("/", $MesAno);
@@ -615,7 +636,7 @@ if($Acao =="transfmesano"){
     }
     $Ano = $Proc[1];
 
-    $MesFrom = addslashes(filter_input(INPUT_GET, 'transfde')); // mes a transferir
+    $MesFrom = addslashes(filter_input(INPUT_GET, 'transfde')); // mes de onde transferir
     $Proc = explode("/", $MesFrom);
     $MesFrom = $Proc[0];
     if(strLen($MesFrom) < 2){
@@ -623,11 +644,12 @@ if($Acao =="transfmesano"){
     }
     $AnoFrom = $Proc[1];
 
+    //Quantos dias tem o próximo mês
     $rsIni = pg_query($Conec, "SELECT MAX(TO_CHAR(dataescala, 'DD')) 
     FROM ".$xProj.".escaladaf 
     WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
     $tblIni = pg_fetch_row($rsIni);
-    $UltDiaProxMes = $tblIni[0];
+    $UltDiaProxMes = $tblIni[0]; 
 
     $rsIni = pg_query($Conec, "SELECT MAX(TO_CHAR(dataescalains, 'DD')) 
     FROM ".$xProj.".escaladaf_ins 
@@ -669,36 +691,32 @@ if($Acao =="transfmesano"){
     WHERE TO_CHAR(dataescalains, 'MM') = '$MesFrom' And TO_CHAR(dataescalains, 'YYYY') = '$AnoFrom' And grupo_ins = $NumGrupo And TO_CHAR(dataescalains, 'DD') > '$DiaSemNum' And TO_CHAR(dataescalains, 'DD') <= '$UltDiaProxMes' ORDER BY dataescalains ");
     $row = pg_num_rows($rs);
     if($row > 0){
-//        $Dia = "01";
         while($tbl = pg_fetch_row($rs)){
-//            if($Dia <= $UltDiaProxMes){
             $CodId = $tbl[0];
             $Dia = $tbl[1];
-            $Dia = ($Dia-$DiaSemNum);
+            $Dia = ($Dia-$DiaSemNum); // retroceder até o dia que é o próximo dia da semana do mes seguinte
             if($Dia <= $UltDiaProxMes){
-            $NovaData = $Ano."/".$Mes."/".$Dia;
-            $PoslogId = $tbl[2];
-            $Letra = $tbl[3];
-            $Turno = $tbl[4];
-            $Dest = $tbl[5];
-            $Carga = $tbl[6];
-            $TurnoId = $tbl[7]; // usado para carregar o turno do dia clicado
+                $NovaData = $Ano."/".$Mes."/".$Dia;
+                $PoslogId = $tbl[2];
+                $Letra = $tbl[3];
+                $Turno = $tbl[4];
+                $Dest = $tbl[5];
+                $Carga = $tbl[6];
+                $TurnoId = $tbl[7]; // usado para carregar o turno do dia clicado
 
-            $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf WHERE dataescala = '$NovaData' And grupo_id = $NumGrupo ");
-            $row1 = pg_num_rows($rs1);
-            if($row1 > 0){
-                $tbl1 = pg_fetch_row($rs1);
-                $CodIdEscala = $tbl1[0];
-                $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_ins");
-                $tblCod = pg_fetch_row($rsCod);
-                $Codigo = $tblCod[0];
-                $CodigoNovo = ($Codigo+1);
-    
-                pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_ins (id, escaladaf_id, dataescalains, poslog_id, letraturno, turnoturno, destaque, cargatime, usuins, datains, grupo_ins, turnos_id) 
-                VALUES ($CodigoNovo, $CodIdEscala, '$NovaData', $PoslogId, '$Letra', '$Turno', $Dest, '$Carga', $UsuIns, NOW(), $NumGrupo, $TurnoId ) ");
+                $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf WHERE dataescala = '$NovaData' And grupo_id = $NumGrupo ");
+                $row1 = pg_num_rows($rs1);
+                if($row1 > 0){
+                    $tbl1 = pg_fetch_row($rs1);
+                    $CodIdEscala = $tbl1[0];
+                    $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_ins");
+                    $tblCod = pg_fetch_row($rsCod);
+                    $Codigo = $tblCod[0];
+                    $CodigoNovo = ($Codigo+1);
 
-            }
-//            $Dia++;
+                    pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_ins (id, escaladaf_id, dataescalains, poslog_id, letraturno, turnoturno, destaque, cargatime, usuins, datains, grupo_ins, turnos_id) 
+                    VALUES ($CodigoNovo, $CodIdEscala, '$NovaData', $PoslogId, '$Letra', '$Turno', $Dest, '$Carga', $UsuIns, NOW(), $NumGrupo, $TurnoId ) ");
+                }
             }
         }
     }
@@ -707,7 +725,6 @@ if($Acao =="transfmesano"){
     if(!$rs || !$rs1){
         $Erro = 1;
     }
-
 
     $var = array("coderro"=>$Erro, "novadata"=>$NovaData, "NumDia"=>$DiaSemNum);
     $responseText = json_encode($var);

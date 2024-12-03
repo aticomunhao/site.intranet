@@ -203,22 +203,22 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                                         document.getElementById("fiscalElev").checked = false;
                                     }
 
-                                    if(parseInt(Resp.escala) === 1){
-                                        document.getElementById("escalaEft").checked = true;
-                                    }else{
-                                        document.getElementById("escalaEft").checked = false;
-                                    }
+//                                    if(parseInt(Resp.escala) === 1){
+//                                        document.getElementById("escalaEft").checked = true;
+//                                    }else{
+//                                        document.getElementById("escalaEft").checked = false;
+//                                    }
                                     document.getElementById("grupoEscala").value = Resp.grupoescala;
                                     if(parseInt(Resp.editaescala) === 1){
                                         document.getElementById("escalante").checked = true;
                                     }else{
                                         document.getElementById("escalante").checked = false;
                                     }
-                                    if(parseInt(Resp.fiscescala) === 1){
-                                        document.getElementById("fiscalEscalas").checked = true;
-                                    }else{
-                                        document.getElementById("fiscalEscalas").checked = false;
-                                    }
+//                                    if(parseInt(Resp.fiscescala) === 1){
+//                                        document.getElementById("fiscalEscalas").checked = true;
+//                                    }else{
+//                                        document.getElementById("fiscalEscalas").checked = false;
+//                                    }
 
                                     if(parseInt(Resp.claviculario) === 1){
                                         document.getElementById("registroChaves").checked = true;
@@ -360,9 +360,9 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                 }
                 
                 Escala = 0;
-                if(document.getElementById("escalaEft").checked === true){
-                    Escala = 1;
-                }
+//                if(document.getElementById("escalaEft").checked === true){
+//                    Escala = 1;
+//                }
                 if(parseInt(Escala) === 1 && parseInt(document.getElementById("grupoEscala").value) === 0){
                     $('#mensagem').fadeIn("slow");
                     document.getElementById("mensagem").innerHTML = "Preencha o campo <u>Grupo da Escala</u> do usuário";
@@ -383,9 +383,9 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     return false;
                 }
                 FiscEscala = 0;
-                if(document.getElementById("fiscalEscalas").checked === true){
-                    FiscEscala = 1;
-                }
+//                if(document.getElementById("fiscalEscalas").checked === true){
+//                    FiscEscala = 1;
+//                }
 
                 Clavic = 0;
                 if(document.getElementById("registroChaves").checked === true){
@@ -804,7 +804,8 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                 }
                 if(parseInt(Cod) === 9){
                     Titulo = "Escala dos Grupos";
-                    Texto = "A marca da esquerda indica que o usuário participa e pode visualizar a escala de serviço do grupo a que pertence.  <br>A marca da direita indica que o usuário é o escalante do grupo. <br>É necessário escolher o grupo ao lado. Os grupos podem ser criados e editados nos Parâmetros do Sistema.";
+//                    Texto = "A marca da esquerda indica que o usuário participa e pode visualizar a escala de serviço do grupo a que pertence.  <br>A marca da direita indica que o usuário é o escalante do grupo. <br>É necessário escolher o grupo ao lado. Os grupos podem ser criados e editados nos Parâmetros do Sistema.";
+                    Texto = "Módulo em desenvolvimento. <br>Só o escalante pode visualizar a escala do grupo a que pertence.<br>É necessário escolher um grupo. <br>Os grupos podem ser criados e editados nos Parâmetros do Sistema.";
                 }
                 if(parseInt(Cod) === 10){
                     Titulo = "Escala dos Grupos";
@@ -1158,11 +1159,12 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
 
 
                     <tr>
-                        <td class="etiq80" style="padding-top: 5px;" title="Faz parte do efetivo da escala">Escala de Serviço:</td>
-                        <td colspan="4">
-                            <input type="checkbox" id="escalaEft" title="Faz parte do efetivo da escala" onchange="modif();" >
+                        <td class="etiq80" style="padding-top: 5px; border-bottom: 1px solid;" title="Faz parte do efetivo da escala">Escala de Serviço:</td>
+                        <td colspan="4" style="border-bottom: 1px solid; padding-bottom: 5px;">
+<!--                            <input type="checkbox" id="escalaEft" title="Faz parte do efetivo da escala" onchange="modif();" >
                             <label for="escalaEft" style="padding-right: 10px; padding-top: 5px;" title="Faz parte do efetivo da escala">Efetivo da Escala:</label>
-
+ -->
+                            <label style="padding-left: 10px; padding-right: 10px; padding-top: 5px;" title="Faz parte do efetivo da escala">Efetivo da Escala:</label>
                             <select id="grupoEscala" style="font-size: 1rem;" title="Selecione um grupo." onchange="modif();">
                             <option value="0"></option>
                             <?php 
@@ -1179,16 +1181,17 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                         </td>
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(9);" title="Guia rápido"></td>
                     </tr>
-
+<!-- 
                     <tr>
                         <td class="etiq80" style="border-bottom: 1px solid;" title="Fiscalizar o andamento das escalas de serviço">Escalas:</td>
                         <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
+   
                             <input type="checkbox" id="fiscalEscalas" title="Fiscalizar as escalas de serviço" onchange="modif();" >
                             <label for="fiscalEscalas" title="Fiscalizar as escalas de serviço">fiscalizar as Escalas de Serviço</label>
                         </td>
                         <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(10);" title="Guia rápido"></td>
                     </tr>
-
+-->
                     <tr>
                         <td class="etiq80" title="Registrar a entrega e devolução das chaves do claviculário da Portaria">Claviculário Portaria: </td>
                         <td colspan="4">

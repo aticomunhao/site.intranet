@@ -164,6 +164,7 @@ if(!isset($_SESSION['AdmUsu'])){
             $rs1 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
             FROM ".$xProj.".escaladaf 
             WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY dataescala");
+            $rowMes = pg_num_rows($rs1);
             while($tbl1 = pg_fetch_row($rs1)){
                 if($tbl1[1] == 0){
                     $pdf->SetFillColor(232, 232, 232); // fundo cinza
@@ -183,8 +184,6 @@ if(!isset($_SESSION['AdmUsu'])){
                     $pdf->SetX(10); 
                     $pdf->Cell(27, 5, substr($tbl1[2], 0, 16), 0, 0, 'L');
                     
-   //substr($DescArq, 0, 14);
-
                 //Carga horária Semanal
                     //Seleciona as semanas do mês e ano para os escalados do grupo
                     $rsS = pg_query($Conec, "SELECT DISTINCT TO_CHAR(dataescala, 'WW') FROM ".$xProj.".escaladaf 
@@ -224,15 +223,8 @@ if(!isset($_SESSION['AdmUsu'])){
                             }
                         }
                     }
-//                    $pdf->Cell(20, 5, "", 0, 1, 'L');
 
-
-
-//                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, marcadaf 
-//                    FROM ".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".escaladaf ON ".$xProj.".escaladaf_ins.escaladaf_id = ".$xProj.".escaladaf.id
-//                    WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '01' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' 
-//                    ORDER BY dataescala");
-
+                    //Quadrinho dias 01, 02, 03, ...
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '01' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
@@ -265,7 +257,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
-                            $pdf->Cell(7, 5, "", 1, 0, 'C');
+                            $pdf->Cell(7, 5, "", 1, 0, 'C'); // montar só os quadrinhos
                         }
                     }
                     
@@ -1222,7 +1214,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             }
                         }
                     }else{ // se o dia não existir 
-                        $pdf->Cell(7, 5, "", 0, 1, 'C');
+//                        $pdf->Cell(7, 5, "", 0, 1, 'C');
                     }
 
                     if(buscaDia($Conec, $xProj, $Mes, $Ano, 30) == 1){ //Ver se o dia existe neste mes
@@ -1260,7 +1252,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             }
                         }
                     }else{
-                        $pdf->Cell(7, 5, "", 0, 1, 'C');
+//                        $pdf->Cell(7, 5, "", 0, 1, 'C');
                     }
 
                     if(buscaDia($Conec, $xProj, $Mes, $Ano, 31) == 1){ //Ver se o dia existe neste mes
@@ -1284,22 +1276,34 @@ if(!isset($_SESSION['AdmUsu'])){
                             if($tbl2[2] == 3){
                                 $pdf->SetFillColor(0, 255, 127); // fundo verde
                             }
-                            $pdf->Cell(7, 5, $tbl2[0], 1, 1, 'C', true); // letra
+//                            $pdf->Cell(7, 5, $tbl2[0], 1, 1, 'C', true); // letra
+                            $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                         }else{
                             $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
                             FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '31' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                             $tbl3 = pg_fetch_row($rs3);
                             if($tbl3[1] == 0){
                                 $pdf->SetFillColor(232, 232, 232); // fundo cinza
-                                $pdf->Cell(7, 5, "", 1, 1, 'C', true);
+//                                $pdf->Cell(7, 5, "", 1, 1, 'C', true);
                                 $pdf->SetFillColor(255, 255, 255);
                             }else{
-                                $pdf->Cell(7, 5, "", 1, 1, 'C');
+//                                $pdf->Cell(7, 5, "", 1, 1, 'C');
+                                $pdf->Cell(7, 5, "", 1, 0, 'C'); // montar só os quadrinhos
                             }
                         }
                     }else{
-                        $pdf->Cell(7, 5, "", 0, 1, 'C');
+//                        $pdf->Cell(7, 5, "", 0, 1, 'C');
                     }
+                    //Conta o número de serviços
+                    $rs5 = pg_query($Conec, "SELECT COUNT(poslog_id) FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'MM') = '$Mes' And grupo_ins = $NumGrupo And letraturno != 'F' And letraturno != 'X' And letraturno != 'Y' ");
+                    $tbl5 = pg_fetch_row($rs5);
+                    $pdf->SetFillColor(255, 255, 255);
+                    $pdf->SetTextColor(152, 152, 152);
+                    $pdf->SetFont('Arial', '' , 7);
+                    $pdf->Cell(5, 5, $tbl5[0], 0, 1, 'C', true);
+                    $pdf->SetTextColor(0, 0, 0);
+                    $pdf->SetFont('Arial', '' , 10);
+
                 }
             }
 

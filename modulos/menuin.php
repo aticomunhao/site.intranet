@@ -83,6 +83,7 @@
 					pg_query($Conec, "UPDATE ".$xProj.".poslog SET adm = 4 WHERE pessoas_id = 86;");
 				}
 
+				//0065
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf ADD COLUMN IF NOT EXISTS grupo_id int NOT NULL DEFAULT 0 ;");
 				$rs = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf WHERE grupo_id > 0;");
 				$row = pg_num_rows($rs);
