@@ -218,6 +218,7 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
 
+                //Transfere de um mês para outro
                 $("#transfMesAnoEsc").change(function(){
                     if(document.getElementById("transfMesAnoEsc").value == document.getElementById("selecMesAnoEsc").value){
                         $.confirm({
@@ -231,6 +232,32 @@ if(!isset($_SESSION["usuarioID"])){
                         document.getElementById("transfMesAnoEsc").value = "";
                         return false;
                     }
+
+                    if(parseInt(document.getElementById("transfMesAnoEsc").value) > parseInt(document.getElementById("selecMesAnoEsc").value)+1){
+                        $.confirm({
+                            title: 'Ação Suspensa!',
+                            content: 'Pulando mês.',
+                            draggable: true,
+                            buttons: {
+                                OK: function(){}
+                            }
+                        });
+                        document.getElementById("transfMesAnoEsc").value = "";
+                        return false;
+                    }
+                    if(parseInt(document.getElementById("selecMesAnoEsc").value) === 12 && parseInt(document.getElementById("transfMesAnoEsc").value) > 1){
+                        $.confirm({
+                            title: 'Ação Suspensa!',
+                            content: 'Pulando mês.',
+                            draggable: true,
+                            buttons: {
+                                OK: function(){}
+                            }
+                        });
+                        document.getElementById("transfMesAnoEsc").value = "";
+                        return false;
+                    }
+
                     if(parseInt(document.getElementById("transfMesAnoEsc").value) > 0){
                         $.confirm({
                             title: 'Transferir escala.',
@@ -244,55 +271,53 @@ if(!isset($_SESSION["usuarioID"])){
                                         ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=transfmesano&mesano="+encodeURIComponent(document.getElementById("transfMesAnoEsc").value)
                                         +"&transfde="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value), true);
                                         ajax.onreadystatechange = function(){
-                                if(ajax.readyState === 4 ){
-                                    if(ajax.responseText){
+                                            if(ajax.readyState === 4 ){
+                                                if(ajax.responseText){
 //alert(ajax.responseText);
-                                        Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
-                                        if(parseInt(Resp.coderro) === 2){
-                                                $.confirm({
-                                                    title: 'Ação Suspensa!',
-                                                    content: 'O preenchimento não está completo.',
-                                                    draggable: true,
-                                                    buttons: {
-                                                        OK: function(){}
+                                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                                    if(parseInt(Resp.coderro) === 2){
+                                                            $.confirm({
+                                                                title: 'Ação Suspensa!',
+                                                                content: 'O preenchimento não está completo.',
+                                                                draggable: true,
+                                                                buttons: {
+                                                                    OK: function(){}
+                                                                }
+                                                            });
+                                                            document.getElementById("transfMesAnoEsc").value = "";
+                                                            return false;
                                                     }
-                                                });
-                                                document.getElementById("transfMesAnoEsc").value = "";
-                                                return false;
+                                                    if(parseInt(Resp.coderro) === 0){
+                                                        if(parseInt(Resp.mesliberado) === 0 && parseInt(document.getElementById("escalante").value) === 0){
+                                                            $("#faixacentral").load("modulos/escaladaf/infoAgd1.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                                            $("#faixaquadro").load("modulos/escaladaf/infoAgd2.php");
+                                                            $("#faixanotas").load("modulos/escaladaf/infoAgd3.php");
+                                                            $("#faixaferiados").load("modulos/escaladaf/infoAgd2.php");
+                                                            document.getElementById("botImprimir").style.visibility = "hidden";
+                                                        }else{
+                                                            $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("transfMesAnoEsc").value));
+                                                            $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?mesano="+encodeURIComponent(document.getElementById("transfMesAnoEsc").value));
+                                                            $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?mesano="+encodeURIComponent(document.getElementById("transfMesAnoEsc").value));
+                                                            $("#faixanotas").load("modulos/escaladaf/notasdaf.php?mesano="+encodeURIComponent(document.getElementById("transfMesAnoEsc").value));
+                                                            $("#faixaferiados").load("modulos/escaladaf/relFeriados.php");
+                                                            document.getElementById("selecMesAnoEsc").value = document.getElementById("transfMesAnoEsc").value;
+                                                            document.getElementById("transfMesAnoEsc").value = "";
+                                                            document.getElementById("botImprimir").style.visibility = "visible";
+                                                        }
+                                                        if(parseInt(Resp.mesliberado) === 0){
+                                                            document.getElementById("evliberames").checked = false;
+                                                        }else{
+                                                            document.getElementById("evliberames").checked = true;
+                                                        }
+                                                    }else{
+                                                        alert("Houve um erro no servidor.")
+                                                    }
+                                                }
                                             }
-                                        if(parseInt(Resp.coderro) === 0){
-                                            if(parseInt(Resp.mesliberado) === 0 && parseInt(document.getElementById("escalante").value) === 0){
-                                                $("#faixacentral").load("modulos/escaladaf/infoAgd1.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
-                                                $("#faixaquadro").load("modulos/escaladaf/infoAgd2.php");
-                                                $("#faixanotas").load("modulos/escaladaf/infoAgd3.php");
-                                                $("#faixaferiados").load("modulos/escaladaf/infoAgd2.php");
-                                                document.getElementById("botImprimir").style.visibility = "hidden";
-                                            }else{
-                                                $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("transfMesAnoEsc").value));
-                                                $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?mesano="+encodeURIComponent(document.getElementById("transfMesAnoEsc").value));
-                                                $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?mesano="+encodeURIComponent(document.getElementById("transfMesAnoEsc").value));
-                                                $("#faixanotas").load("modulos/escaladaf/notasdaf.php?mesano="+encodeURIComponent(document.getElementById("transfMesAnoEsc").value));
-                                                $("#faixaferiados").load("modulos/escaladaf/relFeriados.php");
-
-                                                document.getElementById("selecMesAnoEsc").value = document.getElementById("transfMesAnoEsc").value;
-                                                document.getElementById("transfMesAnoEsc").value = "";
-                                                document.getElementById("botImprimir").style.visibility = "visible";
-                                            }
-                                            if(parseInt(Resp.mesliberado) === 0){
-                                                document.getElementById("evliberames").checked = false;
-                                            }else{
-                                                document.getElementById("evliberames").checked = true;
-                                            }
-                                        }else{
-                                            alert("Houve um erro no servidor.")
-                                        }
+                                        };
+                                        ajax.send(null);
                                     }
-                                }
-                            };
-                            ajax.send(null);
-                        }
-
-                            },
+                                },
                                 Não: function () {
                                     document.getElementById("transfMesAnoEsc").value = "";
                                 }
@@ -1194,67 +1219,6 @@ if(!isset($_SESSION["usuarioID"])){
                 $SiglaGrupo = "";
             }
 
-
-            $rsIni = pg_query($Conec, "SELECT MAX(TO_CHAR(dataescalains, 'DD')) 
-            FROM ".$xProj.".escaladaf_ins 
-            WHERE TO_CHAR(dataescalains, 'MM') = '10' And TO_CHAR(dataescalains, 'YYYY') = '2024' ");
-            $tblIni = pg_fetch_row($rsIni);
-            $UltDia = $tblIni[0];
-
-            $rsIni = pg_query($Conec, "SELECT date_part('dow', dataescalains) 
-            FROM ".$xProj.".escaladaf_ins 
-            WHERE TO_CHAR(dataescalains, 'MM') = '10' And TO_CHAR(dataescalains, 'YYYY') = '2024' And TO_CHAR(dataescalains, 'DD') = '$UltDia' ");
-            $tblIni = pg_fetch_row($rsIni);
-            $UltDiaSem = $tblIni[0];
-
-            $rsIni = pg_query($Conec, "SELECT TO_CHAR(dataescalains, 'WW') 
-            FROM ".$xProj.".escaladaf_ins 
-            WHERE TO_CHAR(dataescalains, 'MM') = '10' And TO_CHAR(dataescalains, 'YYYY') = '2024' And TO_CHAR(dataescalains, 'DD') = '01' ");
-            $tblIni = pg_fetch_row($rsIni);
-            $SemNum = $tblIni[0];
-
-            $rsIni = pg_query($Conec, "SELECT TO_CHAR(dataescalains, 'DD') 
-            FROM ".$xProj.".escaladaf_ins 
-            WHERE TO_CHAR(dataescalains, 'MM') = '10' And TO_CHAR(dataescalains, 'YYYY') = '2024' And TO_CHAR(dataescalains, 'WW') = '$SemNum' And date_part('dow', dataescalains) = '$UltDiaSem' ");
-            $tblIni = pg_fetch_row($rsIni);
-            $DiaSemNum = $tblIni[0];
-
-            $rsIni = pg_query($Conec, "SELECT MAX(TO_CHAR(dataescala, 'DD')) 
-            FROM ".$xProj.".escaladaf 
-            WHERE TO_CHAR(dataescala, 'MM') = '11' And TO_CHAR(dataescala, 'YYYY') = '2024' ");
-            $tblIni = pg_fetch_row($rsIni);
-            $UltDiaProxMes = $tblIni[0];
-
-
-//echo $UltDia."<br>";
-//echo $UltDiaSem."<br>";
-//echo $SemNum."<br>";
-//echo $DiaSemNum."<br>";
-//echo $UltDiaProxMes."<br>";
-            
-
-//            $rsIni = pg_query($Conec, "SELECT date_part('dow', dataescalains), TO_CHAR(dataescalains, 'DD')
-//            FROM ".$xProj.".escaladaf_ins 
-//            WHERE TO_CHAR(dataescalains, 'MM') = '11' And TO_CHAR(dataescalains, 'YYYY') = '2024' And TO_CHAR(dataescalains, 'DD') = '01' ");
-//            $tblIni = pg_fetch_row($rsIni);
-//            $DiaS = $tblIni[0];
-//            $Dia01 = $tblIni[1];
-
-//echo $DiaS."<br>";
-//echo $tblIni[1]."<br>";
-
-//$rsAnt = pg_query($Conec, "SELECT date_part('dow', dataescalains), TO_CHAR(dataescalains, 'DD')
-//FROM ".$xProj.".escaladaf_ins 
-//WHERE TO_CHAR(dataescalains, 'MM') = '10' And TO_CHAR(dataescalains, 'YYYY') = '2024' And date_part('dow', dataescalains) = '$DiaS' ");
-//$tblAnt = pg_fetch_row($rsAnt);
-//$DiaIni = $tblAnt[0];
-//$DiaAnt = $tblAnt[1];
-
-//echo $DiaIni."<br>";
-//echo $DiaAnt."<br>";
-
-//echo $NumGrupo;
-
 //Provisórios
 //    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf");
     pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf (
@@ -1323,7 +1287,7 @@ if(!isset($_SESSION["usuarioID"])){
         $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_turnos");
         $tblCod = pg_fetch_row($rsCod);
         $Codigo = $tblCod[0];
-        
+
         pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+1), $NumGrupo, 'F', 'FÉRIAS', 13, 3, NOW() )");
         pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+2), $NumGrupo, 'X', 'FOLGA', 14, 3, NOW() )");
         pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, letra, horaturno, ordemletra, usuins, datains) VALUES(($Codigo+3), $NumGrupo, 'Y', 'INSS', 15, 3, NOW() )");
@@ -1349,13 +1313,17 @@ if(!isset($_SESSION["usuarioID"])){
         $Hoje = date('d/m/Y');
         while($tblT = pg_fetch_row($rsT)){  //Calcular carga horaria
             $Cod = $tblT[0];
-            $Hora = $tblT[1]; 
+            $Ho = $tblT[1]; 
+            $Hor = str_replace("O", "0", $Ho);   // letra O no lugar de 0
+            $Hora = str_replace("o", "0", $Hor); // letra o no lugar de 0
+
             if($tblT[2] != "F" && $tblT[2] != "X" && $tblT[2] != "Y" && $tblT[2] != "Q"){
                 $Proc = explode("/", $Hora);
                 $HoraI = $Proc[0];
                 $HoraF = $Proc[1];
                 $TurnoIni = $Hoje." ".$HoraI;
                 $TurnoFim = $Hoje." ".$HoraF;
+
                 pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET calcdataini = '$TurnoIni', calcdatafim = '$TurnoFim' WHERE id = $Cod");
                 pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargahora = (calcdatafim - calcdataini) WHERE id = $Cod");
                 pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '01:00'), interv = '01:00' WHERE cargahora >= '08:00' And id = $Cod ");

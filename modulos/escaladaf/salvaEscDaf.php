@@ -392,10 +392,20 @@ if($Acao =="salvaletra"){
     echo $responseText;
 }
 
+
+function limpar_texto($str){ 
+//    return preg_replace("/[^0-9]/", "", $str); 
+//    $a = array('a', 'À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'Æ', 'Ç', 'È', 'É', 'Ê', 'Ë', 'Ì', 'Í', 'Î', 'Ï', 'Ð', 'Ñ', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', 'Ø', 'Ù', 'Ú', 'Û', 'Ü', 'Ý', 'ß', 'à', 'á', 'â', 'ã', 'ä', 'å', 'æ', 'ç', 'è', 'é', 'ê', 'ë', 'ì', 'í', 'î', 'ï', 'ñ', 'ò', 'ó', 'ô', 'õ', 'ö', 'ø', 'ù', 'ú', 'û', 'ü', 'ý', 'ÿ', 'Ā', 'ā', 'Ă', 'ă', 'Ą', 'ą', 'Ć', 'ć', 'Ĉ', 'ĉ', 'Ċ', 'ċ', 'Č', 'č', 'Ď', 'ď', 'Đ', 'đ', 'Ē', 'ē', 'Ĕ', 'ĕ', 'Ė', 'ė', 'Ę', 'ę', 'Ě', 'ě', 'Ĝ', 'ĝ', 'Ğ', 'ğ', 'Ġ', 'ġ', 'Ģ', 'ģ', 'Ĥ', 'ĥ', 'Ħ', 'ħ', 'Ĩ', 'ĩ', 'Ī', 'ī', 'Ĭ', 'ĭ', 'Į', 'į', 'İ', 'ı', 'Ĳ', 'ĳ', 'Ĵ', 'ĵ', 'Ķ', 'ķ', 'Ĺ', 'ĺ', 'Ļ', 'ļ', 'Ľ', 'ľ', 'Ŀ', 'ŀ', 'Ł', 'ł', 'Ń', 'ń', 'Ņ', 'ņ', 'Ň', 'ň', 'ŉ', 'Ō', 'ō', 'Ŏ', 'ŏ', 'Ő', 'ő', 'Œ', 'œ', 'Ŕ', 'ŕ', 'Ŗ', 'ŗ', 'Ř', 'ř', 'Ś', 'ś', 'Ŝ', 'ŝ', 'Ş', 'ş', 'Š', 'š', 'Ţ', 'ţ', 'Ť', 'ť', 'Ŧ', 'ŧ', 'Ũ', 'ũ', 'Ū', 'ū', 'Ŭ', 'ŭ', 'Ů', 'ů', 'Ű', 'ű', 'Ų', 'ų', 'Ŵ', 'ŵ', 'Ŷ', 'ŷ', 'Ÿ', 'Ź', 'ź', 'Ż', 'ż', 'Ž', 'ž', 'ſ', 'ƒ', 'Ơ', 'ơ', 'Ư', 'ư', 'Ǎ', 'ǎ', 'Ǐ', 'ǐ', 'Ǒ', 'ǒ', 'Ǔ', 'ǔ', 'Ǖ', 'ǖ', 'Ǘ', 'ǘ', 'Ǚ', 'ǚ', 'Ǜ', 'ǜ', 'Ǻ', 'ǻ', 'Ǽ', 'ǽ', 'Ǿ', 'ǿ');
+    $a = array('A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'Ü', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
+    $b = array('0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0');
+    return str_replace($a, $b, $str);
+  }
+
 if($Acao =="salvaturno"){
     $Erro = 0;
     $Cod = filter_input(INPUT_GET, 'codigo');
-    $Valor = addslashes(filter_input(INPUT_GET, 'valor'));
+    $Val = addslashes(filter_input(INPUT_GET, 'valor'));
+    $Valor = limpar_texto($Val);// letra O no lugar de 0
 
     $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET horaturno = '$Valor' WHERE id = $Cod");
     if(!$rs){
@@ -404,16 +414,22 @@ if($Acao =="salvaturno"){
 
     if($Cod > 4){ // além de férias, folga, etc
         //Calcular carga horaria
-        $Hora = addslashes(filter_input(INPUT_GET, 'valor')); 
+        $Ho = addslashes(filter_input(INPUT_GET, 'valor')); 
+        $Hor = str_replace("O", "0", $Ho); // letra O no lugar de 0
+        $Hora = str_replace("o", "0", $Hor); // letra o no lugar de 0
+
         $Proc = explode("/", $Hora);
         $HoraI = $Proc[0];
         $HoraF = $Proc[1];
-        $TurnoIni = $Hoje." ".$HoraI;
-        $TurnoFim = $Hoje." ".$HoraF;
+        $TurnoI = $Hoje." ".$HoraI;
+        $TurnoF = $Hoje." ".$HoraF;
+
+        $TurnoIni = limpar_texto($TurnoI);
+        $TurnoFim = limpar_texto($TurnoF);
 
         if(strLen($TurnoIni) < 17 || strLen($TurnoFim) < 17){
             $Erro = 2;
-            $var = array("coderro"=>$Erro);
+            $var = array("coderro"=>$Erro, "hora1"=>$TurnoFim);
             $responseText = json_encode($var);
             echo $responseText;
             return false;
@@ -427,7 +443,7 @@ if($Acao =="salvaturno"){
 
     }
 
-    $var = array("coderro"=>$Erro, "cod"=>$Cod);
+    $var = array("coderro"=>$Erro, "cod"=>$Cod, "hora1"=>$TurnoFim);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -435,7 +451,10 @@ if($Acao =="salvaturno"){
 if($Acao =="salvaInterv"){
     $Erro = 0;
     $Cod = filter_input(INPUT_GET, 'codigo');
-    $Valor = filter_input(INPUT_GET, 'valor');
+    $Va = filter_input(INPUT_GET, 'valor');
+    $Val = str_replace("O", "0", $Va); // letra O no lugar de 0
+    $Valor = str_replace("o", "0", $Val); // letra o no lugar de 0
+
     $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET interv = '$Valor' WHERE id = $Cod");
     if(!$rs){
         $Erro = 1;
@@ -508,7 +527,9 @@ if($Acao =="insereletra"){
     $Erro = 0;
     $Ordem = (int) filter_input(INPUT_GET, 'ordem');
     $Letra = filter_input(INPUT_GET, 'insletra');
-    $Turno = addslashes(filter_input(INPUT_GET, 'insturno'));
+    $Tur = addslashes(filter_input(INPUT_GET, 'insturno'));
+     $Turno = limpar_texto($Tur);
+
     $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
 
     $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_turnos");
@@ -649,52 +670,50 @@ if($Acao =="transfmesano"){
     FROM ".$xProj.".escaladaf 
     WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
     $tblIni = pg_fetch_row($rsIni);
-    $UltDiaProxMes = $tblIni[0]; 
+    $UltDiaProxMes = $tblIni[0]; // 31
 
-    $rsIni = pg_query($Conec, "SELECT MAX(TO_CHAR(dataescalains, 'DD')) 
-    FROM ".$xProj.".escaladaf_ins 
-    WHERE TO_CHAR(dataescalains, 'MM') = '$MesFrom' And TO_CHAR(dataescalains, 'YYYY') = '$AnoFrom' ");
+    $rsIni = pg_query($Conec, "SELECT MAX(TO_CHAR(dataescala, 'DD')) 
+    FROM ".$xProj.".escaladaf 
+    WHERE TO_CHAR(dataescala, 'MM') = '$MesFrom' And TO_CHAR(dataescala, 'YYYY') = '$AnoFrom' ");
     $tblIni = pg_fetch_row($rsIni);
-    $UltDia = $tblIni[0];
+    $UltDia = $tblIni[0]; // 31
 
-    $rsIni = pg_query($Conec, "SELECT date_part('dow', dataescalains) 
-    FROM ".$xProj.".escaladaf_ins 
-    WHERE TO_CHAR(dataescalains, 'MM') = '$MesFrom' And TO_CHAR(dataescalains, 'YYYY') = '$AnoFrom' And TO_CHAR(dataescalains, 'DD') = '$UltDia' ");
+    //Dia da semana onde iniciar 
+    $rsIni = pg_query($Conec, "SELECT date_part('dow', dataescala) 
+    FROM ".$xProj.".escaladaf 
+    WHERE TO_CHAR(dataescala, 'MM') = '$MesFrom' And TO_CHAR(dataescala, 'YYYY') = '$AnoFrom' And TO_CHAR(dataescala, 'DD') = '$UltDia' And grupo_id = $NumGrupo ");
     $tblIni = pg_fetch_row($rsIni);
-    $UltDiaSem = $tblIni[0];
+    $DiaSemanaIni = ($tblIni[0]+1);  // 0, 1, 2...  Soma um dia na semana para iniciar a sequência no mês seguinte
 
-    $rsIni = pg_query($Conec, "SELECT TO_CHAR(dataescalains, 'WW') 
-    FROM ".$xProj.".escaladaf_ins 
-    WHERE TO_CHAR(dataescalains, 'MM') = '$MesFrom' And TO_CHAR(dataescalains, 'YYYY') = '$AnoFrom' And TO_CHAR(dataescalains, 'DD') = '01' ");
-    $tblIni = pg_fetch_row($rsIni);
-    $SemNum = $tblIni[0];
-
-    $rsIni = pg_query($Conec, "SELECT TO_CHAR(dataescalains, 'DD') FROM ".$xProj.".escaladaf_ins 
-    WHERE TO_CHAR(dataescalains, 'MM') = '$MesFrom' And TO_CHAR(dataescalains, 'YYYY') = '$AnoFrom' And TO_CHAR(dataescalains, 'WW') = '$SemNum' And date_part('dow', dataescalains) = '$UltDiaSem' ");
+    //Procura o dia do mês para iniciar
+    $rsIni = pg_query($Conec, "SELECT TO_CHAR(dataescala, 'DD') FROM ".$xProj.".escaladaf 
+    WHERE TO_CHAR(dataescala, 'MM') = '$MesFrom' And TO_CHAR(dataescala, 'YYYY') = '$AnoFrom' And date_part('dow', dataescala) = '$DiaSemanaIni' And grupo_id = $NumGrupo ORDER BY dataescala ");
     $rowIni = pg_num_rows($rsIni);
     if($rowIni > 0){
         $tblIni = pg_fetch_row($rsIni);
-        $DiaSemNum = $tblIni[0];
+        $DiaSemDia = $tblIni[0];
     }else{
-        $DiaSemNum = "01";
+        $DiaSemDia = "01";
         $Erro = 2;
-        $var = array("coderro"=>$Erro);
+        $var = array("coderro"=>$Erro, "ulDiaSemana"=>$DiaSemanaIni, "NumDia"=>$DiaSemDia);
         $responseText = json_encode($var);
         echo $responseText;
         return false;
     }
-  
+    
+    // apaga o que houver no mês seguinte
     pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf_ins WHERE TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ;");
 
+    //Inicia selecionando 
     $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescalains, 'DD'), poslog_id, letraturno, turnoturno, destaque, cargatime, turnos_id 
     FROM ".$xProj.".escaladaf_ins 
-    WHERE TO_CHAR(dataescalains, 'MM') = '$MesFrom' And TO_CHAR(dataescalains, 'YYYY') = '$AnoFrom' And grupo_ins = $NumGrupo And TO_CHAR(dataescalains, 'DD') > '$DiaSemNum' And TO_CHAR(dataescalains, 'DD') <= '$UltDiaProxMes' ORDER BY dataescalains ");
+    WHERE TO_CHAR(dataescalains, 'MM') = '$MesFrom' And TO_CHAR(dataescalains, 'YYYY') = '$AnoFrom' And grupo_ins = $NumGrupo And TO_CHAR(dataescalains, 'DD') >= '$DiaSemDia' And TO_CHAR(dataescalains, 'DD') <= '$UltDiaProxMes' ORDER BY dataescalains ");
     $row = pg_num_rows($rs);
     if($row > 0){
         while($tbl = pg_fetch_row($rs)){
             $CodId = $tbl[0];
             $Dia = $tbl[1];
-            $Dia = ($Dia-$DiaSemNum); // retroceder até o dia que é o próximo dia da semana do mes seguinte
+            $Dia = ($Dia-($DiaSemDia-1)); // retroceder até o dia que é o próximo dia da semana do mes seguinte
             if($Dia <= $UltDiaProxMes){
                 $NovaData = $Ano."/".$Mes."/".$Dia;
                 $PoslogId = $tbl[2];
@@ -726,7 +745,7 @@ if($Acao =="transfmesano"){
         $Erro = 1;
     }
 
-    $var = array("coderro"=>$Erro, "novadata"=>$NovaData, "NumDia"=>$DiaSemNum);
+    $var = array("coderro"=>$Erro, "novadata"=>$NovaData, "NumDia"=>$DiaSemDia);
     $responseText = json_encode($var);
     echo $responseText;
 }

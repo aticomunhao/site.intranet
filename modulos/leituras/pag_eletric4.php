@@ -201,7 +201,7 @@ if(!isset($_SESSION["usuarioID"])){
             }); // fim do ready
 
             function carregaModal(Cod){
-                if(parseInt(document.getElementById("InsLeitura").value) === 0){
+                if(parseInt(document.getElementById("InsLeituraEletric").value) === 0){
                     return false;
                 }
                 ajaxIni();

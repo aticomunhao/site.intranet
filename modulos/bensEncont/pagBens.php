@@ -260,6 +260,7 @@ if(!isset($_SESSION["usuarioID"])){
                     };
                     ajax.send(null);
                 }
+                document.getElementById("botApagaBem").style.visibility = "hidden";
                 document.getElementById("relacmodalRegistro").style.display = "block";
             }
 
@@ -461,6 +462,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("guardaNumRelat").value = Resp.numprocesso;
 //                                    document.getElementById("numprocesso").innerHTML = "Registrado sob nº "+Resp.numprocesso;
                                     document.getElementById("botsalvareg").innerHTML = "Salvar";
+                                    document.getElementById("botApagaBem").style.visibility = "visible";
                                     document.getElementById("relacmodalRegistro").style.display = "block";
                                 }
                             }
@@ -1196,8 +1198,9 @@ if(!isset($_SESSION["usuarioID"])){
                     <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Restituídos');" title="Bem já restituído">Restituídos</button>
                     <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Destinar');" title="Pronto para dar destino. Prazo de 90 dias transcorrido. Nível Revisor.">Destinar</button>
                     <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Destinados');" title="Bem já encaminhado para o destino.">Destinados</button>
-                    <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Receber');" title="Objeto já destinado. Falta receber no destino." >Receber</button>
+<!--                    <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Receber');" title="Objeto já destinado. Falta receber no destino." >Receber</button>
                     <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Recebidos');" title="Bem já recebido no destino." >Recebidos</button>
+-->
                     <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Arquivar');" title="Processo que aguarda encerramento. Nível Revisor." >Arquivar</button>
                     <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Arquivados');" title="Processo encerrado." >Arquivados</button>
 
@@ -1283,7 +1286,9 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="3"></td>
                         </tr>
                         <tr>
-                            <td><button class="botpadrTijolo" id="botApagaBem" onclick="ApagarBem();">Apagar</button></td>
+                            <td>
+                                <button class="botpadrTijolo" id="botApagaBem" onclick="ApagarBem();">Apagar</button>
+                            </td>
                             <td colspan="3"></td>
                         </tr>
                     </table>
@@ -1404,7 +1409,9 @@ if(!isset($_SESSION["usuarioID"])){
                             <td style="padding-left: 15px; padding-right: 15px;"><div style="border: 1px solid blue; border-radius: 10px; text-align: center;">(a) <label id="etiqnomeusurestit" style="font-weight: bold;"> <?php echo $_SESSION["NomeCompl"]; ?> </label></div></td>
                         </tr>
                         <tr>
-                            <td><button class="botpadrTijolo" id="botApagaBem" onclick="ApagarBem();">Apagar</button></td>
+                            <td>
+<!--                                <button class="botpadrTijolo" id="botApagaBem" onclick="ApagarBem();">Apagar</button> -->
+                            </td>
                             <td style="text-align: center; padding-top: 25px;"><button class="botpadrblue" id="botsalvaRestit" onclick="modalRestit();">Objeto Restituido</button></td>
                         </tr>
                         <tr>

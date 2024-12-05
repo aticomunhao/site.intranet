@@ -1,26 +1,27 @@
 <?php
-session_start(); 
-if(!isset($_SESSION["usuarioID"])){
-    session_destroy();
-    header("Location: ../../index.php");
-}
+    session_start(); 
+    if(!isset($_SESSION["usuarioID"])){
+        session_destroy();
+        header("Location: ../../index.php");
+    }
 
-require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
-date_default_timezone_set('America/Sao_Paulo'); 
-//numeração do dia da semana da função extract() (DOW) é diferente da função to_char() (D)
-//Função para Extract no postgres
-$Semana_Extract = array(
-    '0' => 'D',
-    '1' => '2ª',
-    '2' => '3ª',
-    '3' => '4ª',
-    '4' => '5ª',
-    '5' => '6ª',
-    '6' => 'S',
-    'xª'=> ''
-);
-$Mes = date("m");
-$Ano = date("Y");
+    require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
+    date_default_timezone_set('America/Sao_Paulo'); 
+    //numeração do dia da semana da função extract() (DOW) é diferente da função to_char() (D)
+    //Função para Extract no postgres
+    $Semana_Extract = array(
+        '0' => 'D',
+        '1' => '2ª',
+        '2' => '3ª',
+        '3' => '4ª',
+        '4' => '5ª',
+        '5' => '6ª',
+        '6' => 'S',
+        'xª'=> ''
+    );
+
+    $Mes = date("m");
+    $Ano = date("Y");
 
     if(isset($_REQUEST["mesano"])){
         $Busca = addslashes(filter_input(INPUT_GET, 'mesano'));
@@ -43,7 +44,6 @@ $Ano = date("Y");
                 $Ano = $Proc[1];
             }
         }
-
         $Data = date('01/'.$Mes.'/'.$Ano);
     }else{
         $rs = pg_query($Conec, "SELECT MIN(dataescala) FROM ".$xProj.".escaladaf WHERE ativo = 1 And grupo_id = $NumGrupo");
@@ -55,13 +55,15 @@ $Ano = date("Y");
         $Mes = ($Mes - 1);
         $Data = date('01/'.$Mes.'/'.$Ano);
     }
+
     $EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
     $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
     echo "Mês: ".$Mes.'/'.$Ano;
     echo "<br><br>";
 
-        $rs2 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl ");
-        $row2 = pg_num_rows($rs2);
+    $rs2 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl ");
+    $row2 = pg_num_rows($rs2);
+
         if($row2 > 0){
             echo "<table style='margin: 0 auto; width: 90%;'>";
                 echo "<tr>";

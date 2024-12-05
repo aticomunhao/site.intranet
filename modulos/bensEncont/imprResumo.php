@@ -138,7 +138,8 @@ if(!isset($_SESSION['AdmUsu'])){
                 $tbl2 = pg_fetch_row($rs2);
                 $pdf->SetFont('Arial', '' , 10); 
                 $pdf->SetX(55);
-                $pdf->Cell(50, 4, "Processo Encerrado: ", 0, 0, 'L');
+//                $pdf->Cell(50, 4, "Processo Encerrado: ", 0, 0, 'L');
+                $pdf->Cell(50, 4, " ", 0, 0, 'L');
                 $pdf->SetFont('Arial', 'B' , 10); 
                 $pdf->Cell(10, 4, number_format($tbl2[0], 0, ",","."), 0, 0, 'R');
 
@@ -148,7 +149,7 @@ if(!isset($_SESSION['AdmUsu'])){
                 }
                 $pdf->Cell(25, 4, "", 0, 1, 'L');
 
-                $pdf->ln(2);
+                $pdf->ln(10);
                 $rsP4 = pg_query($Conec, "SELECT COUNT(id) FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And usucsg != 0 And usuarquivou = 0");
                 $tblP4 = pg_fetch_row($rsP4);
                 $pdf->SetFont('Arial', '' , 10); 

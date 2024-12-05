@@ -211,7 +211,7 @@ if(!isset($_SESSION["usuarioID"])){
             }); // fim do ready
 
             function carregaModal(Cod){
-                if(parseInt(document.getElementById("InsLeitura").value) === 0){
+                if(parseInt(document.getElementById("InsLeituraEletric").value) === 0){
                     return false;
                 }
                 ajaxIni();
@@ -667,7 +667,6 @@ if(!isset($_SESSION["usuarioID"])){
             $InsEletric = parEsc("eletric", $Conec, $xProj, $_SESSION["usuarioID"]); // procura coluna eletric em poslog 
             $FiscEletric = parEsc("fisc_eletric", $Conec, $xProj, $_SESSION["usuarioID"]); // procura fisc_eletric em poslog 
             $FatorCor = parAdm("fatorcor_eletr", $Conec, $xProj); // fator a aplicar para acertar com o consumo das antenas
-
             $Menu1 = escMenu($Conec, $xProj, 1);
             $Menu2 = escMenu($Conec, $xProj, 2);
             $Menu3 = escMenu($Conec, $xProj, 3);

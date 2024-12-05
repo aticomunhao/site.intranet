@@ -24,119 +24,18 @@
 			//Provisório
 			if(strtotime('2024/12/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//0063
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS encbens smallint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS orgtarefa smallint NOT NULL DEFAULT 60 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS usumodiforg bigint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS datamodiforg timestamp without time zone DEFAULT '3000-12-31' ;");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET orgtarefa = 60 WHERE orgtarefa = 0;");
-
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS orgins smallint NOT NULL DEFAULT 60 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS orgexec smallint NOT NULL DEFAULT 60 ;");
-
-				$rs = pg_query($Conec, "SELECT orgtarefa FROM ".$xProj.".poslog WHERE pessoas_id = 2057 And orgtarefa = 60;");
-				$row = pg_num_rows($rs);
-                if($row > 0){
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET orgtarefa = 20 WHERE pessoas_id = 2057;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET orgtarefa = 30 WHERE pessoas_id = 2;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET orgtarefa = 30 WHERE pessoas_id = 83;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET orgtarefa = 40 WHERE pessoas_id = 22;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET orgtarefa = 40 WHERE pessoas_id = 44;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET orgtarefa = 40 WHERE pessoas_id = 86;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET orgtarefa = 40 WHERE pessoas_id = 8;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET orgtarefa = 40 WHERE pessoas_id = 37;");
-
-					$rs1 = pg_query($Conec, "SELECT usuins FROM ".$xProj.".tarefas WHERE ativo = 1 GROUP BY usuins;");
-					$row1 = pg_num_rows($rs1);
-					While ($tbl1 = pg_fetch_row($rs1)){
-						$Cod = $tbl1[0];
-						$rs2 = pg_query($Conec, "SELECT orgtarefa FROM ".$xProj.".poslog WHERE pessoas_id = $Cod;");
-						$row2 = pg_num_rows($rs2);
-						if($row2 > 0){
-							$tbl2 = pg_fetch_row($rs2);
-							$Valor = $tbl2[0];
-							pg_query($Conec, "UPDATE ".$xProj.".tarefas SET orgins = $Valor WHERE usuins = $Cod;");
-						}
-					}
-					$rs1 = pg_query($Conec, "SELECT usuexec FROM ".$xProj.".tarefas WHERE ativo = 1 GROUP BY usuexec;");
-					$row1 = pg_num_rows($rs1);
-					While ($tbl1 = pg_fetch_row($rs1)){
-						$Cod = $tbl1[0];
-						$rs2 = pg_query($Conec, "SELECT orgtarefa FROM ".$xProj.".poslog WHERE pessoas_id = $Cod;");
-						$row2 = pg_num_rows($rs2);
-						if($row2 > 0){
-							$tbl2 = pg_fetch_row($rs2);
-							$Valor = $tbl2[0];
-							pg_query($Conec, "UPDATE ".$xProj.".tarefas SET orgexec = $Valor WHERE usuexec = $Cod;");
-						}
+				//0067 
+				$rsT = pg_query($Conec, "SELECT id, horaturno, letra FROM ".$xProj.".escaladaf_turnos WHERE id > 4 And ativo = 1 ");
+				$rowT = pg_num_rows($rsT);
+				if($rowT > 0){
+					while($tblT = pg_fetch_row($rsT)){
+						$Cod = $tblT[0];
+						$Ho = $tblT[1]; 
+						$Hor = str_replace("O", "0", $Ho);   // letra O no lugar de 0
+						$Hora = str_replace("o", "0", $Hor); // letra o no lugar de 0
+						pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET horaturno = '$Hora' WHERE id = $Cod");
 					}
 				}
-				$rs = pg_query($Conec, "SELECT encbens FROM ".$xProj.".poslog WHERE pessoas_id = 83 And encbens = 0;");
-				$row = pg_num_rows($rs);
-                if($row > 0){
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET encbens = 1 WHERE pessoas_id = 83;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET encbens = 1 WHERE pessoas_id = 22;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET encbens = 1 WHERE pessoas_id = 37;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET encbens = 1 WHERE pessoas_id = 86;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET adm = 4 WHERE pessoas_id = 22;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET adm = 4 WHERE pessoas_id = 37;");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET adm = 4 WHERE pessoas_id = 86;");
-				}
-
-				//0065
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf ADD COLUMN IF NOT EXISTS grupo_id int NOT NULL DEFAULT 0 ;");
-				$rs = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf WHERE grupo_id > 0;");
-				$row = pg_num_rows($rs);
-                if($row == 0){
-					pg_query($Conec, "UPDATE ".$xProj.".escaladaf SET grupo_id = 1 "); // 1 = DAF
-				}
-
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_ins ADD COLUMN IF NOT EXISTS grupo_ins int NOT NULL DEFAULT 0 ;");
-				$rs = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_ins WHERE grupo_ins > 0;");
-				$row = pg_num_rows($rs);
-                if($row == 0){
-					pg_query($Conec, "UPDATE ".$xProj.".escaladaf_ins SET grupo_ins= 1 ");
-				}
-
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS grupo_turnos int NOT NULL DEFAULT 0 ;");
-				$rs = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_turnos WHERE grupo_turnos > 0;");
-				$row = pg_num_rows($rs);
-                if($row == 0){
-					pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET grupo_turnos= 1 ");
-				}
-
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_notas ADD COLUMN IF NOT EXISTS grupo_notas int NOT NULL DEFAULT 0 ;");
-				$rs = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_notas WHERE grupo_notas > 0;");
-				$row = pg_num_rows($rs);
-                if($row == 0){ // roda só uma vez
-					pg_query($Conec, "UPDATE ".$xProj.".escaladaf_notas SET grupo_notas= 1 ");
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_grupo = 2 WHERE pessoas_id = 22 "); // Elton
-					pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_grupo = 3 WHERE pessoas_id = 2 ");  // Moi
-					pg_query($Conec, "UPDATE ".$xProj.".escalas_gr SET siglagrupo = 'DIADM' WHERE id = 2 ");
-					$Amanha = strtotime("+1 day", $DiaIni);
-					$DiaIni = $Amanha;
-					$Data = date("Y/m/d", $Amanha); // data legível
-					$rs0 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf WHERE dataescala = '$Data' And grupo_id = 2 ");
-					$row0 = pg_num_rows($rs0);
-					if($row0 == 0){
-						pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf (dataescala, grupo_id) VALUES ('$Data', 2");
-						pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf (dataescala, grupo_id) VALUES ('$Data', 3");
-					}
-				}
-
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_ins ADD COLUMN IF NOT EXISTS turnos_id smallint NOT NULL DEFAULT 0 ;");
-
-				$rs3 = pg_query($Conec, "SELECT id, letra FROM ".$xProj.".escaladaf_turnos WHERE grupo_turnos = 1 ORDER BY letra");
-				While ($tbl3 = pg_fetch_row($rs3)){
-					$Cod = $tbl3[0];
-					$Letra = $tbl3[1];
-					pg_query($Conec, "UPDATE ".$xProj.".escaladaf_ins SET turnos_id = $Cod WHERE letraturno = '$Letra' ;");
-				}
-
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escalas_gr ADD COLUMN IF NOT EXISTS chefe_escdaf bigint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escalas_gr ADD COLUMN IF NOT EXISTS enc_escdaf bigint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "UPDATE ".$xProj.".escalas_gr SET chefe_escdaf = 83, enc_escdaf = 22 WHERE chefe_escdaf = 0 ;");
-				 
 
 			} // fim data limite
         ?>

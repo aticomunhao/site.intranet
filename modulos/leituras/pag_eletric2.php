@@ -211,7 +211,7 @@ if(!isset($_SESSION["usuarioID"])){
             }); // fim do ready
 
             function carregaModal(Cod){
-                if(parseInt(document.getElementById("InsLeitura").value) === 0){
+                if(parseInt(document.getElementById("InsLeituraEletric").value) === 0){
                     return false;
                 }
                 ajaxIni();
@@ -570,7 +570,6 @@ if(!isset($_SESSION["usuarioID"])){
             $admEdit = parAdm("editleituraeletric", $Conec, $xProj); // nível para editar
             $InsEletric = parEsc("eletric2", $Conec, $xProj, $_SESSION["usuarioID"]); // procura coluna eletric em poslog 
             $FiscEletric = parEsc("fisc_eletric", $Conec, $xProj, $_SESSION["usuarioID"]); // procura fisc_eletric em poslog 
-
             $Menu1 = escMenu($Conec, $xProj, 1);
             $Menu2 = escMenu($Conec, $xProj, 2);
             $Menu3 = escMenu($Conec, $xProj, 3);

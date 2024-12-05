@@ -74,14 +74,14 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 $Acao = "Todos";
             }
 
-            $Condic = $xProj.".bensachados.ativo = 1 ";
+            $Condic = $xProj.".bensachados.ativo = 1 And usuarquivou = 0";
             $vIndex = $xProj.".bensachados.datareceb DESC, id DESC";
             if($Acao == "Restituídos"){
                 $Condic = $xProj.".bensachados.ativo = 1 And usurestit > 0";
                 $vIndex = $xProj.".bensachados.datareceb DESC";
             }
             if($Acao == "Destinados"){
-                $Condic = $xProj.".bensachados.ativo = 1 And usuencdestino > 0 And (CURRENT_DATE-datareceb) >= 90";
+                $Condic = $xProj.".bensachados.ativo = 1 And usuencdestino > 0 And usuarquivou = 0 And (CURRENT_DATE-datareceb) >= 90";
                 $vIndex = $xProj.".bensachados.dataencdestino DESC";
             }
             if($Acao == "Destinar"){
