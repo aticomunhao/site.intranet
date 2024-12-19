@@ -868,8 +868,8 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
 
             require_once("modais.php");
             //Para carregar os select de dia e mês
-            $OpcoesMes = pg_query($Conec, "SELECT Esc1 FROM ".$xProj.".escolhas WHERE CodEsc < 14 ORDER BY Esc1");
-            $OpcoesDia = pg_query($Conec, "SELECT Esc1 FROM ".$xProj.".escolhas ORDER BY Esc1");
+            $OpcoesMes = pg_query($Conec, "SELECT esc1 FROM ".$xProj.".escolhas WHERE codesc < 14 ORDER BY esc1");
+            $OpcoesDia = pg_query($Conec, "SELECT esc1 FROM ".$xProj.".escolhas ORDER BY esc1");
 
             $Menu1 = escMenu($Conec, $xProj, 1); //abre alas
             $Menu2 = escMenu($Conec, $xProj, 2); 

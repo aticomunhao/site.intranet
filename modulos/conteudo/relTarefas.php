@@ -197,7 +197,9 @@ if(!isset($_SESSION["usuarioID"])){
                             $rs6 = pg_query($Conec, "SELECT execlido FROM ".$xProj.".tarefas_msg WHERE idtarefa = $idTar And execlido = 0"); // procura mensagens não lidas como usuIns para essa tarefa
                             $row6 = pg_num_rows($rs6); // quantid mensagens não lidas como usuExec
                         }
-
+                        $rs8 = pg_query($Conec, "SELECT idmsg FROM ".$xProj.".tarefas_msg WHERE idtarefa = $idTar And elim = 0 "); // procura mensagens não lidas como usuIns para essa tarefa
+                        $row8 = pg_num_rows($rs8); // quantid mensagens 
+                        
                         echo "<tr>";  //Primeira coluna à esquerda - data e nomes
                             echo "<td style='vertical-align: top;'><div style='padding-bottom: 8px; padding-top: 2px;' title='Tarefa expedida para $NomeExec'><sub>Em $DataInsert para:</sub></div>";
                                 echo "<div class='etiqLat'>";
@@ -269,9 +271,17 @@ if(!isset($_SESSION["usuarioID"])){
                                 }
                                 echo "<div title='Mensagens' style='cursor: pointer;' onclick='carregaMsg($idTar);'>";
                                     if($row4 > 0 || $row6 > 0){
-                                        echo "<p class='blink'>&#9993;</p>";
+                                        echo "<p class='blink'>&#9993;";
+                                        if($row8 > 0){
+                                            echo "<label style='font-size: 70%; cursor: pointer;'><sup>$row8</sup></label>";
+                                        }
+                                        echo "</p>";
                                     }else{
-                                        echo "<p>&#9993;</p>";
+                                        echo "<p>&#9993;";
+                                        if($row8 > 0){
+                                            echo "<label style='font-size: 70%; cursor: pointer;'><sup>$row8</sup></label>";
+                                        }
+                                        echo "</p>";
                                     }
                                     echo "</div>";
                             echo "</td>";

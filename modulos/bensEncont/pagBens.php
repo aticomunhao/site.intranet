@@ -96,6 +96,8 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("botInsReg").style.visibility = "hidden"; 
                 document.getElementById("botApagaBem").style.visibility = "hidden";
                 document.getElementById("imgBensconfig").style.visibility = "hidden";
+                document.getElementById("numregistro").disabled = true;
+
                 if(parseInt(document.getElementById("guardaescEdit").value) === 1){ // tem que estar autorizado no cadastro de usuários
                     if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
                         document.getElementById("botInsReg").style.visibility = "visible"; 
@@ -464,6 +466,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("botsalvareg").innerHTML = "Salvar";
                                     document.getElementById("botApagaBem").style.visibility = "visible";
                                     document.getElementById("relacmodalRegistro").style.display = "block";
+                                    document.getElementById("numregistro").disabled = false;
                                 }
                             }
                         }
@@ -1255,10 +1258,10 @@ if(!isset($_SESSION["usuarioID"])){
 <!--                                <label id="numprocesso" class="etiqAzul" style="padding-left: 30px; color: red;"></label>  -->
                             </td>
                             <td class="etiqAzul">Número do Processo: </td>
-                            <td><input type="text" id="numregistro" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="checaNumRegistro();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;"></td>
+                            <td><input disabled type="text" id="numregistro" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="checaNumRegistro();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;"></td>
                         </tr>
                         <tr>
-                            <td class="etiqAzul">Descrição do bem encontrado: </td>
+                            <td class="etiqAzul">Descrição do objeto encontrado: </td>
                             <td colspan="3">
                                 <textarea style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="3" cols="60" id="descdobem" onchange="modif();"></textarea>
                             </td>
@@ -1274,7 +1277,7 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="3"><textarea style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="2" cols="60" id="localachado" onchange="modif();"></textarea></td>
                         </tr>
                         <tr>
-                            <td class="etiqAzul">Nome do Colaborador que encontrou o bem: </td>
+                            <td class="etiqAzul">Nome de quem encontrou: </td>
                             <td colspan="3"><input type="text" id="nomeachou" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="Nome do colaborador que encontrou" style="font-size: .9em; width: 90%;"></td>
                         </tr>
                         <tr>

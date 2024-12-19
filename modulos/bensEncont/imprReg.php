@@ -24,7 +24,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
     $rs = pg_query($Conec, "SELECT to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, to_char(".$xProj.".bensachados.dataachou, 'DD/MM/YYYY'), localachou, nomeachou, telefachou, to_char(NOW(), 'DD/MM/YYYY'), usuguarda, to_char(".$xProj.".bensachados.dataguarda, 'DD/MM/YYYY'), nomepropriet, 
     cpfpropriet, telefpropriet, usurestit, to_char(".$xProj.".bensachados.datarestit, 'DD/MM/YYYY'), usucsg, to_char(".$xProj.".bensachados.datarcbcsg, 'DD/MM/YYYY'), setordestino, nomerecebeudestino, destinonodestino, to_char(".$xProj.".bensachados.datadestino, 'DD/MM/YYYY'), 
-    usuarquivou, to_char(".$xProj.".bensachados.dataarquivou, 'DD/MM/YYYY'), usudestino, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, CURRENT_DATE-datareceb As Dias, descencdestino, descencprocesso 
+    usuarquivou, to_char(".$xProj.".bensachados.dataarquivou, 'DD/MM/YYYY'), usudestino, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, CURRENT_DATE-datareceb As Dias, descencdestino, descencprocesso, usuencdestino, to_char(".$xProj.".bensachados.dataencdestino, 'DD/MM/YYYY')
     FROM ".$xProj.".bensachados INNER JOIN ".$xProj.".poslog ON ".$xProj.".bensachados.codusuins = ".$xProj.".poslog.pessoas_id
     WHERE ".$xProj.".bensachados.id = $Num ");
     $row = pg_num_rows($rs);
@@ -40,6 +40,10 @@ if(!isset($_SESSION['AdmUsu'])){
     $Dias = (int) $tbl[25];
     $DestSetor = $tbl[26];
     $DestProcesso = $tbl[27];
+
+    $UsuEncDest = $tbl[28];
+    $DataEncDest = $tbl[29];
+
 //    8 e 9 usuguarda e dataguarda
 // 10 nomeprop
 //usurestit 13   data restit 14
@@ -361,7 +365,11 @@ if(!isset($_SESSION['AdmUsu'])){
             if($UsuRestit > 0){
                 $pdf->MultiCell(0, 5, "Não houve. O objeto foi restituído em ".$tbl[14], 0, 'C', false);
             }else{
-                $pdf->MultiCell(0, 5, "Objeto ainda não destinado.", 0, 'C', false);
+                if($UsuEncDest > 0){
+                    $pdf->MultiCell(0, 5, "Objeto destinado a ".$DestSetor." para ".$DestProcesso.". Aguarda recebimento no destino.", 0, 'C', false);
+                }else{                
+                    $pdf->MultiCell(0, 5, "Objeto ainda não destinado.", 0, 'C', false);
+                }
             }
         }
         $pdf->ln(5);
@@ -377,7 +385,7 @@ if(!isset($_SESSION['AdmUsu'])){
         }else{
             $pdf->SetFont('Arial', '', 10);
             if($Dias < 90){
-                $pdf->MultiCell(0, 5, "Processo ".$Processo." está aberto aguardando prazo.", 1, 'C', true);    
+                $pdf->MultiCell(0, 5, "Processo ".$Processo." está aberto, aguardando prazo.", 1, 'C', true);    
             }else{
                 $pdf->MultiCell(0, 5, "Processo ".$Processo." está aberto.", 1, 'C', true);
             }
