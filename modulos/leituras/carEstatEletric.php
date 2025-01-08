@@ -79,11 +79,17 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 $SomaLeitAnt = 0;
                 $SomaCons1Fator = 0;
 
-                
+                $rsCusto = pg_query($Conec, "SELECT valorkwh FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura1) = $Mes And DATE_PART('YEAR', dataleitura1) = '$Ano' And colec = 1 And ativo = 1 And leitura1 != 0 ");
+                $rowCusto = pg_num_rows($rsCusto); // dá a quantidade de dias no mês
+
+                $rsSoma = pg_query($Conec, "SELECT SUM(valorkwh) FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura1) = $Mes And DATE_PART('YEAR', dataleitura1) = '$Ano' And colec = 1 And ativo = 1 And leitura1 != 0 ");
+                $tblSoma = pg_fetch_row($rsSoma);
+                $CalcValorKwh = ($tblSoma[0]/$rowCusto);
+
                 $rs2 = pg_query($Conec, "SELECT dataleitura1, leitura1, fator, valorkwh FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura1) = $Mes And DATE_PART('YEAR', dataleitura1) = '$Ano' And colec = 1 And ativo = 1 And leitura1 != 0 ");
                 $row2 = pg_num_rows($rs2);
                 if($row2 > 0){
-                    while($tbl2 = pg_fetch_row($rs2) ){
+                    while($tbl2 = pg_fetch_row($rs2)){
                         $DataLinha = $tbl2[0]; // dataleitura1
                         $SomaLeit1 = $SomaLeit1+$tbl2[1];
 
@@ -101,14 +107,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         }
                         $Cons1 = ($SomaLeit1-$SomaLeitAnt);
                         $Cons2 = (($SomaLeit1-$SomaLeitAnt)*$tbl2[2]); // fator de correção do bc registrado junto com o consumo
-
-//echo $Cons1."<br>";
-//echo $Cons2."<br>";
-//Echo $Cons1Fator."<br>";
                     }
                 }
-
-//echo $Cons1*$FatorCor."<br>";
 
                 $MesAnt = ($Mes-1);
                 if(strLen($MesAnt) < 2){
@@ -147,7 +147,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 }
 
 
-
                 $Eletric2Mes = buscaEletric2Mes($Conec, $xProj, $Ano, $Mes, $DiaMedia);
                 $Eletric2MesAnt = buscaEletric2Mes($Conec, $xProj, $Ano, $MesAnt, $DiaMedia);
                 $Eletric3Mes = buscaEletric3Mes($Conec, $xProj, $Ano, $Mes, $DiaMedia);
@@ -165,7 +164,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     }
                 }else{
                     $ConsCalc = number_format((($LeitMesAtual - $LeitMesAnt)*$FatorCor), 0, ",",".")." kWh";
-                    $Fatura = "R$ ".number_format((($LeitMesAtual - $LeitMesAnt)*$FatorCor-$Injet)*$ValorKwh, 2, ",",".");
+                    $Fatura = "R$ ".number_format((($LeitMesAtual - $LeitMesAnt)*$FatorCor-$Injet)*$CalcValorKwh, 2, ",",".");
                 }
                 ?>
                 <div style="border: 1px solid; border-radius: 10px">
@@ -213,7 +212,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td style="border-bottom: 1px solid gray; font-size: 90%;" title="Fator aplicado:  <?php echo $FatorCor; ?>">Fatura: 
                                 <?php 
                                 if($LeitMesAtual > 0 && $LeitMesAnt > 0){ 
-                                    echo number_format((($LeitMesAtual - $LeitMesAnt)*$FatorCor), 0, ",",".")." kWh - ".number_format($Injet, 0, ",",".")." kWh x R$ ".$ValorKwh; 
+                                    echo number_format((($LeitMesAtual - $LeitMesAnt)*$FatorCor), 0, ",",".")." kWh - ".number_format($Injet, 0, ",",".")." kWh x R$ ".number_format($CalcValorKwh, 4, ",","."); 
                                 }
                                 ?>
                             </td>
@@ -235,7 +234,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                 <?php 
                                 if($Eletric2Mes > 0 && $Eletric2MesAnt > 0){
 //                                    echo number_format(($Eletric2Mes - $Eletric2MesAnt), 0, ",",".")." kWh";
-                                    $Total1 = "R$ ".number_format(($Eletric2Mes - $Eletric2MesAnt)*$ValorKwh, 2, ",",".");
+                                    $Total1 = "R$ ".number_format(($Eletric2Mes - $Eletric2MesAnt)*$CalcValorKwh, 2, ",",".");
                                     echo $Total1;
 
                                 }else{
@@ -257,7 +256,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     echo "(".$DiaMedia."/".$MesAnt." a ".$DiaMedia."/".$Mes.")";
                                     if($Eletric3Mes > 0 && $Eletric3MesAnt > 0){
 //                                        echo " &rarr; ".number_format(($Eletric3Mes - $Eletric3MesAnt), 0, ",",".")." kWh";
-                                        $Total1 = "R$ ".number_format(($Eletric3Mes - $Eletric3MesAnt)*$ValorKwh, 2, ",",".");
+                                        $Total1 = "R$ ".number_format(($Eletric3Mes - $Eletric3MesAnt)*$CalcValorKwh, 2, ",",".");
                                         echo $Total1;
                                     }
                                 ?>

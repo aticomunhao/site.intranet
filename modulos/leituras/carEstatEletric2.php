@@ -72,6 +72,14 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 $MediaDiaria = 0;
                 $SomaLeit1 = 0;
                 $SomaLeitAnt = 0;
+
+                $rsCusto = pg_query($Conec, "SELECT valorkwh FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura1) = $Mes And DATE_PART('YEAR', dataleitura1) = '$Ano' And colec = 1 And ativo = 1 And leitura1 != 0 ");
+                $rowCusto = pg_num_rows($rsCusto); // dá a quantidade de dias no mês
+
+                $rsSoma = pg_query($Conec, "SELECT SUM(valorkwh) FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura1) = $Mes And DATE_PART('YEAR', dataleitura1) = '$Ano' And colec = 1 And ativo = 1 And leitura1 != 0 ");
+                $tblSoma = pg_fetch_row($rsSoma);
+                $CalcValorKwh = ($tblSoma[0]/$rowCusto);
+
                 $rs2 = pg_query($Conec, "SELECT dataleitura2, leitura2 FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura2) = $Mes And colec = 2 And ativo = 1 And leitura2 != 0 ");
                 $row2 = pg_num_rows($rs2);
                 if($row2 > 0){
@@ -131,7 +139,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     }
                 }else{
                     $ConsCalc = number_format(($LeitMesAtual - $LeitMesAnt), 0, ",",".");
-                    $ValorCalc = "R$ ".number_format(($ConsCalc*$ValorKwh), 2, ",",".");
+                    $ValorCalc = "R$ ".number_format(($ConsCalc*$CalcValorKwh), 2, ",",".");
                 }
 
                 ?>

@@ -23,6 +23,11 @@
     $Mes = date("m");
     $Ano = date("Y");
 
+    $EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
+    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    echo "Mês: ".$Mes.'/'.$Ano;
+    echo "<br><br>";
+
     if(isset($_REQUEST["mesano"])){
         $Busca = addslashes(filter_input(INPUT_GET, 'mesano'));
         if(is_null($Busca || $Busca == "")){
@@ -56,10 +61,6 @@
         $Data = date('01/'.$Mes.'/'.$Ano);
     }
 
-    $EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
-    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
-    echo "Mês: ".$Mes.'/'.$Ano;
-    echo "<br><br>";
 
     $rs2 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl ");
     $row2 = pg_num_rows($rs2);

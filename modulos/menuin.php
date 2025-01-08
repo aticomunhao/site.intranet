@@ -24,18 +24,7 @@
 			//Provisório
 			if(strtotime('2024/12/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//0067 
-				$rsT = pg_query($Conec, "SELECT id, horaturno, letra FROM ".$xProj.".escaladaf_turnos WHERE id > 4 And ativo = 1 ");
-				$rowT = pg_num_rows($rsT);
-				if($rowT > 0){
-					while($tblT = pg_fetch_row($rsT)){
-						$Cod = $tblT[0];
-						$Ho = $tblT[1]; 
-						$Hor = str_replace("O", "0", $Ho);   // letra O no lugar de 0
-						$Hora = str_replace("o", "0", $Hor); // letra o no lugar de 0
-						pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET horaturno = '$Hora' WHERE id = $Cod");
-					}
-				}
+
 
 			} // fim data limite
         ?>
