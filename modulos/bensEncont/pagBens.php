@@ -47,6 +47,17 @@ if(!isset($_SESSION["usuarioID"])){
                 margin: 1px;
                 border: 1px solid; border-radius: 5px; padding-left: 3px; padding-right: 3px; font-size: 80%;
             }
+            .botpadrinat{
+                text-align: center;
+                padding: 2px; 
+                padding-left: 15px;
+                padding-right: 15px; 
+                border-radius: 7px;
+                font-size: 80%;
+                font-weight: bold;
+                background-color: #D3D3D3;
+                color: #FFE4E1;
+            }
         </style>
         <script>
              function ajaxIni(){
@@ -230,6 +241,20 @@ if(!isset($_SESSION["usuarioID"])){
                     window.open("modulos/bensEncont/imprResumo.php?acao=resumo", "Resumo");
                     document.getElementById("relacimprBens").style.display = "none";
                 });
+
+                $("#selecprocesso").change(function(){
+                    document.getElementById("descprocesso").innerHTML = "";
+                    document.getElementById("botsalvaregrec").disabled = false;
+                    let element = document.getElementById('botsalvaregrec');
+                    element.classList.remove('botpadrinat');
+                });
+
+                $("#selecdestino").change(function(){
+                    document.getElementById("botsalvaregdest").disabled = false;
+                    let element = document.getElementById('botsalvaregdest');
+                    element.classList.remove('botpadrinat');
+                });
+
 
             }); // fim do ready
 
@@ -476,6 +501,8 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function mostraBem(Cod, modal, Restit){
+//alert(Cod);
+                document.getElementById("guardamodal").value = modal;
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=buscaBem&codigo="+Cod, true);
@@ -542,10 +569,12 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById("numprocessoDest").innerHTML = Resp.numprocesso;
                                             document.getElementById("etiqprocessoDest").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
                                             document.getElementById("descdobemDest").innerHTML = Resp.descdobem;
-                                            document.getElementById("selecdestino").value = Resp.destino;
                                             document.getElementById('nomeproprietario').value = Resp.nomepropriet;
                                             document.getElementById('cpfproprietario').value = Resp.cpfpropriet;
                                             document.getElementById('telefproprietario').value = Resp.telefpropriet;
+                                            document.getElementById("codusudest").value = 0;
+                                            document.getElementById("etiqAssinaturaDest").innerHTML = document.getElementById("usuarioNome").value;
+                                            document.getElementById("botsalvaregdest").innerHTML = "Encaminhar";
                                             document.getElementById('selecdestino').value = "";
                                             document.getElementById('selecprocesso').value = "";
                                             document.getElementById("relacmodalDest").style.display = "block";
@@ -567,6 +596,11 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("descdobemReceb").innerHTML = Resp.descdobem;
                                         document.getElementById("descdestino").innerHTML = Resp.DescDest;
                                         document.getElementById("descprocesso").innerHTML = Resp.DescProcesso;
+                                        document.getElementById("codusureceb").value = 0; //document.getElementById("usuarioID").value;
+                                        document.getElementById("etiqfinalidade").innerHTML = " finalidade";
+                                        document.getElementById("etiqAssinatura").innerHTML = document.getElementById("usuarioNome").value;
+                                        document.getElementById("botsalvaregrec").innerHTML = "Receber";
+                                        document.getElementById("selecprocesso").value = Resp.codProcesso;
                                         document.getElementById("relacmodalReceb").style.display = "block";
                                     }
                                     if(parseInt(modal) === 6){
@@ -576,6 +610,42 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("descdestinoArq").innerHTML = Resp.DescDest;
                                         document.getElementById("descprocessoArq").innerHTML = Resp.DescProcesso;
                                         document.getElementById("relacmodalArquivar").style.display = "block";
+                                    }
+                                    //Superusuário corrigindo finalidade 
+                                    if(parseInt(modal) === 7){
+                                        document.getElementById("numprocessoReceb").innerHTML = Resp.numprocesso;
+                                        document.getElementById("etiqprocessoReceb").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
+                                        document.getElementById("descdobemReceb").innerHTML = Resp.descdobem;
+                                        document.getElementById("descdestino").innerHTML = Resp.DescDest;
+                                        document.getElementById("descprocesso").innerHTML = Resp.DescProcesso+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+                                        document.getElementById("codusureceb").value = Resp.UsuEncProcesso;
+                                        document.getElementById("etiqfinalidade").innerHTML = "modificar finalidade";
+                                        document.getElementById("etiqAssinatura").innerHTML = Resp.NomeEncProcesso;
+                                        document.getElementById("botsalvaregrec").innerHTML = "Corrigir";
+                                        document.getElementById("selecprocesso").value = Resp.codProcesso;
+                                        document.getElementById("botsalvaregrec").disabled = true;
+                                        let element = document.getElementById('botsalvaregrec');
+                                        element.classList.add('botpadrinat');
+                                        document.getElementById("relacmodalReceb").style.display = "block";
+                                    }
+                                    //Superusuário corrigindo destino
+                                    if(parseInt(modal) === 8){
+                                        document.getElementById("numprocessoDest").innerHTML = Resp.numprocesso;
+                                        document.getElementById("etiqprocessoDest").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
+                                        document.getElementById("descdobemDest").innerHTML = Resp.descdobem;
+                                        document.getElementById("selecdestino").value = Resp.codSetorDestino;
+                                        document.getElementById('nomeproprietario').value = Resp.nomepropriet;
+                                        document.getElementById('cpfproprietario').value = Resp.cpfpropriet;
+                                        document.getElementById('telefproprietario').value = Resp.telefpropriet;
+                                        document.getElementById("botsalvaregdest").innerHTML = "Corrigir";
+                                        document.getElementById("codusudest").value = Resp.UsuDestino;
+                                        document.getElementById("etiqAssinaturaDest").innerHTML = Resp.NomeUsuDestino;
+                                        document.getElementById("botsalvaregdest").disabled = true;
+
+                let element = document.getElementById('botsalvaregdest');
+                    element.classList.add('botpadrinat');
+
+                                        document.getElementById("relacmodalDest").style.display = "block";
                                     }
                                 }
                             }
@@ -753,7 +823,7 @@ if(!isset($_SESSION["usuarioID"])){
 
             //Aceita a transferência do objeto para guarda
             function modalDestino(){ // encaminha o bem para o destino final
-                if(parseInt(document.getElementById("selecdestino").value) === 0){
+                if(parseInt(document.getElementById("selecdestino").value) === 0 || document.getElementById("selecdestino").value === ""){
                     let element = document.getElementById('selecdestino');
                     element.classList.add('destacaBorda');
                     document.getElementById("selecdestino").focus();
@@ -762,15 +832,15 @@ if(!isset($_SESSION["usuarioID"])){
                     $('#mensagemdest').fadeOut(2000);
                     return false;
                 }
-                if(parseInt(document.getElementById("selecprocesso").value) === 1){
-                    let element = document.getElementById('selecprocesso');
-                    element.classList.add('destacaBorda');
-                    document.getElementById("selecprocesso").focus();
-                    $('#mensagemdest').fadeIn("slow");
-                    document.getElementById("mensagemdest").innerHTML = "Selecione o processo adequado";
-                    $('#mensagemdest').fadeOut(2000);
-                    return false;
-                }
+//                if(parseInt(document.getElementById("selecprocesso").value) === 1){
+//                    let element = document.getElementById('selecprocesso');
+//                    element.classList.add('destacaBorda');
+//                    document.getElementById("selecprocesso").focus();
+//                    $('#mensagemdest').fadeIn("slow");
+//                    document.getElementById("mensagemdest").innerHTML = "Selecione o processo adequado";
+//                    $('#mensagemdest').fadeOut(2000);
+//                    return false;
+//                }
                 $.confirm({
                     title: 'Destinação',
                     content: 'Confirma a destinação dada ao objeto?',
@@ -782,7 +852,8 @@ if(!isset($_SESSION["usuarioID"])){
                             if(ajax){
                                 ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=encdestinaBem&codigo="+document.getElementById("guardacod").value
                                 +"&selecdestino="+document.getElementById("selecdestino").value
-                                +"&selecprocesso="+document.getElementById("selecprocesso").value, true);
+                                +"&codusudest="+document.getElementById("codusudest").value, true);
+//                                +"&selecprocesso="+document.getElementById("selecprocesso").value, true);
                                 ajax.onreadystatechange = function(){
                                     if(ajax.readyState === 4 ){
                                         if(ajax.responseText){
@@ -815,16 +886,30 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function modalRecebe(){ // recebe o bem encaminhado para destino final
+                if(parseInt(document.getElementById("selecprocesso").value) === 1 || document.getElementById("selecprocesso").value === ""){
+                    let element = document.getElementById('selecprocesso');
+                    element.classList.add('destacaBorda');
+                    document.getElementById("selecprocesso").focus();
+                    $('#mensagemRec').fadeIn("slow");
+                    document.getElementById("mensagemRec").innerHTML = "Selecione o processo adequado";
+                    $('#mensagemRec').fadeOut(2000);
+                    return false;
+                }
+                let Mensag = "Confirma corrigir o processo?";
+                if(parseInt(document.getElementById("codusureceb").value) === 0){
+                    Mensag = "Confirma receber o bem para para a finalidade descrita?";
+                }
+
                 $.confirm({
                     title: 'Destinação Final',
-                    content: 'Confirma receber o bem para a destinação descrita?',
+                    content: Mensag, 
                     autoClose: 'Não|10000',
                     draggable: true,
                     buttons: {
                         Sim: function () {
                             ajaxIni();
                             if(ajax){
-                                ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=recebeBemDest&codigo="+document.getElementById("guardacod").value, true);
+                                ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=recebeBemDest&codigo="+document.getElementById("guardacod").value+"&selecprocesso="+document.getElementById("selecprocesso").value+"&codusureceb="+document.getElementById("codusureceb").value, true);
                                 ajax.onreadystatechange = function(){
                                     if(ajax.readyState === 4 ){
                                         if(ajax.responseText){
@@ -842,7 +927,11 @@ if(!isset($_SESSION["usuarioID"])){
                                                     }
                                                 });
                                                 document.getElementById("relacmodalReceb").style.display = "none";
-                                                $("#carregaBens").load("modulos/bensEncont/relBens.php?acao=Receber");
+                                                if(parseInt(document.getElementById("guardamodal").value) === 7){ // corrigindo finalidade
+                                                    $("#carregaBens").load("modulos/bensEncont/relBens.php?acao=Arquivar");
+                                                }else{
+                                                    $("#carregaBens").load("modulos/bensEncont/relBens.php?acao=Receber");
+                                                }
                                             }
                                         }
                                     }
@@ -885,6 +974,8 @@ if(!isset($_SESSION["usuarioID"])){
                                                 });
                                                 document.getElementById("relacmodalArquivar").style.display = "none";
                                                 $("#carregaBens").load("modulos/bensEncont/relBens.php?acao=Arquivar");
+//                                                window.opener.location.reload(true);
+//                                                window.location.reload();
                                             }
                                         }
                                     }
@@ -897,8 +988,7 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
             }
-
-
+            
             function ApagarBem(){
                 $.confirm({
                     title: 'Confirmação',
@@ -1190,34 +1280,28 @@ if(!isset($_SESSION["usuarioID"])){
 
         ?>
         <!-- div três colunas -->
-        <div class="container" style="margin: 0 auto;">
-            <div class="row">
-                <div class="col quadro" style="text-align: left;"><button class="botpadrGr fundoAmarelo" id="botInsReg" onclick="abreRegistro();" >Novo Registro</button>
+        <div style="margin: 0 auto; text-align: center;">
+            <div style="position: relative; float: left; text-align: center; width: 25%; padding-left: 20px;">
+                <div class="col quadro" style="text-align: left;">
+                    <button class="botpadrGr fundoAmarelo" id="botInsReg" onclick="abreRegistro();" >Novo Registro</button>
                     <img src="imagens/settings.png" height="20px;" id="imgBensconfig" style="cursor: pointer; padding-left: 30px;" onclick="abreBensConfig();" title="Configurar o acesso ao processamento de Achados e Perdidos">
                 </div>
-                <div class="col quadro"><h5>Registro de Achados e Perdidos</h5>
-
-                    <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Todos');">Todos</button>
-                    <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Restituídos');" title="Bem já restituído">Restituídos</button>
-                    <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Destinar');" title="Pronto para dar destino. Prazo de 90 dias transcorrido. Nível Revisor.">Destinar</button>
-                    <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Destinados');" title="Bem já encaminhado para o destino.">Destinados</button>
-<!--                    <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Receber');" title="Objeto já destinado. Falta receber no destino." >Receber</button>
-                    <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Recebidos');" title="Bem já recebido no destino." >Recebidos</button>
--->
-                    <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Arquivar');" title="Processo que aguarda encerramento. Nível Revisor." >Arquivar</button>
-                    <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Arquivados');" title="Processo encerrado." >Arquivados</button>
-
-                </div> <!-- Central - espaçamento entre colunas  -->
-                <div class="col quadro" style="text-align: right;">
-                    <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="abreImprBens();">PDF</button>
-                    <label style="padding-left: 20px;"></label>
-                    <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpBens();" title="Guia rápido">
-                </div> 
+            </div>
+            <div style="position: relative; float: left; text-align: center; width: 48%;">
+                <h5>Registro de Achados e Perdidos</h5>
+                <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Todos');">Todos</button>
+                <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Restituídos');" title="Bem já restituído">Restituídos</button>
+                <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Destinar');" title="Pronto para dar destino. Prazo de 90 dias transcorrido. Nível Revisor.">Destinar</button>
+                <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Receber');" title="Bem já encaminhado. Receber no destino.">Receber</button>
+                <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Arquivar');" title="Processos que aguardam encerramento. Nível Revisor." >Arquivar</button>
+                <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Arquivados');" title="Processos encerrados." >Arquivados</button>
+            </div>
+            <div style="position: relative; float: left; text-align: center; width: 25%;">
+                <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="abreImprBens();">PDF</button>
+                <label style="padding-left: 20px;"></label>
+                <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpBens();" title="Guia rápido">
             </div>
         </div>
-
-
-<!--<div class="col-12 col-xl-4 col-lg-4 col-md-4 col-sm-12 " style="border: 1px solid;">Teste de coluna</div> -->
 
         <input type="hidden" id="guardacod" value="0" /> <!-- id ocorrência -->
         <input type="hidden" id="mudou" value="0" />
@@ -1226,6 +1310,9 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="usuarioID" value="<?php echo $_SESSION["usuarioID"]; ?>" />
         <input type="hidden" id="usuarioNome" value="<?php echo $_SESSION["NomeCompl"]; ?>" />
         <input type="hidden" id="codusuins" value="0" />
+        <input type="hidden" id="codusudest" value = "0" />
+        <input type="hidden" id="codusureceb" value = "0" />
+        <input type="hidden" id="guardamodal" value = "0" />
         <input type="hidden" id="guardaescEdit" value="<?php echo $escEdit; ?>" />
         <input type="hidden" id="guardaInsBens" value="<?php echo $SoInsBens; ?>" />
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>" />
@@ -1233,7 +1320,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" /> <!-- nível mínimo para editar -->
         <input type="hidden" id="guardaIndex" value="<?php echo $Acao; ?>" /> <!-- ordem do índex -->
 
-        <div style="margin: 1px; border: 2px solid blue; border-radius: 15px; padding: 10px; padding-top: 2px;">
+        <div style="margin: 80px; border: 2px solid blue; border-radius: 15px; padding: 10px; padding-top: 2px;">
             <div id="carregaBens"></div>
         </div>
 
@@ -1538,17 +1625,6 @@ if(!isset($_SESSION["usuarioID"])){
                                 }
                                 ?>
                                 </select>
-                                <label class="etiqAzul"> para </label>
-                                <select id="selecprocesso" onclick="tiraBorda(id);" onchange="modif();" style="font-size: 0.9rem; min-width: 100px;" title="Selecione o destino dado ao bem encontrado.">
-                                <?php 
-                                if($OpProcesso){
-                                    while ($Opcoes = pg_fetch_row($OpProcesso)){ ?>
-                                        <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
-                                    <?php 
-                                    }
-                                }
-                                ?>
-                                </select>
                             </td>
                         </tr>
                         <tr>
@@ -1559,7 +1635,7 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <tr>
                             <td class="etiqAzul">Assinatura: </td>
-                            <td style="padding-left: 15px; padding-right: 15px;"><div style="border: 1px solid blue; border-radius: 10px; text-align: center;">(a) <label style="font-weight: bold;"> <?php echo $_SESSION["NomeCompl"]; ?> </label></div></td>
+                            <td style="padding-left: 15px; padding-right: 15px;"><div style="border: 1px solid blue; border-radius: 10px; text-align: center;">(a) <label id="etiqAssinaturaDest" style="font-weight: bold;"> <?php echo $_SESSION["NomeCompl"]; ?> </label></div></td>
                         </tr>
                         <tr>
                             <td></td>
@@ -1575,8 +1651,7 @@ if(!isset($_SESSION["usuarioID"])){
            </div>
         </div> <!-- Fim Modal-->
 
-
-        <!-- div modal para destinação do objeto  -->
+        <!-- div modal para receber objeto no destino  -->
        <div id="relacmodalReceb" class="relacmodal">
             <div class="modal-content-Bens">
                 <span class="close" onclick="fechaModalReceb();">&times;</span>
@@ -1612,9 +1687,22 @@ if(!isset($_SESSION["usuarioID"])){
                         <tr>
                             <td class="etiqAzul">Destino: </td>
                             <td>
-                                <div style="border: 1px solid blue; border-radius: 10px; padding: 3px; padding-left: 10px; font-size: 110%; font-weight: bold;">
-                                    <label id="descdestino"></label>&nbsp;&nbsp; &rarr; &nbsp;&nbsp;
+                                <div style="border: 1px solid blue; border-radius: 10px; padding: 3px; padding-left: 10px; font-size: 110%;">
+                                    <label id="descdestino" style="font-weight: bold;"></label>&nbsp;&nbsp; &rarr; &nbsp;
                                     <label id="descprocesso"></label>
+                                    
+
+                                    <label id="etiqfinalidade" class="etiqAzul"> finalidade: </label>
+                                    <select id="selecprocesso" onclick="tiraBorda(id);" onchange="modif();" style="font-size: 0.9rem; min-width: 100px;" title="Selecione o destino dado ao bem encontrado.">
+                                    <?php 
+                                    if($OpProcesso){
+                                        while ($Opcoes = pg_fetch_row($OpProcesso)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                    </select>
                                 </div>
                             </td>
                         </tr>
@@ -1632,15 +1720,15 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <tr>
                             <td class="etiqAzul">Assinatura: </td>
-                            <td style="padding-left: 15px; padding-right: 15px;"><div style="border: 1px solid blue; border-radius: 10px; text-align: center;">(a) <label style="font-weight: bold;"> <?php echo $_SESSION["NomeCompl"]; ?> </label></div></td>
+                            <td style="padding-left: 15px; padding-right: 15px;"><div style="border: 1px solid blue; border-radius: 10px; text-align: center;">(a) <label id="etiqAssinatura" style="font-weight: bold;"> <?php echo $_SESSION["NomeCompl"]; ?> </label></div></td>
                         </tr>
                         <tr>
                             <td></td>
-                            <td style="text-align: center; padding-top: 25px;"><button class="botpadrblue" id="botsalvaregdest" onclick="modalRecebe();">Receber</button></td>
+                            <td style="text-align: center; padding-top: 25px;"><button class="botpadrblue" id="botsalvaregrec" onclick="modalRecebe();">Receber</button></td>
                         </tr>
                         <tr>
                             <td></td>
-                            <td style="text-align: center; padding-top: 25px;"><div id="mensagemdest" style="color: red; font-weight: bold; margin: 5px; text-align: center; padding-top: 10px;"></div></td>
+                            <td><div id="mensagemRec" style="text-align: center; color: red; font-weight: bold; padding-top: 5px;"></div></td>
                         </tr>
                     </table>
                     <br>
@@ -1649,7 +1737,7 @@ if(!isset($_SESSION["usuarioID"])){
         </div> <!-- Fim Modal-->
 
 
-        <!-- div modal para destinação do objeto  -->
+        <!-- div modal para arquivar processo  -->
        <div id="relacmodalArquivar" class="relacmodal">
             <div class="modal-content-Bens">
                 <span class="close" onclick="fechaModalArquivar();">&times;</span>
@@ -1707,11 +1795,11 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <tr>
                             <td></td>
-                            <td style="text-align: center; padding-top: 25px;"><button class="botpadrblue" id="botsalvaregdest" onclick="modalArquiva();">Arquivar</button></td>
+                            <td style="text-align: center; padding-top: 25px;"><button class="botpadrblue" id="botsalvaregarq" onclick="modalArquiva();">Arquivar</button></td>
                         </tr>
                         <tr>
                             <td></td>
-                            <td style="text-align: center; padding-top: 25px;"><div id="mensagemdest" style="color: red; font-weight: bold; margin: 5px; text-align: center; padding-top: 10px;"></div></td>
+                            <td style="text-align: center; padding-top: 25px;"><div id="mensagemArqv" style="color: red; font-weight: bold; margin: 5px; text-align: center; padding-top: 10px;"></div></td>
                         </tr>
                     </table>
                     <br>

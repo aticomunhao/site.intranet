@@ -115,42 +115,7 @@ if(!isset($_SESSION['AdmUsu'])){
                 }
                 $pdf->Cell(25, 4, "", 0, 1, 'L');
 
-                $rsP3 = pg_query($Conec, "SELECT COUNT(id) FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And usudestino != 0");
-                $tblP3 = pg_fetch_row($rsP3);
-                $pdf->SetFont('Arial', '' , 10); 
-                $pdf->SetX(55);
-                $pdf->Cell(50, 4, "Destinados: ", 0, 0, 'L');
-                $pdf->SetFont('Arial', 'B' , 10); 
-                $pdf->Cell(10, 4, number_format($tblP3[0], 0, ",","."), 0, 1, 'R');
-
-                $pdf->SetDrawColor(200); // cinza claro
-                $lin = $pdf->GetY();
-                $pdf->Line(100, $lin, 116, $lin);
-                $pdf->ln(1);
-
-                $rsPR = pg_query($Conec, "SELECT (dataarquivou - datareceb) FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And usuarquivou != 0");
-                $rowPR = pg_num_rows($rsPR);
-                $Dias = 0;
-                while($tblPR = pg_fetch_row($rsPR)){
-                    $Dias = $Dias+$tblPR[0];
-                }
-                $rs2 = pg_query($Conec, "SELECT COUNT(id) FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And usuarquivou != 0");
-                $tbl2 = pg_fetch_row($rs2);
-                $pdf->SetFont('Arial', '' , 10); 
-                $pdf->SetX(55);
-//                $pdf->Cell(50, 4, "Processo Encerrado: ", 0, 0, 'L');
-                $pdf->Cell(50, 4, " ", 0, 0, 'L');
-                $pdf->SetFont('Arial', 'B' , 10); 
-                $pdf->Cell(10, 4, number_format($tbl2[0], 0, ",","."), 0, 0, 'R');
-
-                if($Dias > 0){
-                    $pdf->SetFont('Arial', '' , 8); 
-                    $pdf->Cell(25, 4, "Tempo médio: ".number_format(($Dias/$rowPR), 1, ",",".")." dias", 0, 0, 'L');
-                }
-                $pdf->Cell(25, 4, "", 0, 1, 'L');
-
-                $pdf->ln(10);
-                $rsP4 = pg_query($Conec, "SELECT COUNT(id) FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And usucsg != 0 And usuarquivou = 0");
+                $rsP4 = pg_query($Conec, "SELECT COUNT(id) FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And usucsg != 0 And usuarquivou = 0 And usurestit = 0 And usudestino = 0");
                 $tblP4 = pg_fetch_row($rsP4);
                 $pdf->SetFont('Arial', '' , 10); 
                 $pdf->SetX(55);
@@ -158,6 +123,54 @@ if(!isset($_SESSION['AdmUsu'])){
                 $pdf->SetFont('Arial', 'B' , 10); 
                 $pdf->Cell(10, 4, number_format($tblP4[0], 0, ",","."), 0, 1, 'R');
 
+                $rsP3 = pg_query($Conec, "SELECT COUNT(id) FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And codencdestino != 0");
+                $tblP3 = pg_fetch_row($rsP3);
+                $pdf->SetFont('Arial', '' , 10); 
+                $pdf->SetX(55);
+                $pdf->Cell(50, 4, "Destinados: ", 0, 0, 'L');
+                $pdf->SetFont('Arial', 'B' , 10); 
+                $pdf->Cell(10, 4, number_format($tblP3[0], 0, ",","."), 0, 0, 'R');
+
+
+                $rsPR = pg_query($Conec, "SELECT (dataarquivou - datareceb) FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And usudestino != 0");
+                $rowPR = pg_num_rows($rsPR);
+                $Dias = 0;
+                while($tblPR = pg_fetch_row($rsPR)){
+                    $Dias = $Dias+$tblPR[0];
+                }
+
+                if($Dias > 0){
+                    $pdf->SetFont('Arial', '' , 8); 
+                    $pdf->Cell(25, 4, "Tempo médio: ".number_format(($Dias/$rowPR), 1, ",",".")." dias", 0, 0, 'L');
+                }
+                $pdf->Cell(25, 4, "", 0, 1, 'L');
+
+
+                $rsDest = pg_query($Conec, "SELECT numdest, descdest FROM ".$xProj.".bensdestinos WHERE numdest > 0 And descdest != '' ORDER BY descdest");
+                while($tblDest = pg_fetch_row($rsDest)){
+                    $CodDest = $tblDest[0];
+                    $DescDest = $tblDest[1];
+                    $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And usudestino != 0 And codencdestino = $CodDest ");
+                    $row1 = pg_num_rows($rs1);
+                    if($row1 > 0){
+                        $pdf->SetFont('Arial', '' , 8); 
+                        $pdf->SetX(65);
+                        $pdf->Cell(50, 4, $DescDest." (".$row1.")", 0, 1, 'L');
+                        $rsProc = pg_query($Conec, "SELECT id, processo FROM ".$xProj.".bensprocessos WHERE processo != '' ORDER BY processo");
+                        while($tblProc = pg_fetch_row($rsProc)){
+                            $CodProc = $tblProc[0];
+                            $DescProc = $tblProc[1];
+                            $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And usudestino != 0 And codencdestino = $CodDest And codencprocesso = $CodProc ");
+                            $row2 = pg_num_rows($rs2);
+                            if($row2 > 0){
+                                $pdf->SetFont('Arial', '' , 7); 
+                                $pdf->SetX(75);
+                                $pdf->Cell(50, 4, $DescProc." (".$row2.")", 0, 1, 'L');
+                            }
+                        }
+                    }
+                }
+                $pdf->ln(10);
                 $rsP5 = pg_query($Conec, "SELECT id FROM ".$xProj.".bensachados WHERE ativo = 1 And DATE_PART('YEAR', datareceb) = '$AnoTar' And codusuins != 0 And usucsg = 0 And usurestit = 0 And usudestino = 0");
                 $rowP5 = pg_num_rows($rsP5);
                 if($rowP5 > 0){

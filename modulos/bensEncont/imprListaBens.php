@@ -98,13 +98,15 @@ if(!isset($_SESSION['AdmUsu'])){
         }
         $Ano = $Proc[1];
         $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(datareceb, 'DD/MM/YYYY'), date_part('dow', datareceb), numprocesso, descdobem, codusuins, usuguarda, usurestit, usucsg, usudestino, usuarquivou, 
-        CURRENT_DATE-datareceb, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, localachou, nomeachou, telefachou, dataarquivou-datareceb As tempoTot FROM ".$xProj.".bensachados WHERE ativo = 1 And DATE_PART('MONTH', datareceb) = '$Mes' And DATE_PART('YEAR', datareceb) = '$Ano' ORDER BY datareceb DESC, id DESC ");
+        CURRENT_DATE-datareceb, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, localachou, nomeachou, telefachou, dataarquivou-datareceb As tempoTot, descencdestino 
+        FROM ".$xProj.".bensachados WHERE ativo = 1 And DATE_PART('MONTH', datareceb) = '$Mes' And DATE_PART('YEAR', datareceb) = '$Ano' ORDER BY datareceb DESC, id DESC ");
     }
 
     if($Acao == "listaanoBens"){
         $Ano = filter_input(INPUT_GET, 'ano'); 
         $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(datareceb, 'DD/MM/YYYY'), date_part('dow', datareceb), numprocesso, descdobem, codusuins, usuguarda, usurestit, usucsg, usudestino, usuarquivou, 
-        CURRENT_DATE-datareceb, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, localachou, nomeachou, telefachou, dataarquivou-datareceb As tempoTot FROM ".$xProj.".bensachados WHERE ativo = 1 And DATE_PART('YEAR', datareceb) = '$Ano' ORDER BY datareceb DESC, id DESC ");
+        CURRENT_DATE-datareceb, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, localachou, nomeachou, telefachou, dataarquivou-datareceb As tempoTot, descencdestino 
+        FROM ".$xProj.".bensachados WHERE ativo = 1 And DATE_PART('YEAR', datareceb) = '$Ano' ORDER BY datareceb DESC, id DESC ");
     }
 
     if($Acao == "listamesBens" || $Acao == "listaanoBens"){
@@ -147,6 +149,7 @@ if(!isset($_SESSION['AdmUsu'])){
                 $Restit = $tbl0[7];
                 $GuardaCSG = $tbl0[8];
                 $Destino = $tbl0[9];
+                $DescDestino = $tbl0[17];
                 $Arquivado = $tbl0[10];
                 $Intervalo = (int) $tbl0[12];
                 $Dias = str_pad(($tbl0[11]), 2, "0", STR_PAD_LEFT);
@@ -193,7 +196,9 @@ if(!isset($_SESSION['AdmUsu'])){
 
                 $pdf->SetX(231);
                 if($Destino > 0){
-                        $pdf->Cell(17, 5, "Destinado", 1, 0, 'C'); 
+//                        $pdf->Cell(17, 5, "Destinado", 1, 0, 'C'); 
+                        $pdf->Cell(17, 5, $DescDestino, 1, 0, 'C'); 
+                        
                 }else{
                     $pdf->Cell(17, 5, "", 1, 0, 'C'); 
                 }

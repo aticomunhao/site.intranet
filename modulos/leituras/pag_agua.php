@@ -230,8 +230,7 @@ if(!isset($_SESSION["usuarioID"])){
                     return false;
                 }
 
-                if(parseInt(document.getElementById("insleitura1").value) >= parseInt(document.getElementById("insleitura2").value) ){
-//                    alert("Erro nas leituras");
+                if(parseFloat(document.getElementById("insleitura1").value) >= parseFloat(document.getElementById("insleitura2").value) ){
                     $.confirm({
                         title: 'Ação Suspensa!',
                         content: 'Erro nas leituras',
@@ -243,10 +242,10 @@ if(!isset($_SESSION["usuarioID"])){
                     return false;
                 }
 
-                if(parseInt(document.getElementById("insleitura2").value) >= parseInt(document.getElementById("insleitura3").value) ){
+                if(parseFloat(document.getElementById("insleitura2").value) >= parseFloat(document.getElementById("insleitura3").value) ){
                     $.confirm({
                         title: 'Ação Suspensa!',
-                        content: 'Erro nas leituras',
+                        content: 'Erro nas leituras2',
                         draggable: true,
                         buttons: {
                             OK: function(){}
@@ -341,8 +340,19 @@ if(!isset($_SESSION["usuarioID"])){
             function fechaModalImpr(){
                 document.getElementById("relacimprLeitura").style.display = "none";
             }
-            function modif(){ // assinala se houve qualquer modificação nos campos do modal
+            function modifIns(Campo){ // assinala se houve qualquer modificação nos campos do modal
                 document.getElementById("mudou").value = "1";
+
+                paragraph1 = document.getElementById(Campo).value;
+                document.getElementById(Campo).value = paragraph1.replace(",", '.');
+
+
+ //               paragraph1 = document.getElementById("insleitura1").value;
+ //               document.getElementById("insleitura1").value = paragraph1.replace(",", '.');
+ //               paragraph2 = document.getElementById("insleitura2").value;
+ //               document.getElementById("insleitura2").value = paragraph2.replace(",", '.');
+ //               paragraph3 = document.getElementById("insleitura3").value;
+ //               document.getElementById("insleitura3").value = paragraph3.replace(",", '.');
             }
             function foco(id){
                 document.getElementById(id).focus();

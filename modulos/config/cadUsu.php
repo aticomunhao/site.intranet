@@ -525,9 +525,9 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                                             document.getElementById("usulogin").disabled = true;
                                             if(parseInt(Resp.jatem) === 1){
                                                 document.getElementById("guardaid_click").value = Resp.idpessoa; // para salvar modif se for procurado por inserção ao invés de click
-                                                $('#mensagem').fadeIn("slow");
-                                                document.getElementById("mensagem").innerHTML = "Usuário já cadastrado no site.";
-                                                $('#mensagem').fadeOut(10000);
+                                                $('#mensagemCima').fadeIn("slow");
+                                                document.getElementById("mensagemCima").innerHTML = "Usuário já cadastrado no site.";
+                                                $('#mensagemCima').fadeOut(5000);
                                             }
                                         }
                                     }
@@ -924,10 +924,12 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
             <div class="modal-content-Usu">
                 <span class="close" onclick="fechaModal();">&times;</span>
                 <h3 id="titulomodal" style="text-align: center; color: #666;">Edição de Usuários</h3>
+                <div id="mensagemCima" style="text-align: center; color: red; font-weight: bold;"></div>
                 <table style="margin: 0 auto; width: 90%">
                     <tr>
                         <td id="etiqNomelog" class="etiq80">Login:</td>
-                        <td><input type="text" disabled id="usulogin" style="text-align: center;" placeholder="Login" onchange="checaEntrada();" onkeypress="if(event.keyCode===13){javascript:foco('salvar');return false;}"></td>
+<!--                        <td><input type="text" disabled id="usulogin" style="text-align: center;" placeholder="Login" onchange="checaEntrada();" onkeypress="if(event.keyCode===13){javascript:foco('salvar');return false;}"></td> -->
+                        <td><input type="text" disabled id="usulogin" style="text-align: center;" placeholder="Login" onchange="checaEntrada();" ></td>
                         <td></td>
                         <td></td>
                         <td colspan="2" style="text-align: right;">

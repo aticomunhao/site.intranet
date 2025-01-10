@@ -204,9 +204,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     <tr>
                         <td><input type="text" style="text-align: center; width: 100%;" id="insdata" onchange="checaData();" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('insleitura1');return false;}"/></td>
                         <td style="text-align: center;"><label id="insdiasemana" style="font-size: 80%;"></label></td>
-                        <td style="width: 120px;"><input type="text" style="text-align: center; width: 100%;" id="insleitura1" onchange="modif();" placeholder="Leitura 1" onkeypress="if(event.keyCode===13){javascript:foco('insleitura2');return false;}"/></td>
-                        <td style="width: 120px;"><input type="text" style="text-align: center; width: 100%;" id="insleitura2" placeholder="Leitura 2" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('insleitura3');return false;}"/></td>
-                        <td style="width: 120px;"><input type="text" style="text-align: center; width: 100%;" id="insleitura3" placeholder="Leitura 3" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('insleitura1');return false;}"/></td>
+                        <td style="width: 120px;"><input type="text" style="text-align: center; width: 100%;" id="insleitura1" onchange="modifIns('insleitura1');" placeholder="Leitura 1" onkeypress="if(event.keyCode===13){javascript:foco('insleitura2');return false;}"/></td>
+                        <td style="width: 120px;"><input type="text" style="text-align: center; width: 100%;" id="insleitura2" placeholder="Leitura 2" onchange="modifIns('insleitura2');" onkeypress="if(event.keyCode===13){javascript:foco('insleitura3');return false;}"/></td>
+                        <td style="width: 120px;"><input type="text" style="text-align: center; width: 100%;" id="insleitura3" placeholder="Leitura 3" onchange="modifIns('insleitura3');" onkeypress="if(event.keyCode===13){javascript:foco('insleitura1');return false;}"/></td>
                     </tr>
                     <tr>
                         <td colspan="5" style="text-align: center; padding-top: 5px;"><div id="mensagemLeitura" style="color: red; font-weight: bold;"></div></td>

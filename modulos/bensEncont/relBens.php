@@ -89,7 +89,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 $vIndex = $xProj.".bensachados.datareceb DESC";
             }
             if($Acao == "Receber"){
-                $Condic = $xProj.".bensachados.ativo = 1 And usurestit = 0 And usuencdestino > 0 And usudestino = 0 And (CURRENT_DATE-datareceb) >= 90 ";
+                $Condic = $xProj.".bensachados.ativo = 1 And usurestit = 0 And usudestino > 0 And usuencdestino = 0 And codencdestino > 0 And codencprocesso = 0 And usuarquivou = 0 And (CURRENT_DATE-datareceb) >= 90 ";
                 $vIndex = $xProj.".bensachados.dataencdestino DESC";
             }
             if($Acao == "Guardar"){
@@ -110,7 +110,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             }
 
             $rs0 = pg_query($Conec, "SELECT ".$xProj.".bensachados.id, to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, usuguarda, usurestit, usucsg, usuarquivou, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, usudestino, CURRENT_DATE-datareceb, 
-            codusuins, date_part('dow', datareceb), usuencdestino  
+            codusuins, date_part('dow', datareceb), usuencdestino, descencdestino, descencprocesso 
             FROM ".$xProj.".bensachados INNER JOIN ".$xProj.".poslog ON ".$xProj.".bensachados.codusuins = ".$xProj.".poslog.pessoas_id
             WHERE $Condic 
             ORDER BY $vIndex ");
@@ -135,7 +135,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
             if($Marca == 0 && $SoInsBens == 1){ // só para registrar (portaria nos fins de semana) - Só mostra os do dia
                 $rs0 = pg_query($Conec, "SELECT ".$xProj.".bensachados.id, to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, usuguarda, usurestit, usucsg, usuarquivou, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, usudestino, CURRENT_DATE-datareceb, 
-                codusuins, date_part('dow', datareceb), usuencdestino 
+                codusuins, date_part('dow', datareceb), usuencdestino, descencdestino, descencprocesso 
                 FROM ".$xProj.".bensachados INNER JOIN ".$xProj.".poslog ON ".$xProj.".bensachados.codusuins = ".$xProj.".poslog.pessoas_id
                 WHERE ".$xProj.".bensachados.ativo = 1 And usucsg = 0 And ".$xProj.".bensachados.datareceb = CURRENT_DATE 
                 ORDER BY ".$xProj.".bensachados.datareceb DESC");
@@ -165,6 +165,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         $GuardaCSG = $tbl0[6];
                         $Destino = $tbl0[9];
                         $EncDestino = $tbl0[13];
+                        $DescDestino = $tbl0[14];
+                        $DescProcesso = $tbl0[15];
                         $Arquivado = $tbl0[7];
                         $Dias = str_pad(($tbl0[10]), 2, "0", STR_PAD_LEFT);
                         ?>
@@ -189,7 +191,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                         echo "<button disabled class='botTable fundoCinza corAzulClaro'>SSV</button>";
                                     }
 
-                                    if($EncDestino == 0){
+                                    if($Destino == 0){
                                         if($Restit == 0){
                                             echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);' title='Formuário de restituição ao proprietário'>Restituição</button>";
                                         }else{
@@ -199,20 +201,30 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                         echo "<button disabled class='botTable fundoCinza corAzulClaro'>Restituição</button>";
                                     }
 
-                                    if($Edit == 1 && $Restit == 0 && $Arquivado == 0 && $EncDestino == 0 && $Dias >= 90 && $EncBens == 1){
+                                    if($Edit == 1 && $Restit == 0 && $Arquivado == 0 && $Destino == 0 && $Dias >= 90 && $EncBens == 1){
                                         echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 4, $Restit);' title='Destinação após 90 dias'>Destinação</button>";
                                     }else{
-                                        if($EncDestino == 0){
+                                        if($Destino == 0){
                                             echo "<button disabled class='botTable fundoCinza corAzulClaro'>Destinação</button>";
                                         }else{
-                                            echo "<button disabled class='botTable fundoCinza corAzulClaro'>Destinado</button>";
+                                            if($_SESSION["AdmUsu"] >= 6){ // Revisor ou Superusuário
+                                                echo "<button class='botTable fundoCinza corAzulClaro' onclick='mostraBem($tbl0[0], 8, $Restit);'>Destinado</button>";
+                                            }else{
+                                                echo "<button disabled class='botTable fundoCinza corAzulClaro'>Destinado</button>";
+                                            }
                                         }
                                     }
 
-                                    if($Edit == 1 && $Restit == 0 && $Arquivado == 0 && $EncDestino > 0 && $Destino == 0 && $Dias >= 90){
-                                        echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 5, $Restit);' title='Recebimento no destino'>Recebimento</button>";
+                                    if($Edit == 1 && $Restit == 0 && $Arquivado == 0 && $Destino > 0 && $EncDestino == 0 && $Dias >= 90){
+                                        echo "<button class='botTable fundoAmarelo' style='min-width: 100px;' onclick='mostraBem($tbl0[0], 5, $Restit);' title='Recebimento no destino'>$DescDestino</button>";
                                     }else{
-                                        echo "<button disabled class='botTable fundoCinza corAzulClaro' title='Recebimento no destino'>Recebimento</button>";
+                                        if($_SESSION["AdmUsu"] >= 6){ // Revisor ou Superusuário
+                                            if($Destino > 0){
+                                                echo "<button class='botTable fundoCinza corAzulClaro' style='min-width: 100px;' onclick='mostraBem($tbl0[0], 7, $Restit);' title='Recebido no destino'>$DescDestino</button>";
+                                            }
+                                        }else{
+                                            echo "<button disabled class='botTable fundoCinza corAzulClaro' style='min-width: 100px;' title='Recebido no destino'>$DescDestino</button>";
+                                        }
                                     }
 
                                     if($Edit == 1 && $Arquivado == 0 && $EncDestino > 0 && $Destino > 0 && $Dias >= 90 && $EncBens == 1){
@@ -238,14 +250,19 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     echo "<div class='etiqResult' title='Sob guarda do SSV'>SSV</div>";
                                 }
                                 if($Restit > 0){
-                                    echo "<div class='etiqResult'style='border-color: red;' title='Bem restituído'>Restituído</div>";
-                                }
-                                if($EncDestino > 0){
-                                    echo "<div class='etiqResult'style='border-color: red;' title='Bem restituído'>Destinado</div>";
+                                    echo "<div class='etiqResult'style='border: 2px solid; border-color: red;' title='Bem restituído'>Restituído</div>";
                                 }
                                 if($Destino > 0){
-                                    echo "<div class='etiqResult' title='Bem já destinado'>Recebido</div>";
+                                    echo "<div class='etiqResult'style='border-color: red;' title='Bem encaminhado para o destino'>Destinado: $DescDestino</div>";
                                 }
+                                if($EncDestino > 0){
+                                    if(!is_null($DescProcesso) && $DescProcesso != ""){
+                                        echo "<div class='etiqResult' title='Bem já destinado'>Recebido para $DescProcesso</div>";
+                                    }else{
+                                        echo "<div class='etiqResult' title='Bem já destinado'>Recebido</div>";
+                                    }
+                                }
+
                                 if($Arquivado > 0){
                                     echo "<div class='etiqResult' style='border-color: red;' title='Processo arquivado'>Arquivado</div>";
                                 }

@@ -71,7 +71,8 @@ if($Acao=="buscaBem"){
     $NomeUsuRest = "";
 
     $rs1 = pg_query($Conec, "SELECT to_char(datareceb, 'DD/MM/YYYY'), TO_CHAR(dataachou, 'DD/MM/YYYY'), descdobem, localachou, nomeachou, telefachou, numprocesso, codusuins, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, destinonodestino, setordestino, 
-    nomerecebeudestino, nomepropriet, cpfpropriet, telefpropriet, usurestit, descencdestino, descencprocesso FROM ".$xProj.".bensachados WHERE id = $Codigo ");
+    nomerecebeudestino, nomepropriet, cpfpropriet, telefpropriet, usurestit, descencdestino, descencprocesso, codencdestino, codencprocesso, usudestino, 
+    usuencdestino FROM ".$xProj.".bensachados WHERE id = $Codigo ");
     //TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo  - procura o intervalo de 3 meses entre o recebimento e hoje
     if(!$rs1){
         $Erro = 1;
@@ -82,15 +83,35 @@ if($Acao=="buscaBem"){
         $CodUsuRestit = $tbl1[15];
         $CodDest = $tbl1[9];
 
+        $CodDestino = $tbl1[18];
         if(!is_null($tbl1[16])){
             $EncDest = $tbl1[16];
         }else{
             $EncDest = "";
         }
+        $UsuDestino = $tbl1[20];
+        $rs6 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $UsuDestino"); // usuário que inseriu no sistema
+        $tbl6 = pg_fetch_row($rs6);
+        if($tbl6 > 0){
+            $NomeUsuDestino = $tbl6[0];
+        }else{
+            $NomeUsuDestino = "";
+        }
+
+        $CodProcesso = $tbl1[19];
         if(!is_null($tbl1[17])){
             $EncProcesso = $tbl1[17];
         }else{
             $EncProcesso = "";
+        }
+
+        $UsuEncProcesso = $tbl1[21];
+        $rs5 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $UsuEncProcesso"); // usuário que inseriu no sistema
+        $tbl5 = pg_fetch_row($rs5);
+        if($tbl5 > 0){
+            $NomeEncProcesso = $tbl5[0];
+        }else{
+            $NomeEncProcesso = "";
         }
 
         $rs2 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodUsuIns"); // usuário que inseriu no sistema
@@ -108,7 +129,7 @@ if($Acao=="buscaBem"){
         $tbl4 = pg_fetch_row($rs4);
         $DescDest = $tbl4[0];
 
-        $var = array("coderro"=>$Erro, "datareg"=>$tbl1[0], "dataachou"=>$tbl1[1], "descdobem"=>nl2br($tbl1[2]), "localachou"=>$tbl1[3], "nomeachou"=>$tbl1[4], "telefachou"=>$tbl1[5], "numprocesso"=>$tbl1[6], "codusuins"=>$CodUsuIns, "nomeusuins"=>$NomeUsuIns, "intervalo"=>$tbl1[8], "destino"=>$tbl1[9], "setordestino"=>$tbl1[10], "nomerecebeu"=>$tbl1[11], "nomepropriet"=>$tbl1[12], "cpfpropriet"=>$tbl1[13], "telefpropriet"=>$tbl1[14], "nomeusurestit"=>$NomeUsuRest, "codusurestit"=>$CodUsuRestit, "setorrecebeu"=>$DescDest, "DescDest"=>$EncDest, "DescProcesso"=>$EncProcesso);
+        $var = array("coderro"=>$Erro, "datareg"=>$tbl1[0], "dataachou"=>$tbl1[1], "descdobem"=>nl2br($tbl1[2]), "localachou"=>$tbl1[3], "nomeachou"=>$tbl1[4], "telefachou"=>$tbl1[5], "numprocesso"=>$tbl1[6], "codusuins"=>$CodUsuIns, "nomeusuins"=>$NomeUsuIns, "intervalo"=>$tbl1[8], "destino"=>$tbl1[9], "setordestino"=>$tbl1[10], "nomerecebeu"=>$tbl1[11], "nomepropriet"=>$tbl1[12], "cpfpropriet"=>$tbl1[13], "telefpropriet"=>$tbl1[14], "nomeusurestit"=>$NomeUsuRest, "codusurestit"=>$CodUsuRestit, "setorrecebeu"=>$DescDest, "codSetorDestino"=>$CodDestino, "DescDest"=>$EncDest, "codProcesso"=>$CodProcesso, "DescProcesso"=>$EncProcesso, "UsuEncProcesso"=>$UsuEncProcesso, "NomeEncProcesso"=>$NomeEncProcesso, "UsuDestino"=>$UsuDestino, "NomeUsuDestino"=>$NomeUsuDestino);
     }
     $responseText = json_encode($var);
     echo $responseText;
@@ -175,18 +196,23 @@ if($Acao=="destinaBem__"){
 if($Acao=="encdestinaBem"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Setor = (int) filter_input(INPUT_GET, 'selecdestino');
-    $Processo = (int) filter_input(INPUT_GET, 'selecprocesso');
+    $UsuEdita = (int) filter_input(INPUT_GET, 'codusudest');
+//    $Processo = (int) filter_input(INPUT_GET, 'selecprocesso');
     $Erro = 0;
 
-    $rs = pg_query($Conec, "SELECT descdest FROM  ".$xProj.".bensdestinos WHERE numdest = $Setor");
+    $rs = pg_query($Conec, "SELECT descdest FROM ".$xProj.".bensdestinos WHERE numdest = $Setor");
     $tbl = pg_fetch_row($rs);
     $SetorDest = $tbl[0];
 
-    $rs0 = pg_query($Conec, "SELECT processo FROM  ".$xProj.".bensprocessos WHERE id = $Processo");
-    $tbl0 = pg_fetch_row($rs0);
-    $DescProcesso = $tbl0[0];
+//    $rs0 = pg_query($Conec, "SELECT processo FROM ".$xProj.".bensprocessos WHERE id = $Processo");
+//    $tbl0 = pg_fetch_row($rs0);
+//    $DescProcesso = $tbl0[0];
 
-    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET codencdestino = $Setor, codencprocesso = $Processo, dataencdestino = NOW(), usuencdestino = ".$_SESSION["usuarioID"].", descencdestino = '$SetorDest', descencprocesso = '$DescProcesso' WHERE id = $Cod");
+    if($UsuEdita == 0){
+        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET codencdestino = $Setor, descencdestino = '$SetorDest', dataencdestino = NOW(), usudestino = ".$_SESSION["usuarioID"]." WHERE id = $Cod");
+    }else{ // superusuário modificando
+        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET codencdestinoant = codencdestino, usumodifdestino = ".$_SESSION["usuarioID"].", datamodifdestino = NOW(), codencdestino = $Setor, descencdestino = '$SetorDest', dataencdestino = NOW(), usudestino = $UsuEdita WHERE id = $Cod");    
+    }
     if(!$rs1){
         $Erro = 1;
     }
@@ -332,9 +358,19 @@ if($Acao == "checaNumero"){
 }
 if($Acao=="recebeBemDest"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Processo = (int) filter_input(INPUT_GET, 'selecprocesso');
+    $UsuReceb = (int) filter_input(INPUT_GET, 'codusureceb');
     $Erro = 0;
 
-    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET usudestino = ".$_SESSION["usuarioID"].", datadestino = NOW() WHERE id = $Cod");
+    $rs0 = pg_query($Conec, "SELECT processo FROM ".$xProj.".bensprocessos WHERE id = $Processo");
+    $tbl0 = pg_fetch_row($rs0);
+    $DescProcesso = $tbl0[0];
+
+    if($UsuReceb == 0){
+        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET usuencdestino = ".$_SESSION["usuarioID"].", datadestino = NOW(), codencprocesso = $Processo, descencprocesso = '$DescProcesso' WHERE id = $Cod");
+    }else{ // superusuário corrindo finalidade do objeto destinado
+        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET codencprocessoant = codencprocesso, usumodifprocesso = ".$_SESSION["usuarioID"].", datamodifprocesso = NOW(), usuencdestino = $UsuReceb, datadestino = NOW(), codencprocesso = $Processo, descencprocesso = '$DescProcesso' WHERE id = $Cod");
+    }
     if(!$rs1){
         $Erro = 1;
     }
