@@ -166,6 +166,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         $Destino = $tbl0[9];
                         $EncDestino = $tbl0[13];
                         $DescDestino = $tbl0[14];
+                        if(is_null($DescDestino) || $DescDestino == ""){
+                            $DescDestino = "Receber";
+                        }
                         $DescProcesso = $tbl0[15];
                         $Arquivado = $tbl0[7];
                         $Dias = str_pad(($tbl0[10]), 2, "0", STR_PAD_LEFT);
@@ -262,11 +265,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                         echo "<div class='etiqResult' title='Bem já destinado'>Recebido</div>";
                                     }
                                 }
-
                                 if($Arquivado > 0){
                                     echo "<div class='etiqResult' style='border-color: red;' title='Processo arquivado'>Arquivado</div>";
                                 }
-
                                 if($Edit == 0 && $Impr == 1){
                                     echo "<div class='etiqResult' style='border-color: blue; cursor: pointer;' onclick='imprProcesso($tbl0[0]);' title='Gerar PDF do processo'>PDF</div>";
                                 }
