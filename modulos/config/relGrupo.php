@@ -17,7 +17,7 @@ require_once("abrealas.php");
         <div style="padding: 10px;">
             <label class="etiqAzul">Usuários do Grupo:</label>
             <?php
-                $rs3 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual, esc_horaini, esc_horafim FROM ".$xProj.".poslog WHERE ativo = 1 And esc_grupo = $Cod ORDER BY nomeusual, nomecompl ");
+                $rs3 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual, esc_horaini, esc_horafim FROM ".$xProj.".poslog WHERE ativo = 1 And eft_daf = 1 And esc_grupo = $Cod ORDER BY nomeusual, nomecompl ");
             ?>
             <table class="display" style="width:85%;">
                 <?php 

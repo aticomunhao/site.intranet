@@ -23,7 +23,7 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 70%; /* acertar de acordo com a tela */
+                width: 75%; /* acertar de acordo com a tela */
                 max-width: 900px;
             }
         </style>
@@ -214,11 +214,11 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                                     }else{
                                         document.getElementById("escalante").checked = false;
                                     }
-//                                    if(parseInt(Resp.fiscescala) === 1){
-//                                        document.getElementById("fiscalEscalas").checked = true;
-//                                    }else{
-//                                        document.getElementById("fiscalEscalas").checked = false;
-//                                    }
+                                    if(parseInt(Resp.fiscescala) === 1){
+                                        document.getElementById("fiscalEscalas").checked = true;
+                                    }else{
+                                        document.getElementById("fiscalEscalas").checked = false;
+                                    }
 
                                     if(parseInt(Resp.claviculario) === 1){
                                         document.getElementById("registroChaves").checked = true;
@@ -383,9 +383,9 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     return false;
                 }
                 FiscEscala = 0;
-//                if(document.getElementById("fiscalEscalas").checked === true){
-//                    FiscEscala = 1;
-//                }
+                if(document.getElementById("fiscalEscalas").checked === true){
+                    FiscEscala = 1;
+                }
 
                 Clavic = 0;
                 if(document.getElementById("registroChaves").checked === true){
@@ -1180,20 +1180,13 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                             </select>                            
                             <label for="escalante" style="padding-left: 30px; padding-top: 5px;" title="Confecciona a escala">Escalante:</label>
                             <input type="checkbox" id="escalante" title="Confecciona a escala do grupo" onchange="modif();" >
+                            <label for="fiscalEscalas" style="padding-left: 30px; padding-top: 5px;" title="Fiscalizar as escalas de serviço">Fiscalizar</label>
+                            <input type="checkbox" id="fiscalEscalas" title="Fiscalizar as escalas de serviço" onchange="modif();" >
+
                         </td>
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(9);" title="Guia rápido"></td>
                     </tr>
-<!-- 
-                    <tr>
-                        <td class="etiq80" style="border-bottom: 1px solid;" title="Fiscalizar o andamento das escalas de serviço">Escalas:</td>
-                        <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
-   
-                            <input type="checkbox" id="fiscalEscalas" title="Fiscalizar as escalas de serviço" onchange="modif();" >
-                            <label for="fiscalEscalas" title="Fiscalizar as escalas de serviço">fiscalizar as Escalas de Serviço</label>
-                        </td>
-                        <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(10);" title="Guia rápido"></td>
-                    </tr>
--->
+
                     <tr>
                         <td class="etiq80" title="Registrar a entrega e devolução das chaves do claviculário da Portaria">Claviculário Portaria: </td>
                         <td colspan="4">

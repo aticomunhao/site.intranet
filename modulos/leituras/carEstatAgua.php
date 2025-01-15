@@ -42,16 +42,17 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             return false;
         }
 
-        $rs1 = pg_query($Conec, "SELECT DATE_PART('MONTH', dataleitura), COUNT(id), SUM(leitura1), SUM(leitura2), SUM(leitura3) 
+        $rs1 = pg_query($Conec, "SELECT DATE_PART('YEAR', dataleitura), DATE_PART('MONTH', dataleitura), COUNT(id), SUM(leitura1), SUM(leitura2), SUM(leitura3) 
         FROM ".$xProj.".leitura_agua 
-        WHERE dataleitura IS NOT NULL And leitura1 != 0 
-        GROUP BY DATE_PART('MONTH', dataleitura) ORDER BY DATE_PART('MONTH', dataleitura) DESC ");
+        WHERE dataleitura IS NOT NULL And leitura1 != 0 And ativo = 1 
+        GROUP BY DATE_PART('YEAR', dataleitura), DATE_PART('MONTH', dataleitura) ORDER BY DATE_PART('YEAR', dataleitura) DESC, DATE_PART('MONTH', dataleitura) DESC ");
 
         $row1 = pg_num_rows($rs1);
         if($row1 > 0){
             while($tbl1 = pg_fetch_row($rs1) ){
-                $Mes = $tbl1[0];
-                $QuantDias = $tbl1[1];
+                $Ano = $tbl1[0];
+                $Mes = $tbl1[1];
+                $QuantDias = $tbl1[2];
                 $Cons1 = 0;
                 $Cons2 = 0;
                 $Cons3 = 0;
@@ -62,7 +63,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 $SomaLeitAnt = 0;
 
                 $rs2 = pg_query($Conec, "SELECT dataleitura, leitura1, leitura2, leitura3 FROM ".$xProj.".leitura_agua 
-                WHERE DATE_PART('MONTH', dataleitura) = $Mes And ativo = 1 And leitura1 != 0 And leitura2 != 0 And leitura3 != 0 ");
+                WHERE DATE_PART('YEAR', dataleitura) = $Ano And DATE_PART('MONTH', dataleitura) = $Mes And ativo = 1 And leitura1 != 0 And leitura2 != 0 And leitura3 != 0 ");
                 $row2 = pg_num_rows($rs2);
                 if($row2 > 0){
                     while($tbl2 = pg_fetch_row($rs2) ){
@@ -94,7 +95,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 <div style="border: 1px solid; border-radius: 10px">
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>
-                            <td style="font-size: 140%; font-weight: bold;"><?php echo $mes_extenso[$Mes]; ?></td>
+                            <td style="font-size: 120%; font-weight: bold;"><?php echo $mes_extenso[$Mes]." ".$Ano; ?></td>
                             <td colspan="3" style="text-align: center;">Períodos</td>
                         </tr>
                         <tr>

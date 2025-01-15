@@ -32,8 +32,10 @@ if($PrazoDel < 1000){
    pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar3 WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
    pg_query($Conec, "DELETE FROM ".$xProj.".visitas_el WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
    pg_query($Conec, "DELETE FROM ".$xProj.".chaves_ctl WHERE datavolta < CURRENT_DATE - interval '$PrazoDel years'");
+   pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf WHERE dataescala < CURRENT_DATE - interval '$PrazoDel years'");
+   pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf WHERE dataescala < CURRENT_DATE - interval '2 months' And ativo = 0;");
 
-   pg_query($Conec, "DELETE FROM ".$xProj.".escalas WHERE dataescala < CURRENT_DATE - interval '$PrazoDel years'");
+//   pg_query($Conec, "DELETE FROM ".$xProj.".escalas WHERE dataescala < CURRENT_DATE - interval '$PrazoDel years'");
    
 
 }else{
@@ -695,28 +697,28 @@ echo "Tabela ".$xProj.".visitas_ar checada. <br>";
       pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(14, 'L', '07:00 / 13:15', 10, 3, NOW() )");
       pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(15, 'M', '13:35 / 19:50', 11, 3, NOW() )");
       pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, letra, horaturno, ordemletra, usuins, datains) VALUES(16, 'O', '08:00 / 18:00', 12, 3, NOW() )");
-  }
-
-  //Acerta as colunas auxiliares para os turnos da escalaDAF
-  $rsT = pg_query($Conec, "SELECT id, horaturno FROM ".$xProj.".escaladaf_turnos WHERE id > 4 And ativo = 1 And cargahora < '00:01' And cargahora IS NOT NULL ORDER BY letra");
-  $rowT = pg_num_rows($rsT);
-  if($rowT > 0){
-      $Hoje = date('d/m/Y');
-      while($tblT = pg_fetch_row($rsT)){  //Calcular carga horaria
-          $Cod = $tblT[0];
-          $Hora = $tblT[1]; 
-          $Proc = explode("/", $Hora);
-          $HoraI = $Proc[0];
-          $HoraF = $Proc[1];
-          $TurnoIni = $Hoje." ".$HoraI;
-          $TurnoFim = $Hoje." ".$HoraF;
-          pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET calcdataini = '$TurnoIni', calcdatafim = '$TurnoFim' WHERE id = $Cod");
-          pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargahora = (calcdatafim - calcdataini) WHERE id = $Cod");
-          pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '01:00'), interv = '01:00' WHERE cargahora >= '08:00' And id = $Cod ");
-          pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '00:15'), interv = '00:15' WHERE cargahora >= '06:00' And cargahora < '08:00' And id = $Cod ");
-          pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = cargahora, interv = '00:00' WHERE cargahora <= '06:00' And id = $Cod ");
+  
+      //Acerta as colunas auxiliares para os turnos da escalaDAF
+      $rsT = pg_query($Conec, "SELECT id, horaturno FROM ".$xProj.".escaladaf_turnos WHERE horaturno != 'FÉRIAS' And horaturno != 'FOLGA' And horaturno != 'INSS' And horaturno != 'AULA IAQ' And ativo = 1 And cargahora < '00:01' And cargahora IS NOT NULL ORDER BY letra");
+      $rowT = pg_num_rows($rsT);
+      if($rowT > 0){
+         $Hoje = date('d/m/Y');
+         while($tblT = pg_fetch_row($rsT)){  //Calcular carga horaria
+            $Cod = $tblT[0];
+            $Hora = $tblT[1]; 
+             $Proc = explode("/", $Hora);
+             $HoraI = $Proc[0];
+             $HoraF = $Proc[1];
+             $TurnoIni = $Hoje." ".$HoraI;
+             $TurnoFim = $Hoje." ".$HoraF;
+             pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET calcdataini = '$TurnoIni', calcdatafim = '$TurnoFim' WHERE id = $Cod");
+             pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargahora = (calcdatafim - calcdataini) WHERE id = $Cod");
+             pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '01:00'), interv = '01:00' WHERE cargahora >= '08:00' And id = $Cod ");
+             pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '00:15'), interv = '00:15' WHERE cargahora >= '06:00' And cargahora < '08:00' And id = $Cod ");
+             pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = cargahora, interv = '00:00' WHERE cargahora <= '06:00' And id = $Cod ");
+         }
       }
-  }
+   }
   echo "Tabela ".$xProj.".escaladaf_turnos checada. <br>";
 
   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_notas (

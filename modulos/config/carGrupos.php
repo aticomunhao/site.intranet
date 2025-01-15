@@ -21,7 +21,7 @@ require_once("abrealas.php");
                 $Cod = data[0];
                 document.getElementById("guardacod").value = $Cod;
                 if($Cod !== 0){
-                    carregaModalGrupos($Cod);
+//                    carregaModalGrupos($Cod);
                 }
             });
         </script>
@@ -34,7 +34,7 @@ require_once("abrealas.php");
                 <label class="etiqAzul">As modificações feitas aqui são passadas para o módulo Escalas</label><br> 
             </div>
             <?php
-                $rs0 = pg_query($Conec, "SELECT id, siglagrupo, descgrupo, qtd_turno, ativo FROM ".$xProj.".escalas_gr WHERE ativo = 1 ORDER BY siglagrupo");
+                $rs0 = pg_query($Conec, "SELECT id, siglagrupo, descgrupo, ativo FROM ".$xProj.".escalas_gr WHERE ativo = 1 ORDER BY siglagrupo");
             ?>
             <table id="idTabelaGr" class="display" style="width:85%;">
                 <thead>
@@ -42,23 +42,23 @@ require_once("abrealas.php");
                         <th style="display: none;"></th>
                         <th style="text-align: center; font-size: 80%;">Sigla</th>
                         <th style="text-align: center; font-size: 80%;">Descrição</th>
-                        <th style="text-align: center; font-size: 80%;" title="Quantidade de turnos na escala">Turnos</th>
                         <th style="text-align: center; font-size: 80%;">Usuários</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                 <?php 
                 while ($tbl0 = pg_fetch_row($rs0)){
                     $Cod = $tbl0[0]; // codocor
-                    $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE esc_eft = 1 And ativo = 1 And esc_grupo = $Cod");
+                    $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $Cod");
                     $row1 = pg_num_rows($rs1);
                     ?>
                     <tr>
                         <td style="display: none;"><?php echo $Cod; ?></td>
-                        <td><?php echo $tbl0[1]; ?></td>
-                        <td><?php echo $tbl0[2]; ?></td>
-                        <td style="text-align: center; font-size: 80%;"><?php echo $tbl0[3]; ?></td>
-                        <td style="text-align: center; font-size: 80%;"><?php echo $row1; ?></td>
+                        <td onclick="carregaModalGrupos(<?php echo $Cod; ?>)" style="cursor: pointer;"><?php echo $tbl0[1]; ?></td>
+                        <td onclick="carregaModalGrupos(<?php echo $Cod; ?>)" style="cursor: pointer;"><?php echo $tbl0[2]; ?></td>
+                        <td onclick="carregaModalGrupos(<?php echo $Cod; ?>)" style="cursor: pointer; text-align: center; font-size: 80%;"><?php echo $row1; ?></td>
+                        <td style="text-align: center; padding-left: 5px;"><img src='imagens/lixeiraPreta.png' height='15px;' style='cursor: pointer; padding-right: 3px;' onclick='apagaGrupo(<?php echo $Cod; ?>);' title='Apagar este grupo e suas escalas.'></td>
                     </tr>
                 <?php
                 }

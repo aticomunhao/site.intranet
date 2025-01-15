@@ -61,8 +61,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
         $rs1 = pg_query($Conec, "SELECT DATE_PART('MONTH', dataleitura1), COUNT(id), SUM(leitura1), DATE_PART('YEAR', dataleitura1) 
         FROM ".$xProj.".leitura_eletric 
-        WHERE colec = 1 And dataleitura1 IS NOT NULL And leitura1 != 0 
-        GROUP BY DATE_PART('MONTH', dataleitura1), DATE_PART('YEAR', dataleitura1) ORDER BY DATE_PART('MONTH', dataleitura1) DESC, DATE_PART('YEAR', dataleitura1) DESC ");
+        WHERE colec = 1 And dataleitura1 IS NOT NULL And leitura1 != 0 And ativo = 1 
+        GROUP BY DATE_PART('MONTH', dataleitura1), DATE_PART('YEAR', dataleitura1) ORDER BY DATE_PART('YEAR', dataleitura1) DESC, DATE_PART('MONTH', dataleitura1) DESC ");
 
         $row1 = pg_num_rows($rs1);
         if($row1 > 0){
@@ -170,7 +170,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 <div style="border: 1px solid; border-radius: 10px">
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>
-                            <td style="font-size: 140%; font-weight: bold;"><?php echo $mes_extenso[$Mes]."/".$Ano; ?></td>
+                            <td style="font-size: 120%; font-weight: bold;"><?php echo $mes_extenso[$Mes]." ".$Ano; ?></td>
                             <td colspan="3" style="text-align: center;"></td>
                         </tr>
                         <tr>

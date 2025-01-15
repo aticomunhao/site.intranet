@@ -788,3 +788,81 @@ if($Acao =="salvaencarreg"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+if($Acao =="salvaGrupo"){
+    $Erro = 0;
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Sigla = filter_input(INPUT_GET, 'siglagrupo');
+    $Nome = filter_input(INPUT_GET, 'nomegrupo');
+    $Descr = filter_input(INPUT_GET, 'descgrupo');
+    $Turnos = (int) filter_input(INPUT_GET, 'selecTurnos');
+
+    if($Cod > 0){ // salvar
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".escalas_gr SET siglagrupo = '$Sigla', descgrupo = '$Nome', descescala = '$Descr', qtd_turno = $Turnos WHERE id = $Cod ");
+        if(!$rs){
+            $Erro = 1;
+        }
+    }else{ // inserir
+        $rs1 = pg_query($Conec, "SELECT siglagrupo FROM ".$xProj.".escalas_gr WHERE siglagrupo = '$Sigla' ");
+        $row1 = pg_num_rows($rs1);
+        if($row1 > 0){
+            $Erro = 2;
+            $var = array("coderro"=>$Erro);
+            $responseText = json_encode($var);
+            echo $responseText;
+            return false;
+        }
+
+        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escalas_gr");
+        $tblCod = pg_fetch_row($rsCod);
+        $Codigo = $tblCod[0];
+        $CodigoNovo = ($Codigo+1);
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".escalas_gr (id, siglagrupo, descgrupo, descescala, qtd_turno) 
+        VALUES ($CodigoNovo, '$Sigla', '$Nome', '$Descr', $Turnos) ");
+
+        //Inserir um para a primeira abertura
+        $DiaIni = strtotime(date('Y/m/01'));
+        $Amanha = strtotime("+1 day", $DiaIni);
+        $DiaIni = $Amanha;
+        $Data = date("Y/m/d", $Amanha); // data legível
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf (dataescala, grupo_id) VALUES ('$Data', $CodigoNovo)");
+
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="trocagrupo"){
+    $NumGrupo = (int) filter_input(INPUT_GET, 'grupo');
+    $Erro = 0;
+    $rs0 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_grupo = $NumGrupo WHERE pessoas_id = ".$_SESSION["usuarioID"]." And ativo = 1");
+    if(!$rs0){
+        $Erro = 1;
+    }else{
+        $rs = pg_query($Conec, "SELECT siglagrupo FROM ".$xProj.".escalas_gr WHERE id = $NumGrupo;");
+        $row = pg_num_rows($rs);
+        if($row > 0){
+            $tbl = pg_fetch_row($rs);
+            $SiglaGrupo = $tbl[0];
+        }else{
+            $SiglaGrupo = "";
+        } 
+    }
+    $var = array("coderro"=>$Erro, "siglagrupo"=>$SiglaGrupo);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="apagaGrupo"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Erro = 0;
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".escalas_gr SET ativo = 0 WHERE id = $Cod");
+    if(!$rs){
+        $Erro = 1;
+    }else{
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf SET ativo = 0 WHERE grupo_id = $Cod");
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}

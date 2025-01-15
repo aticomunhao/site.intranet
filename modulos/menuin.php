@@ -24,21 +24,10 @@
 			//Provisório
 			if(strtotime('2025/03/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				pg_query($Conec, "UPDATE ".$xProj.".bensachados SET usudestino = usuencdestino WHERE usudestino = 0 And usuencdestino > 0");
-				pg_query($Conec, "UPDATE ".$xProj.".bensachados SET codencprocesso = 5, descencprocesso = 'Venda' WHERE codencdestino = 2 And codencprocesso = 0");
-				pg_query($Conec, "UPDATE ".$xProj.".bensachados SET codencprocesso = 5, descencprocesso = 'Venda' WHERE codencdestino = 3 And codencprocesso = 0");
-				pg_query($Conec, "UPDATE ".$xProj.".bensachados SET usuencdestino = 0 WHERE codencprocesso = 0");
-
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS codencdestinoant smallint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS codencprocessoant smallint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS datamodifdestino timestamp without time zone DEFAULT '3000-12-31' ;");
-
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS usumodifdestino bigint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS usumodifprocesso bigint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS datamodifprocesso timestamp without time zone DEFAULT '3000-12-31' ;");
-
-				pg_query($Conec, "UPDATE ".$xProj.".bensachados SET codencdestino = 5, codencprocesso = 4 WHERE id = 16 And codencdestino = 0");
-
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_fisc = 0 WHERE pessoas_id = 34");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_fisc = 0 WHERE pessoas_id = 86");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_fisc = 1 WHERE pessoas_id = 83");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_fisc = 1 WHERE pessoas_id = 3");
 
 			} // fim data limite
         ?>

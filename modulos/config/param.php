@@ -414,7 +414,7 @@
                                     document.getElementById("siglagrupo").value = Resp.siglagrupo;
                                     document.getElementById("nomegrupo").value = Resp.descgrupo;
                                     document.getElementById("descgrupo").value = Resp.descescala;
-                                    document.getElementById("selecTurnos").value = Resp.turnos;
+//                                    document.getElementById("selecTurnos").value = Resp.turnos;
                                     $("#relusugrupo").load("modulos/config/relGrupo.php?codigo="+Cod); // está em relGrupo.php
                                     document.getElementById("relacEditaGrupos").style.display = "block";
                                 }
@@ -430,7 +430,7 @@
                 document.getElementById("siglagrupo").value = "";
                 document.getElementById("nomegrupo").value = "";
                 document.getElementById("descgrupo").value = "";
-                document.getElementById("selecTurnos").value = "1";
+//                document.getElementById("selecTurnos").value = "1";
                 document.getElementById("relusugrupo").innerHTML = "";
                 document.getElementById("relacEditaGrupos").style.display = "block";
             }
@@ -440,19 +440,19 @@
                         document.getElementById("siglagrupo").focus();
                         return false;
                     }
-                    if(document.getElementById("nomegrupo").value == ""){
-                        document.getElementById("nomegrupo").focus();
-                        return false;
-                    }
-                    if(document.getElementById("selecTurnos").value == ""){
-                        document.getElementById("selecTurnos").focus();
-                        return false;
-                    }
+//                    if(document.getElementById("nomegrupo").value == ""){
+//                        document.getElementById("nomegrupo").focus();
+//                        return false;
+//                    }
+//                    if(document.getElementById("selecTurnos").value == ""){
+//                        document.getElementById("selecTurnos").focus();
+//                        return false;
+//                    }
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/escala/salvaEsc.php?acao=salvaGrupo&codigo="+document.getElementById("guardacodgrupo").value
+                        ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaGrupo&codigo="+document.getElementById("guardacodgrupo").value
                         +"&siglagrupo="+document.getElementById("siglagrupo").value
-                        +"&selecTurnos="+document.getElementById("selecTurnos").value
+//                        +"&selecTurnos="+document.getElementById("selecTurnos").value
                         +"&nomegrupo="+document.getElementById("nomegrupo").value
                         +"&descgrupo="+document.getElementById("descgrupo").value
                         , true);
@@ -464,8 +464,19 @@
                                     if(parseInt(Resp.coderro) === 1){
                                         alert("Houve um erro no servidor.");
                                     }else{
-                                        $("#carGruposEscala").load("modulos/config/carGrupos.php");
-                                        document.getElementById("relacEditaGrupos").style.display = "none";
+                                        if(parseInt(Resp.coderro) === 2){
+                                            $.confirm({
+                                                title: 'Erro!',
+                                                content: 'Grupo já existe.',
+                                                draggable: true,
+                                                buttons: {
+                                                    OK: function(){}
+                                                }
+                                            });
+                                        }else{
+                                            $("#carGruposEscala").load("modulos/config/carGrupos.php");
+                                            document.getElementById("relacEditaGrupos").style.display = "none";
+                                        }
                                     }
                                 }
                             }
@@ -475,6 +486,40 @@
                 }else{
                     document.getElementById("relacEditaGrupos").style.display = "none";
                 }
+            }
+
+            function apagaGrupo(Cod){
+                $.confirm({
+                    title: 'Apagar',
+                    content: 'Confirma apagar este grupo e suas escalas?<br>Não haverá possibilidade de recuperação.<br>Continua?',
+                    autoClose: 'Não|15000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=apagaGrupo&codigo="+Cod, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) > 0){
+                                                alert("Houve erro ao salvar");
+                                            }else{
+                                                $("#carGruposEscala").load("modulos/config/carGrupos.php");
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                            document.getElementById("valorprazodel").value = document.getElementById("guardaPrazoDel").value;
+                        }
+                    }
+                })               
             }
 
             function salvaModalDir(){
@@ -1537,12 +1582,7 @@
             <div id="carCheckListLRO"></div>
 
 
-
-
-
         </div> <!-- Fim-->
-
-
             
             <!-- Modal para editar descrição de alguns itens do menu  -->
             <div id="relacEditMenuOpr" class="relacmodal">
@@ -1573,8 +1613,9 @@
                     <tr>
                         <td class="etiq">Sigla</td>
                         <td><input type="text" id="siglagrupo" style="width: 50%;" onchange="modif();" placeholder="Sigla" onkeypress="if(event.keyCode===13){javascript:foco('nomegrupo');return false;}"/></td>
-                        <td class="etiq">Turnos</td>
+                        <td class="etiq"></td>
                         <td>
+<!--
                             <select id="selecTurnos" style="font-size: 1rem; width: 60px; text-align: centr;" onchange="modif();" title="Selecione o número de turnos para compor a escala deste grupo.">
                                 <option value="0"></option>
                                 <option value="1">1</option>
@@ -1582,6 +1623,7 @@
                                 <option value="3">3</option>
                                 <option value="4">4</option>
                             </select>
+-->
                         </td>    
                     </tr>
                     <tr>
@@ -1646,6 +1688,7 @@
                         <li>Registros de manutenção dos Elevadores.</li>
                         <li>Evendos do calendário.</li>
                         <li>Tarefas atribuidas.</li>
+                        <li>Escalas de Serviço.</li>
                     </ul>
                 </div>
                 <div style="text-align: center;">Este módulo é acionado uma vez por dia no primeiro login.</div>

@@ -299,11 +299,12 @@
 //						}
 
 						$NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]); // procurar a que grupo de escala pertence
-						//Só o escalante vê a escala
+						//Só escalante e fiscal vê a escala
 						$EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
+						$Fiscal = parEsc("esc_fisc", $Conec, $xProj, $_SESSION["usuarioID"]);
 //						$EfetivoEscalaDAF = parEsc("eft_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
 //						if($EscalanteDAF == 1 || $EfetivoEscalaDAF == 1){
-						if($NumGrupo > 0 && $EscalanteDAF == 1){
+						if($NumGrupo > 0 && $EscalanteDAF == 1 || $Fiscal == 1){
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(77);'>Escala DAF</a>";
 							echo "</li>";

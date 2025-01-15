@@ -148,15 +148,20 @@ if(!isset($_SESSION["usuarioID"])){
                 //Não vai liberar para os escalados - só o pdf impresso
                 document.getElementById("evliberames").style.visibility = "hidden"; 
                 document.getElementById("etiqevliberames").style.visibility = "hidden"; 
+                document.getElementById("selecGrupo").style.visibility = "hidden"; 
+                document.getElementById("etiqGrupo").style.visibility = "hidden"; 
+                document.getElementById("imgEscalaConfig").style.visibility = "hidden";
 
-                document.getElementById("imgEscalaConfig").style.visibility = "hidden"; 
-                if(parseInt(document.getElementById("escalante").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // // se estiver marcado
+                if(parseInt(document.getElementById("escalante").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // Escalante e Superusuário
                     document.getElementById("imgEscalaConfig").style.visibility = "visible"; 
                 }
-
+                if(parseInt(document.getElementById("fiscal").value) === 1){ // Fiscal das escalas
+                    document.getElementById("selecGrupo").style.visibility = "visible"; 
+                    document.getElementById("etiqGrupo").style.visibility = "visible"; 
+                }
                 document.getElementById("selecMesAnoEsc").value = document.getElementById("guardamesano").value;
 
-                if(parseInt(document.getElementById("liberadoefetivo").value) === 0 && parseInt(document.getElementById("escalante").value) === 0){
+                if(parseInt(document.getElementById("liberadoefetivo").value) === 0 && parseInt(document.getElementById("escalante").value) === 0 && parseInt(document.getElementById("fiscal").value) === 0){
                     $("#faixacentral").load("modulos/escaladaf/infoAgd1.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                     $("#faixaquadro").load("modulos/escaladaf/infoAgd2.php");
                     $("#faixacarga").load("modulos/escaladaf/infoAgd2.php");
@@ -171,7 +176,9 @@ if(!isset($_SESSION["usuarioID"])){
                     $("#faixanotas").load("modulos/escaladaf/notasdaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                     $("#faixaferiados").load("modulos/escaladaf/relFeriados.php");
                     document.getElementById("botImprimir").style.visibility = "visible";
-                    document.getElementById("transfMesAnoEsc").style.visibility = "visible";
+                    if(parseInt(document.getElementById("escalante").value) === 1){
+                        document.getElementById("transfMesAnoEsc").style.visibility = "visible";
+                    }
                 }
 
                 $("#edinterv").mask("99:99");
@@ -188,7 +195,7 @@ if(!isset($_SESSION["usuarioID"])){
 //alert(ajax.responseText);
                                         Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                         if(parseInt(Resp.coderro) === 0){
-                                            if(parseInt(Resp.mesliberado) === 0 && parseInt(document.getElementById("escalante").value) === 0){
+                                            if(parseInt(Resp.mesliberado) === 0 && parseInt(document.getElementById("escalante").value) === 0 && parseInt(document.getElementById("fiscal").value) === 0){
                                                 $("#faixacentral").load("modulos/escaladaf/infoAgd1.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                                                 $("#faixaquadro").load("modulos/escaladaf/infoAgd2.php");
                                                 $("#faixanotas").load("modulos/escaladaf/infoAgd3.php");
@@ -466,6 +473,34 @@ if(!isset($_SESSION["usuarioID"])){
                                     Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                     if(parseInt(Resp.coderro) === 1){
                                         alert("Houve um erro no servidor.");
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                });
+
+                $("#selecGrupo").change(function(){
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=trocagrupo&grupo="+document.getElementById("selecGrupo").value, true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 1){
+                                        alert("Houve um erro no servidor.");
+                                    }else{
+                                        document.getElementById("etiqSiglaGrupo").innerHTML = "Escala "+Resp.siglagrupo;
+                                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                        $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                        $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                        $("#faixanotas").load("modulos/escaladaf/notasdaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                        $("#faixaferiados").load("modulos/escaladaf/relFeriados.php");
+                                        document.getElementById("botImprimir").style.visibility = "visible";
+                                        document.getElementById("transfMesAnoEsc").style.visibility = "visible";
                                     }
                                 }
                             }
@@ -1015,8 +1050,8 @@ if(!isset($_SESSION["usuarioID"])){
                                         obj.checked = false;
                                         $.confirm({
                                             title: 'Atenção!',
-                                            content: 'Usuário participa de outra escala: '+Resp.outrogrupo+".<br>Solicite à ATI modificar o grupo, se for o caso.",
-                                            autoClose: 'OK|10000',
+                                            content: 'Usuário participa de outra escala: '+Resp.outrogrupo+".<br>Solicite à ATI modificar o grupo para fins de escala, se for o caso.",
+                                            autoClose: 'OK|15000',
                                             draggable: true,
                                             buttons: {
                                                 OK: function(){}
@@ -1210,6 +1245,14 @@ if(!isset($_SESSION["usuarioID"])){
         <?php
             require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+            if($NumGrupo == 0){ // está sem grupo
+                $rs0 = pg_query($Conec, "SELECT MIN(id) FROM ".$xProj.".escalas_gr;");
+                $row0 = pg_num_rows($rs0);
+                if($row0 > 0){
+                    $tbl0 = pg_fetch_row($rs0);
+                    $NumGrupo = $tbl0[0];
+                }    
+            }
             $rs = pg_query($Conec, "SELECT siglagrupo FROM ".$xProj.".escalas_gr WHERE id = $NumGrupo;");
             $row = pg_num_rows($rs);
             if($row > 0){
@@ -1406,12 +1449,12 @@ if(!isset($_SESSION["usuarioID"])){
     ");
 //------------
 
-
     $DiaIni = strtotime(date('Y/m/01')); // número - para começar com o dia 1
     $DiaIni = strtotime("-1 day", $DiaIni); // para começar com o dia 1 no loop for
 
     $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataescala, 'MM'), '/', TO_CHAR(dataescala, 'YYYY')) 
     FROM ".$xProj.".escaladaf WHERE grupo_id = $NumGrupo GROUP BY TO_CHAR(dataescala, 'MM'), TO_CHAR(dataescala, 'YYYY') ORDER BY TO_CHAR(dataescala, 'YYYY') DESC, TO_CHAR(dataescala, 'MM') DESC ");
+    $OpcoesGrupo = pg_query($Conec, "SELECT id, siglagrupo FROM ".$xProj.".escalas_gr WHERE ativo = 1 ORDER BY siglagrupo");
 
     $OpcoesTransfMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataescala, 'MM'), '/', TO_CHAR(dataescala, 'YYYY')) 
     FROM ".$xProj.".escaladaf WHERE grupo_id = $NumGrupo  
@@ -1442,8 +1485,8 @@ if(!isset($_SESSION["usuarioID"])){
         }
     }
 
-
     $Escalante = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
+    $Fiscal = parEsc("esc_fisc", $Conec, $xProj, $_SESSION["usuarioID"]);
     $MesSalvo = parEsc("mes_escdaf", $Conec, $xProj, $_SESSION["usuarioID"]);
 
     //Ver se o que está guardado em poslog corresponde a algum mes salvo em escaladaf
@@ -1455,6 +1498,7 @@ if(!isset($_SESSION["usuarioID"])){
         $MesSalvo = date("m")."/".date("Y");
         pg_query($Conec, "UPDATE ".$xProj.".poslog SET mes_escdaf = '$MesSalvo' WHERE pessoas_id = ". $_SESSION["usuarioID"]."" );
     }
+
     $Busca = addslashes($MesSalvo); 
     $Proc = explode("/", $Busca);
     $Mes = $Proc[0];
@@ -1476,6 +1520,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardamesano" value="<?php echo addslashes($MesSalvo); ?>" />
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>" />
         <input type="hidden" id="escalante" value="<?php echo $Escalante; ?>" />
+        <input type="hidden" id="fiscal" value="<?php echo $Fiscal; ?>" />
         <input type="hidden" id="guardanumgrupo" value="<?php echo $NumGrupo; ?>" />
         <input type="hidden" id="guardaDiaId" value="" />
         <input type="hidden" id="guardaUsuId" value="" />
@@ -1488,7 +1533,7 @@ if(!isset($_SESSION["usuarioID"])){
             <div class="row"> <!-- botões Inserir e Imprimir-->
                 <div class="col" style="margin: 0 auto; text-align: left;">
                     <img src="imagens/settings.png" height="20px;" id="imgEscalaConfig" style="cursor: pointer; padding-left: 30px;" onclick="abreEscalaConfig();" title="Configurar o acesso e inserir participantes da escala">
-                    <label style="padding-left: 40px;">Escala mês: </label>
+                    <label style="padding-left: 20px; font-size: .8rem;">Escala mês: </label>
                     <select id="selecMesAnoEsc" style="font-size: 1rem; width: 90px;" title="Selecione o mês/ano.">
                         <option value=""></option>
                             <?php 
@@ -1501,8 +1546,22 @@ if(!isset($_SESSION["usuarioID"])){
                             ?>
                     </select>
 
+                    <label id="etiqGrupo" style="font-size: .8rem;">Ver Grupo: </label>
+                    <select id="selecGrupo" style="font-size: .8rem; width: 90px;" title="Selecione o grupo.">
+                        <option value="0"></option>
+                            <?php 
+                                if($OpcoesGrupo){
+                                    while ($Opcoes = pg_fetch_row($OpcoesGrupo)){ ?>
+                                        <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                        <?php 
+                                    }
+                                }
+                            ?>
+                    </select>
+
+
                     <?php
-                    if($Escalante == 1){
+                    if($Escalante == 1 || $Fiscal == 1){ // suspenso
                         ?>
                         <label style="padding-left: 10px;"></label>
                         <input type="checkbox" id="evliberames" title="Liberar acesso aos participantes da escala" onClick="liberaMes(this);" <?php if($MesLiberado == 1) {echo "checked";} ?> >
@@ -1512,11 +1571,10 @@ if(!isset($_SESSION["usuarioID"])){
                     ?>
                 </div> <!-- quadro -->
 
-                <div class="col" style="text-align: center;">Escala de Serviço <?php echo $SiglaGrupo; ?></div> <!-- espaçamento entre colunas  -->
+                <div class="col" id="etiqSiglaGrupo" style="text-align: center;">Escala <?php echo $SiglaGrupo; ?></div> <!-- espaçamento entre colunas  -->
                 <div class="col" style="margin: 0 auto; text-align: center;">
-
-                <label style="padding-left: 40px;">Transferir para o mês: </label>
-                    <select id="transfMesAnoEsc" style="font-size: 1rem; width: 90px;" title="Transferir esta escala para o mês/ano escolhido">
+                    <label style="padding-left: 40px; font-size: .8rem;">Transferir para o mês: </label>
+                    <select id="transfMesAnoEsc" style="font-size: .8rem; width: 90px;" title="Transferir esta escala para o mês/ano escolhido">
                         <option value=""></option>
                             <?php 
                                 if($OpcoesTransfMes){
@@ -1528,7 +1586,6 @@ if(!isset($_SESSION["usuarioID"])){
                             ?>
                     </select>
                     <label style="padding-left: 20px;"></label>
-
                     <button id="botImprimir" class="botpadrred" onclick="imprPlanilha();">PDF</button>
                 </div> <!-- quadro -->
             </div>
@@ -1548,6 +1605,7 @@ if(!isset($_SESSION["usuarioID"])){
                     </td>
                 </tr>
             </table>
+<!-- Faixas da página -->
             <div id="faixacentral"></div>
             <div id="faixaquadro"></div>
             <div id="faixacarga"></div>
@@ -1572,7 +1630,6 @@ if(!isset($_SESSION["usuarioID"])){
                 <button class="botpadrblue" style="font-size: 80%;" onclick="insParticipante();">Inserir Marcados</button>
             </div>
         </div> <!-- Fim Modal-->
-
 
         <!-- div modal relacionar turnos - edHorarios.php -->
         <div id="relacQuadroHorario" class="relacmodal">

@@ -20,46 +20,63 @@
         'xª'=> ''
     );
 
-    $Mes = date("m");
-    $Ano = date("Y");
+    $MesSalvo = parEsc("mes_escdaf", $Conec, $xProj, $_SESSION["usuarioID"]);
+    if(is_null($MesSalvo) || $MesSalvo == ""){
+        $MesSalvo = date("m")."/".date("Y");
+    }
+    $Proc = explode("/", $MesSalvo);
+    if(is_null($Proc[1])){
+        $Mes = date("m");
+    }else{
+        $Mes = $Proc[0];
+    }
+    if(strLen($Mes) < 2){
+        $Mes = "0".$Mes;
+    }
+    if(is_null($Proc[1])){
+        $Ano = date("Y");
+        }else{
+        $Ano = $Proc[1];
+    }
 
     $EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
     $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
-    echo "Mês: ".$Mes.'/'.$Ano;
+    $Fiscal = parEsc("esc_fisc", $Conec, $xProj, $_SESSION["usuarioID"]);
+    echo "Mês: ".$MesSalvo;
     echo "<br><br>";
 
-    if(isset($_REQUEST["mesano"])){
-        $Busca = addslashes(filter_input(INPUT_GET, 'mesano'));
-        if(is_null($Busca || $Busca == "")){
-            $Mes = date("m");
-            $Ano = date("Y");
-        }else{
-            $Proc = explode("/", $Busca);
-            if(is_null($Proc[1])){
-                $Mes = date("m");
-            }else{
-                $Mes = $Proc[0];
-            }
-            if(strLen($Mes) < 2){
-                $Mes = "0".$Mes;
-            }
-            if(is_null($Proc[1])){
-                $Ano = date("Y");
-            }else{
-                $Ano = $Proc[1];
-            }
-        }
-        $Data = date('01/'.$Mes.'/'.$Ano);
-    }else{
-        $rs = pg_query($Conec, "SELECT MIN(dataescala) FROM ".$xProj.".escaladaf WHERE ativo = 1 And grupo_id = $NumGrupo");
-        $tbl = pg_fetch_row($rs);
-        $MaxData = $tbl[0];
-        $Proc = explode("-", $MaxData);
-        $Ano = $Proc[0];
-        $Mes = $Proc[1];
-        $Mes = ($Mes - 1);
-        $Data = date('01/'.$Mes.'/'.$Ano);
-    }
+//    if(isset($_REQUEST["mesano"])){
+//        $Busca = addslashes(filter_input(INPUT_GET, 'mesano'));
+//        if(is_null($Busca || $Busca == "")){
+//            $Mes = date("m");
+//            $Ano = date("Y");
+//        }else{
+//            $Proc = explode("/", $Busca);
+//            if(is_null($Proc[1])){
+//                $Mes = date("m");
+//            }else{
+//                $Mes = $Proc[0];
+//            }
+//            if(strLen($Mes) < 2){
+//                $Mes = "0".$Mes;
+//            }
+//            if(is_null($Proc[1])){
+//                $Ano = date("Y");
+//            }else{
+//                $Ano = $Proc[1];
+//            }
+//        }
+//        $Data = date('01/'.$Mes.'/'.$Ano);
+//    }else{
+//        $rs = pg_query($Conec, "SELECT MIN(dataescala) FROM ".$xProj.".escaladaf WHERE ativo = 1 And grupo_id = $NumGrupo");
+//        $tbl = pg_fetch_row($rs);
+//        $MaxData = $tbl[0];
+//        $Proc = explode("-", $MaxData);
+//        $Ano = $Proc[0];
+//        $Mes = $Proc[1];
+//        $Mes = ($Mes - 1);
+//        $Data = date('01/'.$Mes.'/'.$Ano);
+//    }
 
 
     $rs2 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl ");
@@ -76,7 +93,7 @@
                             while($tbl = pg_fetch_row($rs)){
                                 $IdDia = $tbl[0];
                                 $DataDia = addslashes($tbl[3]);
-                                if($EscalanteDAF == 1){
+                                if($EscalanteDAF == 1 || $Fiscal == 1){
                                     ?>
                                     <td><div <?php if($tbl[2] == 0 || $tbl[4] == 1){echo "class='quadrodiaClickCinza'";}else{echo "class='quadrodiaClick'";} ?> onclick="abreEdit(<?php echo $IdDia; ?>, '<?php echo $DataDia; ?>');"><?php echo $tbl[1]; ?><br><?php echo $Semana_Extract[$tbl[2]]; ?></div></td>
                                     <?php
