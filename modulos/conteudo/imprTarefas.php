@@ -1015,7 +1015,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
 
                         $pdf->SetX(41);
-                        $pdf->Cell(30, 4, number_format($tbl6[1], 0, ",",".")." dias", 0, 0, 'R');
+                        if($tbl6[1] == 1){
+                            $pdf->Cell(30, 4, number_format($tbl6[1], 0, ",",".")." dia", 0, 0, 'R');
+                        }else{
+                            $pdf->Cell(30, 4, number_format($tbl6[1], 0, ",",".")." dias", 0, 0, 'R');
+                        }
 
                         $pdf->Cell(0, 4, "para ".$tbl6[3], 0, 1, 'L');
 

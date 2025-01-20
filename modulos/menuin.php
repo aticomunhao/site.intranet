@@ -24,10 +24,11 @@
 			//Provisório
 			if(strtotime('2025/03/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_fisc = 0 WHERE pessoas_id = 34");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_fisc = 0 WHERE pessoas_id = 86");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_fisc = 1 WHERE pessoas_id = 83");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_fisc = 1 WHERE pessoas_id = 3");
+				//0073
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".leitura_agua ADD COLUMN IF NOT EXISTS consdiario double precision NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".leitura_eletric ADD COLUMN IF NOT EXISTS consdiario1 double precision NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".leitura_eletric ADD COLUMN IF NOT EXISTS consdiario2 double precision NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".leitura_eletric ADD COLUMN IF NOT EXISTS consdiario3 double precision NOT NULL DEFAULT 0 ");
 
 			} // fim data limite
         ?>

@@ -109,6 +109,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         $Cons2 = (($SomaLeit1-$SomaLeitAnt)*$tbl2[2]); // fator de correção do bc registrado junto com o consumo
                     }
                 }
+                //Consumo mensal calculado com a soma do consumo diário 
+                $rs4 = pg_query($Conec, "SELECT SUM(consdiario1) FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura1) = $Mes And DATE_PART('YEAR', dataleitura1) = '$Ano' And colec = 1 And ativo = 1 And leitura1 != 0");
+                $tbl4 = pg_fetch_row($rs4);
+                $ConsMensal = $tbl4[0];
 
                 $MesAnt = ($Mes-1);
                 if(strLen($MesAnt) < 2){
@@ -179,7 +183,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         </tr>
                         <tr>
                             <td style="border-bottom: 1px solid gray; font-size: 90%;">Consumo Mensal (leitura) <?php if($Mes == $MesAtual){if($QuantDias == 1){echo " (1 dia)";}else{echo "(".$QuantDias." dias)";}} ?></td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo number_format(($Cons1), 0, ",","."); ?> kWh</td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo number_format(($ConsMensal), 0, ",","."); ?> kWh</td>
                         </tr>
 
                         <tr>

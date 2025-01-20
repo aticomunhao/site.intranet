@@ -34,6 +34,14 @@ if(!isset($_SESSION["usuarioID"])){
                 /*  padding-top, padding-right, padding-bottom, padding-left */
                 margin: 5px; padding: 3px 15px 3px 15px; background-color: #87CEFA; border: 1px solid; border-radius:10px;
             }
+            .modal-content-grafico{
+                background: linear-gradient(180deg, white, #FFF8DC);
+                margin: 12% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 70%;
+            }
         </style>
 
         <script type="text/javascript">
@@ -334,6 +342,14 @@ if(!isset($_SESSION["usuarioID"])){
             function abreImprLeitura(){
                 document.getElementById("relacimprLeitura").style.display = "block";
             }
+
+            function abreGrafico(Mes, Ano){
+                $("#divgrafico").load("modulos/leituras/grafAguaJs.php?mes="+Mes+"&ano="+Ano);
+                document.getElementById("relacgrafico").style.display = "block";
+            }
+            function fechaModalGrafico(){
+                document.getElementById("relacgrafico").style.display = "none";
+            }
             function fechaModal(){
                 document.getElementById("relacmodalLeitura").style.display = "none";
             }
@@ -345,8 +361,6 @@ if(!isset($_SESSION["usuarioID"])){
 
                 paragraph1 = document.getElementById(Campo).value;
                 document.getElementById(Campo).value = paragraph1.replace(",", '.');
-
-
  //               paragraph1 = document.getElementById("insleitura1").value;
  //               document.getElementById("insleitura1").value = paragraph1.replace(",", '.');
  //               paragraph2 = document.getElementById("insleitura2").value;
@@ -404,12 +418,16 @@ if(!isset($_SESSION["usuarioID"])){
             <div class="row"> <!-- botões Inserir e Imprimir-->
                 <div class="col" style="margin: 0 auto; text-align: center;" title="Inserir leitura do hidrômetro"><button id="botInserir" class="botpadrblue" onclick="insereModal();">Inserir</button></div> <!-- quadro -->
                 <div class="col" style="text-align: center;">Controle do Consumo de Água</div> <!-- espaçamento entre colunas  -->
-                <div class="col" style="margin: 0 auto; text-align: center;"><button id="botImprimir" class="botpadrred" onclick="abreImprLeitura();">PDF</button></div> <!-- quadro -->
+                <div class="col" style="margin: 0 auto; text-align: center;">
+                    <img src="imagens/iconGraf.png" height="46px;" id="botgrafico" style="cursor: pointer;" onclick="abreGrafico();" title="Gráfico de consumo anual">
+                    <label styke="padding-right: 30px;"></label>
+                    <button id="botImprimir" class="botpadrred" onclick="abreImprLeitura();">PDF</button>
+                </div> <!-- quadro -->
             </div>
 
             <div style="padding: 10px; display: flex; align-items: center; justify-content: center;"> 
 
-                <div class="row" style="width: 95%;">
+                <div class="row" style="width: 97%;">
                     <div id="container5" class="col quadro" style="margin: 0 auto; width: 100%;"></div> <!-- quadro -->
 
                     <div class="col-1" style="width: 1%;"></div> <!-- espaçamento entre colunas  -->
@@ -465,6 +483,17 @@ if(!isset($_SESSION["usuarioID"])){
                 <div style="padding-bottom: 20px;"></div>
            </div>
            <br><br>
+        </div> <!-- Fim Modal-->
+
+        <!-- div modal para mostrar gráfico anual -->
+        <div id="relacgrafico" class="relacmodal">
+            <div class="modal-content-grafico">
+                <span class="close" onclick="fechaModalGrafico();">&times;</span>
+                <h5 id="titulomodal" style="text-align: center;color: #666;">Controle do Consumo de Água</h5>
+                <div id="divgrafico" style="border: 2px solid #C6E2FF; border-radius: 15px;"></div>
+                <div style="padding-bottom: 20px;"></div>
+            </div>
+            <br><br>
         </div> <!-- Fim Modal-->
     </body>
 </html>

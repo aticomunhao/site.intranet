@@ -41,6 +41,14 @@ if(!isset($_SESSION["usuarioID"])){
                 /*  padding-top, padding-right, padding-bottom, padding-left */
                 margin: 5px; padding: 3px 15px 3px 15px; background-color: #FFFACD; border: 1px solid; border-radius:10px;
             }
+            .modal-content-grafico{
+                background: linear-gradient(180deg, white, #FFF8DC);
+                margin: 12% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 70%;
+            }
         </style>
 
         <script type="text/javascript">
@@ -499,7 +507,13 @@ if(!isset($_SESSION["usuarioID"])){
                 window.open("modulos/leituras/imprLista.php?acao=listaanoEletric&colec=3&ano="+encodeURIComponent(document.getElementById("selecAno").value));
                 document.getElementById("relacimprLeituraEletric").style.display = "none";
             }
-
+            function abreGrafico(){
+                $("#divgrafico").load("modulos/leituras/grafEletrJs3.php");
+                document.getElementById("relacgrafico").style.display = "block";
+            }
+            function fechaModalGrafico(){
+                document.getElementById("relacgrafico").style.display = "none";
+            }
             function abreImprLeitura(){
                 document.getElementById("relacimprLeituraEletric").style.display = "block";
             }
@@ -602,7 +616,11 @@ if(!isset($_SESSION["usuarioID"])){
                     <button id="botInserir" class="botpadrblue" onclick="insereModal();">Inserir</button>
                 </div> <!-- quadro -->
                 <div class="col" style="text-align: center;">Controle do Consumo de Energia Elétrica<?php echo " - ".$Menu3; ?></div> <!-- espaçamento entre colunas  -->
-                <div class="col" style="margin: 0 auto; text-align: center;"><button id="botImprimir" class="botpadrred" onclick="abreImprLeitura();">PDF</button></div> <!-- quadro -->
+                <div class="col" style="margin: 0 auto; text-align: center;">
+                    <img src="imagens/iconGraf.png" height="46px;" id="botgrafico" style="cursor: pointer;" onclick="abreGrafico();" title="Gráfico de consumo anual">
+                    <label styke="padding-right: 30px;"></label>
+                    <button id="botImprimir" class="botpadrred" onclick="abreImprLeitura();">PDF</button>
+                </div> <!-- quadro -->
             </div>
 
             <div style="padding: 10px; display: flex; align-items: center; justify-content: center;"> 
@@ -738,6 +756,15 @@ if(!isset($_SESSION["usuarioID"])){
                 </table>
             </div>
         </div> <!-- Fim Modal-->
-
+        <!-- div modal para mostrar gráfico anual -->
+        <div id="relacgrafico" class="relacmodal">
+            <div class="modal-content-grafico">
+                <span class="close" onclick="fechaModalGrafico();">&times;</span>
+                <h5 id="titulomodal" style="text-align: center;color: #666;">Controle do Consumo de Eletricidade - <?php echo $Menu3; ?></h5>
+                <div id="divgrafico" style="border: 2px solid #C6E2FF; border-radius: 10px;"></div>
+                <div style="padding-bottom: 20px;"></div>
+            </div>
+            <br><br>
+        </div> <!-- Fim Modal-->
     </body>
 </html>

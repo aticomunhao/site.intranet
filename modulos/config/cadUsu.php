@@ -1167,7 +1167,7 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                             <label for="escalaEft" style="padding-right: 10px; padding-top: 5px;" title="Faz parte do efetivo da escala">Efetivo da Escala:</label>
  -->
                             <label style="padding-left: 10px; padding-right: 10px; padding-top: 5px;" title="Faz parte do efetivo da escala">Efetivo da Escala:</label>
-                            <select id="grupoEscala" style="font-size: 1rem;" title="Selecione um grupo." onchange="modif();">
+                            <select id="grupoEscala" style="font-size: 1rem; width: 200px;" title="Selecione um grupo." onchange="modif();">
                             <option value="0"></option>
                             <?php 
                             if($OpcoesEscala){
@@ -1178,9 +1178,9 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                             }
                             ?>
                             </select>                            
-                            <label for="escalante" style="padding-left: 30px; padding-top: 5px;" title="Confecciona a escala">Escalante:</label>
+                            <label for="escalante" style="padding-left: 10px; padding-top: 5px;" title="Confecciona a escala">Escalante:</label>
                             <input type="checkbox" id="escalante" title="Confecciona a escala do grupo" onchange="modif();" >
-                            <label for="fiscalEscalas" style="padding-left: 30px; padding-top: 5px;" title="Fiscalizar as escalas de serviço">Fiscalizar</label>
+                            <label for="fiscalEscalas" style="padding-left: 10px; padding-top: 5px;" title="Fiscalizar as escalas de serviço">Fiscalizar</label>
                             <input type="checkbox" id="fiscalEscalas" title="Fiscalizar as escalas de serviço" onchange="modif();" >
 
                         </td>

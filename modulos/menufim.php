@@ -22,9 +22,6 @@
 				});
 //var versaoJquery = $.fn.jquery; 
 //alert(versaoJquery);
-				if(parseInt(document.getElementByid("guardaAdm").value) > 6){
-					document.getElementByid("atualiz").innerHTML = "Atualização0020";
-				}
             });
         </script>
     </head>

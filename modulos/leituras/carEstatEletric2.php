@@ -103,6 +103,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         $MediaDiaria = $Cons1/$QuantDias;
                     }
                 }
+                //Consumo mensal calculado com a soma do consumo diário 
+                $rs4 = pg_query($Conec, "SELECT SUM(consdiario2) FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura2) = $Mes And DATE_PART('YEAR', dataleitura2) = '$Ano' And colec = 2 And ativo = 1 And leitura2 != 0");
+                $tbl4 = pg_fetch_row($rs4);
+                $ConsMensal = $tbl4[0];
 
                 $MesAnt = ($Mes-1);
                 if(strLen($MesAnt) < 2){
@@ -155,7 +159,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         </tr>
                         <tr>
                             <td style="border-bottom: 1px solid gray; font-size: 90%;">Consumo Mensal</td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo number_format(($Cons1), 0, ",","."); ?> kWh</td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%;"><?php echo number_format(($ConsMensal), 0, ",","."); ?> kWh</td>
                         </tr>
                         <tr>
                             <td style="border-bottom: 1px solid gray; font-size: 90%;">Consumo Médio Diário <?php if($QuantDias == 1){echo " (1 dia)";}else{echo "(".$QuantDias." dias)";} ?></td>

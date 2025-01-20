@@ -49,7 +49,15 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 date_default_timezone_set('America/Sao_Paulo');
                 $admIns = parAdm("insleituraagua", $Conec, $xProj);   // nível para inserir 
                 $admEdit = parAdm("editleituraagua", $Conec, $xProj); // nível para editar
-                $hoje = date('d/m/Y');
+
+                // Para checar se está faltando algum dia na lista - põe o próximo dia em vermelho
+                $rsDia1 = pg_query($Conec, "SELECT MAX(dataleitura3) FROM ".$xProj.".leitura_eletric WHERE colec = 3 And ativo = 1 ");
+                $rowDia1 = pg_num_rows($rsDia1);
+                if($rowDia1 > 0){
+                    $tblDia1 = pg_fetch_row($rsDia1);
+                    $DiaIni = $tblDia1[0]; // pega a data do último lançamento 
+                }
+
                 $rs = pg_query($Conec, "SELECT valoriniagua, TO_CHAR(datainiagua, 'YYYY/MM/DD') FROM ".$xProj.".paramsis WHERE idpar = 1 ");
                 $row = pg_num_rows($rs);
                 if($row > 0){
@@ -90,6 +98,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     <tbody>
                         <?php
                             while($tbl0 = pg_fetch_row($rs0)){
+                                $Cod = $tbl0[0];
                                 $Dow = $tbl0[2];
                                 switch ($Dow){
                                     case 0:
@@ -155,11 +164,15 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     $Cons3 = 0;
                                 }
                                 $ConsDia = $Cons1+$Cons2+$Cons3;
+                                //Preenche coluna consdiario para o gráfico
+                                pg_query($Conec, "UPDATE ".$xProj.".leitura_agua SET consdiario = $ConsDia WHERE id = $Cod");
                             ?>
                         <tr>
                             <td style="display: none;"></td>
                             <td style="display: none;"><?php echo $tbl0[0]; ?></td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;" title="Data"><?php echo $tbl0[1]; ?></td> <!-- Data -->
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%; <?php if(strtotime(date($tbl0[6])) != strtotime(date($DiaIni))){echo 'color: red; font-weight: bold;'; $DiaIni = date('Y/m/d', strtotime($DiaIni. '- 1 day'));}else{echo 'color: black; font-weight: normal;';} ?>" title="Data">
+                                <?php echo $tbl0[1]; ?>
+                            </td> <!-- Data -->
                             <td style="border-bottom: 1px solid gray; text-align: center; font-size: 70%;" title="Dia da Semana"><?php echo $Sem; ?></td> <!-- dia da semana --> 
 
                             <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%;" title="Leitura 1"><?php echo number_format($Leit07, 3, ",","."); ?></td> <!-- Leitura 1 -->
@@ -175,11 +188,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         </tr>
                         <?php
                             $Cont = $Cont + $tbl0[3];
+                            $DiaIni = date('Y/m/d', strtotime($DiaIni. '- 1 day')); //segue voltando um dia
                             }
                             ?>
                     </tbody>
                 </table>
-        
         </div>
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->

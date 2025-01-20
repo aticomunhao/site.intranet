@@ -40,8 +40,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 }
                 $('#insdata').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
             });
-
-//            $("#insdata").mask("99/99/9999");  // esse tipo de datepicker não deixa digitar
         </script>
     </head>
     <body> 
@@ -50,7 +48,15 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             date_default_timezone_set('America/Sao_Paulo');
             $admIns = parAdm("insleituraeletric", $Conec, $xProj);   // nível para inserir 
             $admEdit = parAdm("editleituraeletric", $Conec, $xProj); // nível para editar
-            $hoje = date('d/m/Y');
+
+            // Para checar se está faltando algum dia na lista - põe o próximo dia em vermelho
+            $rsDia1 = pg_query($Conec, "SELECT MAX(dataleitura3) FROM ".$xProj.".leitura_eletric WHERE colec = 3 And ativo = 1 ");
+            $rowDia1 = pg_num_rows($rsDia1);
+            if($rowDia1 > 0){
+                $tblDia1 = pg_fetch_row($rsDia1);
+                $DiaIni = $tblDia1[0]; // pega a data do último lançamento 
+            }
+
             $rs = pg_query($Conec, "SELECT valorinieletric3, TO_CHAR(datainieletric3, 'YYYY/MM/DD') FROM ".$xProj.".paramsis WHERE idpar = 1 ");
             $row = pg_num_rows($rs);
             if($row > 0){
@@ -77,12 +83,13 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <th style="border-bottom: 1px solid gray; font-size: 70%; text-align: center;">Sem</th>
                             <th style="border-bottom: 1px solid gray; font-size: 70%; text-align: center;">Leitura Diária</th>
                             <th style="border-bottom: 1px solid gray; font-size: 70%; text-align: center;">Consumo</th>
-<!--                            <th style="border-bottom: 1px solid gray; font-size: 70%; text-align: center;" title="Consumo Diário">Cons Diário</th> -->
                         </tr>
                     </thead>
                     <tbody>
                         <?php
                             while($tbl0 = pg_fetch_row($rs0)){
+
+                                $Cod = $tbl0[0];
                                 $Dow = $tbl0[2];
                                 switch ($Dow){
                                     case 0:
@@ -111,8 +118,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
                                 if(strtotime($DataLinha) == strtotime($DataIni)){ // DataIni tem que ser igual ao dia da primeira leitura anotado em Parâmetros do Sistema
                                     $Leit24Ant = $ValorIni;  //1696.485;
-//echo "DataLinha é = DataIni";
-//echo "<br>";
                                 }else{
                                     $rs1 = pg_query($Conec, "SELECT leitura3 FROM ".$xProj.".leitura_eletric WHERE dataleitura3 = (date '$DataLinha' - 1) And colec = 3 And ativo = 1");
                                     $row1 = pg_num_rows($rs1);
@@ -132,23 +137,27 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     $Cons1 = 0;
                                 }
                                 $ConsDia = $Cons1;
-
+                                pg_query($Conec, "UPDATE ".$xProj.".leitura_eletric SET consdiario3 = $ConsDia WHERE id = $Cod");
                             ?>
                         <tr>
                             <td style="display: none;"></td>
                             <td style="display: none;"><?php echo $tbl0[0]; ?></td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;" title="Data"><?php echo $tbl0[1]; ?></td> <!-- Data -->
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%; <?php if(strtotime(date($tbl0[4])) != strtotime(date($DiaIni))){echo 'color: red; font-weight: bold;'; $DiaIni = date('Y/m/d', strtotime($DiaIni. '- 1 day'));}else{echo 'color: black; font-weight: normal;';} ?>" title="Data">
+                                <?php
+                                echo $tbl0[1];
+                                ?>
+                            </td> <!-- Data -->
                             <td style="border-bottom: 1px solid gray; text-align: center; font-size: 70%;" title="Dia da Semana"><?php echo $Sem; ?></td> <!-- dia da semana --> 
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;" title="Leitura"><?php echo $Leit07; ?></td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%; <?php if($Leit07 == 0){echo 'color: red;';}else{echo 'color: black;';} ?>" title="Leitura"><?php echo $Leit07; ?></td>
                             <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;" title="Consumo do dia"><?php echo $Cons1." kWh"; ?></td>
                         </tr>
                         <?php
                             $Cont = $Cont + $tbl0[3];
+                            $DiaIni = date('Y/m/d', strtotime($DiaIni. '- 1 day')); //segue voltando um dia
                             }
                             ?>
                     </tbody>
                 </table>
-        
         </div>
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->

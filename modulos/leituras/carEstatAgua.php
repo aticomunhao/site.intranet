@@ -7,6 +7,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     <head>
         <meta charset="UTF-8"> 
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <script src="comp/js/plotly.min.js"></script>
         <title></title>
         <script type="text/javascript">
             $("#insdata").mask("99/99/9999");
@@ -41,6 +42,13 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             echo "<div style='text-align: center;'>Informe à ATI.</div>";
             return false;
         }
+
+        //Definir valores máximos para o eixo y do gráfico
+        $rsY = pg_query($Conec, "SELECT MAX(consdiario) 
+        FROM ".$xProj.".leitura_agua WHERE ativo = 1 And consdiario < 1000");
+        $tblY = pg_fetch_row($rsY);
+        $MaxY = number_format($tblY[0], 0, ",",".");
+        
 
         $rs1 = pg_query($Conec, "SELECT DATE_PART('YEAR', dataleitura), DATE_PART('MONTH', dataleitura), COUNT(id), SUM(leitura1), SUM(leitura2), SUM(leitura3) 
         FROM ".$xProj.".leitura_agua 
@@ -91,6 +99,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         $MediaDiaria = ($Cons1+$Cons2+$Cons3)/$QuantDias;
                     }
                 }
+                $rs4 = pg_query($Conec, "SELECT SUM(consdiario) FROM ".$xProj.".leitura_agua WHERE DATE_PART('MONTH', dataleitura) = $Mes And DATE_PART('YEAR', dataleitura) = $Ano And ativo = 1 And leitura1 != 0 And leitura2 != 0 And leitura3 != 0 ");
+                $tbl4 = pg_fetch_row($rs4);
+                $ConsMensal = $tbl4[0];
                 ?>
                 <div style="border: 1px solid; border-radius: 10px">
                     <table style="margin: 0 auto; width: 95%;">
@@ -99,7 +110,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td colspan="3" style="text-align: center;">Períodos</td>
                         </tr>
                         <tr>
-                            <td style="border-bottom: 1px solid gray; font-size: 80%; font-weight: bold;">Consumo Mensal: <?php echo number_format(($Cons1+$Cons2+$Cons3), 3, ",","."); ?> m<label style="vertical-align: 0.4em; font-size: 70%;">3</label></td>
+                            <td style="border-bottom: 1px solid gray; font-size: 80%; font-weight: bold;">Consumo Mensal: <?php echo number_format(($ConsMensal), 3, ",","."); ?> m<label style="vertical-align: 0.4em; font-size: 70%;">3</label></td>
                             <td style="border-bottom: 1px solid gray; font-size: 80%; text-align: center;">00h00 / 07h30</td>
                             <td style="border-bottom: 1px solid gray; font-size: 80%; text-align: center;">07h30 / 16h30</td>
                             <td style="border-bottom: 1px solid gray; font-size: 80%; text-align: center;">16h30 / 24h00</td>
@@ -125,7 +136,47 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         </tr>
                     </table>
                 </div>
+                <div id="graficoMensal<?php echo $Mes; ?>" style="width:100%; height: 300px;"></div>
                 <br>
+
+                <?php
+                    //Preenche arrays para o gráfico
+                    $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(dataleitura, 'DD') as Dia, consdiario As Leitura 
+                    FROM ".$xProj.".leitura_agua WHERE ativo = 1 And DATE_PART('MONTH', dataleitura) = $Mes And DATE_PART('YEAR', dataleitura) = $Ano And leitura3 != 0 ORDER BY dataleitura ");
+                    $row0 = pg_num_rows($rs0);
+                    $datay = [];
+                    $datax = [];
+                    while($tbl0 = pg_fetch_row($rs0)){
+                        array_push($datay, $tbl0[1]);
+                        array_push($datax, $tbl0[2]);
+                    }
+                ?>
+
+                <script>
+                    //const xArray = [50,60,70,80,90,100,110,120,130,140,150];
+                    //const yArray = [7,8,8,9,9,9,10,11,14,14,15];
+
+                    xArray = <?php echo json_encode($datay); ?>;
+                    yArray = <?php echo json_encode($datax); ?>;
+
+                    // Define Data
+                    data = [{
+                        x: xArray,
+                        y: yArray,
+                        mode:"lines+markers"
+                    }];
+
+                    // Define Layout
+                    layout = {
+                        xaxis: {range: [1, 31], title: "Dia"},
+                        yaxis: {range: [0, <?php echo $MaxY; ?>], title: "m3"},
+                        title: "Consumo Diário - <?php echo $mes_extenso[$Mes]."/".$Ano; ?>"
+                    };
+
+                    // Display using Plotly
+                    Plotly.newPlot("graficoMensal<?php echo $Mes; ?>", data, layout, {displayModeBar: false});
+                </script>
+
                 <?php
             }
         }
