@@ -175,16 +175,16 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             </td> <!-- Data -->
                             <td style="border-bottom: 1px solid gray; text-align: center; font-size: 70%;" title="Dia da Semana"><?php echo $Sem; ?></td> <!-- dia da semana --> 
 
-                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%;" title="Leitura 1"><?php echo number_format($Leit07, 3, ",","."); ?></td> <!-- Leitura 1 -->
-                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%;" title="Consumo"><?php echo number_format($Cons1, 3, ",","."); ?></td>
+                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%; <?php if($Leit07 <= 0){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>" title="Leitura 1"><?php echo number_format($Leit07, 3, ",","."); ?></td> <!-- Leitura 1 -->
+                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%; <?php if($Cons1 <= 0){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>" title="Consumo"><?php echo number_format($Cons1, 3, ",","."); ?></td>
 
-                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%;" title="Leitura 2"><?php echo number_format($Leit16, 3, ",","."); ?></td> <!-- Leitura 2 -->
-                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%;" title="Consumo"><?php echo number_format(($Cons2), 3); ?></td>
+                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%; <?php if($Leit16 <= 0){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>" title="Leitura 2"><?php echo number_format($Leit16, 3, ",","."); ?></td> <!-- Leitura 2 -->
+                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%; <?php if($Cons2 <= 0){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>" title="Consumo"><?php echo number_format(($Cons2), 3); ?></td>
 
-                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%;" title="Leitura 3"><?php echo number_format($Leit24, 3, ",","."); ?></td> <!-- Leitura 3 -->
-                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%;" title="Consumo"><?php echo number_format(($Cons3), 3, ",","."); ?></td>
+                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%; <?php if($Leit24 <= 0){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>" title="Leitura 3"><?php echo number_format($Leit24, 3, ",","."); ?></td> <!-- Leitura 3 -->
+                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%; <?php if($Cons3 <= 0){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>" title="Consumo"><?php echo number_format(($Cons3), 3, ",","."); ?></td>
 
-                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 90%;" title="Consumo do dia"><?php echo number_format(($ConsDia), 3, ",","."); ?></td>
+                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 90%; <?php if($ConsDia <= 0){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>" title="Consumo do dia"><?php echo number_format(($ConsDia), 3, ",","."); ?></td>
                         </tr>
                         <?php
                             $Cont = $Cont + $tbl0[3];

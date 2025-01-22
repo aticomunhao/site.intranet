@@ -17,10 +17,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 if(isset($_REQUEST["diaid"])){
                     //Salva em poslog a última sequência de letras inserida
                     $DiaId = $_REQUEST["diaid"];
-
-
-echo "SELECT poslog_id, turnos_id FROM ".$xProj.".escaladaf_ins WHERE escaladaf_id = $DiaId";
-
                     $rs4 = pg_query($Conec, "SELECT poslog_id, turnos_id FROM ".$xProj.".escaladaf_ins WHERE escaladaf_id = $DiaId");
                     $row4 = pg_num_rows($rs4);
                     if($row4 > 0){

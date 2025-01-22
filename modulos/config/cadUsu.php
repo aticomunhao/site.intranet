@@ -79,9 +79,9 @@ if(!isset($_SESSION["usuarioID"])){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
 
-if(document.getElementById("guardausu_cpf").value == "13652176049"){
-    alert(ajax.responseText);
-}
+//if(document.getElementById("guardausu_cpf").value == "13652176049"){
+//    alert(ajax.responseText);
+//}
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 if(parseInt(Resp.coderro) === 2){
                                     alert("CPF não encontrado.");
@@ -359,11 +359,12 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                     FiscElev = 1;
                 }
                 
-                Escala = 0;
+//                Escala = 0;
 //                if(document.getElementById("escalaEft").checked === true){
 //                    Escala = 1;
 //                }
-                if(parseInt(Escala) === 1 && parseInt(document.getElementById("grupoEscala").value) === 0){
+//                if(parseInt(Escala) === 1 && parseInt(document.getElementById("grupoEscala").value) === 0){
+                if(parseInt(document.getElementById("grupoEscala").value) === 0){
                     $('#mensagem').fadeIn("slow");
                     document.getElementById("mensagem").innerHTML = "Preencha o campo <u>Grupo da Escala</u> do usuário";
                     $('#mensagem').fadeOut(3000);
@@ -437,7 +438,7 @@ if(document.getElementById("guardausu_cpf").value == "13652176049"){
                         +"&fiscar="+FiscAr
                         +"&elev="+Elev
                         +"&fiscelev="+FiscElev
-                        +"&escala="+Escala
+//                        +"&escala="+Escala
                         +"&grupoesc="+document.getElementById("grupoEscala").value
                         +"&escalante="+Escalante
                         +"&fiscalescala="+FiscEscala

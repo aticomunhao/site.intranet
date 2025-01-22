@@ -14,12 +14,45 @@ if(!isset($_SESSION["usuarioID"])){
         <link rel="stylesheet" type="text/css" media="screen" href="class/bootstrap/css/bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-ui.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="comp/css/relacmod.css" />
         <script src="class/bootstrap/js/bootstrap.min.js"></script>
         <script src="comp/js/jquery.min.js"></script> <!-- versão 3.6.3 -->
         <script src="comp/js/jquery-ui.min.js"></script>
         <script src="comp/js/jquery.mask.js"></script>
         <script src="comp/js/jquery-confirm.min.js"></script>   <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
         <style>
+             .relacmodalMovel{
+                display: none; /* oculto default */
+                position: fixed;
+                min-width: 800px;
+                z-index: 200;
+                left: 20%;
+                top: 120px;
+                border-radius: 15px;
+                overflow: auto; /* autoriza scroll se necessário */
+                background-color: rgb(0,0,0); /* Fallback color */
+                background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            }
+
+            .modal-content-relacHorarioMovel{
+                background: linear-gradient(180deg, white, #00BFFF);
+                margin: 2% auto;
+                padding: 5px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 97%;
+                overflow: auto;
+            }
+            .modal-content-relacParticipMovel{
+                background: linear-gradient(180deg, white, #00BFFF);
+                margin: 2% auto;
+                padding: 10px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 97%;
+                overflow: auto;
+            }
+
             .modal-content-relacParticip{
                 background: linear-gradient(180deg, white, #00BFFF);
                 margin: 12% auto;
@@ -139,9 +172,15 @@ if(!isset($_SESSION["usuarioID"])){
                 padding-left: 10px; 
                 padding-right: 10px; 
             }
-            .etiq{
-                text-align: right; font-size: 70%; font-weight: bold; padding-right: 1px; padding-bottom: 1px;
+            .modal-content-relacTurnos{
+                background: linear-gradient(180deg, white,rgb(203, 229, 236));
+                margin: 12% auto;
+                padding: 10px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 40%;
             }
+
         </style>
         <script>
             $(document).ready(function(){
@@ -597,7 +636,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-            function editaTurno(Cod, Valor){
+            function editaTurno__(Cod, Valor){ // Sem uso
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaturno&codigo="+Cod+"&valor="+encodeURIComponent(Valor), true);
@@ -682,7 +721,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-            function salvaLetra(){
+            function salvaLetra__(){
                 if(document.getElementById("insordem").value == ""){
                     return false;
                 }
@@ -723,6 +762,54 @@ if(!isset($_SESSION["usuarioID"])){
                                     $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php");
                                     $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                                     document.getElementById("abreinsletra").style.visibility = "visible";
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function salvaLetra(){
+                if(document.getElementById("insordem").value == ""){
+                    return false;
+                }
+                if(document.getElementById("insletra").value == ""){
+                    return false;
+                }
+//                if(document.getElementById("insturno").value == ""){
+//                    return false;
+//                }
+//                let Turno = document.getElementById("insturno").value;
+//                let Valor_Length = 13;
+//                if (Turno.length !== Valor_Length) {
+//                    $.confirm({
+//                        title: 'Ação Suspensa!',
+//                        content: 'Observe o formato: 00:00 / 00:00',
+//                        draggable: true,
+//                        buttons: {
+//                            OK: function(){}
+//                        }
+//                    });
+//                    return false;
+//                }
+
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=insereletra&ordem="+document.getElementById("insordem").value
+                    +"&insletra="+encodeURIComponent(document.getElementById("insletra").value), true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php");
+                                    $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                    document.getElementById("abreinsletra").style.visibility = "visible";
+                                    abreQuadroTurnos(Resp.codigonovo);
                                 }
                             }
                         }
@@ -1091,7 +1178,6 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-
             function insParticipante(){
                 //Cod = pessoas_id de poslog
                 //GuardaCod = id de escalas
@@ -1143,7 +1229,6 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-
             function abreEscalaConfig(){
                 ajaxIni();
                 if(ajax){
@@ -1171,10 +1256,8 @@ if(!isset($_SESSION["usuarioID"])){
                     };
                     ajax.send(null);
                 }
-
-
-
             }
+
             function fechaEscalaConfig(){
                 document.getElementById("modalEscalaConfig").style.display = "none";
             }
@@ -1229,6 +1312,108 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
+            function abreQuadroTurnos(Cod){
+                document.getElementById("guardaCodTurno").value = Cod;
+                document.getElementById("textoTurno").style.display = "none";
+                document.getElementById("selecTurno").style.display = "block";
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=buscaTurno&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    if(parseInt(Resp.infotexto) === 0){
+                                        document.getElementById("boxtextoTurno").checked = false;
+                                        document.getElementById("etiqletra").innerHTML = Resp.letra;
+                                        document.getElementById("selecHor1").value = Resp.turno1Hor;
+                                        document.getElementById("selecMin1").value = Resp.turno1Min;
+                                        document.getElementById("selecHor2").value = Resp.turno2Hor;
+                                        document.getElementById("selecMin2").value = Resp.turno2Min;
+                                    }else{
+                                        document.getElementById("boxtextoTurno").checked = true;
+                                        document.getElementById("etiqletra").innerHTML = Resp.letra;
+                                        document.getElementById("textoTurno").value = Resp.turno;
+                                        document.getElementById("selecTurno").style.display = "none";
+                                        document.getElementById("textoTurno").style.display = "block";
+                                        document.getElementById("textoTurno").focus();
+                                    }
+                                }
+                                document.getElementById("relacQuadroTurnos").style.display = "block";
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function abreTexto(obj){
+                if(obj.checked === true){
+                    document.getElementById("selecTurno").style.display = "none";
+                    document.getElementById("textoTurno").style.display = "block";
+                }else{
+                    document.getElementById("selecTurno").style.display = "block";
+                    document.getElementById("textoTurno").style.display = "none";
+                }
+            }
+
+            function salvaEditTurno(){
+                if(document.getElementById("mudou").value == "0"){
+                    document.getElementById("relacQuadroTurnos").style.display = "none";
+                    return false;
+                }
+
+                if(document.getElementById("boxtextoTurno").checked == false){
+                    InfoTexto = 0;
+                    if(parseInt(document.getElementById("selecHor2").value) < parseInt(document.getElementById("selecHor1").value)){
+                        $.confirm({
+                            title: 'Ação Suspensa!',
+                            content: 'Verifique a hora do final do turno.',
+                            draggable: true,
+                            buttons: {
+                                OK: function(){}
+                            }
+                        });
+                        return false;
+                    }
+                    Turno = document.getElementById("selecHor1").value+":"+document.getElementById("selecMin1").value+" / "+document.getElementById("selecHor2").value+":"+document.getElementById("selecMin2").value
+                }else{ // só texto
+                    InfoTexto = 1;
+                    Turno = document.getElementById("textoTurno").value;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaEditaTurno&codigo="+document.getElementById("guardaCodTurno").value
+                    +"&turno="+encodeURIComponent(Turno)+"&infotexto="+InfoTexto
+                    +"&mesano="+document.getElementById("guardamesano").value
+                    +"&letra="+document.getElementById("etiqletra").innerHTML, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    document.getElementById("relacQuadroTurnos").style.display = "none";
+                                    $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php");
+                                    $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                    $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                               }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function fechaQuadroTurnos(){
+                document.getElementById("relacQuadroTurnos").style.display = "none";
+            }
             function format_CnpjCpf(value){
                 //https://gist.github.com/davidalves1/3c98ef866bad4aba3987e7671e404c1e
                 const CPF_LENGTH = 11;
@@ -1238,6 +1423,11 @@ if(!isset($_SESSION["usuarioID"])){
                 } 
                   return cnpjCpf.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g, "\$1.\$2.\$3/\$4-\$5");
             }
+
+            jQuery(function($){
+                $("#relacParticip").draggable();
+//                $("#relacQuadroHorario").draggable();
+            });
 
         </script>
     </head>
@@ -1350,17 +1540,17 @@ if(!isset($_SESSION["usuarioID"])){
     }
 
     //Acerta as colunas auxiliares para os turnos
-    $rsT = pg_query($Conec, "SELECT id, horaturno, letra FROM ".$xProj.".escaladaf_turnos WHERE id > 4 And ativo = 1 And cargahora < '00:01' And cargahora IS NOT NULL And grupo_turnos = $NumGrupo ORDER BY letra");
+    $rsT = pg_query($Conec, "SELECT id, horaturno, letra, infotexto FROM ".$xProj.".escaladaf_turnos WHERE infotexto = 0 And ativo = 1 And cargahora < '00:01' And cargahora IS NOT NULL And grupo_turnos = $NumGrupo ORDER BY letra");
     $rowT = pg_num_rows($rsT);
     if($rowT > 0){
         $Hoje = date('d/m/Y');
         while($tblT = pg_fetch_row($rsT)){  //Calcular carga horaria
             $Cod = $tblT[0];
-            $Ho = $tblT[1]; 
-            $Hor = str_replace("O", "0", $Ho);   // letra O no lugar de 0
-            $Hora = str_replace("o", "0", $Hor); // letra o no lugar de 0
-
-            if($tblT[2] != "F" && $tblT[2] != "X" && $tblT[2] != "Y" && $tblT[2] != "Q"){
+            $Hora = $tblT[1];
+            if(is_null($Hora)){
+                $Hora = "00:00 / 00:00";
+            }
+            if($tblT[3] == 0){ // infotexto: férias, inss, folga, etc
                 $Proc = explode("/", $Hora);
                 $HoraI = $Proc[0];
                 $HoraF = $Proc[1];
@@ -1527,7 +1717,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardacod" value="" />
         <input type="hidden" id="mudou" value="0" />
         <input type="hidden" id="liberadoefetivo" value="<?php echo $MesLiberado; ?>" />
-
+        <input type="hidden" id="guardaCodTurno" value="0" />
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->
@@ -1558,7 +1748,6 @@ if(!isset($_SESSION["usuarioID"])){
                                 }
                             ?>
                     </select>
-
 
                     <?php
                     if($Escalante == 1 || $Fiscal == 1){ // suspenso
@@ -1621,8 +1810,8 @@ if(!isset($_SESSION["usuarioID"])){
         </div>
 
         <!-- div modal relacionar escalado -->
-        <div id="relacParticip" class="relacmodal">
-            <div class="modal-content-relacParticip">
+        <div id="relacParticip" class="relacmodalMovel">
+            <div class="modal-content-relacParticipMovel">
                 <span class="close" onclick="fechaRelaPart();">&times;</span>
                 <label style="color: #666;">Escala para o dia: &nbsp; </label><label id="titulomodal" style="color: #666; padding-bottom: 10px; font-weight: bold;"></label>
                 <!-- lista dos participantes da escala do grupo -->
@@ -1798,5 +1987,221 @@ if(!isset($_SESSION["usuarioID"])){
                 </table>
             </div>
         </div> <!-- Fim Modal-->
+
+        <!-- div modal formatar turno -->
+        <div id="relacQuadroTurnos" class="relacmodal">
+            <div class="modal-content-relacTurnos">
+                <span class="close" onclick="fechaQuadroTurnos();">&times;</span>
+                <div>
+                    <table style="margin: 0 auto;">
+                        <tr>
+                            <td><label class="etiqAzul">Letra</label></td>
+                            <td colspan="7" style="text-align: center;"><label class="etiqAzul">Formação do Turno</label></td>
+                            <td><label class="etiqAzul"></label></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul" style="text-align: center; font-size: 110%; font-weight: bold;" id="etiqletra">Letra</td>
+                            <td colspan="7" style="text-align: center;">
+                                <div id="selecTurno" style="margin-left: 10px; padding: 4px; border: 1px solid; border-radius: 4px;">
+                                <select id="selecHor1" style="font-size: .9rem; width: 50px;" title="Selecione o mês/ano." onchange="modif();">
+                                    <option value="00">00</option>
+                                    <option value="01">01</option>
+                                    <option value="02">02</option>
+                                    <option value="03">03</option>
+                                    <option value="04">04</option>
+                                    <option value="05">05</option>
+                                    <option value="06">06</option>
+                                    <option value="07">07</option>
+                                    <option value="08">08</option>
+                                    <option value="09">09</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                    <option value="21">21</option>
+                                    <option value="22">22</option>
+                                    <option value="23">23</option>
+                                </select>
+                                :
+                                <select id="selecMin1" style="font-size: .9rem; width: 50px;" onchange="modif();">
+                                    <option value="00">00</option>
+                                    <option value="01">01</option>
+                                    <option value="02">02</option>
+                                    <option value="03">03</option>
+                                    <option value="04">04</option>
+                                    <option value="05">05</option>
+                                    <option value="06">06</option>
+                                    <option value="07">07</option>
+                                    <option value="08">08</option>
+                                    <option value="09">09</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                    <option value="21">21</option>
+                                    <option value="22">22</option>
+                                    <option value="23">23</option>
+                                    <option value="24">24</option>
+                                    <option value="25">25</option>
+                                    <option value="26">26</option>
+                                    <option value="27">27</option>
+                                    <option value="28">28</option>
+                                    <option value="29">29</option>
+                                    <option value="30">30</option>
+                                    <option value="31">31</option>
+                                    <option value="32">32</option>
+                                    <option value="33">33</option>
+                                    <option value="34">34</option>
+                                    <option value="35">35</option>
+                                    <option value="36">36</option>
+                                    <option value="37">37</option>
+                                    <option value="38">38</option>
+                                    <option value="39">39</option>
+                                    <option value="40">40</option>
+                                    <option value="41">41</option>
+                                    <option value="42">42</option>
+                                    <option value="43">43</option>
+                                    <option value="44">44</option>
+                                    <option value="45">45</option>
+                                    <option value="46">46</option>
+                                    <option value="47">47</option>
+                                    <option value="48">48</option>
+                                    <option value="49">49</option>
+                                    <option value="50">50</option>
+                                    <option value="51">51</option>
+                                    <option value="52">52</option>
+                                    <option value="53">53</option>
+                                    <option value="54">54</option>
+                                    <option value="55">55</option>
+                                    <option value="56">56</option>
+                                    <option value="57">57</option>
+                                    <option value="58">58</option>
+                                    <option value="59">59</option>
+                                </select>
+                                /
+                                <select id="selecHor2" style="font-size: .9rem; width: 50px;" onchange="modif();">
+                                <option value="00">00</option>
+                                    <option value="01">01</option>
+                                    <option value="02">02</option>
+                                    <option value="03">03</option>
+                                    <option value="04">04</option>
+                                    <option value="05">05</option>
+                                    <option value="06">06</option>
+                                    <option value="07">07</option>
+                                    <option value="08">08</option>
+                                    <option value="09">09</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                    <option value="21">21</option>
+                                    <option value="22">22</option>
+                                    <option value="23">23</option>
+                                </select>
+                                :
+                                <select id="selecMin2" style="font-size: .9rem; width: 50px;" onchange="modif();">
+                                <option value="00">00</option>
+                                    <option value="01">01</option>
+                                    <option value="02">02</option>
+                                    <option value="03">03</option>
+                                    <option value="04">04</option>
+                                    <option value="05">05</option>
+                                    <option value="06">06</option>
+                                    <option value="07">07</option>
+                                    <option value="08">08</option>
+                                    <option value="09">09</option>
+                                    <option value="10">10</option>
+                                    <option value="11">11</option>
+                                    <option value="12">12</option>
+                                    <option value="13">13</option>
+                                    <option value="14">14</option>
+                                    <option value="15">15</option>
+                                    <option value="16">16</option>
+                                    <option value="17">17</option>
+                                    <option value="18">18</option>
+                                    <option value="19">19</option>
+                                    <option value="20">20</option>
+                                    <option value="21">21</option>
+                                    <option value="22">22</option>
+                                    <option value="23">23</option>
+                                    <option value="24">24</option>
+                                    <option value="25">25</option>
+                                    <option value="26">26</option>
+                                    <option value="27">27</option>
+                                    <option value="28">28</option>
+                                    <option value="29">29</option>
+                                    <option value="30">30</option>
+                                    <option value="31">31</option>
+                                    <option value="32">32</option>
+                                    <option value="33">33</option>
+                                    <option value="34">34</option>
+                                    <option value="35">35</option>
+                                    <option value="36">36</option>
+                                    <option value="37">37</option>
+                                    <option value="38">38</option>
+                                    <option value="39">39</option>
+                                    <option value="40">40</option>
+                                    <option value="41">41</option>
+                                    <option value="42">42</option>
+                                    <option value="43">43</option>
+                                    <option value="44">44</option>
+                                    <option value="45">45</option>
+                                    <option value="46">46</option>
+                                    <option value="47">47</option>
+                                    <option value="48">48</option>
+                                    <option value="49">49</option>
+                                    <option value="50">50</option>
+                                    <option value="51">51</option>
+                                    <option value="52">52</option>
+                                    <option value="53">53</option>
+                                    <option value="54">54</option>
+                                    <option value="55">55</option>
+                                    <option value="56">56</option>
+                                    <option value="57">57</option>
+                                    <option value="58">58</option>
+                                    <option value="59">59</option>
+                                </select>
+                                </div>
+                                <div style="min-width: 250px; align-content: center; margin-left: 10px; padding: 4px;">
+                                    <input type="text" id="textoTurno" style="width: 100%; text-align: center;" title="Digite o texto para o turno" onchange="modif();"/>
+                                </div>
+                            </td>
+                            <td style="padding-left: 10px;">
+                                <input type="checkbox" id="boxtextoTurno" title="Texto livre" onClick="abreTexto(this);"><label for="boxtextoTurno" style="padding-left: 3px;" title="Escrever texto"> Texto</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label class="etiqAzul"></label></td>
+                            <td colspan="7" style="text-align: center;">
+                            <button class="botpadrblue" style="font-size: .8rem;" onclick="salvaEditTurno();">Salvar</button>
+                            </td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div> <!-- Fim Modal-->
+
     </body>
 </html>
