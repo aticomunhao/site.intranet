@@ -152,8 +152,13 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     <?php
                         if($EscalanteDAF == 1){
                             ?>
-                            <div class='bContainer corFundo' onclick='abreEditHorario()'> Editar </div>
+                            <div class='bContainer corFundo' onclick='abreEditHorario()'> Editar </div><br><br>
                             <?php
+                            if($_SESSION["usuarioID"] == 3){
+                                ?>
+                                <div class='bContainer corFundo' onclick='abreEditDescanso()' title="Escala para descanso."> Descanso </div>
+                                <?php
+                            }
                         }
                     ?>
                 </div> <!-- quadro -->

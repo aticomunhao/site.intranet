@@ -45,11 +45,11 @@ if(!isset($_SESSION["usuarioID"])){
             }
             .modal-content-relacParticipMovel{
                 background: linear-gradient(180deg, white, #00BFFF);
-                margin: 2% auto;
+                margin: 5% auto;
                 padding: 10px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 97%;
+                width: 95%;
                 overflow: auto;
             }
 
@@ -76,6 +76,14 @@ if(!isset($_SESSION["usuarioID"])){
                 border: 1px solid #888;
                 border-radius: 15px;
                 width: 60%;
+            }
+            .modal-content-relacDescanso{
+                background: linear-gradient(180deg, white,rgb(221, 243, 203));
+                margin: 12% auto;
+                padding: 10px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 50%;
             }
             .modal-content-destacaDia{
                 background: linear-gradient(180deg, white, #00BFFF);
@@ -580,6 +588,11 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("relacQuadroHorario").style.display = "block";
             }
 
+            function abreEditDescanso(){
+                $("#relacaoDescanso").load("modulos/escaladaf/edDescanso.php");
+                document.getElementById("relacQuadroDescanso").style.display = "block";
+            }
+
             function abreEditFeriados(){
                 $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php");
                 document.getElementById("relacQuadroFeriados").style.display = "block";
@@ -599,6 +612,26 @@ if(!isset($_SESSION["usuarioID"])){
                                 }else{
                                     $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php");
                                     $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function editaFolga(Cod, Valor){
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvafolga&codigo="+Cod+"&valor="+Valor, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
                                 }
                             }
                         }
@@ -1267,6 +1300,9 @@ if(!isset($_SESSION["usuarioID"])){
             function fechaQuadroHorario(){
                 document.getElementById("relacQuadroHorario").style.display = "none";
             }
+            function fechaQuadrodescanso(){
+                document.getElementById("relacQuadroDescanso").style.display = "none";
+            }
             function fechaQuadroNotas(){
                 document.getElementById("relacQuadroNotas").style.display = "none";
             }
@@ -1825,6 +1861,14 @@ if(!isset($_SESSION["usuarioID"])){
             <div class="modal-content-relacHorario">
                 <span class="close" onclick="fechaQuadroHorario();">&times;</span>
                 <div id="relacaoHorarios" style="border: 2px solid #C6E2FF; border-radius: 10px;"></div>
+            </div>
+        </div> <!-- Fim Modal-->
+
+        <!-- div modal relacionar descanso - edDescanso.php -->
+        <div id="relacQuadroDescanso" class="relacmodal">
+            <div class="modal-content-relacDescanso">
+                <span class="close" onclick="fechaQuadrodescanso();">&times;</span>
+                <div id="relacaoDescanso" style="border: 2px solid #C6E2FF; border-radius: 10px;"></div>
             </div>
         </div> <!-- Fim Modal-->
 

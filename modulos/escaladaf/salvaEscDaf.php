@@ -978,3 +978,15 @@ if($Acao =="buscaOrdem"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+if($Acao =="salvafolga"){
+    $Erro = 0;
+    $Cod = filter_input(INPUT_GET, 'codigo');
+    $Valor = filter_input(INPUT_GET, 'valor');
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_ins SET horafolga = '$Valor' WHERE id = $Cod");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}

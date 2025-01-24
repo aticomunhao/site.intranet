@@ -17,11 +17,7 @@ if($Acao=="salvaRegBem"){
 
     $DataReg = implode("-", array_reverse(explode("/", $DataR)));
     $DataAchou = implode("-", array_reverse(explode("/", $DataAc)));
-
-//    $DescBem = $_REQUEST['descdobem'];
-//    $DescBem = str_replace('"', "'", $_REQUEST['descdobem']);
     $DescBem = str_replace("'","\"",$_REQUEST["descdobem"]); // substituir aspas simples por duplas
-//    $DescBem = str_replace("\'", "\"", $_REQUEST['descdobem']);
 
     $LocalAchou = addslashes($_REQUEST['localachado']);
     $NomeAchou = addslashes($_REQUEST['nomeachou']);
@@ -43,9 +39,18 @@ if($Acao=="salvaRegBem"){
 //        $row0 = pg_num_rows($rs0);
 //        $Num = str_pad(($row0+1), 4, "0", STR_PAD_LEFT);
 //        $NumRelat = $Num."/".$y;
-//
-//  Virá da edição até novo aviso  16/08/2024
 
+        //Número do relato - reinicia a cada ano
+        $rs0 = pg_query($Conec, "SELECT MAX(LEFT(numprocesso, 4)) FROM ".$xProj.".bensachados WHERE TO_CHAR(datareceb, 'YYYY') = '$y' ");
+        $tbl0 = pg_fetch_row($rs0);
+        if(!$rs0){
+            $Erro = 1;
+        }
+        $Num = $tbl0[0];
+        $Processo = str_pad(($Num+1), 4, "0", STR_PAD_LEFT);
+        $NumRelat = $Processo."/".$y;
+
+        //Cod novo para o BD
         $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".bensachados");
         $tblCod = pg_fetch_row($rsCod);
         $Codigo = $tblCod[0];
@@ -308,24 +313,19 @@ if($Acao == "buscanum"){
     $DataR = addslashes($_REQUEST['dataregistro']);
     $DataReg = implode("/", array_reverse(explode("/", $DataR)));
 
-    $rs = pg_query($Conec, "SELECT MAX(LEFT(numprocesso, 4)) FROM ".$xProj.".bensachados");
+    $ProcAno = explode("/","$DataReg");
+    $d = $ProcAno[2];
+    $m = $ProcAno[1];
+    $y = $ProcAno[0];
+
+    $rs = pg_query($Conec, "SELECT MAX(LEFT(numprocesso, 4)) FROM ".$xProj.".bensachados WHERE TO_CHAR(datareceb, 'YYYY') = '$y' ");
     $tbl = pg_fetch_row($rs);
     $Processo = $tbl[0];
     $Num = $Processo+1; 
     if(!$rs){
         $Erro = 1;
     }
-
-    if($Num == 1){
-        $Num = 234;
-    }
     $Num = str_pad($Num, 4, "0", STR_PAD_LEFT);
-
-    $ProcAno = explode("/","$DataReg");
-    $d = $ProcAno[2];
-    $m = $ProcAno[1];
-    $y = $ProcAno[0];
-
     $NumRelat = $Num."/".$y;
 
     $var = array("coderro"=>$Erro, "numprocesso"=>$NumRelat);
