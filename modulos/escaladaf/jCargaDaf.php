@@ -35,29 +35,30 @@ $Mes_Extract = array(
         return $Hora."h ".$M."min";
     }
 
-    if(isset($_REQUEST["mesano"])){
-        if($_REQUEST["mesano"] != ""){
-            $Busca = addslashes(filter_input(INPUT_GET, 'mesano'));
-            $Proc = explode("/", $Busca);
-            $Mes = $Proc[0];
-            if(strLen($Mes) < 2){
-                $Mes = "0".$Mes;
-            }
-            if($Proc[1] == ""){
-                return false;
-            }
-            $Ano = $Proc[1];
-            $Data = date('01/'.$Mes.'/'.$Ano);
-        }else{
-            $Mes = date("m");
-            $Ano = date("Y");
-        }
-    }else{
+    $MesSalvo = parEsc("mes_escdaf", $Conec, $xProj, $_SESSION["usuarioID"]);
+    if(is_null($MesSalvo) || $MesSalvo == ""){
+        $MesSalvo = date("m")."/".date("Y");
+    }
+    $Proc = explode("/", $MesSalvo);
+    if(is_null($Proc[1])){
         $Mes = date("m");
+    }else{
+        $Mes = $Proc[0];
+    }
+    if(strLen($Mes) < 2){
+        $Mes = "0".$Mes;
+    }
+    if(is_null($Proc[1])){
         $Ano = date("Y");
+        }else{
+        $Ano = $Proc[1];
     }
 
-    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    if(isset($_REQUEST["numgrupo"])){
+        $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal
+    }else{
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);   
+    }
     ?>
     <div style="text-align: center;">
         <h5>Carga Mensal e Semanal</h5>
@@ -102,16 +103,18 @@ $Mes_Extract = array(
                     </table>
                 </div>
 
-                
                 <!-- Semanal -->
                 <?php
                 //Seleciona as semanas do mês e ano para os escalados do grupo
-                $rs = pg_query($Conec, "SELECT DISTINCT TO_CHAR(dataescala, 'WW') FROM ".$xProj.".escaladaf 
-                WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY TO_CHAR(dataescala, 'WW') ");
+                //WW 	número da semana do ano (1–53) (a primeira semana começa no primeiro dia do ano)
+                //IW 	número da semana do ano de numeração de semanas ISO 8601 (01–53; a primeira quinta-feira do ano é na semana 1)
+                $rs = pg_query($Conec, "SELECT DISTINCT TO_CHAR(dataescala, 'IW') FROM ".$xProj.".escaladaf 
+                WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY TO_CHAR(dataescala, 'IW') ");
                 $row = pg_num_rows($rs);
 
                 while($tbl = pg_fetch_row($rs)){
                     $SemanaNum = $tbl[0]; // número da semana no ano
+//echo $SemanaNum." ";
                     ?>
                     <div class="col" style="margin: 0 auto; text-align: left;">
                         <table style="margin: 0 auto;">
@@ -149,7 +152,7 @@ $Mes_Extract = array(
                                     //Carga Semanal turno1
                                     $rs1 = pg_query($Conec, "SELECT TO_CHAR(SUM(cargatime), 'HH24:MI') 
                                     FROM ".$xProj.".escaladaf LEFT JOIN ".$xProj.".escaladaf_ins ON ".$xProj.".escaladaf.id = ".$xProj.".escaladaf_ins.escaladaf_id 
-                                    WHERE poslog_id = $Cod1 And TO_CHAR(dataescala, 'WW') = '$SemanaNum' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo");
+                                    WHERE poslog_id = $Cod1 And TO_CHAR(dataescala, 'IW') = '$SemanaNum' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo");
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         $tbl1 = pg_fetch_row($rs1);

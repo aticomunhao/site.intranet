@@ -13,7 +13,12 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <div style="margin-top: 15px;">Horários de Trabalho</div>
         <?php
             $EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
-            $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+//            $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+            if(isset($_REQUEST["numgrupo"])){
+                $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal
+            }else{
+                $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);   
+            }
         ?>
         <div style="margin: 10px; padding: 20px; border: 2px solid green; border-radius: 15px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->

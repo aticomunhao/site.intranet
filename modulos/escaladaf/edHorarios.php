@@ -45,7 +45,13 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         </div>
         <div style="margin: 10px; padding: 10px; text-align: center; border: 2px solid green; border-radius: 15px;">
             <?php
-            $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+//            $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+            if(isset($_REQUEST["numgrupo"])){
+                $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal
+            }else{
+                $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);   
+            }
+
             $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, ordemletra, destaq, TO_CHAR(cargahora, 'HH24:MI'), TO_CHAR(cargacont, 'HH24:MI'), TO_CHAR(interv, 'HH24:MI'), infotexto FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And grupo_turnos = $NumGrupo ORDER BY ordemletra");
             ?>
             <div style="position: relative; float: right; color: red; font-weight: bold;" id="mensagemQuadroHorario"></div>

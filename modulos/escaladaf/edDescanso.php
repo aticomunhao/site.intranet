@@ -15,21 +15,14 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         </style>
     </head>
     <body> 
-        <div style="margin-top: 15px; text-align: center; font-weight: bold;">Horários de Descanso<br></div>
-        <div style="margin: 10px; padding: 10px; text-align: center; border: 2px solid green; border-radius: 15px;">
-            <?php
-                $Semana_Extract = array(
-                    '0' => 'D',
-                    '1' => '2ª',
-                    '2' => '3ª',
-                    '3' => '4ª',
-                    '4' => '5ª',
-                    '5' => '6ª',
-                    '6' => 'S',
-                    'xª'=> ''
-                );
+        <?php
+//            $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+            if(isset($_REQUEST["numgrupo"])){
+                $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal
+            }else{
+                $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);   
+            }
 
-            $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
             $MesSalvo = parEsc("mes_escdaf", $Conec, $xProj, $_SESSION["usuarioID"]);
             $Busca = addslashes($MesSalvo); 
             $Proc = explode("/", $Busca);
@@ -39,13 +32,47 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             }
             $Ano = $Proc[1];
 
+            $Semana_Extract = array(
+                '0' => 'D',
+                '1' => '2ª',
+                '2' => '3ª',
+                '3' => '4ª',
+                '4' => '5ª',
+                '5' => '6ª',
+                '6' => 'S',
+                'xª'=> ''
+            );
+            $Mes_Extract = array(
+                '01' => 'Janeiro',
+                '02' => 'Fevereiro',
+                '03' => 'Março',
+                '04' => 'Abril',
+                '05' => 'Maio',
+                '06' => 'Junho',
+                '07' => 'Julho',
+                '08' => 'Agosto',
+                '09' => 'Setembro',
+                '10' => 'Outubro',
+                '11' => 'Novembro',
+                '12' => 'Dezembro'
+            );
+        ?>
+        <div style="margin-top: 15px; text-align: center; font-weight: bold;">Horários de Descanso</div>
+        <div class="row">
+            <div class="col" style="width: 30%;"></div>
+            <div class="col" style="width: 33%; text-align: center;"><?php echo $Mes_Extract[$Mes]."/".$Ano; ?></div>
+            <div class="col" style="text-align: right; width: 30%;"><button id="botImprimir" class="botpadrred" onclick="imprDescanso();">PDF</button></div>
+        </div>
+
+        <div style="margin: 10px; padding: 10px; text-align: center; border: 2px solid green; border-radius: 15px;">
+            <?php
             $rsEft = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo");
             $Eft = pg_num_rows($rsEft); // Número de escalados
 
             $rs0 = pg_query($Conec, "SELECT ".$xProj.".escaladaf_ins.id, TO_CHAR(dataescala, 'DD'), feriado, nomeusual, turnoturno, horafolga, ".$xProj.".escaladaf_ins.poslog_id, ".$xProj.".escaladaf_ins.turnos_id, nomecompl, date_part('dow', dataescala) 
             FROM ".$xProj.".poslog INNER JOIN (".$xProj.".escaladaf INNER JOIN ".$xProj.".escaladaf_ins ON ".$xProj.".escaladaf.id = ".$xProj.".escaladaf_ins.escaladaf_id) ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escaladaf_ins.poslog_id 
-            WHERE ".$xProj.".escaladaf_ins.ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And esc_grupo = $NumGrupo ORDER BY dataescala, nomeusual");
-//            $Dias = pg_num_rows($rs0);
+            WHERE ".$xProj.".poslog.eft_daf = 1 And ".$xProj.".escaladaf_ins.ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And esc_grupo = $NumGrupo ORDER BY dataescala, nomeusual");
+
             ?>
             <div style="position: relative; float: right; color: red; font-weight: bold;" id="mensagemQuadroHorario"></div>
             <table style="margin: 0 auto; width: 95%;">
@@ -73,7 +100,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         $Nome = substr($tbl0[3], 0, 22); //nomeusual
                     }
 
-                    if(is_null($HoraFolga) || $HoraFolga == ""){
+//                    if(is_null($HoraFolga) || $HoraFolga == ""){
+                    if(is_null($HoraFolga)){
                         $rs1 = pg_query($Conec, "SELECT horafolga 
                         FROM ".$xProj.".escaladaf_ins 
                         WHERE horafolga IS NOT NULL And ativo = 1 And poslog_id = $PoslogId And grupo_ins = $NumGrupo ORDER BY dataescalains DESC");
@@ -84,28 +112,31 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             pg_query($Conec, "UPDATE ".$xProj.".escaladaf_ins SET horafolga = '$HoraFolga' WHERE id = $Cod");
                         }
                     }
-                    $rs2 = pg_query($Conec, "SELECT horaturno, interv 
+                    $rs2 = pg_query($Conec, "SELECT horaturno, interv, infotexto 
                     FROM ".$xProj.".escaladaf_turnos 
                     WHERE id = $TurnosId And interv IS NOT NULL And ativo = 1 ");
                     $row2 = pg_num_rows($rs2);
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
                         $Interv = $tbl2[1];
+                        $InfoTexto = $tbl2[2];
                     }else{
                         $Interv = "";
+                        $InfoTexto = 0;
                     }
 
                     ?>
                     <tr>
                         <td style="display: none;"></td>
                         <td style="display: none;"><?php echo $tbl0[0]; ?></td>
-                        <td class="etiqAzul90 aCentro"><?php if($ContDia == 1){echo "<div style='border: 1px solid; border-radius: 3px;'>".$tbl0[1]."</div>";} ?></td> <!-- Dia -->
-                        <td class="etiqAzul aCentro" title="Dia da semana"><?php if($ContDia == 1){echo $Semana_Extract[$tbl0[9]];} ?></td>
-                        <td class="etiqAzul90 aEsq" style="padding-left: 5px;"><?php echo "<div style='border: 1px solid; border-radius: 3px;'>".$Nome."</div>"; ?></td> <!-- Nome -->
-                        <td class="etiqAzul aCentro"><?php echo $tbl0[4]; ?></td> <!-- Turno escalado -->
-                        <td class="etiqAzul aCentro"><?php echo $Interv; ?></td> <!-- Intervalo de Turno - vem de escaladaf_turnos -->
-                        <td><input type="text" value="<?php echo $HoraFolga; ?>" style="width: 120px; text-align: center; border: 1px solid; border-radius: 3px;" onchange="editaFolga(<?php echo $Cod; ?>, value);" title="Período de descanso no formato 00:00/00:00"/></td>
+                        <td class="etiqAzul90 aCentro" title="<?php echo "Dia ".$tbl0[1]."/".$Mes."/".$Ano; ?>" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?>> <?php if($ContDia == 1){echo "<div style='border: 1px solid; border-radius: 3px;'>".$tbl0[1]."</div>";} ?></td> <!-- Dia -->
+                        <td class="etiqAzul aCentro" title="Dia da semana" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?>><?php if($ContDia == 1){echo $Semana_Extract[$tbl0[9]];} ?></td>
+                        <td class="etiqAzul90 aEsq" style="padding-left: 5px; <?php if($ContDia == 1){echo "border-top: 1px solid;";}; ?> "><?php echo "<div style='border: 1px solid; border-radius: 3px; padding-left: 3px;'>".$Nome."</div>"; ?></td> <!-- Nome -->
+                        <td class="etiqAzul aCentro" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?> ><?php echo $tbl0[4]; ?></td> <!-- Turno escalado -->
+                        <td class="etiqAzul aCentro" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?>><?php echo $Interv; ?></td> <!-- Intervalo de Turno - vem de escaladaf_turnos -->
+                        <td <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; if($InfoTexto == 1){echo "font-size: 80%;";} ?>><input <?php if($InfoTexto == 1){echo "disabled";} ?> type="text" value="<?php if($InfoTexto == 0){echo $HoraFolga;}else{echo $tbl0[4];} ?>" style="width: 120px; text-align: center; border: 1px solid; border-radius: 3px;" onchange="editaFolga(<?php echo $Cod; ?>, value);" title="Período de descanso no formato 00:00/00:00"/></td>
                     </tr>
+
                     <?php
                     $ContDia++;
                     if($ContDia > $Eft){

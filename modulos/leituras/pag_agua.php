@@ -414,7 +414,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="InsLeitura" value="<?php echo $InsAgua; ?>" /> <!-- marca em cadusu para inserir as leituras -->
         <input type="hidden" id="FiscAgua" value="<?php echo $FiscAgua; ?>" />
 
-        <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
+        <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 3px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->
                 <div class="col" style="margin: 0 auto; text-align: center;" title="Inserir leitura do hidrômetro"><button id="botInserir" class="botpadrblue" onclick="insereModal();">Inserir</button></div> <!-- quadro -->
                 <div class="col" style="text-align: center;">Controle do Consumo de Água</div> <!-- espaçamento entre colunas  -->
@@ -425,7 +425,7 @@ if(!isset($_SESSION["usuarioID"])){
                 </div> <!-- quadro -->
             </div>
 
-            <div style="padding: 10px; display: flex; align-items: center; justify-content: center;"> 
+            <div style="padding: 5px; display: flex; align-items: center; justify-content: center;"> 
 
                 <div class="row" style="width: 97%;">
                     <div id="container5" class="col quadro" style="margin: 0 auto; width: 100%;"></div> <!-- quadro -->

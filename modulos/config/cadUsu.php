@@ -364,13 +364,13 @@ if(!isset($_SESSION["usuarioID"])){
 //                    Escala = 1;
 //                }
 //                if(parseInt(Escala) === 1 && parseInt(document.getElementById("grupoEscala").value) === 0){
-                if(parseInt(document.getElementById("grupoEscala").value) === 0){
-                    $('#mensagem').fadeIn("slow");
-                    document.getElementById("mensagem").innerHTML = "Preencha o campo <u>Grupo da Escala</u> do usuário";
-                    $('#mensagem').fadeOut(3000);
-                    document.getElementById("grupoEscala").focus();
-                    return false;
-                }
+//                if(parseInt(document.getElementById("grupoEscala").value) === 0){
+//                    $('#mensagem').fadeIn("slow");
+//                    document.getElementById("mensagem").innerHTML = "Preencha o campo <u>Grupo da Escala</u> do usuário";
+//                    $('#mensagem').fadeOut(3000);
+//                    document.getElementById("grupoEscala").focus();
+//                    return false;
+//                }
 
                 Escalante = 0;
                 if(document.getElementById("escalante").checked === true){
@@ -1159,7 +1159,6 @@ if(!isset($_SESSION["usuarioID"])){
                         </td>
                         <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(8);" title="Guia rápido"></td>
                     </tr>
-
 
                     <tr>
                         <td class="etiq80" style="padding-top: 5px; border-bottom: 1px solid;" title="Faz parte do efetivo da escala">Escala de Serviço:</td>

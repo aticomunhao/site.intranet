@@ -41,9 +41,12 @@
 						$Proc++;
 					}
 				}
+				//0075
 				pg_query($Conec, "UPDATE ".$xProj.".escaladaf SET ativo = 0 WHERE id BETWEEN 696 And 700");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_ins ADD COLUMN IF NOT EXISTS horafolga VARCHAR(11) ");
-
+				//0076
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS tipotar smallint NOT NULL DEFAULT 1 ");
+				
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

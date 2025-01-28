@@ -21,7 +21,13 @@ if(isset($_REQUEST["acao"])){
     require_once('../../class/fpdf/fpdf.php'); // adaptado ao PHP 7.2 - 8.2
     define('FPDF_FONTPATH', '../../class/fpdf/font/');  
     $Dom = "logo_comunhao_completa_cor_pos_150px.png";
-    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    
+    if(isset($_REQUEST["numgrupo"])){
+        $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal
+    }else{
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);   
+    }
+
     $rsSig = pg_query($Conec, "SELECT siglagrupo, chefe_escdaf, enc_escdaf FROM ".$xProj.".escalas_gr WHERE id = $NumGrupo;");
     $rowSig = pg_num_rows($rsSig);
     if($rowSig > 0){

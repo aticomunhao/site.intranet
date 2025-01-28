@@ -13,7 +13,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <!-- Apresenta os usuários do grupo -->
         <div style="padding: 10px;">
             <?php
-                $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+                if(isset($_REQUEST["numgrupo"])){
+                    $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal
+                }else{
+                    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);   
+                }
                 if(isset($_REQUEST["diaid"])){
                     //Salva em poslog a última sequência de letras inserida
                     $DiaId = $_REQUEST["diaid"];

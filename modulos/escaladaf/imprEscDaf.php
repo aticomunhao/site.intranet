@@ -11,14 +11,23 @@ if(!isset($_SESSION['AdmUsu'])){
     require_once('../../class/fpdf/fpdf.php'); // adaptado ao PHP 7.2 - 8.2
     define('FPDF_FONTPATH', '../../class/fpdf/font/');  
     $Dom = "logo_comunhao_completa_cor_pos_150px.png";
-    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+
+    if(isset($_REQUEST["numgrupo"])){
+        $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal
+    }else{
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);   
+    }
+
+    $rsGr = pg_query($Conec, "SELECT siglagrupo FROM ".$xProj.".escalas_gr WHERE id = $NumGrupo");
+    $tblGr = pg_fetch_row($rsGr);
+    $Cabec3 = $tblGr[0];
 
     $rsCabec = pg_query($Conec, "SELECT cabec1, cabec2, cabec3 FROM ".$xProj.".setores WHERE codset = ".$_SESSION["CodSetorUsu"]." ");
     $rowCabec = pg_num_rows($rsCabec);
     $tblCabec = pg_fetch_row($rsCabec);
     $Cabec1 = $tblCabec[0];
     $Cabec2 = $tblCabec[1];
-    $Cabec3 = $tblCabec[2];
+//    $Cabec3 = $tblCabec[2];
 
     $mes_extenso = array(
         '01' => 'Janeiro',
@@ -186,8 +195,8 @@ if(!isset($_SESSION['AdmUsu'])){
                     
                 //Carga horária Semanal
                     //Seleciona as semanas do mês e ano para os escalados do grupo
-                    $rsS = pg_query($Conec, "SELECT DISTINCT TO_CHAR(dataescala, 'WW') FROM ".$xProj.".escaladaf 
-                    WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY TO_CHAR(dataescala, 'WW') ");
+                    $rsS = pg_query($Conec, "SELECT DISTINCT TO_CHAR(dataescala, 'IW') FROM ".$xProj.".escaladaf 
+                    WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY TO_CHAR(dataescala, 'IW') ");
                     $rowS = pg_num_rows($rsS);
                     while($tblS = pg_fetch_row($rsS)){
                         $SemanaNum = $tblS[0]; // número da semana no ano
@@ -208,7 +217,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         //Carga Semanal turno1
                         $rsS1 = pg_query($Conec, "SELECT TO_CHAR(SUM(cargatime), 'HH24:MI') 
                         FROM ".$xProj.".escaladaf LEFT JOIN ".$xProj.".escaladaf_ins ON ".$xProj.".escaladaf.id = ".$xProj.".escaladaf_ins.escaladaf_id 
-                        WHERE poslog_id = $Cod And TO_CHAR(dataescala, 'WW') = '$SemanaNum' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And ".$xProj.".escaladaf_ins.grupo_ins = $NumGrupo ");
+                        WHERE poslog_id = $Cod And TO_CHAR(dataescala, 'IW') = '$SemanaNum' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And ".$xProj.".escaladaf_ins.grupo_ins = $NumGrupo ");
                         $rowS1 = pg_num_rows($rsS1);
                         if($rowS1 > 0){
                             $tblS1 = pg_fetch_row($rsS1);
@@ -1295,7 +1304,10 @@ if(!isset($_SESSION['AdmUsu'])){
 //                        $pdf->Cell(7, 5, "", 0, 1, 'C');
                     }
                     //Conta o número de serviços
-                    $rs5 = pg_query($Conec, "SELECT COUNT(poslog_id) FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'MM') = '$Mes' And grupo_ins = $NumGrupo And letraturno != 'F' And letraturno != 'X' And letraturno != 'Y' ");
+//                    $rs5 = pg_query($Conec, "SELECT COUNT(poslog_id) FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'MM') = '$Mes' And grupo_ins = $NumGrupo And letraturno != 'F' And letraturno != 'X' And letraturno != 'Y' ");
+                    $rs5 = pg_query($Conec, "SELECT COUNT(poslog_id) 
+                    FROM ".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".escaladaf_turnos ON ".$xProj.".escaladaf_ins.turnos_id = ".$xProj.".escaladaf_turnos.id 
+                    WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'MM') = '$Mes' And grupo_ins = $NumGrupo And infotexto = 0 ");
                     $tbl5 = pg_fetch_row($rs5);
                     $pdf->SetFillColor(255, 255, 255);
                     $pdf->SetTextColor(152, 152, 152);
