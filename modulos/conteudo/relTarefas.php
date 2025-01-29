@@ -19,11 +19,18 @@ if(!isset($_SESSION["usuarioID"])){
             $UsuLogadoId = $_SESSION["usuarioID"];
             $UsuLogadoNome = $_SESSION["NomeCompl"];
 
+            $DescArea = "";
+            if(isset($_REQUEST["area"])){
+                $Area = $_REQUEST["area"];
+            }else{
+                $Area = 0;
+            }
+
+            $DescSit = "";
             if(isset($_REQUEST["selec"])){
                 $Selec = $_REQUEST["selec"];
             }else{
                 $Selec = 0;
-                $DescSit = "";
             }
             if(isset($_REQUEST["numtarefa"])){ // vem da pág inicial ao clicar em tem mensagem nas Tarefas
                 $NumTarefa = $_REQUEST["numtarefa"];
@@ -31,11 +38,24 @@ if(!isset($_SESSION["usuarioID"])){
                 $NumTarefa = 0;
             }
 
+            if($Area == 0){
+                $Condic2 = " And ".$xProj.".tarefas.tipotar > 0 ";
+            }
+            if($Area == 1){
+                $Condic2 = " And ".$xProj.".tarefas.tipotar = $Area ";
+                $DescArea = "na Área de Manutenção";
+            }
+            if($Area == 2){
+                $Condic2 = " And ".$xProj.".tarefas.tipotar = $Area ";
+                $DescArea = "na Área Administrativa";
+            }
+
 //            $vIndex = $xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl";
             $vIndex = $xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains, nomecompl"; // Sol Will 27/11/2024
-            $Condic = $xProj.".tarefas.ativo > 0";
+            $Condic = $xProj.".tarefas.ativo > 0".$Condic2;
+
             if($Selec > 0){
-                $Condic = $xProj.".tarefas.ativo > 0 And sit = $Selec";
+                $Condic = $xProj.".tarefas.ativo > 0 And sit = $Selec".$Condic2;
                 if($Selec == 1){
                     $DescSit = "Designada";
                 }
@@ -50,16 +70,16 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 if($Selec == 5){
                     $DescSit = "em Minhas Tarefas";
-                    $Condic = $xProj.".tarefas.ativo > 0 And usuexec = $UsuLogadoId";
+                    $Condic = $xProj.".tarefas.ativo > 0 And usuexec = $UsuLogadoId".$Condic2;
                     if($NumTarefa > 0){
-                        $Condic = $xProj.".tarefas.ativo > 0 And idTar = $NumTarefa";
+                        $Condic = $xProj.".tarefas.ativo > 0 And idTar = $NumTarefa".$Condic2;
                     }
                 }
                 if($Selec == 6){
                     $DescSit = "em Meus Pedidos";
-                    $Condic = $xProj.".tarefas.ativo > 0 And ".$xProj.".tarefas.usuins = $UsuLogadoId";
+                    $Condic = $xProj.".tarefas.ativo > 0 And ".$xProj.".tarefas.usuins = $UsuLogadoId".$Condic2;
                     if($NumTarefa > 0){
-                        $Condic = $xProj.".tarefas.ativo > 0 And idTar = $NumTarefa";
+                        $Condic = $xProj.".tarefas.ativo > 0 And idTar = $NumTarefa".$Condic2;
                     }
                 }
             }
@@ -344,7 +364,7 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 }else{
                     echo "<tr>";
-                        echo "<td colspan='8' style='text-align: center; font-weight: 800; color: blue; padding: 10px;'>Nenhuma tarefa $DescSit</td>";
+                        echo "<td colspan='8' style='text-align: center; font-weight: 800; color: blue; padding: 10px;'>Nenhuma tarefa $DescSit $DescArea</td>";
                     echo "</tr>";
                 }
                 ?>

@@ -46,6 +46,8 @@
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_ins ADD COLUMN IF NOT EXISTS horafolga VARCHAR(11) ");
 				//0076
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS tipotar smallint NOT NULL DEFAULT 1 ");
+				//0077
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS areatar smallint NOT NULL DEFAULT 1 ");
 				
 			} // fim data limite
         ?>

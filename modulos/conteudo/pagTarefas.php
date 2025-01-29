@@ -165,11 +165,15 @@ if(!isset($_SESSION["usuarioID"])){
 
                 //Para mensagens não lidas nas Tarefas  - Tem um comando desses em indexb.php aproveitando o temporizador em checaCalend() a cada hora
                 document.getElementById("verTipo"+document.getElementById("guardaSelecSit").value).checked = true;
+                document.getElementById("verSetor"+document.getElementById("guardaSelecSetor").value).checked = true;
+                document.getElementById("verSetorImpr"+document.getElementById("guardaSelecSetor").value).checked = true;
+                
 //                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value+"&numtarefa="+document.getElementById("selecTarefa").value);
 
-                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
+                //$('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
+                $("#faixaTarefa").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value);
                 ContaTarefa();
-                
+
                 //Fecha caixa ao clicar na página
                 modalMsg = document.getElementById('relacmodalMsg'); //span[0]
                 spanMsg = document.getElementsByClassName("close")[0];
@@ -189,7 +193,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("selecMandante").value = "";
                     document.getElementById("selecExecutante").value = "";
                     if(document.getElementById("selecMesAno").value != ""){
-                        window.open("modulos/conteudo/imprTarefas.php?acao=listamesTarefa&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), document.getElementById("selecMesAno").value);
+                        window.open("modulos/conteudo/imprTarefas.php?acao=listamesTarefa&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value)+"&area="+document.getElementById("guardaSelecSetorImpr").value, document.getElementById("selecMesAno").value);
                         document.getElementById("selecMesAno").value = "";
                         document.getElementById("relacimprTarefas").style.display = "none";
                     }
@@ -200,7 +204,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("selecExecutante").value = "";
                     document.getElementById("selecsit").value = "";
                     if(document.getElementById("selecAno").value != ""){
-                        window.open("modulos/conteudo/imprTarefas.php?acao=listaanoTarefa&ano="+encodeURIComponent(document.getElementById("selecAno").value), document.getElementById("selecAno").value);
+                        window.open("modulos/conteudo/imprTarefas.php?acao=listaanoTarefa&ano="+encodeURIComponent(document.getElementById("selecAno").value)+"&area="+document.getElementById("guardaSelecSetorImpr").value, document.getElementById("selecAno").value);
                         document.getElementById("selecAno").value = "";
                         document.getElementById("relacimprTarefas").style.display = "none";
                     }
@@ -212,7 +216,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("selecExecutante").value = "";
                     document.getElementById("selecsit").value = "";
                     if(document.getElementById("selecMandante").value != ""){
-                        window.open("modulos/conteudo/imprTarefas.php?acao=listaMandante&codigo="+document.getElementById("selecMandante").value, document.getElementById("selecMandante").value);
+                        window.open("modulos/conteudo/imprTarefas.php?acao=listaMandante&codigo="+document.getElementById("selecMandante").value+"&area="+document.getElementById("guardaSelecSetorImpr").value, document.getElementById("selecMandante").value);
                         document.getElementById("selecMandante").value = "";
                         document.getElementById("relacimprTarefas").style.display = "none";
                     }
@@ -224,7 +228,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("selecMandante").value = "";
                     document.getElementById("selecsit").value = "";
                     if(document.getElementById("selecExecutante").value != ""){
-                        window.open("modulos/conteudo/imprTarefas.php?acao=listaExecutante&codigo="+document.getElementById("selecExecutante").value, document.getElementById("selecExecutante").value);
+                        window.open("modulos/conteudo/imprTarefas.php?acao=listaExecutante&codigo="+document.getElementById("selecExecutante").value+"&area="+document.getElementById("guardaSelecSetorImpr").value, document.getElementById("selecExecutante").value);
                         document.getElementById("selecExecutante").value = "";
                         document.getElementById("relacimprTarefas").style.display = "none";
                     }
@@ -235,7 +239,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("selecMandante").value = "";
                     document.getElementById("selecExecutante").value = "";
                     if(document.getElementById("selecsit").value != ""){
-                        window.open("modulos/conteudo/imprTarefas.php?acao=listaSitTarefa&numero="+document.getElementById("selecsit").value, document.getElementById("selecsit").value);
+                        window.open("modulos/conteudo/imprTarefas.php?acao=listaSitTarefa&numero="+document.getElementById("selecsit").value+"&area="+document.getElementById("guardaSelecSetorImpr").value, document.getElementById("selecsit").value);
                         document.getElementById("selecsit").value = "";
                         document.getElementById("relacimprTarefas").style.display = "none";
                     }
@@ -331,7 +335,8 @@ if(!isset($_SESSION["usuarioID"])){
                                                 draggable: true,
                                                 buttons: {
                                                     Sim: function () {
-                                                        $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
+                                                        //$('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
+                                                        $("#faixaTarefa").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value);
                                                         if(parseInt(document.getElementById("guardaGrupoTar").value) === 3){ // em grupo
                                                             document.getElementById("etiqGrupoTar").innerHTML = "Tarefas Grupo "+Resp.siglasetor;
                                                         }
@@ -350,7 +355,6 @@ if(!isset($_SESSION["usuarioID"])){
                         ajax.send(null);
                     }
                 });
-
 
                 $("#configselecUsuOrg").change(function(){
                     if(document.getElementById("configselecUsuOrg").value == ""){
@@ -394,7 +398,8 @@ if(!isset($_SESSION["usuarioID"])){
                                         $('#mensagemConfigOrg').fadeOut(2000);
                                         //Se for atualizar o próprio nível, reinicializar
                                         if(parseInt(document.getElementById("configselecUsuOrg").value) === parseInt(document.getElementById("usu_Logado_id").value)){
-                                            $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value); 
+                                            //$('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
+                                            $("#faixaTarefa").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value); 
                                         }
                                     }else{
                                         alert("Houve um erro no servidor.")
@@ -436,11 +441,11 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("selecComboAno").value == ""){
                     return false;
                 }
-                window.open("modulos/conteudo/imprTarefas.php?acao=listaCombo&mandante="+document.getElementById("selecComboMandante").value+"&executante="+document.getElementById("selecComboExecutante").value+"&ano="+document.getElementById("selecComboAno").value+"&sit="+encodeURIComponent(document.getElementById("selecComboSit").value), "Combo");
+                window.open("modulos/conteudo/imprTarefas.php?acao=listaCombo&mandante="+document.getElementById("selecComboMandante").value+"&executante="+document.getElementById("selecComboExecutante").value+"&ano="+document.getElementById("selecComboAno").value+"&sit="+encodeURIComponent(document.getElementById("selecComboSit").value)+"&area="+document.getElementById("guardaSelecSetor").value, "Combo");
             }
 
             function relatTarefas(){
-                window.open("modulos/conteudo/imprTarefas.php?acao=estatTarefas", "Estatistica");
+                window.open("modulos/conteudo/imprTarefas.php?acao=estatTarefas&area="+document.getElementById("guardaSelecSetorImpr").value, "Estatistica");
                 document.getElementById("relacimprTarefas").style.display = "none";
             }
 
@@ -491,7 +496,8 @@ if(!isset($_SESSION["usuarioID"])){
                                     if(parseInt(Resp.coderro) === 1){
                                         alert("Houve um erro no servidor.")
                                     }else{
-                                        $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
+                                        //$('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
+                                        $("#faixaTarefa").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value);
                                         ev.preventDefault();
                                         var data = ev.dataTransfer.getData("text");
                                         ev.target.appendChild(document.getElementById(data));
@@ -522,6 +528,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("selectStatus").disabled = false;
                                     document.getElementById("botapagar").style.visibility = "visible";
                                 }
+                                document.getElementById("verSetorIns"+Resp.tipotar).checked = true;
                                 document.getElementById("titulomodal").innerHTML = "Edição de Tarefa";
                                 document.getElementById("labelnomeIns").innerHTML = "Inserida por: "+Resp.NomeUsuIns;
                                 document.getElementById("relacmodalTarefa").style.display = "block";
@@ -541,6 +548,11 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("selecprio").value = 3;                
                 document.getElementById("guardaid").value = 0;
                 document.getElementById("guardaidEdit").value = 0;
+                if(parseInt(document.getElementById("guardaSelecSetor").value) === 0){
+                    document.getElementById("verSetorIns1").checked = true;    
+                }else{
+                    document.getElementById("verSetorIns"+document.getElementById("guardaSelecSetor").value).checked = true;
+                }
                 document.getElementById("mudou").value = "1"; // vai inserir novo
                 document.getElementById("botapagar").style.visibility = "hidden";
                 document.getElementById("selectStatus").disabled = true;
@@ -561,6 +573,10 @@ if(!isset($_SESSION["usuarioID"])){
                     $('#mensagem').fadeOut(2000);
                     return false;
                 }
+                AreaTar = 1;
+                if(document.getElementById("verSetorIns2").checked === true){
+                    AreaTar = 2;
+                }
                 if(parseInt(document.getElementById("mudou").value) === 1){
                     ajaxIni();
                     if(ajax){
@@ -569,6 +585,7 @@ if(!isset($_SESSION["usuarioID"])){
                         +"&idExecSelect="+document.getElementById("idExecSelect").value
                         +"&selectStatus="+document.getElementById("selectStatus").value
                         +"&priorid="+document.getElementById("selecprio").value
+                        +"&areatar="+AreaTar
                         +"&textoEvid="+encodeURIComponent(document.getElementById("textoEvid").value)
                         +"&textoExt="+encodeURIComponent(document.getElementById("textoExt").value), true);
                         
@@ -582,8 +599,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     if(parseInt(Resp.coderro) === 0){
                                         document.getElementById("mudou").value = "0";
                                         document.getElementById("relacmodalTarefa").style.display = "none";
-//                                        $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
-                                        $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec=6'); // Meus Pedidos
+                                        $("#faixaTarefa").load("modulos/conteudo/relTarefas.php?selec=6&area="+document.getElementById("guardaSelecSetor").value);
                                         ContaTarefa();
                                         document.getElementById("verTipo6").checked = true;
                                     }else if(parseInt(Resp.coderro) === 2){
@@ -646,7 +662,8 @@ if(!isset($_SESSION["usuarioID"])){
                                             }else{
                                                 document.getElementById("mudou").value = "0";
                                                 document.getElementById("relacmodalTarefa").style.display = "none";
-                                                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
+                                                //$('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
+                                                $("#faixaTarefa").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value);
                                                 ContaTarefa();
                                             }
                                         }
@@ -693,7 +710,8 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor ao fechar as mensagens. Informe à ATI.")
                                 }
-                                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value); // para parar de piscar a ícone de tem mensagem
+                                //$('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value); // para parar de piscar a ícone de tem mensagem
+                                $("#faixaTarefa").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value); // para parar de piscar a ícone de tem mensagem
                             }
                         }
                     };
@@ -755,7 +773,8 @@ if(!isset($_SESSION["usuarioID"])){
                                                                 if(ajax.responseText){
 //alert(ajax.responseText);
                                                                     document.getElementById("relacmodalTransf").style.display = "none";
-                                                                    $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
+                                                                    //$('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
+                                                                    $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value);
                                                                 }
                                                             }
                                                             };
@@ -787,8 +806,35 @@ if(!isset($_SESSION["usuarioID"])){
 
             function carregaTipo(Valor){
                 document.getElementById("guardaSelecSit").value = Valor;
-                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
+                $("#faixaTarefa").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value);
             }
+
+            function carregaSetor(Valor){
+                document.getElementById("guardaSelecSetor").value = Valor;
+                document.getElementById("guardaSelecSetorImpr").value = Valor;
+                document.getElementById("verSetorImpr"+document.getElementById("guardaSelecSetorImpr").value).checked = true;
+                //para guardar o valor em poslog
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/conteudo/salvaTarefa.php?acao=salvaSetor&valor="+Valor, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value);
+            }
+
+            function carregaSetorImpr(Valor){
+                document.getElementById("guardaSelecSetorImpr").value = Valor;
+            } 
 
             function ContaTarefa(){
                 ajaxIni();
@@ -809,8 +855,6 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 }
             }
-
-
 
             function abreTarefasConfig(){
                 document.getElementById("configcpfsolicitante").value = "";
@@ -885,7 +929,8 @@ if(!isset($_SESSION["usuarioID"])){
         $admIns = parAdm("instarefa", $Conec, $xProj);   // nível para inserir
         $admEdit = parAdm("edittarefa", $Conec, $xProj); // nível para editar
         $VerTarefas = parAdm("vertarefa", $Conec, $xProj); // ver tarefas   1: todos - 2: só mandante e executante - 3: visualização por setor - 4: por Organograma
-        
+
+        $AreaUsu = parEsc("areatar", $Conec, $xProj, $_SESSION["usuarioID"]); // Área a visualizar Manutenção ou administrativa 
 
         $CodSetorUsu = parEsc("grupotarefa", $Conec, $xProj, $_SESSION["usuarioID"]);
         $rs7 = pg_query($Conec, "SELECT siglasetor FROM ".$xProj.".setores WHERE codset = $CodSetorUsu");
@@ -949,6 +994,8 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardaGrupoTar" value="<?php echo $VerTarefas; ?>" /> 
         <input type="hidden" id="guardaSelecSit" value="<?php echo $Sit; ?>" />
         <input type="hidden" id="selecTarefa" value="<?php echo $NumTarefa; ?>" />
+        <input type="hidden" id="guardaSelecSetor" value="<?php echo $AreaUsu; ?>" />
+        <input type="hidden" id="guardaSelecSetorImpr" value="<?php echo $AreaUsu; ?>" />
 
         <!-- div três colunas -->
         <div class="container" style="margin: 0 auto; padding-top: 10px;">
@@ -971,6 +1018,22 @@ if(!isset($_SESSION["usuarioID"])){
                 </div> 
             </div>
         </div>
+
+    <!-- Selecionar área de tarefas: administrativa ou manutenção -->
+        <table style="margin: 0 auto;">
+            <tr>
+                <td>
+                    <div style="text-align: center; width: 100%; border: 1px solid #7D26CD; border-radius: 10px; padding-left: 10px; padding-right: 10px;">
+                        <label class="etiqRoxa" style="padding-right: 10px;">Selecionar Área: </label>
+                        <input type="radio" name="verSetor" id="verSetor2" value="2" onclick="carregaSetor(value);"><label for="verSetor2" class="etiqRoxa" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Administrativa</label>
+                        <input type="radio" name="verSetor" id="verSetor1" value="1" onclick="carregaSetor(value);"><label for="verSetor1" class="etiqRoxa" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Manutenção</label>
+                        <input type="radio" name="verSetor" id="verSetor0" value="0" CHECKED onclick="carregaSetor(value);"><label for="verSetor0" class="etiqRoxa" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Ambas</label>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+
         <div class="container" style="margin: 0 auto; padding-top: 2px; text-align: center;">
             <label class="etiqAzul" style="padding-right: 10px;">Visualizar Tarefas 
                 <?php if($VerTarefas == 3){echo "(Grupos)";};
@@ -992,11 +1055,11 @@ if(!isset($_SESSION["usuarioID"])){
             <div class="modalTarefa-content">
                 <span class="close" onclick="fechaModalTarefa();">&times;</span>
                 <h3 id="titulomodal" style="text-align: center; color: #666;">Edição de Tarefas</h3>
-
+                <label id="labelnomeIns" class="etiq" style="padding-left: 10px;"></label>
                 <table style="margin: 0 auto;">
                     <tr>
                         <td id="etiqIdExec" class="etiq">Tarefa para:</td>
-                        <td colspan='4' >
+                        <td colspan='2' >
                             <select id="idExecSelect" style="font-size: 1rem; width: 200px;" title="Selecione um usuário.">
                             <option value= ""></option>
                             <?php 
@@ -1008,9 +1071,14 @@ if(!isset($_SESSION["usuarioID"])){
                             }
                             ?>
                             </select>
-                            <label id="labelnomeIns" class="etiq" style="padding-left: 30px;"></label>
+                        </td>    
+                        <td colspan='3' >
+                            <div style="text-align: center; width: 100%; border: 1px solid #7D26CD; border-radius: 10px; padding-left: 10px; padding-right: 5px;">
+                                <label class="etiqRoxa" style="padding-right: 10px;">Área: </label>
+                                <input type="radio" name="verSetorIns" id="verSetorIns2" value="2"><label for="verSetorIns2" class="etiqRoxa" style="font-size: 12px; padding-left: 3px; padding-right: 5px; font-weight: bold;"> Administrativa</label>
+                                <input type="radio" name="verSetorIns" id="verSetorIns1" value="1"><label for="verSetorIns1" class="etiqRoxa" style="font-size: 12px; padding-left: 3px; padding-right: 5px; font-weight: bold;"> Manutenção</label>
+                            </div>
                         </td>
-                        <td></td>
                     </tr>
                     <tr>
                         <td id="etiqTextoEvid" class="etiq">Tarefa:</td>
@@ -1153,6 +1221,20 @@ if(!isset($_SESSION["usuarioID"])){
             <div class="modal-content-imprLeitura">
                 <span class="close" onclick="fechaModalImpr();">&times;</span>
                 <h5 id="titulomodal" style="text-align: center;color: #666;">Relatórios Tarefas</h5>
+
+                <table style="margin: 0 auto;">
+                    <tr>
+                        <td>
+                            <div style="text-align: center; width: 100%; border: 1px solid #7D26CD; border-radius: 10px; padding-left: 10px; padding-right: 10px;">
+                                <label class="etiqRoxa" style="padding-right: 10px;">Selecionar Área: </label>
+                                <input type="radio" name="verSetorImpr" id="verSetorImpr2" value="2" onclick="carregaSetorImpr(value);"><label for="verSetorImpr2" class="etiqRoxa" style="font-size: 12px; padding-left: 3px; padding-right: 10px; font-weight: bold;"> Administrativa</label>
+                                <input type="radio" name="verSetorImpr" id="verSetorImpr1" value="1" onclick="carregaSetorImpr(value);"><label for="verSetorImpr1" class="etiqRoxa" style="font-size: 12px; padding-left: 3px; padding-right: 10px; font-weight: bold;"> Manutenção</label>
+                                <input type="radio" name="verSetorImpr" id="verSetorImpr0" value="0" onclick="carregaSetorImpr(value);"><label for="verSetorImpr0" class="etiqRoxa" style="font-size: 12px; padding-left: 3px; padding-right: 10px; font-weight: bold;"> Ambas</label>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
                 <div style="border: 2px solid #C6E2FF; border-radius: 10px; padding: 5px;">
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>

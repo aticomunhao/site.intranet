@@ -153,6 +153,26 @@ if(!isset($_SESSION['AdmUsu'])){
         return $Tempo;
     }
 
+
+    $DescArea = "Todas as Áreas";
+    if(isset($_REQUEST["area"])){
+        $Area = $_REQUEST["area"];
+    }else{
+        $Area = 0;
+    }
+    if($Area == 0){
+        $Condic2 = " And ".$xProj.".tarefas.tipotar > 0 ";
+    }
+    if($Area == 1){
+        $Condic2 = " And ".$xProj.".tarefas.tipotar = 1 ";
+        $DescArea = "Área de Manutenção";
+    }
+    if($Area == 2){
+        $Condic2 = " And ".$xProj.".tarefas.tipotar = 2 ";
+        $DescArea = "Área Administrativa";
+    }
+
+
     $rsCabec = pg_query($Conec, "SELECT cabec1, cabec2, cabec3 FROM ".$xProj.".setores WHERE codset = ".$_SESSION["CodSetorUsu"]." ");
     $rowCabec = pg_num_rows($rsCabec);
     $tblCabec = pg_fetch_row($rsCabec);
@@ -200,6 +220,16 @@ if(!isset($_SESSION['AdmUsu'])){
     }else{
         $pdf->MultiCell(0, 3, "Tarefas", 0, 'C', false);
     }
+
+    if($Area == 1){
+        $pdf->MultiCell(0, 4, "Área de Manutenção", 0, 'C', false);
+    }
+    if($Area == 2){
+        $pdf->MultiCell(0, 4, "Área Administrativa", 0, 'C', false);
+    }
+
+
+
     $pdf->SetDrawColor(0);
     $pdf->SetTextColor(0, 0, 0);
     $pdf->SetFont('Arial', '', 6);
@@ -230,43 +260,47 @@ if(!isset($_SESSION['AdmUsu'])){
             //Conta tarefas no mês
             if($VerTarefas == 1){ // 1 = Todos 
                 $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                WHERE ativo != 0 And DATE_PART('MONTH', datains) = '$Mes' And DATE_PART('YEAR', datains) = '$Ano'");
+                WHERE ativo != 0 And DATE_PART('MONTH', datains) = '$Mes' And DATE_PART('YEAR', datains) = '$Ano' $Condic2");
 
                 $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
-                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' 
+                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' $Condic2 
                 GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 ORDER BY ".$xProj.".poslog.nomecompl"); 
             }
             if($VerTarefas == 2){ // 2 = só mandante e executante 
                 $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                WHERE ativo != 0 And DATE_PART('MONTH', datains) = '$Mes' And DATE_PART('YEAR', datains) = '$Ano' And usuins = $UsuLogadoId Or ativo != 0 And DATE_PART('MONTH', datains) = '$Mes' And DATE_PART('YEAR', datains) = '$Ano' And usuexec = $UsuLogadoId");
+                WHERE ativo != 0 And DATE_PART('MONTH', datains) = '$Mes' And DATE_PART('YEAR', datains) = '$Ano' And usuins = $UsuLogadoId $Condic2 Or ativo != 0 And DATE_PART('MONTH', datains) = '$Mes' And DATE_PART('YEAR', datains) = '$Ano' And usuexec = $UsuLogadoId $Condic2");
 
                 $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
-                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.usuins = $UsuLogadoId Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.usuexec = $UsuLogadoId
+                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.usuins = $UsuLogadoId $Condic2 Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.usuexec = $UsuLogadoId $Condic2
                 GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 ORDER BY ".$xProj.".poslog.nomecompl"); 
             }
             if($VerTarefas == 3){ // 3 = visualização por setor 
                 $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                WHERE ativo != 0 And DATE_PART('MONTH', datains) = '$Mes' And DATE_PART('YEAR', datains) = '$Ano' And setorins = $CodSetorUsu Or ativo != 0 And DATE_PART('MONTH', datains) = '$Mes' And DATE_PART('YEAR', datains) = '$Ano' And setorexec = $CodSetorUsu");
+                WHERE ativo != 0 And DATE_PART('MONTH', datains) = '$Mes' And DATE_PART('YEAR', datains) = '$Ano' And setorins = $CodSetorUsu $Condic2 Or ativo != 0 And DATE_PART('MONTH', datains) = '$Mes' And DATE_PART('YEAR', datains) = '$Ano' And setorexec = $CodSetorUsu $Condic2");
 
                 $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
-                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And setorins = $CodSetorUsu Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And setorexec = $CodSetorUsu 
+                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And setorins = $CodSetorUsu $Condic2 Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And setorexec = $CodSetorUsu $Condic2 
                 GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 ORDER BY ".$xProj.".poslog.nomecompl"); 
             }
             if($VerTarefas == 4){ // 3 = visualização por organograma 
                 $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgexec >= $MeuOrg ");
+                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgins >= $MeuOrg $Condic2 Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgexec >= $MeuOrg $Condic2 ");
                 $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
-                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgexec >= $MeuOrg 
+                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgins >= $MeuOrg $Condic2 Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgexec >= $MeuOrg $Condic2 
                 GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 ORDER BY ".$xProj.".poslog.nomecompl"); 
             }
+
+
+
+
             $tblCont = pg_fetch_row($rsCont);
             $pdf->SetTextColor(120, 120, 120);  
             $pdf->SetFont('Arial', 'I', 9);
@@ -289,41 +323,41 @@ if(!isset($_SESSION['AdmUsu'])){
             //Conta tarefas no ano
             if($VerTarefas == 1){ // 1 = Todos 
                 $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$Ano'");
+                WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$Ano' $Condic2");
 
                 $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
-                WHERE ".$xProj.".tarefas.ativo != 0  And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' 
+                WHERE ".$xProj.".tarefas.ativo != 0  And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' $Condic2 
                 GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 ORDER BY ".$xProj.".poslog.nomecompl"); 
             }
             if($VerTarefas == 2){ // 2 = só mandante e executante 
                 $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$Ano' And usuins = $UsuLogadoId Or ativo != 0 And DATE_PART('YEAR', datains) = '$Ano' And usuexec = $UsuLogadoId");
+                WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$Ano' And usuins = $UsuLogadoId $Condic2 Or ativo != 0 And DATE_PART('YEAR', datains) = '$Ano' And usuexec = $UsuLogadoId $Condic2");
 
                 $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
-                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.usuins = $UsuLogadoId Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.usuexec = $UsuLogadoId
+                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.usuins = $UsuLogadoId $Condic2 Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.usuexec = $UsuLogadoId $Condic2
                 GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 ORDER BY ".$xProj.".poslog.nomecompl"); 
             }
             if($VerTarefas == 3){ // 3 = visualização por setor 
                 $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$Ano' And setorins = $CodSetorUsu Or ativo != 0 And DATE_PART('YEAR', datains) = '$Ano' And setorexec = $CodSetorUsu");
+                WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$Ano' And setorins = $CodSetorUsu $Condic2 Or ativo != 0 And DATE_PART('YEAR', datains) = '$Ano' And setorexec = $CodSetorUsu $Condic2");
 
                 $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
-                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And setorins = $CodSetorUsu Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And setorexec = $CodSetorUsu 
+                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And setorins = $CodSetorUsu $Condic2 Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And setorexec = $CodSetorUsu $Condic2 
                 GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 ORDER BY ".$xProj.".poslog.nomecompl"); 
             }
             if($VerTarefas == 4){ // 4 = visualização por organograma 
                 $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgins >= $MeuOrg $Condic2 Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgexec >= $MeuOrg $Condic2");
 
                 $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
-                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgexec >= $MeuOrg 
+                WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgins >= $MeuOrg $Condic2 Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' And ".$xProj.".tarefas.orgexec >= $MeuOrg $Condic2 
                 GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 ORDER BY ".$xProj.".poslog.nomecompl"); 
             }
@@ -348,7 +382,9 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->SetTitle('Relação Individual', $isUTF8=TRUE);
             $rs1 = pg_query($Conec, "SELECT DISTINCT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
             FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
-            WHERE ".$xProj.".tarefas.ativo != 0 And ".$xProj.".poslog.pessoas_id = $CodUsu "); 
+            WHERE ".$xProj.".tarefas.ativo != 0 And ".$xProj.".poslog.pessoas_id = $CodUsu $Condic2 "); 
+
+
         }
 
         if($Acao == "listaExecutante"){ 
@@ -356,7 +392,7 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->SetTitle('Relação Individual', $isUTF8=TRUE);
             $rs1 = pg_query($Conec, "SELECT DISTINCT ".$xProj.".tarefas.usuexec, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual  
             FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id
-            WHERE ".$xProj.".tarefas.ativo != 0 And ".$xProj.".poslog.pessoas_id = $CodUsu "); 
+            WHERE ".$xProj.".tarefas.ativo != 0 And ".$xProj.".poslog.pessoas_id = $CodUsu $Condic2 "); 
         }
 
 
@@ -384,7 +420,7 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->SetTitle('Relação Combo', $isUTF8=TRUE);
             $rs1 = pg_query($Conec, "SELECT DISTINCT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
             FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
-            WHERE ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.usuins = $CodMand ");
+            WHERE ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.usuins = $CodMand $Condic2 ");
 
             $rs8 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodMand");
             $tbl8 = pg_fetch_row($rs8);
@@ -414,48 +450,48 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->SetFont('Arial', 'I', 14);
             $pdf->MultiCell(0, 5, "Tarefas na fase: ".$Desc, 0, 'C', false);
             if($VerTarefas == 1){ // 1 = Todos 
-                $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And sit = $Sit");
+                $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And sit = $Sit $Condic2");
 
                 $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
-                WHERE ".$xProj.".tarefas.ativo != 0 And sit = $Sit 
+                WHERE ".$xProj.".tarefas.ativo != 0 And sit = $Sit $Condic2 
                 GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 ORDER BY ".$xProj.".poslog.nomecompl");        
             }
             if($VerTarefas == 2){ // 2 = só mandante e executante 
                 $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                WHERE ativo != 0 And usuins = $UsuLogadoId And sit = $Sit Or ativo != 0 And usuexec = $UsuLogadoId And sit = $Sit");
+                WHERE ativo != 0 And usuins = $UsuLogadoId And sit = $Sit Or ativo != 0 And usuexec = $UsuLogadoId And sit = $Sit $Condic2");
 
                 $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
-                WHERE ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.usuins = $UsuLogadoId And sit = $Sit Or ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.usuexec = $UsuLogadoId And sit = $Sit 
+                WHERE ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.usuins = $UsuLogadoId And sit = $Sit $Condic2 Or ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.usuexec = $UsuLogadoId And sit = $Sit $Condic2 
                 GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 ORDER BY ".$xProj.".poslog.nomecompl");     
             }
             if($VerTarefas == 3){ // 3 = visualização por setor 
                 $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                WHERE ativo != 0 And setorins = $CodSetorUsu And sit = $Sit Or ativo != 0 And setorexec = $CodSetorUsu And sit = $Sit");
+                WHERE ativo != 0 And setorins = $CodSetorUsu And sit = $Sit $Condic2 Or ativo != 0 And setorexec = $CodSetorUsu And sit = $Sit $Condic2");
 
                 $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
-                WHERE ".$xProj.".tarefas.ativo != 0 And setorins = $CodSetorUsu And sit = $Sit Or ".$xProj.".tarefas.ativo != 0 And setorexec = $CodSetorUsu And sit = $Sit 
+                WHERE ".$xProj.".tarefas.ativo != 0 And setorins = $CodSetorUsu And sit = $Sit $Condic2 Or ".$xProj.".tarefas.ativo != 0 And setorexec = $CodSetorUsu And sit = $Sit $Condic2 
                 GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 ORDER BY ".$xProj.".poslog.nomecompl");
             }
             if($VerTarefas == 4){ // 4 = visualização por organograma 
                 $rsCont = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                WHERE ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.orgins >= $MeuOrg And ".$xProj.".tarefas.sit = $Sit Or ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.orgexec >= $MeuOrg And ".$xProj.".tarefas.sit = $Sit ");
+                WHERE ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.orgins >= $MeuOrg And ".$xProj.".tarefas.sit = $Sit Or ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.orgexec >= $MeuOrg And ".$xProj.".tarefas.sit = $Sit $Condic2 ");
 
                 $rs1 = pg_query($Conec, "SELECT ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
-                WHERE ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.orgins >= $MeuOrg And ".$xProj.".tarefas.sit = $Sit Or ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.orgexec >= $MeuOrg And ".$xProj.".tarefas.sit = $Sit 
+                WHERE ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.orgins >= $MeuOrg And ".$xProj.".tarefas.sit = $Sit $Condic2 Or ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.orgexec >= $MeuOrg And ".$xProj.".tarefas.sit = $Sit $Condic2 
                 GROUP BY ".$xProj.".tarefas.usuins, ".$xProj.".poslog.nomecompl, ".$xProj.".poslog.nomeusual 
                 ORDER BY ".$xProj.".poslog.nomecompl");
             }
             $tblCont = pg_fetch_row($rsCont);
             $pdf->SetTextColor(120, 120, 120);  
             $pdf->SetFont('Arial', 'I', 9);
-            $pdf->SetX(30);
+//            $pdf->SetX(30);
             $pdf->MultiCell(0, 3, $tblCont[0]." tarefas", 0, 'C', false);
             $pdf->SetTextColor(0, 0, 0);
 
@@ -506,7 +542,7 @@ if(!isset($_SESSION['AdmUsu'])){
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), 
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio, nomeusual 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id
-                    WHERE ".$xProj.".tarefas.usuins = $Cod And ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' 
+                    WHERE ".$xProj.".tarefas.usuins = $Cod And ".$xProj.".tarefas.ativo != 0 And DATE_PART('MONTH', ".$xProj.".tarefas.datains) = '$Mes' And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' $Condic2 
                     ORDER BY ".$xProj.".tarefas.datains DESC");
                 }
                 if($Acao == "listaanoTarefa"){ 
@@ -517,7 +553,7 @@ if(!isset($_SESSION['AdmUsu'])){
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), 
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio, nomeusual 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id
-                    WHERE ".$xProj.".tarefas.usuins = $Cod And ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' 
+                    WHERE ".$xProj.".tarefas.usuins = $Cod And ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' $Condic2 
                     ORDER BY ".$xProj.".tarefas.datains DESC");
                 }
                 if($Acao == "listaMandante"){ 
@@ -528,7 +564,7 @@ if(!isset($_SESSION['AdmUsu'])){
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), 
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio, nomeusual 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id
-                    WHERE ".$xProj.".tarefas.usuins = $CodUsu And ".$xProj.".tarefas.ativo != 0 
+                    WHERE ".$xProj.".tarefas.usuins = $CodUsu And ".$xProj.".tarefas.ativo != 0 $Condic2 
                     ORDER BY ".$xProj.".tarefas.datains DESC");
                 }
 
@@ -540,7 +576,7 @@ if(!isset($_SESSION['AdmUsu'])){
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), 
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio, nomeusual 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id
-                    WHERE ".$xProj.".tarefas.usuexec = $CodUsu And ".$xProj.".tarefas.ativo != 0 
+                    WHERE ".$xProj.".tarefas.usuexec = $CodUsu And ".$xProj.".tarefas.ativo != 0 $Condic2 
                     ORDER BY ".$xProj.".tarefas.datains DESC");
                 }
 
@@ -552,7 +588,7 @@ if(!isset($_SESSION['AdmUsu'])){
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), 
                     EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio, nomeusual 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id
-                    WHERE ".$xProj.".tarefas.usuins = $Cod And sit = $Sit and ".$xProj.".tarefas.ativo != 0 
+                    WHERE ".$xProj.".tarefas.usuins = $Cod And sit = $Sit and ".$xProj.".tarefas.ativo != 0 $Condic2 
                     ORDER BY ".$xProj.".tarefas.datains DESC");
                 }
                 if($Acao == "listaCombo"){
@@ -564,7 +600,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), 
                         EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio, nomeusual 
                         FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id
-                        WHERE ".$xProj.".tarefas.usuins = $CodMand And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.usuexec = $CodExec And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano'
+                        WHERE ".$xProj.".tarefas.usuins = $CodMand And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.usuexec = $CodExec And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' $Condic2
                         ORDER BY ".$xProj.".tarefas.datains DESC");
                     }else{
                         $rs2 = pg_query($Conec, "SELECT usuexec, tittarefa, nomecompl, TO_CHAR(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI'), TO_CHAR(".$xProj.".tarefas.datasit1, 'DD/MM/YYYY HH24:MI'), TO_CHAR(".$xProj.".tarefas.datasit2, 'DD/MM/YYYY HH24:MI'), TO_CHAR(".$xProj.".tarefas.datasit3, 'DD/MM/YYYY HH24:MI'), TO_CHAR(".$xProj.".tarefas.datasit4, 'DD/MM/YYYY HH24:MI'), 
@@ -574,7 +610,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datasit3)), 
                         EXTRACT('years' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('month' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('days' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('hours' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), EXTRACT('min' FROM AGE(".$xProj.".tarefas.datasit4, ".$xProj.".tarefas.datains)), prio, nomeusual 
                         FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id
-                        WHERE ".$xProj.".tarefas.usuins = $CodMand And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.usuexec = $CodExec And sit = $Sit And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano'
+                        WHERE ".$xProj.".tarefas.usuins = $CodMand And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.usuexec = $CodExec And sit = $Sit And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$Ano' $Condic2
                         ORDER BY ".$xProj.".tarefas.datains DESC");
                     }
                     $row2 = pg_num_rows($rs2);
@@ -709,7 +745,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $Min = $Min+$e[4];
                         }
                     }
-                    $rs4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE usuexec = $CodUsu And ativo != 0 And datasit4 != '3000-12-31' And datasit4 IS NOT NULL");
+                    $rs4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE usuexec = $CodUsu And ativo != 0 And datasit4 != '3000-12-31' And datasit4 IS NOT NULL $Condic2");
                     $tbl4 = pg_fetch_row($rs4);
                     $NumTar = $tbl4[0];
 
@@ -729,11 +765,11 @@ if(!isset($_SESSION['AdmUsu'])){
                     }
                 }
                 if($Acao == "listaMandante"){ 
-                    $rs4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE usuins = $CodUsu And ativo != 0");
+                    $rs4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE usuins = $CodUsu And ativo != 0 $Condic2");
                     $tbl4 = pg_fetch_row($rs4);
                     $NumTar = $tbl4[0];
 
-                    $rs5 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE usuins = $CodUsu And ativo != 0 And datasit4 != '3000-12-31' And datasit4 IS NOT NULL");
+                    $rs5 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE usuins = $CodUsu And ativo != 0 And datasit4 != '3000-12-31' And datasit4 IS NOT NULL $Condic2");
                     $tbl5 = pg_fetch_row($rs5);
                     $NumTarTerm = $tbl5[0];
 
@@ -770,7 +806,7 @@ if(!isset($_SESSION['AdmUsu'])){
         $pdf->SetFont('Arial', 'I', 12);
         $pdf->MultiCell(0, 5, "Resumo Anual de Tarefas Expedidas", 0, 'C', false);
 
-        $rs0 = pg_query($Conec, "SELECT DATE_PART('YEAR', datains) FROM ".$xProj.".tarefas WHERE ativo != 0 
+        $rs0 = pg_query($Conec, "SELECT DATE_PART('YEAR', datains) FROM ".$xProj.".tarefas WHERE ativo != 0 $Condic2 
         GROUP BY DATE_PART('YEAR', datains) ORDER BY DATE_PART('YEAR', datains) DESC");
         $row0 = pg_num_rows($rs0);
         if($row0 > 0){
@@ -783,120 +819,120 @@ if(!isset($_SESSION['AdmUsu'])){
                 $pdf->Cell(0, 5, $tbl0[0], 0, 1, 'L'); //Ano
 
                 if($VerTarefas == 1){ // 1 = Todos 
-                    $rs1 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar'");
-                    $rsP1 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 0");
-                    $rsP3 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 2");
-                    $rsP4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 3");
+                    $rs1 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' $Condic2");
+                    $rsP1 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 0 $Condic2");
+                    $rsP3 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 2 $Condic2");
+                    $rsP4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 3 $Condic2");
 
-                    $rs2 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 1");
-                    $rs3 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 2");
-                    $rs4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 3");
-                    $rs5 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4");
-                    $rsCalc = pg_query($Conec, "SELECT tempototal FROM ".$xProj.".tarefas WHERE DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And ativo != 0 And tempototal IS NOT NULL");
+                    $rs2 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 1 $Condic2");
+                    $rs3 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 2 $Condic2");
+                    $rs4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 3 $Condic2");
+                    $rs5 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 $Condic2");
+                    $rsCalc = pg_query($Conec, "SELECT tempototal FROM ".$xProj.".tarefas WHERE DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And ativo != 0 And tempototal IS NOT NULL $Condic2");
                     $rs6 = pg_query($Conec, "SELECT TO_CHAR(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI'), TO_CHAR((CURRENT_DATE - ".$xProj.".tarefas.datains), 'DD'), tittarefa, ".$xProj.".poslog.nomecompl, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.sit 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id 
-                    WHERE DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 ORDER BY (CURRENT_DATE - ".$xProj.".tarefas.datains) DESC");
+                    WHERE DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 $Condic2 ORDER BY (CURRENT_DATE - ".$xProj.".tarefas.datains) DESC");
                 }
 
                 if($VerTarefas == 2){ // 2 = só mandante e executante 
                     $rs1 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And usuins = $UsuLogadoId Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And usuexec = $UsuLogadoId");
+                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And usuins = $UsuLogadoId $Condic2 Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And usuexec = $UsuLogadoId $Condic2");
 
                     $rsP1 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 0 And usuins = $UsuLogadoId Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 0 And usuexec = $UsuLogadoId");
+                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 0 And usuins = $UsuLogadoId $Condic2 Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 0 And usuexec = $UsuLogadoId $Condic2");
                     
                     $rsP3 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 2 And usuins = $UsuLogadoId Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 2 And usuexec = $UsuLogadoId");
+                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 2 And usuins = $UsuLogadoId $Condic2 Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 2 And usuexec = $UsuLogadoId $Condic2");
 
                     $rsP4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 3 And usuins = $UsuLogadoId Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 3 And usuexec = $UsuLogadoId");
+                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 3 And usuins = $UsuLogadoId $Condic2 Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 3 And usuexec = $UsuLogadoId $Condic2");
 
                     $rs2 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 1 And usuins = $UsuLogadoId Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 1 And usuexec = $UsuLogadoId ");
+                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 1 And usuins = $UsuLogadoId $Condic2 Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 1 And usuexec = $UsuLogadoId  $Condic2");
 
                     $rs3 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 2 And usuins = $UsuLogadoId Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 2 And usuexec = $UsuLogadoId ");
+                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 2 And usuins = $UsuLogadoId $Condic2 Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 2 And usuexec = $UsuLogadoId $Condic2 ");
 
                     $rs4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 3 And usuins = $UsuLogadoId Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 3 And usuexec = $UsuLogadoId ");
+                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 3 And usuins = $UsuLogadoId $Condic2 Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 3 And usuexec = $UsuLogadoId $Condic2 ");
 
                     $rs5 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And usuins = $UsuLogadoId Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And usuexec = $UsuLogadoId ");
+                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And usuins = $UsuLogadoId $Condic2 Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And usuexec = $UsuLogadoId $Condic2 ");
 
                     $rsCalc = pg_query($Conec, "SELECT tempototal FROM ".$xProj.".tarefas 
-                    WHERE DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And ativo != 0 And tempototal IS NOT NULL And usuins = $UsuLogadoId Or DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And ativo != 0 And tempototal IS NOT NULL And usuexec = $UsuLogadoId");
+                    WHERE DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And ativo != 0 And tempototal IS NOT NULL And usuins = $UsuLogadoId $Condic2 Or DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And ativo != 0 And tempototal IS NOT NULL And usuexec = $UsuLogadoId $Condic2");
                     
                     $rs6 = pg_query($Conec, "SELECT TO_CHAR(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI'), TO_CHAR((CURRENT_DATE - ".$xProj.".tarefas.datains), 'DD'), tittarefa, ".$xProj.".poslog.nomecompl, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.sit 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id 
-                    WHERE DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.usuins = $UsuLogadoId Or DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.usuexec = $UsuLogadoId 
+                    WHERE DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.usuins = $UsuLogadoId $Condic2 Or DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.usuexec = $UsuLogadoId $Condic2 
                     ORDER BY (CURRENT_DATE - ".$xProj.".tarefas.datains) DESC");
                 }
  
                 if($VerTarefas == 3){ // 3 = visualização por setor ou grupos
                     $rs1 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And setorins = $CodSetorUsu or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And setorexec = $CodSetorUsu");
+                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And setorins = $CodSetorUsu $Condic2 or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And setorexec = $CodSetorUsu $Condic2");
 
                     $rsP1 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 0 And setorins = $CodSetorUsu Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 0 And setorexec = $CodSetorUsu");
+                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 0 And setorins = $CodSetorUsu $Condic2 Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 0 And setorexec = $CodSetorUsu $Condic2");
 
                     $rsP3 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 2 And setorins = $CodSetorUsu Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 2 And setorexec = $CodSetorUsu");
+                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 2 And setorins = $CodSetorUsu $Condic2 Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 2 And setorexec = $CodSetorUsu $Condic2");
 
                     $rsP4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 3 And setorins = $CodSetorUsu Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 3 And setorexec = $CodSetorUsu");
+                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 3 And setorins = $CodSetorUsu $Condic2 Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And prio = 3 And setorexec = $CodSetorUsu $Condic2");
 
                     $rs2 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 1 And setorins = $CodSetorUsu Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 1 And setorexec = $CodSetorUsu");
+                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 1 And setorins = $CodSetorUsu $Condic2 Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 1 And setorexec = $CodSetorUsu $Condic2");
 
                     $rs3 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 2 And setorins = $CodSetorUsu Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 2 And setorexec = $CodSetorUsu");
+                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 2 And setorins = $CodSetorUsu $Condic2 Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 2 And setorexec = $CodSetorUsu $Condic2");
 
                     $rs4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 3 And setorins = $CodSetorUsu Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 3 And setorexec = $CodSetorUsu");
+                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 3 And setorins = $CodSetorUsu $Condic2 Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 3 And setorexec = $CodSetorUsu $Condic2");
 
                     $rs5 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And setorins = $CodSetorUsu Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And setorexec = $CodSetorUsu");
+                    WHERE ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And setorins = $CodSetorUsu $Condic2 Or ativo != 0 And DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And setorexec = $CodSetorUsu $Condic2");
 
                     $rsCalc = pg_query($Conec, "SELECT tempototal FROM ".$xProj.".tarefas 
-                    WHERE DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And ativo != 0 And tempototal IS NOT NULL And setorins = $CodSetorUsu Or DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And ativo != 0 And tempototal IS NOT NULL And setorexec = $CodSetorUsu ");
+                    WHERE DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And ativo != 0 And tempototal IS NOT NULL And setorins = $CodSetorUsu $Condic2 Or DATE_PART('YEAR', datains) = '$AnoTar' And sit = 4 And ativo != 0 And tempototal IS NOT NULL And setorexec = $CodSetorUsu $Condic2 ");
 
                     $rs6 = pg_query($Conec, "SELECT TO_CHAR(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI'), TO_CHAR((CURRENT_DATE - ".$xProj.".tarefas.datains), 'DD'), tittarefa, ".$xProj.".poslog.nomecompl, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.sit 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id 
-                    WHERE DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 And setorins = $CodSetorUsu Or DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 And setorexec = $CodSetorUsu 
+                    WHERE DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 And setorins = $CodSetorUsu $Condic2 Or DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 And setorexec = $CodSetorUsu $Condic2 
                     ORDER BY (CURRENT_DATE - ".$xProj.".tarefas.datains) DESC");
                 }
 
                 if($VerTarefas == 4){ // 4 = visualização por organograma 
                     $rs1 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.orgins >= $MeuOrg $Condic2 Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.orgexec >= $MeuOrg $Condic2");
 
                     $rsP1 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.prio = 0 And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.prio = 0 And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.prio = 0 And ".$xProj.".tarefas.orgins >= $MeuOrg  $Condic2Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.prio = 0 And ".$xProj.".tarefas.orgexec >= $MeuOrg $Condic2");
 
                     $rsP3 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And prio = 2 And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And prio = 2 And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And prio = 2 And ".$xProj.".tarefas.orgins >= $MeuOrg $Condic2 Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And prio = 2 And ".$xProj.".tarefas.orgexec >= $MeuOrg $Condic2");
 
                     $rsP4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.prio = 3 And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.prio = 3 And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.prio = 3 And ".$xProj.".tarefas.orgins >= $MeuOrg $Condic2 Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.prio = 3 And ".$xProj.".tarefas.orgexec >= $MeuOrg $Condic2");
 
                     $rs2 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 1 And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR',".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 1 And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 1 And ".$xProj.".tarefas.orgins >= $MeuOrg $Condic2 Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR',".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 1 And ".$xProj.".tarefas.orgexec >= $MeuOrg $Condic2");
 
                     $rs3 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 2 And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 2 And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 2 And ".$xProj.".tarefas.orgins >= $MeuOrg $Condic2 Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 2 And ".$xProj.".tarefas.orgexec >= $MeuOrg $Condic2");
 
                     $rs4 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 3 And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 3 And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 3 And ".$xProj.".tarefas.orgins >= $MeuOrg $Condic2 Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 3 And ".$xProj.".tarefas.orgexec >= $MeuOrg $Condic2");
 
                     $rs5 = pg_query($Conec, "SELECT COUNT(idtar) FROM ".$xProj.".tarefas 
-                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 4 And ".$xProj.".tarefas.orgins >= $MeuOrg Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 4 And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+                    WHERE ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 4 And ".$xProj.".tarefas.orgins >= $MeuOrg $Condic2 Or ".$xProj.".tarefas.ativo != 0 And DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 4 And ".$xProj.".tarefas.orgexec >= $MeuOrg $Condic2");
 
                     $rsCalc = pg_query($Conec, "SELECT tempototal FROM ".$xProj.".tarefas 
-                    WHERE DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 4 And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.tempototal IS NOT NULL And ".$xProj.".tarefas.orgins >= $MeuOrg Or DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 4 And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.tempototal IS NOT NULL And ".$xProj.".tarefas.orgexec >= $MeuOrg");
+                    WHERE DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 4 And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.tempototal IS NOT NULL And ".$xProj.".tarefas.orgins >= $MeuOrg $Condic2 Or DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And ".$xProj.".tarefas.sit = 4 And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.tempototal IS NOT NULL And ".$xProj.".tarefas.orgexec >= $MeuOrg $Condic2");
 
                     $rs6 = pg_query($Conec, "SELECT TO_CHAR(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI'), TO_CHAR((CURRENT_DATE - ".$xProj.".tarefas.datains), 'DD'), tittarefa, ".$xProj.".poslog.nomecompl, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.sit 
                     FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuexec = ".$xProj.".poslog.pessoas_id 
-                    WHERE DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.orgins >= $MeuOrg Or DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.orgexec >= $MeuOrg 
+                    WHERE DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.orgins >= $MeuOrg $Condic2 Or DATE_PART('YEAR', ".$xProj.".tarefas.datains) = '$AnoTar' And sit < 4 And ".$xProj.".tarefas.ativo != 0 And ".$xProj.".tarefas.orgexec >= $MeuOrg $Condic2 
                     ORDER BY (CURRENT_DATE - ".$xProj.".tarefas.datains) DESC");
                 }
 
