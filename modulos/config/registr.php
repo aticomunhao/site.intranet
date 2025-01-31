@@ -333,8 +333,11 @@ if($Acao =="buscaacesso"){
             $rsBens = pg_query($Conec, "SELECT id FROM ".$xProj.".bensachados WHERE codusuins > 0 And usurestit = 0 And usucsg = 0");
             $rowBens = pg_num_rows($rsBens);
 
-            $rsDest = pg_query($Conec, "SELECT id FROM ".$xProj.".bensachados WHERE (CURRENT_DATE-datareceb) > 90 And usucsg >0 And usurestit = 0 And usudestino = 0");
-            $rowDest = pg_num_rows($rsDest);
+            $EncBens = parEsc("encbens", $Conec, $xProj, $_SESSION["usuarioID"]); // Destinar bens
+            if($EncBens == 1){
+                $rsDest = pg_query($Conec, "SELECT id FROM ".$xProj.".bensachados WHERE (CURRENT_DATE-datareceb) > 90 And usucsg >0 And usurestit = 0 And usudestino = 0");
+                $rowDest = pg_num_rows($rsDest);
+            }
         }
         // Contratos
         $rowContr1 = 0;

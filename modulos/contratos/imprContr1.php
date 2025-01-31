@@ -97,14 +97,14 @@ if(isset($_REQUEST["acao"])){
         $pdf->ln(5);
         if($row0 > 0){
             $pdf->SetFont('Arial', 'I', 8);
-            $pdf->SetX(25);
+            $pdf->SetX(20);
             $pdf->Cell(20, 3, "Assinatura", 0, 0, 'C');
             $pdf->Cell(30, 3, "Número", 0, 0, 'C');
             $pdf->Cell(20, 3, "Vencimento", 0, 0, 'C');
             $pdf->Cell(65, 3, "Empresa", 0, 0, 'L');
             
             $pdf->Cell(20, 3, "Setor", 0, 0, 'L');
-            $pdf->Cell(20, 3, "Vigência", 0, 0, 'L');
+            $pdf->Cell(25, 3, "Vigência", 0, 0, 'L');
             $pdf->Cell(90, 3, "Objeto", 0, 0, 'L');
             $pdf->ln(4);
             $lin = $pdf->GetY();
@@ -113,7 +113,7 @@ if(isset($_REQUEST["acao"])){
 
             while($tbl0 = pg_fetch_row($rs0)){
                 $Cod = $tbl0[0];
-                $pdf->SetX(25); 
+                $pdf->SetX(20); 
                 $pdf->Cell(20, 5, $tbl0[2], 0, 0, 'C');
                 $pdf->Cell(30, 5, $tbl0[1], 0, 0, 'C');
                 $pdf->Cell(20, 5, $tbl0[3], 0, 0, 'C');
@@ -139,7 +139,7 @@ if(isset($_REQUEST["acao"])){
                     $DescSetor = "";
                 }
                 $pdf->Cell(20, 5, $DescSetor, 0, 0, 'L');
-                $pdf->Cell(20, 5, $tbl0[7], 0, 0, 'L');
+                $pdf->Cell(25, 5, $tbl0[7], 0, 0, 'L');
                 $pdf->MultiCell(100, 4, $tbl0[9], 0, 'L', false);
 
                 $pdf->SetFont('Arial', '', 10);
@@ -171,14 +171,14 @@ if(isset($_REQUEST["acao"])){
         $pdf->ln(5);
         if($row0 > 0){
             $pdf->SetFont('Arial', 'I', 8);
-            $pdf->SetX(25);
+            $pdf->SetX(20);
             $pdf->Cell(20, 3, "Assinatura", 0, 0, 'C');
             $pdf->Cell(30, 3, "Número", 0, 0, 'C');
             $pdf->Cell(20, 3, "Vencimento", 0, 0, 'C');
             $pdf->Cell(65, 3, "Empresa", 0, 0, 'L');
             
             $pdf->Cell(20, 3, "Setor", 0, 0, 'L');
-            $pdf->Cell(20, 3, "Vigência", 0, 0, 'L');
+            $pdf->Cell(25, 3, "Vigência", 0, 0, 'L');
             $pdf->Cell(90, 3, "Objeto", 0, 0, 'L');
             $pdf->ln(4);
             $lin = $pdf->GetY();
@@ -187,7 +187,7 @@ if(isset($_REQUEST["acao"])){
 
             while($tbl0 = pg_fetch_row($rs0)){
                 $Cod = $tbl0[0];
-                $pdf->SetX(25); 
+                $pdf->SetX(20); 
                 $pdf->Cell(20, 5, $tbl0[2], 0, 0, 'C');
                 $pdf->Cell(30, 5, $tbl0[1], 0, 0, 'C');
                 $pdf->Cell(20, 5, $tbl0[3], 0, 0, 'C');
@@ -213,7 +213,7 @@ if(isset($_REQUEST["acao"])){
                     $DescSetor = "";
                 }
                 $pdf->Cell(20, 5, $DescSetor, 0, 0, 'L');
-                $pdf->Cell(20, 5, $tbl0[7], 0, 0, 'L');
+                $pdf->Cell(25, 5, $tbl0[7], 0, 0, 'L');
                 $pdf->MultiCell(100, 4, $tbl0[9], 0, 'L', false);
 
                 $pdf->SetFont('Arial', '', 10);
@@ -248,14 +248,14 @@ if(isset($_REQUEST["acao"])){
         $pdf->ln(5);
         if($row0 > 0){
             $pdf->SetFont('Arial', 'I', 8);
-            $pdf->SetX(25);
+            $pdf->SetX(20);
             $pdf->Cell(20, 3, "Assinatura", 0, 0, 'C');
             $pdf->Cell(30, 3, "Número", 0, 0, 'C');
             $pdf->Cell(20, 3, "Vencimento", 0, 0, 'C');
             $pdf->Cell(65, 3, "Empresa", 0, 0, 'L');
             
             $pdf->Cell(20, 3, "Setor", 0, 0, 'L');
-            $pdf->Cell(20, 3, "Vigência", 0, 0, 'L');
+            $pdf->Cell(25, 3, "Vigência", 0, 0, 'L');
             $pdf->Cell(90, 3, "Objeto", 0, 0, 'L');
             $pdf->ln(4);
             $lin = $pdf->GetY();
@@ -264,7 +264,7 @@ if(isset($_REQUEST["acao"])){
 
             while($tbl0 = pg_fetch_row($rs0)){
                 $Cod = $tbl0[0];
-                $pdf->SetX(25); 
+                $pdf->SetX(20); 
                 $pdf->Cell(20, 5, $tbl0[2], 0, 0, 'C');
                 $pdf->SetFont('Arial', '', 8);
                 $pdf->Cell(30, 5, $tbl0[1], 0, 0, 'C');
@@ -292,7 +292,7 @@ if(isset($_REQUEST["acao"])){
                     $DescSetor = "";
                 }
                 $pdf->Cell(20, 5, $DescSetor, 0, 0, 'L');
-                $pdf->Cell(20, 5, $tbl0[7], 0, 0, 'L');
+                $pdf->Cell(25, 5, $tbl0[7], 0, 0, 'L');
                 $pdf->MultiCell(100, 4, $tbl0[9], 0, 'L', false);
 
                 $pdf->SetFont('Arial', '', 10);
@@ -326,14 +326,14 @@ if(isset($_REQUEST["acao"])){
         $pdf->ln(5);
         if($row0 > 0){
             $pdf->SetFont('Arial', 'I', 8);
-            $pdf->SetX(25);
+            $pdf->SetX(20);
             $pdf->Cell(20, 3, "Assinatura", 0, 0, 'C');
             $pdf->Cell(30, 3, "Número", 0, 0, 'C');
             $pdf->Cell(20, 3, "Vencimento", 0, 0, 'C');
             $pdf->Cell(65, 3, "Empresa", 0, 0, 'L');
             
             $pdf->Cell(20, 3, "Setor", 0, 0, 'L');
-            $pdf->Cell(20, 3, "Vigência", 0, 0, 'L');
+            $pdf->Cell(25, 3, "Vigência", 0, 0, 'L');
             $pdf->Cell(90, 3, "Objeto", 0, 0, 'L');
             $pdf->ln(4);
             $lin = $pdf->GetY();
@@ -342,7 +342,7 @@ if(isset($_REQUEST["acao"])){
 
             while($tbl0 = pg_fetch_row($rs0)){
                 $Cod = $tbl0[0];
-                $pdf->SetX(25); 
+                $pdf->SetX(20); 
                 $pdf->Cell(20, 5, $tbl0[2], 0, 0, 'C');
                 $pdf->SetFont('Arial', '', 8);
                 $pdf->Cell(30, 5, $tbl0[1], 0, 0, 'C');
@@ -370,7 +370,7 @@ if(isset($_REQUEST["acao"])){
                     $DescSetor = "";
                 }
                 $pdf->Cell(20, 5, $DescSetor, 0, 0, 'L');
-                $pdf->Cell(20, 5, $tbl0[7], 0, 0, 'L');
+                $pdf->Cell(25, 5, $tbl0[7], 0, 0, 'L');
                 $pdf->MultiCell(100, 4, $tbl0[9], 0, 'L', false);
 
                 $pdf->SetFont('Arial', '', 10);

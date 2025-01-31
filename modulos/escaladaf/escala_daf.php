@@ -140,7 +140,7 @@ if(!isset($_SESSION["usuarioID"])){
             .quadroletra {
                 text-align: center;
                 font-size: 90%;
-                min-width: 10px;
+                min-width: 20px;
                 border: 1px solid;
                 border-radius: 3px;
             }
@@ -167,6 +167,11 @@ if(!isset($_SESSION["usuarioID"])){
                 border: 1px solid;
                 border-radius: 3px;
                 background-color: #00FF7F;
+            }
+            .quadroCinza {
+                font-size: 80%;
+                border: 1px solid #838B8B;
+                color: #838B8B;
             }
             .bContainer{ /* encapsula uma frase no topo de uma div */
                 position: absolute; 
@@ -566,7 +571,7 @@ if(!isset($_SESSION["usuarioID"])){
                         ajax.send(null);
                     }
                 });
-                
+
                 modalParticip = document.getElementById('relacParticip'); //span[0]
                 window.onclick = function(event){
                     if(event.target === modalParticip){
@@ -685,48 +690,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             OK: function(){}
                                         }
                                     });
-                                }
-                            }
-                        }
-                    };
-                    ajax.send(null);
-                }
-            }
-
-            function editaTurno__(Cod, Valor){ // Sem uso
-                ajaxIni();
-                if(ajax){
-                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaturno&codigo="+Cod+"&valor="+encodeURIComponent(Valor), true);
-                    ajax.onreadystatechange = function(){
-                        if(ajax.readyState === 4 ){
-                            if(ajax.responseText){
-//alert(ajax.responseText);
-                                Resp = eval("(" + ajax.responseText + ")");
-                                if(parseInt(Resp.coderro) === 0){
-                                    $.confirm({
-                                        title: 'Valor Salvo!',
-                                        content: '',
-                                        autoClose: 'OK|1000',
-                                        draggable: true,
-                                        buttons: {
-                                            OK: function(){}
-                                        }
-                                    });
-                                    $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php");
-                                }
-                                if(parseInt(Resp.coderro) === 1){
-                                    alert("Houve um erro no servidor.");
-                                }
-                                if(parseInt(Resp.coderro) === 2){
-                                    $.confirm({
-                                        title: 'Ação Suspensa!',
-                                        content: 'Erro de formatação do turno.<br>Formatação: 00:00 / 00:00',
-                                        draggable: true,
-                                        buttons: {
-                                            OK: function(){}
-                                        }
-                                    });
-                                    return false;
+                                    $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                 }
                             }
                         }
@@ -919,7 +883,7 @@ if(!isset($_SESSION["usuarioID"])){
 //                document.getElementById("relacDestacaDia").style.display = "none";
 //            }
 
-            function MarcaDia(Cod){ // vem de destacDia.php
+            function MarcaDia(Cod){ 
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=marcaDia&codigo="+Cod, true);
@@ -939,7 +903,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
             
-            function marcaTurno(Cod, Cor){ // vem de destacDia.php
+            function marcaTurno(Cod, Cor){ 
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=marcaTurno&codigo="+Cod+"&cor="+Cor, true);
@@ -953,6 +917,32 @@ if(!isset($_SESSION["usuarioID"])){
                                 }else{
                                     $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                     $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function marcaVale(obj, Cod){
+                if(obj.checked === true){
+                    Valor = 1;
+                }else{
+                    Valor = 0;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=marcaVale&codigo="+Cod+"&valor="+Valor, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                 }
                             }
                         }
@@ -1472,6 +1462,47 @@ if(!isset($_SESSION["usuarioID"])){
                     };
                     ajax.send(null);
                 }
+            }
+            function abreExcel(){
+                $.confirm({
+                    title: 'Exportar',
+                    content: 'Confirma criar arquivo Excel?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/criaExcel_daf.php?acao=listaturnos&numgrupo="+document.getElementById("guardanumgrupo").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    //Salva arquivo xlsx
+                                    $(location).attr("href", "modulos/escaladaf/ListaTurnos.xlsx");
+                                    $.confirm({
+                                        title: 'Sucesso',
+                                        content: 'Arquivo baixado para o diretório de downloads.',
+                                        draggable: true,
+                                        buttons: {
+                                            OK: function(){}
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            },
+                        Não: function () {
+                        }
+                    }
+                });
             }
 
             function fechaQuadroTurnos(){

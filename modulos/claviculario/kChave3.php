@@ -30,8 +30,8 @@
         <?php 
         $Hoje = date('Y/m/d');
         $rs = pg_query($Conec, "SELECT ".$xProj.".chaves3_ctl.id, chaves_id, chavenum, chavenumcompl, chavesala, TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), funcentrega, usuretira, cpfretira, telef, chavelocal, datasaida 
-        FROM ".$xProj.".chaves3_ctl INNER JOIN ".$xProj.".chaves ON ".$xProj.".chaves3_ctl.chaves_id = ".$xProj.".chaves.id 
-        WHERE ".$xProj.".chaves.ativo = 1 And usudevolve = 0 And TO_CHAR(datavolta, 'YYYY') = '3000' ORDER BY datasaida ");
+        FROM ".$xProj.".chaves3_ctl INNER JOIN ".$xProj.".chaves3 ON ".$xProj.".chaves3_ctl.chaves_id = ".$xProj.".chaves3.id 
+        WHERE ".$xProj.".chaves3.ativo = 1 And usudevolve = 0 And TO_CHAR(datavolta, 'YYYY') = '3000' ORDER BY datasaida ");
         $row = pg_num_rows($rs);
         if($row > 0){
             while($tbl = pg_fetch_row($rs)){
@@ -40,9 +40,9 @@
                 <div style="border: 2px solid #CFCFCF; border-radius: 8px; padding: 5px;">
                     <table style="margin: 0 auto; width:95%">
                         <tr>          
-                            <td colspan="2"><div class="quadrlista" style="border-color: #E90074; font-size: 130%;"> <?php echo str_pad($tbl[2], 3, 0, STR_PAD_LEFT)." ".$tbl[3]; ?></div>
+                            <td colspan="2"><div class="quadrlista" style="border-color: #E90074; font-size: 130%;"> <?php echo str_pad($tbl[2], 3, 0, STR_PAD_LEFT); ?></div>
                             <div class="quadrlista"><label class="etiq">Sala: </label> <?php echo $tbl[4]; ?></div>
-                            <div class="quadrlista" style="border: 0px;"><label class="etiq">Local: </label> <?php echo $tbl[10]; ?></div>
+<!--                            <div class="quadrlista" style="border: 0px;"><label class="etiq">Local: </label> <?php echo $tbl[10]; ?></div> -->
                         </td>
                         </tr>
                         <tr>              

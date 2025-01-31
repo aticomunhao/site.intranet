@@ -13,7 +13,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <div style="margin-top: 15px;">Horários de Trabalho</div>
         <?php
             $EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
-//            $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+            $MeuGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
             if(isset($_REQUEST["numgrupo"])){
                 $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal
             }else{
@@ -24,7 +24,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             <div class="row"> <!-- botões Inserir e Imprimir-->
                 <div class="col" style="margin: 0 auto; text-align: left;">
                     <?php
-                    $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra <= 5 And grupo_turnos = $NumGrupo ORDER BY letra");
+                    $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq, TO_CHAR(cargacont, 'HH24:MI'), infotexto FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra <= 5 And grupo_turnos = $NumGrupo ORDER BY letra");
                     ?>
                     <table class="display" style="margin: 0 auto; width:85%;">
                         <?php 
@@ -49,6 +49,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                 <?php if($tbl3[1] == ""){echo "&nbsp;";}else{echo $tbl3[1];
                                     } ?></div></td>
                                 <td><div class="quadroletra"><?php echo $tbl3[2]; ?></div></td>
+                                <td>
+                                    <?php if($tbl3[5] == 0){ ?>
+                                        <div class="quadroletra quadroCinza" title="Carga horária do turno"><?php echo $tbl3[4]; ?></div>
+                                    <?php } ?>
+                                </td>
                             </tr>
                             <?php
                         }
@@ -58,7 +63,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
                 <div class="col" style="text-align: center;">
                     <?php
-                    $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 5 And ordemletra <= 10 And grupo_turnos = $NumGrupo ORDER BY ordemletra");
+                    $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq, TO_CHAR(cargacont, 'HH24:MI'), infotexto FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 5 And ordemletra <= 10 And grupo_turnos = $NumGrupo ORDER BY ordemletra");
                     ?>
                     <table class="display" style="margin: 0 auto; width:85%;">
                         <?php 
@@ -81,6 +86,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     }
                                 }?>  ><?php if($tbl3[1] == ""){echo "&nbsp;";}else{echo $tbl3[1];} ?></div></td>
                                 <td><div class="quadroletra"><?php echo $tbl3[2]; ?></div></td>
+                                <td>
+                                    <?php if($tbl3[5] == 0){ ?>
+                                        <div class="quadroletra quadroCinza" title="Carga horária do turno"><?php echo $tbl3[4]; ?></div>
+                                    <?php } ?>
+                                </td>
                             </tr>
                             <?php
                         }
@@ -90,7 +100,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
                 <div class="col" style="margin: 0 auto; text-align: center;">
                     <?php
-                    $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 10 And ordemletra <= 15 And grupo_turnos = $NumGrupo ORDER BY letra");
+                    $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq, TO_CHAR(cargacont, 'HH24:MI'), infotexto FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 10 And ordemletra <= 15 And grupo_turnos = $NumGrupo ORDER BY letra");
                     ?>
                     <table class="display" style="margin: 0 auto; width:85%;">
                         <?php 
@@ -113,17 +123,21 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     }
                                 }?>  ><?php if($tbl3[1] == ""){echo "&nbsp;";}else{echo $tbl3[1];} ?></div></td>
                                 <td><div class="quadroletra"><?php echo $tbl3[2]; ?></div></td>
+                                <td>
+                                    <?php if($tbl3[5] == 0){ ?>
+                                        <div class="quadroletra quadroCinza" title="Carga horária do turno"><?php echo $tbl3[4]; ?></div>
+                                    <?php } ?>
+                                </td>
                             </tr>
                             <?php
                         }
                     ?>
                     </table>
-
                 </div> <!-- quadro -->
 
                 <div class="col" style="margin: 0 auto; text-align: center;">
                     <?php
-                        $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 15 And ordemletra <= 20 And grupo_turnos = $NumGrupo ORDER BY letra");
+                        $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq, TO_CHAR(cargacont, 'HH24:MI'), infotexto FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 15 And ordemletra <= 20 And grupo_turnos = $NumGrupo ORDER BY letra");
                     ?>
                     <table class="display" style="margin: 0 auto; width:85%;">
                         <?php 
@@ -146,6 +160,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     }
                                     } ?>  ><?php if($tbl3[1] == ""){echo "&nbsp;";}else{echo $tbl3[1];} ?></div></td>
                                 <td><div class="quadroletra"><?php echo $tbl3[2]; ?></div></td>
+                                <td>
+                                    <?php if($tbl3[5] == 0){ ?>
+                                        <div class="quadroletra quadroCinza" title="Carga horária do turno"><?php echo $tbl3[4]; ?></div>
+                                    <?php } ?>
+                                </td>
                             </tr>
                             <?php
                         }
@@ -155,15 +174,12 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
                 <div class="col" style="margin: 0 auto; text-align: center;">
                     <?php
-                        if($EscalanteDAF == 1){
+                        if($EscalanteDAF == 1 && $MeuGrupo == $NumGrupo){
                             ?>
-                            <div class='bContainer corFundo' onclick='abreEditHorario()'> Editar </div><br><br>
+                            <div class='bContainer corFundo' onclick='abreEditHorario()'> Editar </div>
+                            <label style="padding-top: 5px;">&nbsp;</label>
+                            <div class='bContainer corFundo' onclick='abreEditDescanso()' title="Escala para descanso."> Descanso </div>
                             <?php
-                            if($_SESSION["usuarioID"] == 3){
-                                ?>
-                                <div class='bContainer corFundo' onclick='abreEditDescanso()' title="Escala para descanso."> Descanso </div>
-                                <?php
-                            }
                         }
                     ?>
                 </div> <!-- quadro -->

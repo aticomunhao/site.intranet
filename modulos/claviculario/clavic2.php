@@ -1260,7 +1260,7 @@ if(!isset($_SESSION["usuarioID"])){
                     <tr>
                         <td class="etiq" style="padding-bottom: 7px;">Chave: </td>
                         <td style="padding-bottom: 10px;"><input type="text" id="numchave" style="width: 70px; text-align: center;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('complemchave');return false;}" title="Número da chave. Preferencialmente único."/>
-                            <input type="text" id="complemchave" style="width: 70px; text-align: center;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('localchave');return false;}" title="Complemento para o caso de chaves com o mesmo número"/>
+                            <input type="text" id="complemchave" style="width: 250px; text-align: center;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('localchave');return false;}" />
                     </td>
                         <td style="padding-bottom: 10px;"></td>
                     </tr>
@@ -1270,7 +1270,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td></td>
                     </tr>
                     <tr>
-                        <td class="etiq">Sala: </td>
+                        <td class="etiq">Sala nº: </td>
                         <td colspan="3" style="width: 100px;"><input type="text" id="salachave" style="width: 100px; text-align: center;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('numchave');return false;}" title=""/></td>
                         <td></td>
                     </tr>

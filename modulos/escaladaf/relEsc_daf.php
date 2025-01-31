@@ -49,6 +49,7 @@
     }else{
         $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);   
     }
+    $MeuGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
 
     //Provisório - Apaga lançamentos em grupo diferente
     $rs0 = pg_query($Conec, "SELECT pessoas_id, esc_grupo FROM ".$xProj.".poslog WHERE ativo = 1 And esc_grupo = $NumGrupo");
@@ -76,7 +77,7 @@
                                 $IdDia = $tbl[0];
                                 $DataDia = addslashes($tbl[3]);
 //                                if($EscalanteDAF == 1 || $Fiscal == 1){
-                                if($EscalanteDAF == 1){
+                                if($EscalanteDAF == 1 && $MeuGrupo == $NumGrupo){
                                     ?>
                                     <td><div <?php if($tbl[2] == 0 || $tbl[4] == 1){echo "class='quadrodiaClickCinza'";}else{echo "class='quadrodiaClick'";} ?> onclick="abreEdit(<?php echo $IdDia; ?>, '<?php echo $DataDia; ?>');"><?php echo $tbl[1]; ?><br><?php echo $Semana_Extract[$tbl[2]]; ?></div></td>
                                     <?php
@@ -87,6 +88,9 @@
                                 }
                             }
                         } 
+
+                        echo "<td><img src='imagens/Excel-icon.png' height='20px;' style='cursor: pointer; padding-left: 5px;' onclick='abreExcel();' title='Envia para arquivo Excel'></td>";
+
                     echo "</td>";
 
                     $Dia = 1;
@@ -108,7 +112,7 @@
                                         $Dia = $tbl3[1];
                                         $Sem = $tbl3[2];
 
-                                        $rs4 = pg_query($Conec, "SELECT letraturno, turnoturno, destaque, date_part('dow', dataescala), feriado 
+                                        $rs4 = pg_query($Conec, "SELECT letraturno, turnoturno, destaque, date_part('dow', dataescala), feriado, valepag 
                                         FROM ".$xProj.".escaladaf INNER JOIN (".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_ins.poslog_id = ".$xProj.".poslog.pessoas_id) ON ".$xProj.".escaladaf.id = ".$xProj.".escaladaf_ins.escaladaf_id  
                                         WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '$Dia'");
 
@@ -116,13 +120,23 @@
                                         echo "<td>";
                                         if($row4 > 0){
                                             $tbl4 = pg_fetch_row($rs4);
-                                            if($tbl4[2] == 0){
-                                                if($Sem == 0 || $tbl4[4] == 1){ // dom ou feriado
-                                                    echo "<div class='quadrodiaCinza'> $tbl4[0] </div>";
+                                            $ValeRef = $tbl4[5]; // Vale refeição
+
+                                            if($tbl4[2] == 0){ // sem destaque
+                                                if($Sem == 0 || $tbl4[4] == 1){ // domingo ou feriado
+                                                    if($ValeRef == 0){ // sem Vale refeição
+                                                        echo "<div class='quadrodiaCinza' style='border-width: 2px; border-color: red;' title='Sem vale refeição'> $tbl4[0] </div>";
+                                                    }else{
+                                                        echo "<div class='quadrodiaCinza'> $tbl4[0] </div>";
+                                                    }
                                                 }else{
-                                                    echo "<div class='quadrodia'> $tbl4[0] </div>";
+                                                    if($ValeRef == 0){ // sem Vale refeição
+                                                        echo "<div class='quadrodia' style='border-width: 2px; border-color: red;' title='Sem vale refeição'> $tbl4[0] </div>";
+                                                    }else{
+                                                        echo "<div class='quadrodia'> $tbl4[0] </div>";
+                                                    }
                                                 }
-                                            }else{
+                                            }else{ // com destaque
                                                 $Destaq = $tbl4[2];
                                                 if($Destaq == 1){
                                                     $Cor = "yellow";
@@ -135,7 +149,11 @@
                                                 }
 
                                                 if($tbl4[0] != ""){
-                                                    echo "<div class='quadrodia' style='background-color: $Cor;'> $tbl4[0] </div>";
+                                                    if($tbl4[5] == 0){ // sem vale refeição
+                                                        echo "<div class='quadrodia' style='background-color: $Cor; border-width: 2px; border-color: red;' title='Sem vale refeição'> $tbl4[0] </div>";
+                                                    }else{
+                                                        echo "<div class='quadrodia' style='background-color: $Cor;'> $tbl4[0] </div>";
+                                                    }
                                                 }else{
                                                     echo "<div class='quadrodia' style='background-color: $Cor;'> &nbsp; </div>";
                                                 }
@@ -155,7 +173,7 @@
 //                                        WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'MM') = '$Mes' And grupo_ins = $NumGrupo And letraturno != 'F' And letraturno != 'X' And letraturno != 'Y' ");
                                         $rs5 = pg_query($Conec, "SELECT COUNT(poslog_id) 
                                         FROM ".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".escaladaf_turnos ON ".$xProj.".escaladaf_ins.turnos_id = ".$xProj.".escaladaf_turnos.id 
-                                        WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'MM') = '$Mes' And grupo_ins = $NumGrupo And infotexto = 0 ");
+                                        WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'MM') = '$Mes' And grupo_ins = $NumGrupo And infotexto = 0 And valepag = 1");
 
                                         $tbl5 = pg_fetch_row($rs5);
                                         $Total = $tbl5[0];

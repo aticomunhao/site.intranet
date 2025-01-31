@@ -19,7 +19,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 //alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");
                                 if(parseInt(Resp.coderro) === 1){
-//                                    alert("Houve um erro no servidor.");
                                     document.getElementById("insordem").value = 0;
                                 }else{
                                     document.getElementById("insordem").value = Resp.ordem;
@@ -32,6 +31,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 document.getElementById("inserirletra").style.display = "block";
                 document.getElementById("abreinsletra").style.visibility = "hidden";
             }
+
             function fechaInsLetra(){
                 document.getElementById("inserirletra").style.display = "none";
                 document.getElementById("abreinsletra").style.visibility = "visible";
@@ -45,14 +45,13 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         </div>
         <div style="margin: 10px; padding: 10px; text-align: center; border: 2px solid green; border-radius: 15px;">
             <?php
-//            $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
             if(isset($_REQUEST["numgrupo"])){
                 $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal
             }else{
                 $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);   
             }
 
-            $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, ordemletra, destaq, TO_CHAR(cargahora, 'HH24:MI'), TO_CHAR(cargacont, 'HH24:MI'), TO_CHAR(interv, 'HH24:MI'), infotexto FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And grupo_turnos = $NumGrupo ORDER BY ordemletra");
+            $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, ordemletra, destaq, TO_CHAR(cargahora, 'HH24:MI'), TO_CHAR(cargacont, 'HH24:MI'), TO_CHAR(interv, 'HH24:MI'), infotexto, valeref FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And grupo_turnos = $NumGrupo ORDER BY ordemletra");
             ?>
             <div style="position: relative; float: right; color: red; font-weight: bold;" id="mensagemQuadroHorario"></div>
             <table style="margin: 0 auto; width: 95%;">
@@ -66,6 +65,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     <td>Horas</td>
                     <td>Intervalo</td>
                     <td>Carga</td>
+                    <td>Vale</td>
                     <td></td>
                 </tr>
                 <?php 
@@ -82,6 +82,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             if($tbl3[4] == 1){echo "background-color: yellow;";} 
                             if($tbl3[4] == 2){echo "background-color: #00BFFF;";} 
                             if($tbl3[4] == 3){echo "background-color: #00FF7F;";} 
+
+                            if($tbl3[9] == 0){echo "border-width: 2px; border-color: red;";} // sem vale refeição
+
                             ?>" onchange="editaLetra(<?php echo $Cod; ?>, value);"/></td>
                         <td>
                             <input type="checkbox" id="ev" title="Sem destaque" onClick="marcaTurno(<?php echo $Cod ?>, 0);" <?php if($tbl3[4] == 0) {echo "checked";} ?> >
@@ -103,6 +106,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td style="width: 80px; text-align: center;"><?php echo $tbl3[5]; ?></td>
                             <td><input type="text" id="edinterv" value="<?php echo $tbl3[7]; ?>" style="width: 70px; text-align: center; border: 1px solid; border-radius: 3px;" onchange="editaInterv(<?php echo $Cod; ?>, value);"/></td>
                             <td style="width: 70px; text-align: center;"><?php echo $tbl3[6]; ?> </td>
+                            <td><input type="checkbox" id="valeRef" title="<?php if($tbl3[9] == 1){echo 'Turno com vale refeição';}else{echo 'Turno sem vale refeição.';} ?>" onClick="marcaVale(this, <?php echo $Cod ?>);" <?php if($tbl3[9] == 1) {echo "checked";} ?> ></td>
                             <td style="text-align: center; padding-left: 5px;"><img src='imagens/lixeiraPreta.png' height='15px;' style='cursor: pointer; padding-right: 3px;' onclick='apagaLetra(<?php echo $Cod; ?>);' title='Apagar esta letra.'></td>
                         <?php
                         }

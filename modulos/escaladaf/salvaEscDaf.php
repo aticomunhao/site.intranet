@@ -300,7 +300,7 @@ if($Acao =="marcaDia"){ // sem uso
     echo $responseText;
 }
 
-if($Acao =="marcaTurno"){ // sem uso
+if($Acao =="marcaTurno"){ 
     $Erro = 0;
     $Cod = (int) filter_input(INPUT_GET, 'codigo'); // pessoas_id
     $Cor = (int) filter_input(INPUT_GET, 'cor');
@@ -366,7 +366,6 @@ if($Acao =="salvamesano"){
 if($Acao =="insParticipante"){
     $Erro = 0;
     $CodDia = (int) filter_input(INPUT_GET, 'diaIdEscala'); // pessoas_id
-//    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
     if(isset($_REQUEST["numgrupo"])){
         $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal
     }else{
@@ -383,7 +382,7 @@ if($Acao =="insParticipante"){
     }else{
         $DataEscala = "";
     }
-    $rs = pg_query($Conec, "SELECT pessoas_id, ".$xProj.".poslog.daf_turno, ".$xProj.".escaladaf_turnos.letra, ".$xProj.".escaladaf_turnos.horaturno, ".$xProj.".escaladaf_turnos.destaq, ".$xProj.".escaladaf_turnos.cargacont, ".$xProj.".escaladaf_turnos.id 
+    $rs = pg_query($Conec, "SELECT pessoas_id, ".$xProj.".poslog.daf_turno, ".$xProj.".escaladaf_turnos.letra, ".$xProj.".escaladaf_turnos.horaturno, ".$xProj.".escaladaf_turnos.destaq, ".$xProj.".escaladaf_turnos.cargacont, ".$xProj.".escaladaf_turnos.id, ".$xProj.".escaladaf_turnos.valeref 
     FROM ".$xProj.".poslog LEFT JOIN ".$xProj.".escaladaf_turnos ON ".$xProj.".poslog.daf_turno = ".$xProj.".escaladaf_turnos.id
     WHERE ".$xProj.".poslog.ativo = 1 And ".$xProj.".poslog.eft_daf = 1 And ".$xProj.".poslog.daf_marca = 1 And ".$xProj.".escaladaf_turnos.grupo_turnos = $NumGrupo");
     $row = pg_num_rows($rs);
@@ -403,6 +402,7 @@ if($Acao =="insParticipante"){
             $DescTurno = $tbl[3];
             $Destaq = $tbl[4];
             $CargaHor = $tbl[5];
+            $ValeRef = $tbl[7];
 
             $CodigoNovo = 0;
             $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_ins");
@@ -410,8 +410,8 @@ if($Acao =="insParticipante"){
             $Codigo = $tblCod[0];
             $CodigoNovo = ($Codigo+1);
 
-            pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_ins (id, grupo_ins, escaladaf_id, dataescalains, poslog_id, letraturno, turnoturno, destaque, cargatime, usuins, datains, turnos_id) 
-            VALUES($CodigoNovo, $NumGrupo, $CodDia, '$DataEscala', $CodPartic, '$Letra', '$DescTurno', $Destaq, '$CargaHor', $UsuIns, NOW(), $IdTurno )");
+            pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_ins (id, grupo_ins, escaladaf_id, dataescalains, poslog_id, letraturno, turnoturno, destaque, cargatime, usuins, datains, turnos_id, valepag) 
+            VALUES($CodigoNovo, $NumGrupo, $CodDia, '$DataEscala', $CodPartic, '$Letra', '$DescTurno', $Destaq, '$CargaHor', $UsuIns, NOW(), $IdTurno, $ValeRef )");
         }
     }
     if(!$rs){
@@ -1071,6 +1071,19 @@ if($Acao =="salvafolga"){
     $Cod = filter_input(INPUT_GET, 'codigo');
     $Valor = filter_input(INPUT_GET, 'valor');
     $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_ins SET horafolga = '$Valor' WHERE id = $Cod");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="marcaVale"){ // sem uso
+    $Erro = 0;
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Valor = (int) filter_input(INPUT_GET, 'valor');
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET valeref = $Valor WHERE id = $Cod");
     if(!$rs){
         $Erro = 1;
     }

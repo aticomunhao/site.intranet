@@ -24,30 +24,10 @@
 			//Provisório
 			if(strtotime('2025/03/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//0074
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS infotexto smallint NOT NULL DEFAULT 0 ");
-				pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET infotexto = 1 WHERE horaturno = 'FÉRIAS' Or horaturno = 'FOLGA' Or horaturno = 'INSS' Or horaturno = 'AULA IAQ'");
 
-				$rs = pg_query($Conec, "SELECT numprocesso FROM ".$xProj.".bensachados WHERE numprocesso = '0525/2025'");
-				$row = pg_num_rows($rs);
-				if($row > 0){
-					$Proc = 1;
-					$rs1 = pg_query($Conec, "SELECT id, numprocesso FROM ".$xProj.".bensachados WHERE TO_CHAR(datareceb, 'YYYY') = '2025' ORDER BY datareceb, id");
-					while($tbl1 = pg_fetch_row($rs1)){
-						$Cod = $tbl1[0];
-						$Num = str_pad(($Proc), 4, "0", STR_PAD_LEFT);
-						$NumRelat = $Num."/2025";
-						pg_query($Conec, "UPDATE ".$xProj.".bensachados SET numprocesso = '$NumRelat' WHERE id = $Cod ");
-						$Proc++;
-					}
-				}
-				//0075
-				pg_query($Conec, "UPDATE ".$xProj.".escaladaf SET ativo = 0 WHERE id BETWEEN 696 And 700");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_ins ADD COLUMN IF NOT EXISTS horafolga VARCHAR(11) ");
-				//0076
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".tarefas ADD COLUMN IF NOT EXISTS tipotar smallint NOT NULL DEFAULT 1 ");
-				//0077
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS areatar smallint NOT NULL DEFAULT 1 ");
+				//0078
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS valeref smallint NOT NULL DEFAULT 1 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_ins ADD COLUMN IF NOT EXISTS valepag smallint NOT NULL DEFAULT 1 ");
 				
 			} // fim data limite
         ?>

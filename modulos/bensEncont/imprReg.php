@@ -254,8 +254,6 @@ if(!isset($_SESSION['AdmUsu'])){
         }
         $pdf->ln(7);
 
-
-
         $lin = $pdf->GetY();
         $pdf->Line(10, $lin, 200, $lin);
         $pdf->ln(5);
@@ -300,7 +298,7 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->MultiCell(0, 4, "(a): ". $NomeRestit, 0, 'C', false);
 
         }else{
-            $pdf->MultiCell(0, 5, "Objeto ainda não procurado", 0, 'C', false);
+            $pdf->MultiCell(0, 5, "Objeto não procurado", 0, 'C', false);
             $pdf->ln(10);
         }
 

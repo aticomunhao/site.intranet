@@ -97,7 +97,7 @@ function openhref(Num){
         $('#container3').load('modulos/claviculario/clavic1.php');
     }
     if(parseInt(Num) === 76){
-        $('#container3').load('modulos/contratos/contratos1.php');
+        $('#container3').load('modulos/contratos/contratosA.php'); // Empr contratadas
     }
     if(parseInt(Num) === 77){
         $('#container3').load('modulos/escaladaf/escala_daf.php');
@@ -111,7 +111,9 @@ function openhref(Num){
     if(parseInt(Num) === 80){
         $('#container3').load('modulos/claviculario/clavic3.php');
     }
-
+    if(parseInt(Num) === 81){
+        $('#container3').load('modulos/contratos/contratosB.php'); // Empr contratantes
+    }
 
 
     if(parseInt(Num) === 30){

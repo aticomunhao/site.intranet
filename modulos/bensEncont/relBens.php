@@ -211,7 +211,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                             echo "<button disabled class='botTable fundoCinza corAzulClaro'>Destinação</button>";
                                         }else{
                                             if($_SESSION["AdmUsu"] >= 6){ // Revisor ou Superusuário
-                                                echo "<button class='botTable fundoCinza corAzulClaro' onclick='mostraBem($tbl0[0], 8, $Restit);'>Destinado</button>";
+                                                if($Arquivado == 0){
+                                                    echo "<button class='botTable fundoCinza corAzulClaro' onclick='mostraBem($tbl0[0], 8, $Restit);'>Destinado</button>";
+                                                }
                                             }else{
                                                 echo "<button disabled class='botTable fundoCinza corAzulClaro'>Destinado</button>";
                                             }
@@ -222,7 +224,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                         echo "<button class='botTable fundoAmarelo' style='min-width: 100px;' onclick='mostraBem($tbl0[0], 5, $Restit);' title='Recebimento no destino'>$DescDestino</button>";
                                     }else{
                                         if($_SESSION["AdmUsu"] >= 6){ // Revisor ou Superusuário
-                                            if($Destino > 0){
+                                            if($Destino > 0 && $Arquivado == 0){
                                                 echo "<button class='botTable fundoCinza corAzulClaro' style='min-width: 100px;' onclick='mostraBem($tbl0[0], 7, $Restit);' title='Recebido no destino'>$DescDestino</button>";
                                             }
                                         }else{

@@ -22,9 +22,9 @@
             <tr>
                 <td style="display: none;"></td>
                 <td class="etiq aCentro">Chave</td>
-                <td class="etiq aCentro"></td>
-                <td class="etiq aCentro">Local</td>
                 <td class="etiq aCentro">Sala</td>
+                <td class="etiq aCentro">Nome</td>
+                <td class="etiq aCentro">Local</td>
                 <td class="etiq aCentro">Obs</td>
                 <td class="etiq aCentro"></td>
             </tr>
@@ -48,10 +48,10 @@
                                 }
                                 ?>
                             </td>
+                            <td><div class="quadrinho"> <?php echo $tbl[4]; ?></div></td>
                             <td><div class="quadrinho"> <?php echo $tbl[2]; ?></div></td>
                             <td><div class="quadrinho"> <?php echo $tbl[3]; ?></div></td>
-                            <td><div class="quadrinho"> <?php echo $tbl[4]; ?></div></td>
-                            <td><div class="quadrinho"> <?php echo $tbl[5]; ?></div></td>
+                            <td><div class="quadrinho" style="font-size: 80%;"> <?php echo $tbl[5]; ?></div></td>
                             <td class="etiq aCentro">
                                 <?php
                                 if($tbl[6] == 1){

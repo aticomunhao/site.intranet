@@ -210,7 +210,16 @@
 					$FiscContr = parEsc("fisc_contr", $Conec, $xProj, $_SESSION["usuarioID"]);
 					if($Contr == 1 || $FiscContr == 1 || $_SESSION["AdmUsu"] > 6){
 						echo "<li>";
-							echo "<a href='#' onclick='openhref(76);'>Contratos</a>";
+//							echo "<a href='#' onclick='openhref(76);'>Contratos</a>";
+							echo "<a href='#'>Contratos</a>";
+							echo "<ul>";
+							echo "<li title='Empresas Contratadas'>";
+								echo "<a href='#' onclick='openhref(76);'>Contratadas</a>";
+							echo "</li>";
+							echo "<li title='Empresas Contratantes'>";
+							echo "<a href='#' onclick='openhref(81);'>Contratantes</a>";
+						echo "</li>";
+						echo "</ul>";
 						echo "</li>";
 					}
 

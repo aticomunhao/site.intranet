@@ -131,7 +131,8 @@ if(isset($_REQUEST["acao"])){
                 $Cod = $tbl0[0];
                 $pdf->SetX(25); 
                 $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(20, 5, str_pad($tbl0[1], 3, 0, STR_PAD_LEFT).$tbl0[2], 0, 0, 'L');
+//                $pdf->Cell(20, 5, str_pad($tbl0[1], 3, 0, STR_PAD_LEFT).$tbl0[2], 0, 0, 'L');
+                $pdf->Cell(20, 5, str_pad($tbl0[1], 3, 0, STR_PAD_LEFT), 0, 0, 'L');
                 $pdf->SetFont('Arial', '', 10);
                 $pdf->Cell(80, 5, $tbl0[3], 0, 0, 'L');
                 $pdf->Cell(20, 5, $tbl0[4], 0, 0, 'R');
@@ -243,6 +244,7 @@ if(isset($_REQUEST["acao"])){
             $pdf->SetX(40);
             $pdf->Cell(20, 3, "Chave", 0, 0, 'L');
             $pdf->Cell(20, 3, "nº de retiradas", 0, 0, 'R');
+            $pdf->Cell(8, 5, "", 0, 0, 'R'); //espaço
             $pdf->Cell(20, 3, "Local da Chave", 0, 0, 'L');
             $pdf->ln(4);
 
@@ -254,12 +256,14 @@ if(isset($_REQUEST["acao"])){
                 $Cod = $tbl0[0];
                 $pdf->SetX(40); 
                 $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(20, 5, str_pad($tbl0[1], 3, 0, STR_PAD_LEFT).$tbl0[2], 0, 0, 'L');
+//                $pdf->Cell(20, 5, str_pad($tbl0[1], 3, 0, STR_PAD_LEFT).$tbl0[2], 0, 0, 'L');
+                $pdf->Cell(20, 5, str_pad($tbl0[1], 3, 0, STR_PAD_LEFT), 0, 0, 'L');
                 $pdf->SetFont('Arial', '', 10);
 
                 $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_ctl WHERE ativo = 1 And chaves_id = $Cod And DATE_PART('MONTH', datasaida) = '$Mes' And DATE_PART('YEAR', datasaida) = '$Ano'");
                 $row1 = pg_num_rows($rs1);
                 $pdf->Cell(20, 5, $row1, 0, 0, 'R');
+                $pdf->Cell(8, 5, "", 0, 0, 'R'); //espaço
                 $pdf->Cell(80, 5, $tbl0[3], 0, 1, 'L');
             }
         }       
@@ -280,6 +284,7 @@ if(isset($_REQUEST["acao"])){
             $pdf->SetX(40);
             $pdf->Cell(20, 3, "Chave", 0, 0, 'L');
             $pdf->Cell(20, 3, "nº de retiradas", 0, 0, 'R');
+            $pdf->Cell(8, 5, "", 0, 0, 'R'); //espaço
             $pdf->Cell(20, 3, "Local da Chave", 0, 0, 'L');
             $pdf->ln(4);
 
@@ -291,12 +296,14 @@ if(isset($_REQUEST["acao"])){
                 $Cod = $tbl0[0];
                 $pdf->SetX(40); 
                 $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(20, 5, str_pad($tbl0[1], 3, 0, STR_PAD_LEFT).$tbl0[2], 0, 0, 'L');
+//                $pdf->Cell(20, 5, str_pad($tbl0[1], 3, 0, STR_PAD_LEFT).$tbl0[2], 0, 0, 'L');
+                $pdf->Cell(20, 5, str_pad($tbl0[1], 3, 0, STR_PAD_LEFT), 0, 0, 'L');
                 $pdf->SetFont('Arial', '', 10);
 
                 $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_ctl WHERE ativo = 1 And chaves_id = $Cod And DATE_PART('YEAR', datasaida) = '$Ano'");
                 $row1 = pg_num_rows($rs1);
                 $pdf->Cell(20, 5, $row1, 0, 0, 'R');
+                $pdf->Cell(8, 5, "", 0, 0, 'R'); //espaço
                 $pdf->Cell(80, 5, $tbl0[3], 0, 1, 'L');
             }
         }       
