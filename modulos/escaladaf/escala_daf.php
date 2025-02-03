@@ -22,7 +22,7 @@ if(!isset($_SESSION["usuarioID"])){
         <script src="comp/js/jquery-confirm.min.js"></script>   <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
         <style>
              .relacmodalMovel{
-                display: none; /* oculto default */
+                display: none; 
                 position: fixed;
                 min-width: 800px;
                 z-index: 200;
@@ -52,7 +52,15 @@ if(!isset($_SESSION["usuarioID"])){
                 width: 95%;
                 overflow: auto;
             }
-
+            .modal-content-escalaControleMovel{
+                background: linear-gradient(180deg, white, #00BFFF);
+                margin: 5% auto;
+                padding: 10px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 95%;
+                overflow: auto;
+            }
             .modal-content-relacParticip{
                 background: linear-gradient(180deg, white, #00BFFF);
                 margin: 12% auto;
@@ -193,6 +201,9 @@ if(!isset($_SESSION["usuarioID"])){
                 border-radius: 15px;
                 width: 40%;
             }
+            tr td {
+                border: 0px solid;
+            }
         </style>
         <script>
             $(document).ready(function(){
@@ -202,6 +213,13 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("selecGrupo").style.visibility = "hidden"; 
                 document.getElementById("etiqGrupo").style.visibility = "hidden"; 
                 document.getElementById("imgEscalaConfig").style.visibility = "hidden";
+
+                if(parseInt(document.getElementById("guardaUsuId").value) != 3){ // Programador
+                    document.getElementById("etiqcheckvisucargo").style.visibility = "hidden";
+                    document.getElementById("checkvisucargo").style.visibility = "hidden";
+                    document.getElementById("etiqcheckprimcargo").style.visibility = "hidden";
+                    document.getElementById("checkprimcargo").style.visibility = "hidden";
+                }
 
 //                if(parseInt(document.getElementById("escalante").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // Escalante e Superusuário
                 if(parseInt(document.getElementById("escalante").value) === 1){ // Escalante
@@ -390,8 +408,6 @@ if(!isset($_SESSION["usuarioID"])){
                         document.getElementById("configCpfEscala").value = "";
                         document.getElementById("checkefetivo").checked = false;
                         document.getElementById("checkescalante").checked = false;
-//                        document.getElementById("checkEncarreg").checked = false;
-//                        document.getElementById("checkChefeADM").checked = false;
                         return false;
                     }
                     ajaxIni();
@@ -404,6 +420,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                     if(parseInt(Resp.coderro) === 0){
                                         document.getElementById("configCpfEscala").value = format_CnpjCpf(Resp.cpf);
+                                        document.getElementById("configCargoEscala").value = Resp.cargo;
                                         if(parseInt(Resp.eft) === 1){
                                             document.getElementById("checkefetivo").checked = true;
                                         }else{
@@ -414,16 +431,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         }else{
                                             document.getElementById("checkescalante").checked = false;
                                         }
-//                                        if(parseInt(Resp.encarreg) === 1){
-//                                            document.getElementById("checkEncarreg").checked = true;
-//                                        }else{
-//                                            document.getElementById("checkEncarreg").checked = false;
-//                                        }
-//                                        if(parseInt(Resp.chefeadm) === 1){
-//                                            document.getElementById("checkChefeADM").checked = true;
-//                                        }else{
-//                                            document.getElementById("checkChefeADM").checked = false;
-//                                        }
+                                        
                                     }else{
                                         alert("Houve um erro no servidor.")
                                     }
@@ -439,8 +447,6 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("configCpfEscala").value = "";
                     document.getElementById("checkefetivo").checked = false;
                     document.getElementById("checkescalante").checked = false;
-//                    document.getElementById("checkEncarreg").checked = false;
-//                    document.getElementById("checkChefeADM").checked = false;
                 });
 
                 $("#configCpfEscala").change(function(){
@@ -456,6 +462,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     if(parseInt(Resp.coderro) === 0){
                                         document.getElementById("configSelecEscala").value = Resp.PosCod;
                                         document.getElementById("configCpfEscala").value = format_CnpjCpf(Resp.cpf);
+                                        document.getElementById("configCargoEscala").value = Resp.cargo;
                                         if(parseInt(Resp.eft) === 1){
                                             document.getElementById("checkefetivo").checked = true;
                                         }else{
@@ -466,16 +473,6 @@ if(!isset($_SESSION["usuarioID"])){
                                         }else{
                                             document.getElementById("checkescalante").checked = false;
                                         }
-//                                        if(parseInt(Resp.encarreg) === 1){
-//                                            document.getElementById("checkEncarreg").checked = true;
-//                                        }else{
-//                                            document.getElementById("checkEncarreg").checked = false;
-//                                        }
-//                                        if(parseInt(Resp.chefeadm) === 1){
-//                                            document.getElementById("checkChefeADM").checked = true;
-//                                        }else{
-//                                            document.getElementById("checkChefeADM").checked = false;
-//                                        }
                                     }
                                     if(parseInt(Resp.coderro) === 1){
                                         alert("Houve um erro no servidor.");
@@ -483,8 +480,6 @@ if(!isset($_SESSION["usuarioID"])){
                                     if(parseInt(Resp.coderro) === 2){
                                         document.getElementById("checkefetivo").checked = false;
                                         document.getElementById("checkescalante").checked = false;
-//                                        document.getElementById("checkEncarreg").checked = false;
-//                                        document.getElementById("checkChefeADM").checked = false;
                                         $('#mensagemConfig').fadeIn("slow");
                                         document.getElementById("mensagemConfig").innerHTML = "Não encontrado";
                                         $('#mensagemConfig').fadeOut(2000);
@@ -496,7 +491,32 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
 
-                $("#configSelecChefeDiv").change(function(){
+                $("#configCargoEscala").change(function(){
+                    if(document.getElementById("configSelecEscala").value == ""){
+                        document.getElementById("configCargoEscala").value = "";
+                        return false;
+                    }
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=cargousudaf&codigo="+document.getElementById("configSelecEscala").value+"&valor="+document.getElementById("configCargoEscala").value, true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 0){
+                                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
+                                    }else{
+                                        alert("Houve um erro no servidor.")
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                });
+
+                 $("#configSelecChefeDiv").change(function(){
                     ajaxIni();
                     if(ajax){
                         ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvachefediv&codigo="+document.getElementById("configSelecChefeDiv").value, true);
@@ -1295,6 +1315,16 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("configSelecEncarreg").value = Resp.encarreg;
                                     document.getElementById("configCpfEscala").value = "";
                                     document.getElementById("configSelecEscala").value = "";
+                                    if(parseInt(Resp.visucargo) === 1){
+                                        document.getElementById("checkvisucargo").checked = true;
+                                    }else{
+                                        document.getElementById("checkvisucargo").checked = false;
+                                    }
+                                    if(parseInt(Resp.primcargo) === 1){
+                                        document.getElementById("checkprimcargo").checked = true;
+                                    }else{
+                                        document.getElementById("checkprimcargo").checked = false;
+                                    }
                                     document.getElementById("modalEscalaConfig").style.display = "block";
                                }
                             }
@@ -1463,6 +1493,7 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 }
             }
+
             function abreExcel(){
                 $.confirm({
                     title: 'Exportar',
@@ -1505,6 +1536,58 @@ if(!isset($_SESSION["usuarioID"])){
                 });
             }
 
+            function marcaVisuCargo(obj, Cod){
+                if(obj.checked === true){
+                    Valor = 1;
+                }else{
+                    Valor = 0;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=marcaVisuCargo&valor="+Valor, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function marcaPrimCargo(obj, Cod){
+                if(obj.checked === true){
+                    Valor = 1;
+                }else{
+                    Valor = 0;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=marcaPrimCargo&valor="+Valor, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
             function fechaQuadroTurnos(){
                 document.getElementById("relacQuadroTurnos").style.display = "none";
             }
@@ -1520,6 +1603,7 @@ if(!isset($_SESSION["usuarioID"])){
 
             jQuery(function($){
                 $("#relacParticip").draggable();
+                $("#modalEscalaConfig").draggable();
 //                $("#relacQuadroHorario").draggable();
             });
 
@@ -1815,12 +1899,12 @@ if(!isset($_SESSION["usuarioID"])){
     ?>
         <input type="hidden" id="guardamesano" value="<?php echo addslashes($MesSalvo); ?>" />
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>" />
+        <input type="hidden" id="guardaUsuId" value="<?php echo $_SESSION["usuarioID"]; ?>" />
         <input type="hidden" id="escalante" value="<?php echo $Escalante; ?>" />
         <input type="hidden" id="fiscal" value="<?php echo $Fiscal; ?>" />
         <input type="hidden" id="guardameugrupo" value="<?php echo $MeuGrupo; ?>" />
         <input type="hidden" id="guardanumgrupo" value="<?php echo $NumGrupo; ?>" />
         <input type="hidden" id="guardaDiaId" value="" />
-        <input type="hidden" id="guardaUsuId" value="" />
         <input type="hidden" id="guardacod" value="" />
         <input type="hidden" id="mudou" value="0" />
         <input type="hidden" id="liberadoefetivo" value="<?php echo $MesLiberado; ?>" />
@@ -1887,15 +1971,15 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
         </div>
 
-        <div style="margin: 10px; border: 2px solid green; border-radius: 15px; padding: 10px; min-height: 70px; text-align: center;">
+        <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px; min-height: 70px; text-align: center;">
             <table style="margin: 0 auto; width: 90%;">
                 <tr>
                     <td>
                         <div class="container" style="margin: 0 auto;">
                             <div class="row">
-                                <div class="col quadro"></div>
-                                <div class="col quadro" style="text-align: center;"></div> <!-- Central - espaçamento entre colunas  -->
-                                <div class="col quadro" style="position: relative; float: rigth; text-align: right;"></div> 
+                                <div class="col"></div>
+                                <div class="col" style="text-align: center;"></div> <!-- Central - espaçamento entre colunas  -->
+                                <div class="col" style="position: relative; float: rigth; text-align: right;"></div> 
                             </div>
                         </div>
                     </td>
@@ -1908,11 +1992,11 @@ if(!isset($_SESSION["usuarioID"])){
             <div id="faixanotas"></div>
 
             <div class="row">
-                <div class="col quadro"></div>
-                <div class="col quadro" style="text-align: center;">
+                <div class="col"></div>
+                <div class="col" style="text-align: center;">
                     <div id="faixaferiados"></div> 
                 </div> <!-- Central -->
-                <div class="col quadro" style="position: relative; float: rigth; text-align: right;"></div> 
+                <div class="col" style="position: relative; float: rigth; text-align: right;"></div> 
             </div>
         </div>
 
@@ -1994,20 +2078,26 @@ if(!isset($_SESSION["usuarioID"])){
 
 
          <!-- Modal configuração-->
-         <div id="modalEscalaConfig" class="relacmodal">
-            <div class="modal-content-escalaControle">
+         <div id="modalEscalaConfig" class="relacmodalMovel">
+            <div class="modal-content-escalaControleMovel">
                 <span class="close" onclick="fechaEscalaConfig();">&times;</span>
                 <!-- div três colunas -->
                 <div class="container" style="margin: 0 auto;">
                     <div class="row">
-                        <div class="col quadro" style="margin: 0 auto;"></div>
-                        <div class="col quadro"><h5 style="text-align: center; color: #666;">Escala <?php echo $SiglaGrupo; ?></h5></div> <!-- Central - espaçamento entre colunas  -->
-                        <div class="col quadro" style="margin: 0 auto; text-align: center;"><button class="botpadrred" style="font-size: 70%;" onclick="resumoUsuEscala();">Resumo em PDF</button></div> 
+                        <div class="col" style="margin: 0 auto;"></div>
+                        <div class="col"><h6 style="text-align: center; color: #666;">Escala <?php echo $SiglaGrupo; ?></h6></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col" style="margin: 0 auto; text-align: center;"><button class="botpadrred" style="font-size: 70%;" onclick="resumoUsuEscala();">Resumo em PDF</button></div> 
                     </div>
                 </div>
                 <label class="etiqAzul">Selecione um usuário para ver a configuração:</label>
+
+                <label for='checkvisucargo' id='etiqcheckvisucargo' class='etiqAzul' style='padding-left: 25px'>Mostrar Cargo</label>
+                <input type='checkbox' id='checkvisucargo' onchange='marcaVisuCargo(this);' title='Programador - Visualisar cargo no formulário' >
+                <label for='checkprimcargo' id='etiqcheckprimcargo' class='etiqAzul' style='padding-left: 15px'>Primeiro o Cargo</label> 
+                <input type='checkbox' id='checkprimcargo' onchange='marcaPrimCargo(this);' title='Programador - Primeiro o cargo depois o nome' >
+
                 <div style="position: relative; float: right; color: red; font-weight: bold; padding-right: 200px;" id="mensagemConfig"></div>
-                <table style="margin: 0 auto; width: 85%;">
+                <table style="margin: 0 auto; width: 95%;">
                     <tr>
                         <td colspan="4" style="text-align: center;"></td>
                     </tr>
@@ -2031,7 +2121,10 @@ if(!isset($_SESSION["usuarioID"])){
                         </td>
                         <td class="etiqAzul"><label class="etiqAzul">ou CPF:</label></td>
                         <td>
-                            <input type="text" id="configCpfEscala" style="width: 130px; text-align: center; border: 1px solid #666; border-radius: 5px;" onkeypress="if(event.keyCode===13){javascript:foco('configSelecEscala');return false;}" title="Procura por CPF. Digite o CPF."/>
+                            <input type="text" id="configCpfEscala" placeholder="CPF" style="width: 130px; text-align: center; border: 1px solid #666; border-radius: 5px;" onkeypress="if(event.keyCode===13){javascript:foco('configSelecEscala');return false;}" title="Procura por CPF. Digite o CPF."/>
+                            <label class="etiqAzul" style="padding-left: 10px">Função: </label>
+                            <input type="text" id="configCargoEscala" maxlength="15" placeholder="Cargo/FG" style="width: 150px; border: 1px solid #666; border-radius: 5px;" title="Digite o cargo/FG"/>
+
                         </td>
                     </tr>
                     <tr>
@@ -2061,10 +2154,7 @@ if(!isset($_SESSION["usuarioID"])){
                     <tr>
                         <td class="etiq80">Encarregado ADM:</td>
                         <td colspan="4">
-<!--                            <input type="checkbox" id="checkEncarreg" onchange="marcaConfigEscala(this, 'enc_escdaf');" >
-                            <label for="checkEncarreg">Chefe Imediato</label>
--->
-                            <select id="configSelecEncarreg" style="max-width: 230px;" onchange="modif();" title="Selecione um usuário.">
+                            <select id="configSelecEncarreg" style="max-width: 300px;" onchange="modif();" title="Selecione um usuário.">
                                 <option value=""></option>
                                 <?php 
                                 $OpEncarreg = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
@@ -2081,10 +2171,7 @@ if(!isset($_SESSION["usuarioID"])){
                     <tr>
                         <td class="etiq80">Chefe DIV ADM:</td>
                         <td colspan="4">
-<!--                            <input type="checkbox" id="checkChefeADM" onchange="marcaConfigEscala(this, 'chefe_escdaf');" >
-                            <label for="checkChefeADM">Chefe Div Adm</label>
--->
-                            <select id="configSelecChefeDiv" style="max-width: 230px;" onchange="modif();" title="Selecione um usuário.">
+                            <select id="configSelecChefeDiv" style="max-width: 300px;" onchange="modif();" title="Selecione um usuário.">
                                 <option value=""></option>
                                 <?php 
                                 $OpChefeDiv = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");

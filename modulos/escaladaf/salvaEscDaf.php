@@ -13,7 +13,7 @@ if($Acao == "buscausuario"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de poslog
     $MeuGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]); // meu grupo
 
-    $rs1 = pg_query($Conec, "SELECT eft_daf, esc_daf, cpf, enc_escdaf, chefe_escdaf, esc_grupo FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
+    $rs1 = pg_query($Conec, "SELECT eft_daf, esc_daf, cpf, enc_escdaf, chefe_escdaf, esc_grupo, cargo_daf FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
     $row1 = pg_num_rows($rs1);
     if($row1 > 0){
         $tbl1 = pg_fetch_row($rs1);
@@ -26,7 +26,7 @@ if($Acao == "buscausuario"){
         if($Esc == 1 && $Grupo != $MeuGrupo ){
             $Esc = 0;
         }
-        $var = array("coderro"=>$Erro, "eft"=>$Eft, "esc"=>$Esc, "cpf"=>$tbl1[2], "encarreg"=>$tbl1[3], "chefeadm"=>$tbl1[4]);
+        $var = array("coderro"=>$Erro, "eft"=>$Eft, "esc"=>$Esc, "cpf"=>$tbl1[2], "encarreg"=>$tbl1[3], "chefeadm"=>$tbl1[4], "cargo"=>$tbl1[6]);
     }else{
         $Erro = 1;
         $var = array("coderro"=>$Erro);
@@ -42,11 +42,11 @@ if($Acao == "buscacpf"){
     $Cpf2 = str_replace(".", "", $Cpf1);
     $GuardaCpf = str_replace("-", "", $Cpf2);
 
-    $rs1 = pg_query($Conec, "SELECT eft_daf, esc_daf, cpf, pessoas_id, enc_escdaf, chefe_escdaf FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf'");
+    $rs1 = pg_query($Conec, "SELECT eft_daf, esc_daf, cpf, pessoas_id, enc_escdaf, chefe_escdaf, cargo_daf FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf'");
     $row1 = pg_num_rows($rs1);
     if($row1 > 0){
         $tbl1 = pg_fetch_row($rs1);
-        $var = array("coderro"=>$Erro, "eft"=>$tbl1[0], "esc"=>$tbl1[1], "cpf"=>$tbl1[2], "PosCod"=>$tbl1[3], "encarreg"=>$tbl1[4], "chefeadm"=>$tbl1[5]);
+        $var = array("coderro"=>$Erro, "eft"=>$tbl1[0], "esc"=>$tbl1[1], "cpf"=>$tbl1[2], "PosCod"=>$tbl1[3], "encarreg"=>$tbl1[4], "chefeadm"=>$tbl1[5], "cargo"=>$tbl1[6]);
     }else{
         $Erro = 1;
         $var = array("coderro"=>$Erro);
@@ -281,7 +281,7 @@ if($Acao =="marcaPartic"){
     echo $responseText;
 }
 
-if($Acao =="marcaDia"){ // sem uso
+if($Acao =="marcaDia"){
     $Erro = 0;
     $Cod = (int) filter_input(INPUT_GET, 'codigo'); // pessoas_id
     $rs0 = pg_query($Conec, "SELECT marcadaf FROM ".$xProj.".escaladaf WHERE id = $Cod");
@@ -699,8 +699,9 @@ if($Acao =="insereFeriado"){
     }
     $Mes = $Proc[1];
 
-    $AnoHoje = date('Y');
-    $Feriado = $AnoHoje."/".$Mes."/".$Dia;
+    //$AnoHoje = date('Y');
+    //$Feriado = $AnoHoje."/".$Mes."/".$Dia;
+    $Feriado = "2024/".$Mes."/".$Dia;
 
     $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_fer");
     $tblCod = pg_fetch_row($rsCod);
@@ -850,7 +851,16 @@ if($Acao =="procChefeDiv"){
     if(!$rs){
         $Erro = 1;
     }
-    $var = array("coderro"=>$Erro, "chefe"=>$tbl[0], "encarreg"=>$tbl[1]);
+    $rs1 = pg_query($Conec, "SELECT visucargo_daf, primcargo_daF FROM ".$xProj.".paramsis WHERE idpar = 1");
+    if($rs1){
+        $tbl1 = pg_fetch_row($rs1);
+        $VisuCargo = $tbl1[0];
+        $PrimCargo = $tbl1[1];
+    }else{
+        $VisuCargo = 0;
+        $PrimCargo = 0;
+    }
+    $var = array("coderro"=>$Erro, "chefe"=>$tbl[0], "encarreg"=>$tbl[1], "visucargo"=>$VisuCargo, "primcargo"=>$PrimCargo);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -1079,11 +1089,48 @@ if($Acao =="salvafolga"){
     echo $responseText;
 }
 
-if($Acao =="marcaVale"){ // sem uso
+if($Acao =="marcaVale"){
     $Erro = 0;
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Valor = (int) filter_input(INPUT_GET, 'valor');
     $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET valeref = $Valor WHERE id = $Cod");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="cargousudaf"){
+    $Erro = 0;
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Valor = filter_input(INPUT_GET, 'valor');
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET cargo_daf = '$Valor' WHERE pessoas_id = $Cod");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="marcaVisuCargo"){
+    $Erro = 0;
+    $Valor = filter_input(INPUT_GET, 'valor');
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".paramsis SET visucargo_daf = $Valor WHERE idpar = 1");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="marcaPrimCargo"){
+    $Erro = 0;
+    $Valor = filter_input(INPUT_GET, 'valor');
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".paramsis SET primcargo_daf = $Valor WHERE idpar = 1");
     if(!$rs){
         $Erro = 1;
     }

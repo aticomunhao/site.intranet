@@ -1,4 +1,5 @@
 <?php
+    // esse é o primeiro quadro - relaciona nome, dias e letras
     session_start(); 
     if(!isset($_SESSION["usuarioID"])){
         session_destroy();
@@ -41,6 +42,9 @@
 
     $EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
     $Fiscal = parEsc("esc_fisc", $Conec, $xProj, $_SESSION["usuarioID"]);
+    $visuCargo = parAdm("visucargo_daf", $Conec, $xProj); // visualisar cargo no quadro
+    $PrimCargo = parAdm("primcargo_daf", $Conec, $xProj); // visualisar primeiro o cargo no quadro
+    
     echo "Mês: ".$MesSalvo;
     echo "<br><br>";
 
@@ -62,48 +66,65 @@
         }
     }
 
-    $rs2 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl ");
+    $rs2 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual, cargo_daf FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl ");
     $row2 = pg_num_rows($rs2);
 
-        if($row2 > 0){
-            echo "<table style='margin: 0 auto; width: 90%;'>";
-                echo "<tr>";
-                    echo "<td>";
-                        echo "<div style='width: 150px;'> &nbsp; </div>";
-                        $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala), TO_CHAR(dataescala, 'DD/MM/YYYY'), feriado FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY dataescala");
-                        $row = pg_num_rows($rs);
-                        if($row > 0){
-                            while($tbl = pg_fetch_row($rs)){
-                                $IdDia = $tbl[0];
-                                $DataDia = addslashes($tbl[3]);
+    if($row2 > 0){
+        echo "<table style='margin: 0 auto; width: 99%;'>";
+            echo "<tr>";
+                echo "<td>";
+                    echo "<div style='width: 150px;'> &nbsp; </div>";
+                    $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala), TO_CHAR(dataescala, 'DD/MM/YYYY'), feriado FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY dataescala");
+                    $row = pg_num_rows($rs);
+                    if($row > 0){
+                        while($tbl = pg_fetch_row($rs)){
+                            $IdDia = $tbl[0];
+                            $DataDia = addslashes($tbl[3]);
 //                                if($EscalanteDAF == 1 || $Fiscal == 1){
-                                if($EscalanteDAF == 1 && $MeuGrupo == $NumGrupo){
-                                    ?>
-                                    <td><div <?php if($tbl[2] == 0 || $tbl[4] == 1){echo "class='quadrodiaClickCinza'";}else{echo "class='quadrodiaClick'";} ?> onclick="abreEdit(<?php echo $IdDia; ?>, '<?php echo $DataDia; ?>');"><?php echo $tbl[1]; ?><br><?php echo $Semana_Extract[$tbl[2]]; ?></div></td>
-                                    <?php
-                                }else{
-                                    ?>
-                                    <td><div <?php if($tbl[2] == 0 || $tbl[4] == 1){echo "class='quadrodiaCinza'";}else{echo "class='quadrodia'";} ?> ><?php echo $tbl[1]; ?><br><?php echo $Semana_Extract[$tbl[2]]; ?></div></td>
-                                    <?php
-                                }
+                            if($EscalanteDAF == 1 && $MeuGrupo == $NumGrupo){
+                                ?>
+                                <td><div <?php if($tbl[2] == 0 || $tbl[4] == 1){echo "class='quadrodiaClickCinza'";}else{echo "class='quadrodiaClick'";} ?> onclick="abreEdit(<?php echo $IdDia; ?>, '<?php echo $DataDia; ?>');"><?php echo $tbl[1]; ?><br><?php echo $Semana_Extract[$tbl[2]]; ?></div></td>
+                                <?php
+                            }else{
+                                ?>
+                                <td><div <?php if($tbl[2] == 0 || $tbl[4] == 1){echo "class='quadrodiaCinza'";}else{echo "class='quadrodia'";} ?> ><?php echo $tbl[1]; ?><br><?php echo $Semana_Extract[$tbl[2]]; ?></div></td>
+                                <?php
                             }
-                        } 
-
-                        echo "<td><img src='imagens/Excel-icon.png' height='20px;' style='cursor: pointer; padding-left: 5px;' onclick='abreExcel();' title='Envia para arquivo Excel'></td>";
-
-                    echo "</td>";
+                        }
+                    } 
+                echo "</td>";
+                echo "<td><img src='imagens/Excel-icon.png' height='20px;' style='cursor: pointer; padding-left: 5px;' onclick='abreExcel();' title='Envia para arquivo Excel'></td>";
+                
 
                     $Dia = 1;
                     while($tbl2 = pg_fetch_row($rs2)){
                         $Cod = $tbl2[0]; //pessoas_id de poslog
                         if(is_null($tbl2[2]) || $tbl2[2] == ""){
-                            $Nome = substr($tbl2[1], 0, 20);
+                            $Nome = substr($tbl2[1], 0, 15); //nome completo
+                            if($visuCargo == 0){
+                                $Nome = substr($tbl2[1], 0, 35); //nome completo
+                            }
                         }else{
-                            $Nome = substr($tbl2[2], 0, 22); //nomeusual
+                            $Nome = substr($tbl2[2], 0, 35); //nome usual
+                        }
+                        if(!is_null($tbl2[3])){
+                            $Cargo = substr($tbl2[3], 0, 15);
+                        }else{
+                            $Cargo = "&nbsp";    
                         }
                         echo "<tr>";
-                            echo "<td>";
-                                echo "<div class='quadrodia' style='min-width: 150px; text-align: left; padding-left: 3px;'> $Nome </div>";
+                            echo "<td style='text-align: right;'>";
+                                if($visuCargo == 1){ // Visualizar o cargo junto ao nome
+                                    if($PrimCargo == 1){ // Primeiro o cargo depois o nome
+                                        echo "<input disabled type='text' style='width: 105px; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Cargo' />";
+                                        echo "<input disabled type='text' style='width: 105px; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
+                                    }else{
+                                        echo "<input disabled type='text' style='width: 105px; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
+                                        echo "<input disabled type='text' style='width: 105px; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Cargo' />";
+                                    }
+                                }else{
+                                    echo "<input disabled type='text' style='width: 170px; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
+                                }
                                 $rs3 = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala), feriado FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY dataescala");
                                 $row3 = pg_num_rows($rs3);
                                 if($row3 > 0){
@@ -169,12 +190,9 @@
                                     }
                                     echo "<td style='font-size: 80%; cursor: default;' title='Número de serviços no mês'>";
                                         //Conta número de serviços na escala
-//                                        $rs5 = pg_query($Conec, "SELECT COUNT(poslog_id) FROM ".$xProj.".escaladaf_ins 
-//                                        WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'MM') = '$Mes' And grupo_ins = $NumGrupo And letraturno != 'F' And letraturno != 'X' And letraturno != 'Y' ");
                                         $rs5 = pg_query($Conec, "SELECT COUNT(poslog_id) 
                                         FROM ".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".escaladaf_turnos ON ".$xProj.".escaladaf_ins.turnos_id = ".$xProj.".escaladaf_turnos.id 
                                         WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'MM') = '$Mes' And grupo_ins = $NumGrupo And infotexto = 0 And valepag = 1");
-
                                         $tbl5 = pg_fetch_row($rs5);
                                         $Total = $tbl5[0];
                                     echo "&nbsp;<sup>$Total</sup></td>";
