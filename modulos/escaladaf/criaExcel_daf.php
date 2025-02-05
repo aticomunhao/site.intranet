@@ -115,7 +115,7 @@
         $objPHPExcel->getActiveSheet()->getStyle('C')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
 
         $writer = new Xlsx($objPHPExcel);
-        $writer->save('ListaTurnos.xlsx');
+        $writer->save('..\conteudo\arquivos\ListaTurnos.xlsx');
     }
 
     if($writer){

@@ -508,7 +508,8 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("relacimprLeituraEletric").style.display = "none";
             }
             function abreGrafico(){
-                $("#divgrafico").load("modulos/leituras/grafEletrJs2.php");
+//                $("#divgrafico").load("modulos/leituras/grafEletrJs2.php");
+                $("#divgrafico").load("modulos/leituras/grafEletrJs25A.php");
                 document.getElementById("relacgrafico").style.display = "block";
             }
             function fechaModalGrafico(){

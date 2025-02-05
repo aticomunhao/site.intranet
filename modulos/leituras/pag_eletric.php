@@ -625,7 +625,8 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("relacimprLeituraEletric").style.display = "none";
             }
             function abreGrafico(){
-                $("#divgrafico").load("modulos/leituras/grafEletrJs1.php");
+//                $("#divgrafico").load("modulos/leituras/grafEletrJs1.php");
+                $("#divgrafico").load("modulos/leituras/grafEletrJs15A.php");
                 document.getElementById("relacgrafico").style.display = "block";
             }
             function fechaModalGrafico(){

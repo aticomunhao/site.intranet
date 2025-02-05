@@ -12,6 +12,7 @@ if(!isset($_SESSION["usuarioID"])){
         <title></title>
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
         <script src="comp/js/jquery.min.js"></script> <!-- versão 3.6.3 -->
+        <script src="comp/js/jquery-confirm.min.js"></script>   <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
         <style type="text/css">
             .cContainer{ /* encapsula uma frase no topo de uma div em reArq.php e PagDir.php */
                 position: absolute; 
@@ -92,32 +93,42 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 }
             }
-            
-            function guardaArq(Cod){
-                document.getElementById("guardaCod").value = Cod;
+
+            function apagaArqDir(Cod){
+                $.confirm({
+                    title: 'Apagar',
+                    content: 'Confirma apagar este arquivo?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/conteudo/regconfig.php?acao=apagaarquivo&codigo="+Cod, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro desconhecido no servidor.");
+                                            }else if(parseInt(Resp.coderro) === 2){
+                                                alert("O arquivo não foi encontrado ou está corrompido.");
+                                                $("#relArquivos").load("modulos/conteudo/carRelArq.php?admins="+document.getElementById("admIns").value);
+                                            }else{
+                                                $("#relArquivos").load("modulos/conteudo/carRelArq.php?admins="+document.getElementById("admIns").value);
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                        }
+                    }
+                });
             }
 
-            function apagaArq(){
-                ajaxIni();
-                if(ajax){
-                   ajax.open("POST", "modulos/conteudo/regconfig.php?acao=apagaarquivo&codigo="+document.getElementById("guardaCod").value, true);
-                    ajax.onreadystatechange = function(){
-                        if(ajax.readyState === 4){
-//alert(ajax.responseText);
-                            Resp = eval("(" + ajax.responseText + ")");
-                            if(parseInt(Resp.coderro) === 1){
-                                alert("Houve um erro desconhecido no servidor.");
-                            }else if(parseInt(Resp.coderro) === 2){
-                                alert("O arquivo não foi encontrado ou está corrompido.");
-                                $("#relArquivos").load("modulos/conteudo/carRelArq.php?admins="+document.getElementById("admIns").value);
-                            }else{
-                                $("#relArquivos").load("modulos/conteudo/carRelArq.php?admins="+document.getElementById("admIns").value);
-                            }
-                        }
-                    };
-                    ajax.send(null);
-                }
-            }
             function fechaDiv(){
                 document.getElementById("arquivo").value = "";
                 document.getElementById("formSubmit").style.display = "none";
@@ -151,7 +162,6 @@ if(!isset($_SESSION["usuarioID"])){
             }
         ?>
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir arquivos -->
-        <input type="hidden" id="guardaCod" value="0" />  <!-- guarda o cod que foi pego na função  guardaArq($Arq) no meio do loop -->
 
         <!-- formulário para envio de arquivo -->
         <div id="formSubmit" style="display: none; margin: 10px; padding: 5px; text-align: center;">
@@ -218,7 +228,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         <div id="relArquivos"></div>  <!-- div para mostrar a relação dos arquivos carregados -->
 
-        <!-- Modal bootstrap para confirmação -->
+        <!-- Modal bootstrap para confirmação - sem uso -->
         <div class="modal fade" id="deletaModal" tabindex="-1" aria-labelledby="deletaModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
@@ -234,5 +244,6 @@ if(!isset($_SESSION["usuarioID"])){
                 </div>
             </div>
         </div>
+
     </body>
 </html>

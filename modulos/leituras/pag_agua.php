@@ -291,6 +291,7 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 }
             }
+
             function apagaModalAgua(){
                 $.confirm({
                     title: 'Confirmação!',
@@ -344,7 +345,9 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function abreGrafico(Mes, Ano){
-                $("#divgrafico").load("modulos/leituras/grafAguaJs.php?mes="+Mes+"&ano="+Ano);
+//                $("#divgrafico").load("modulos/leituras/grafAguaJs.php?mes="+Mes+"&ano="+Ano);
+                //Se estiver em branco, verificar valor exagerado nos lançamentos (falta de decimais)  
+                $("#divgrafico").load("modulos/leituras/grafAguaJs5A.php"); // gráfico para os últimsos 5 anos
                 document.getElementById("relacgrafico").style.display = "block";
             }
             function fechaModalGrafico(){
@@ -361,13 +364,21 @@ if(!isset($_SESSION["usuarioID"])){
 
                 paragraph1 = document.getElementById(Campo).value;
                 document.getElementById(Campo).value = paragraph1.replace(",", '.');
- //               paragraph1 = document.getElementById("insleitura1").value;
- //               document.getElementById("insleitura1").value = paragraph1.replace(",", '.');
- //               paragraph2 = document.getElementById("insleitura2").value;
- //               document.getElementById("insleitura2").value = paragraph2.replace(",", '.');
- //               paragraph3 = document.getElementById("insleitura3").value;
- //               document.getElementById("insleitura3").value = paragraph3.replace(",", '.');
+
+//                if((parseFloat(document.getElementById(Campo).value) % 1) === 0){
+                if((document.getElementById(Campo).value % 1) === 0){
+                    $.confirm({
+                        title: 'Por favor',
+                        content: 'Verifique as casas decimais.',
+                        draggable: true,
+                        buttons: {
+                            OK: function(){}
+                        }
+                    });
+                    return false;
+                }
             }
+
             function foco(id){
                 document.getElementById(id).focus();
             }

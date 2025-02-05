@@ -97,7 +97,14 @@ if(!isset($_SESSION['AdmUsu'])){
     }else{
         $NomeUsuDestino = "";
     }
-
+    $rs7 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $UsuEncDest");
+    $row7 = pg_num_rows($rs7);
+    if($row7 > 0){
+        $tbl7 = pg_fetch_row($rs7);
+        $NomeUsuEncDest = $tbl7[0];
+    }else{
+        $NomeUsuEncDest = "";
+    }
     class PDF extends FPDF{
         function Footer(){
            // Vai para 1.5 cm da parte inferior
@@ -295,7 +302,7 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->ln(5);
             $pdf->SetFont('Arial', 'I', 8);
             $pdf->MultiCell(0, 4, "Restituição efetuada em ".$tbl[14], 0, 'C', false);
-            $pdf->MultiCell(0, 4, "(a): ". $NomeRestit, 0, 'C', false);
+            $pdf->MultiCell(0, 4, "(a) ". $NomeRestit, 0, 'C', false);
 
         }else{
             $pdf->MultiCell(0, 5, "Objeto não procurado", 0, 'C', false);
@@ -348,16 +355,24 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->ln(1);
             $pdf->SetX(15); 
             $pdf->SetFont('Arial', 'I', 8);
-            $pdf->Cell(30, 4, "Finalidade: ", 0, 0, 'L');
+            $pdf->Cell(30, 4, "Encaminhado por: ", 0, 0, 'L');
             $pdf->SetFont('Arial', '', 10);
-            $pdf->MultiCell(0, 5, $DestProcesso, 1, 'J', false);
+            $pdf->MultiCell(0, 5, $NomeUsuDestino, 1, 'J', false);
 
             $pdf->ln(1);
             $pdf->SetX(15); 
             $pdf->SetFont('Arial', 'I', 8);
             $pdf->Cell(30, 4, "Recebido por: ", 0, 0, 'L');
             $pdf->SetFont('Arial', '', 10);
-            $pdf->MultiCell(0, 5, $NomeUsuDestino, 1, 'J', false);
+            $pdf->MultiCell(0, 5, $NomeUsuEncDest, 1, 'J', false);
+
+            $pdf->ln(1);
+            $pdf->SetX(15); 
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->Cell(30, 4, "Finalidade atribuída: ", 0, 0, 'L');
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->MultiCell(0, 5, $DestProcesso, 1, 'J', false);
+
         }else{
             $pdf->ln(3);
             if($UsuRestit > 0){

@@ -107,10 +107,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td><input type="text" id="edinterv" value="<?php echo $tbl3[7]; ?>" style="width: 70px; text-align: center; border: 1px solid; border-radius: 3px;" onchange="editaInterv(<?php echo $Cod; ?>, value);"/></td>
                             <td style="width: 70px; text-align: center;"><?php echo $tbl3[6]; ?> </td>
                             <td><input type="checkbox" id="valeRef" title="<?php if($tbl3[9] == 1){echo 'Turno com vale refeição';}else{echo 'Turno sem vale refeição.';} ?>" onClick="marcaVale(this, <?php echo $Cod ?>);" <?php if($tbl3[9] == 1) {echo "checked";} ?> ></td>
-                            <td style="text-align: center; padding-left: 5px;"><img src='imagens/lixeiraPreta.png' height='15px;' style='cursor: pointer; padding-right: 3px;' onclick='apagaLetra(<?php echo $Cod; ?>);' title='Apagar esta letra.'></td>
                         <?php
                         }
                         ?>
+                        <td style="text-align: center; padding-left: 5px;"><img src='imagens/lixeiraPreta.png' height='15px;' style='cursor: pointer; padding-right: 3px;' onclick='apagaLetra(<?php echo $Cod; ?>);' title='Apagar esta letra.'></td>
                     </tr>
                     <?php
                 }

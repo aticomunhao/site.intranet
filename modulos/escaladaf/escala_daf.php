@@ -201,9 +201,7 @@ if(!isset($_SESSION["usuarioID"])){
                 border-radius: 15px;
                 width: 40%;
             }
-            tr td {
-                border: 0px solid;
-            }
+
         </style>
         <script>
             $(document).ready(function(){
@@ -406,6 +404,7 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#configSelecEscala").change(function(){
                     if(document.getElementById("configSelecEscala").value == ""){
                         document.getElementById("configCpfEscala").value = "";
+                        document.getElementById("configCargoEscala").value = "";
                         document.getElementById("checkefetivo").checked = false;
                         document.getElementById("checkescalante").checked = false;
                         return false;
@@ -445,6 +444,7 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#configCpfEscala").click(function(){
                     document.getElementById("configSelecEscala").value = "";
                     document.getElementById("configCpfEscala").value = "";
+                    document.getElementById("configCargoEscala").value = "";
                     document.getElementById("checkefetivo").checked = false;
                     document.getElementById("checkescalante").checked = false;
                 });
@@ -516,7 +516,7 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
 
-                 $("#configSelecChefeDiv").change(function(){
+                $("#configSelecChefeDiv").change(function(){
                     ajaxIni();
                     if(ajax){
                         ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvachefediv&codigo="+document.getElementById("configSelecChefeDiv").value, true);
@@ -534,6 +534,7 @@ if(!isset($_SESSION["usuarioID"])){
                         ajax.send(null);
                     }
                 });
+
                 $("#configSelecEncarreg").change(function(){
                     ajaxIni();
                     if(ajax){
@@ -598,6 +599,7 @@ if(!isset($_SESSION["usuarioID"])){
                         modalParticip.style.display = "none";
                     }
                 };
+
 
             }); // fim do ready
 
@@ -922,7 +924,7 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 }
             }
-            
+
             function marcaTurno(Cod, Cor){ 
                 ajaxIni();
                 if(ajax){
@@ -1055,7 +1057,6 @@ if(!isset($_SESSION["usuarioID"])){
                     };
                     ajax.send(null);
                 }
-
             }
             
             function MarcaPartic(Cod){ // vem de equipe.php
@@ -1514,7 +1515,8 @@ if(!isset($_SESSION["usuarioID"])){
                                     alert("Houve um erro no servidor.");
                                 }else{
                                     //Salva arquivo xlsx
-                                    $(location).attr("href", "modulos/escaladaf/ListaTurnos.xlsx");
+//                                    $(location).attr("href", "modulos/escaladaf/ListaTurnos.xlsx");
+                                    $(location).attr("href", "modulos/conteudo/arquivos/ListaTurnos.xlsx");
                                     $.confirm({
                                         title: 'Sucesso',
                                         content: 'Arquivo baixado para o diretório de downloads.',

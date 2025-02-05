@@ -41,7 +41,7 @@
                         echo "<td><div style='display: none;'>$CodArq</div></td>";
                         echo "<td><div id='descarq' onclick='mostraArq($CodArq)' class='listaArq arqMouseOver'>$NomeArq</div>";
                         if($Setor == $_SESSION["CodSetorUsu"] && $_SESSION["AdmUsu"] >= $admIns){ 
-                            echo "<div><span data-bs-toggle='modal' data-bs-target='#deletaModal' onclick='guardaArq($CodArq)' title='Apagar este arquivo' style='padding-left: 3px; padding-right: 10px; color: #aaa; top: 0px; float: left; font-size: 16px; font-weight: bold; font-variant-position: super; cursor: pointer;'>&times;</span></div>";
+                            echo "<div><span onclick='apagaArqDir($CodArq)' title='Apagar este arquivo' style='padding-left: 3px; padding-right: 10px; color: #aaa; top: 0px; float: left; font-size: 16px; font-weight: bold; font-variant-position: super; cursor: pointer;'>&times;</span></div>";
                         }
                         echo "</td>";
                     echo "</tr>";

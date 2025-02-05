@@ -103,31 +103,42 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 }
             }
-            function guardaArq(Cod){
-                document.getElementById("guardaCod").value = Cod;
+
+            function apagaArqTraf(Cod){
+                $.confirm({
+                    title: 'Apagar',
+                    content: 'Confirma apagar este arquivo?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/trafego/salvaTraf.php?acao=apagaarquivo&codigo="+Cod, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro desconhecido no servidor.");
+                                            }else if(parseInt(Resp.coderro) === 2){
+                                                alert("O arquivo não foi encontrado ou está corrompido.");
+                                                $("#relTrafArquivos").load("modulos/trafego/carRelTraf.php");
+                                            }else{
+                                                $("#relTrafArquivos").load("modulos/trafego/carRelTraf.php");
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                        }
+                    }
+                });
             }
 
-            function apagaArq(){
-                ajaxIni();
-                if(ajax){
-                   ajax.open("POST", "modulos/trafego/salvaTraf.php?acao=apagaarquivo&codigo="+document.getElementById("guardaCod").value, true);
-                    ajax.onreadystatechange = function(){
-                        if(ajax.readyState === 4){
-//alert(ajax.responseText);
-                            Resp = eval("(" + ajax.responseText + ")");
-                            if(parseInt(Resp.coderro) === 1){
-                                alert("Houve um erro desconhecido no servidor.");
-                            }else if(parseInt(Resp.coderro) === 2){
-                                alert("O arquivo não foi encontrado ou está corrompido.");
-                                $("#relTrafArquivos").load("modulos/trafego/carRelTraf.php");
-                            }else{
-                                $("#relTrafArquivos").load("modulos/trafego/carRelTraf.php");
-                            }
-                        }
-                    };
-                    ajax.send(null);
-                }
-            }
             function fechaDiv(){
                 document.getElementById("arquivo").value = "";
                 document.getElementById("formSubmit").style.display = "none";
@@ -213,7 +224,6 @@ if(!isset($_SESSION["usuarioID"])){
         </script>
 
         <div id="relTrafArquivos" style="padding-top: 15px;"></div>  <!-- div para mostrar a relação dos arquivos -->
-        <input type="hidden" id="guardaCod" value="0" /> <!-- guarda o cod que foi pego na função  guardaArq($Arq) no meio do loop -->
 
         <!-- Modal bootstrap para confirmação -->
         <div class="modal fade" id="deletaModal" tabindex="-1" aria-labelledby="deletaModalLabel" aria-hidden="true">

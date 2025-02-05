@@ -24,30 +24,6 @@
 			//Provisório
 			if(strtotime('2025/03/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//0078
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_turnos ADD COLUMN IF NOT EXISTS valeref smallint NOT NULL DEFAULT 1 ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_ins ADD COLUMN IF NOT EXISTS valepag smallint NOT NULL DEFAULT 1 ");
-				//0079
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS cargo_daf VARCHAR(50) ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS visucargo_daf smallint NOT NULL DEFAULT 1 ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS primcargo_daf smallint NOT NULL DEFAULT 1 ");
-
-				$rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescalafer, 'DD/MM/YYYY') FROM ".$xProj.".escaladaf_fer WHERE DATE_PART('YEAR', dataescalafer) = 2025 ");
-				$row = pg_num_rows($rs);
-				if($row > 0){
-					while($tbl = pg_fetch_row($rs)){
-						$Cod = $tbl[0];
-						$Data = $tbl[1];
-						$Proc = explode("/", $Data);
-						$Dia = $Proc[0];
-						if(strLen($Dia) < 2){
-							$Dia = "0".$Dia;
-						}
-						$Mes = $Proc[1];
-						$Feriado = "2024/".$Mes."/".$Dia;
-						pg_query($Conec, "UPDATE ".$xProj.".escaladaf_fer SET dataescalafer = '$Feriado' WHERE  id = $Cod ");
-					}
-				}
 
 
 			} // fim data limite
