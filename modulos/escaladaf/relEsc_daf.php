@@ -205,6 +205,7 @@
             echo "</table>";
         }else{
             echo "Nenhum usuário participa desta escala. Use as configurações ";
-            echo "<img src='imagens/settings.png' height='15px;' style='cursor: pointer;' onclick='abreEscalaConfig();'>";
+//            echo "<img src='imagens/settings.png' height='15px;' style='cursor: pointer;' onclick='abreEscalaConfig();'>";
+            echo "<img src='imagens/settings.png' height='15px;' style='cursor: pointer;'>";
             echo " para definir os participantes.";
         }
