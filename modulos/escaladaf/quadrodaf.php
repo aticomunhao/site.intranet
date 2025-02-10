@@ -174,7 +174,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
                 <div class="col" style="margin: 0 auto; text-align: center;">
                     <?php
-                        if($EscalanteDAF == 1 && $MeuGrupo == $NumGrupo){
+                        if($EscalanteDAF == 1 && $MeuGrupo == $NumGrupo || $_SESSION["usuarioID"] == 83){ // Provisório Wil
                             ?>
                             <div class='bContainer corFundo' onclick='abreEditHorario()'> Editar </div>
                             <label style="padding-top: 5px;">&nbsp;</label>

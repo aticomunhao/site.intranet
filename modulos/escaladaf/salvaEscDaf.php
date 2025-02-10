@@ -187,10 +187,18 @@ if($Acao == "configMarcaEscala"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo'); // pessoas_id de poslog
     $Campo = filter_input(INPUT_GET, 'campo');
     $Valor = (int) filter_input(INPUT_GET, 'valor');
-
     $Fiscal = parEsc("esc_fisc", $Conec, $xProj, $_SESSION["usuarioID"]);
 
-    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]); // meu grupo no poslog
+    if(isset($_REQUEST["numgrupo"])){ //grupo escolhido
+        $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal que pode editar escala
+    }else{
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+    if($NumGrupo == 0 || $NumGrupo == ""){
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+
+//    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]); // meu grupo no poslog
     $CodGrupo = parEsc("esc_grupo", $Conec, $xProj, $Cod); // grupo do selecionado no poslog
     $SiglaGrupo = "";
 
@@ -845,7 +853,25 @@ if($Acao =="transfmesano"){
 }
 if($Acao =="procChefeDiv"){
     $Erro = 0;
-    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    if(isset($_REQUEST["numgrupo"])){
+        $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal que pode editar escala
+    }else{
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+    if($NumGrupo == 0 || $NumGrupo == ""){
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+    //Quando fiscal pode editar escala 
+    $rs2 = pg_query($Conec, "SELECT siglagrupo FROM ".$xProj.".escalas_gr WHERE id = $NumGrupo;");
+    $row2 = pg_num_rows($rs2);
+    if($row2 > 0){
+        $tbl2 = pg_fetch_row($rs2);
+        $SiglaGrupo = $tbl2[0];
+    }else{
+        $SiglaGrupo = "";
+    }
+
+//    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
     $rs = pg_query($Conec, "SELECT chefe_escdaf, enc_escdaf FROM ".$xProj.".escalas_gr WHERE id = $NumGrupo");
     $tbl = pg_fetch_row($rs);
     if(!$rs){
@@ -860,7 +886,8 @@ if($Acao =="procChefeDiv"){
         $VisuCargo = 0;
         $PrimCargo = 0;
     }
-    $var = array("coderro"=>$Erro, "chefe"=>$tbl[0], "encarreg"=>$tbl[1], "visucargo"=>$VisuCargo, "primcargo"=>$PrimCargo);
+
+    $var = array("coderro"=>$Erro, "chefe"=>$tbl[0], "encarreg"=>$tbl[1], "visucargo"=>$VisuCargo, "primcargo"=>$PrimCargo, "siglagrupo"=>$SiglaGrupo);
     $responseText = json_encode($var);
     echo $responseText;
 }

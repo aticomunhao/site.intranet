@@ -83,11 +83,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <th class="etiq aCentro">Assinatura</th>
                         <th class="etiq aCentro">N°</th>
                         <th class="etiq aCentro">Vencimento</th>
-                        <th class="etiq aCentro">Empresa</th>
-                        <th class="etiq aCentro">Objeto</th>
+                        <th class="etiq">Empresa</th>
+                        <th class="etiq">Objeto</th>
                         <th class="etiq aCentro">Setor</th>
-                        <th class="etiq aCentro" title="Vigência do contrato">Vig</th>
-                        <th class="etiq aCentro" title="Notificação sobre a não prorrogação do contrato?">Not</th>
+                        <th class="etiq" title="Vigência do contrato">Vigência</th>
+                        <th class="etiq aCentro" title="Notificação sobre a não prorrogação do contrato?">Notif</th>
                     </tr>
                 </thead>
                 <tbody>

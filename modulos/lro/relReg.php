@@ -123,7 +123,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td style="text-align: center;" title="Nome Funcionário"><?php echo $tbl0[5]; ?></td> <!-- ususvc -->
                             <td style="display: none;"><?php echo $tbl0[7]; ?></td> <!-- relato já enviado -->
                             <td style="display: none;"><?php echo $tbl0[8]; ?></td> <!-- codusu - quem inseriu o relato -->
-                            <td style="font-size: 80%; text-align: center;" title="Houve Ocorrência?"><?php if($tbl0[9] == 1){echo "Sim";}else{echo "Não";} ?></td>
+                            <td style="font-size: 80%; text-align: center; <?php if($tbl0[9] == 1){echo "color: red; font-weight: bold;";}else{echo "color: black; font-weight: normal;";} ?>" title="Houve Ocorrência?"><?php if($tbl0[9] == 1){echo "Sim";}else{echo "Não";} ?></td>
                         </tr>
                     <?php
                     }

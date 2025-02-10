@@ -20,6 +20,7 @@
 					speed:       'fast', 
 					autoArrows:  false   
 				});
+				document.getElementById("etiqtela").innerHTML = $(window).width();
 //var versaoJquery = $.fn.jquery; 
 //alert(versaoJquery);
             });
@@ -55,9 +56,6 @@
 				$Setor = "";
 			}
 			date_default_timezone_set('America/Sao_Paulo');
-//            $data = date('Y-m-d');
-//            $diaSemana = date('w', strtotime($data)); // date('w', time()); // também funciona
-
             $rs = pg_query($Conec, "SELECT column_name, data_type, character_maximum_length FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'setores'");
             $row = pg_num_rows($rs);
             if($row == 0){
@@ -251,6 +249,21 @@
 					<li>
 						<a href='#' onclick='openhref(73);'>Elevadores</a>
 					</li>
+					<?php
+
+		//Para evitar erro a quem estiver logado
+        $rsProc = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'poslog' AND COLUMN_NAME = 'extint'");
+        $rowProc = pg_num_rows($rsProc);
+        if($rowProc > 0){
+						$Extint = parEsc("extint", $Conec, $xProj, $_SESSION["usuarioID"]);
+						$Fisc_Extint = parEsc("fisc_extint", $Conec, $xProj, $_SESSION["usuarioID"]);
+						if($Extint == 1 || $Fisc_Extint == 1){
+							echo "<li>";
+								echo "<a href='#' onclick='openhref(91);'>Extintores</a>";
+							echo "</li>";
+						}
+		}
+					?>
 				</ul>
 			</li>
 			<?php
@@ -264,7 +277,6 @@
 									echo "<li>";
 									echo "<a href='#' onclick='openhref(60);'>Tabelas</a>";
 									echo "</li>";
-
 									echo "<li>";
 									echo "<a href='#' onclick='openhref(66);'>php Info</a>";
 									echo "</li>";
@@ -327,7 +339,6 @@
 //								echo "<a href='#' onclick='openhref(74);'>Quadro Horário</a>";
 //							echo "</li>";
 //						}
-
 //						if($_SESSION["AdmUsu"] > 6){ // superusuário
 //							echo "<li>";
 //								echo "<a href='#' onclick='openhref(33);'>Registro de Ocorrências</a>";
@@ -359,7 +370,7 @@
 				?>
 			</li>
 			<li>
-				<a href="#" onclick="openhref(98);"><sup>Sair - Encerrar Sessão <div id="nomeLogado" style="padding-top: 2px;"> <?php echo $Nome; ?></sup> <?php echo $Setor; ?></div></a> <!-- vai para o  -->
+				<a href="#" onclick="openhref(98);"><sup>Sair - Encerrar Sessão <label id="etiqtela"></label> <div id="nomeLogado" style="padding-top: 2px;"> <?php echo $Nome; ?></sup> <?php echo $Setor; ?></div></a> <!-- vai para o  -->
 			</li>
         </ul>
     </body>

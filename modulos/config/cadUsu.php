@@ -247,6 +247,17 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("fiscalContrato").checked = false;
                                     }
                                     
+                                    if(parseInt(Resp.extintor) === 1){
+                                        document.getElementById("insExtintor").checked = true;
+                                    }else{
+                                        document.getElementById("insExtintor").checked = false;
+                                    }
+                                    if(parseInt(Resp.fisc_extint) === 1){
+                                        document.getElementById("fiscalExtintor").checked = true;
+                                    }else{
+                                        document.getElementById("fiscalExtintor").checked = false;
+                                    }
+
                                     document.getElementById("titulomodal").innerHTML = "Edição de Usuários";
                                     document.getElementById("ressetsenha").disabled = false;
                                     document.getElementById("mudou").value = "0";
@@ -409,6 +420,15 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("fiscalContrato").checked === true){
                     FiscContr = 1;
                 }
+                Extint = 0;
+                if(document.getElementById("insExtintor").checked === true){
+                    Extint = 1;
+                }
+                FiscExtint = 0;
+                if(document.getElementById("fiscalExtintor").checked === true){
+                    FiscExtint = 1;
+                }
+                
 
                 if(parseInt(document.getElementById("mudou").value) === 1){
                     ajaxIni();
@@ -447,6 +467,8 @@ if(!isset($_SESSION["usuarioID"])){
                         +"&fiscchaves="+FiscChaves
                         +"&contrato="+Contr
                         +"&fisccontrato="+FiscContr
+                        +"&Extint="+Extint
+                        +"&fiscExtint="+FiscExtint
                         , true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
@@ -841,6 +863,14 @@ if(!isset($_SESSION["usuarioID"])){
                     Titulo = "Leitura Eletricidade";
                     Texto = "Esta marca permite apenas verificar e fiscalizar os registros do consumo de eletricidade. Não pode editar ou modificar.";
                 }
+                if(parseInt(Cod) === 18){
+                    Titulo = "Extintores";
+                    Texto = "Esta marca permite gerenciar a disposição e manutenção dos extintores.";
+                }
+                if(parseInt(Cod) === 19){
+                    Titulo = "Extintores";
+                    Texto = "Esta marca permite apenas verificar e fiscalizar a disposição e manutenção dos extintores. Não pode editar ou modificar.";
+                }
                 document.getElementById("textoInfo").innerHTML = Texto;
                 document.getElementById("textoTitulo").innerHTML = Titulo;
                 document.getElementById("infomensagem").style.display = "block"; // está em modais.php
@@ -1218,7 +1248,7 @@ if(!isset($_SESSION["usuarioID"])){
                     <tr>
                         <td class="etiq80" style="border-bottom: 1px solid;" title="Pode resolver as tarefas">Tarefas</td>
                         <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
-                            <label for="retiraChave">Pode executar minhas tarefas: </label>
+                            <label for="exectarefa">Pode executar minhas tarefas: </label>
                             <select id="exectarefa" style="font-size: 1rem;" title="Selecione um usuário." onchange="insExecTarefa();">
                             <option value="0"></option>
                             <?php 
@@ -1242,12 +1272,12 @@ if(!isset($_SESSION["usuarioID"])){
                         <td class="etiq80" title="Acompanhar e colecionar contratos da casa como Contratado ou Contratante.">Contratos DAF</td>
                         <td colspan="4">
                             <input type="checkbox" id="insContrato" title="Acompanhar e colecionar contratos da casa como Contratado ou Contratante." onchange="modif();" >
-                            <label for="insContrato" title="Acompanhar e colecionar contratos da casa como Contratado ou Contratante.">registrar, editar e acompanhar os contratos da casa</label>
+                            <label for="insContrato" title="Acompanhar e colecionar contratos da casa como Contratado ou Contratante.">registrar, editar e gerenciar os contratos da casa</label>
                         </td>
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(14);" title="Guia rápido"></td>
                     </tr>
                     <tr>
-                        <td class="etiq80" title="Acompanhar e fiscalizar os contratos da casa como Contratante ou Contratada.">Contratos DAF:</td>
+                        <td class="etiq80" style="border-bottom: 1px solid;" title="Gerenciar os contratos da casa como Contratante ou Contratada.">Contratos DAF:</td>
                         <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
                             <input type="checkbox" id="fiscalContrato" title="Acompanhar e fiscalizar os contratos da casa como Contratante ou Contratada." onchange="modif();" >
                             <label for="fiscalContrato" title="Acompanhar e fiscalizar os contratos da casa como Contratante ou Contratada.">fiscalizar e acompanhar os contratos da casa</label>
@@ -1255,6 +1285,24 @@ if(!isset($_SESSION["usuarioID"])){
                         <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(15);" title="Guia rápido"></td>
                     </tr>
 
+
+                    <tr>
+                        <td class="etiq80" title="Gerenciar a disposição e manutenção dos extintores.">Extintores:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="insExtintor" title="Gerenciar a disposição e manutenção dos extintores." onchange="modif();" >
+                            <label for="insExtintor" title="Gerenciar a disposição e manutenção dos extintores.">gerenciar disposição e manutenção dos extintores</label>
+                        </td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(18);" title="Guia rápido"></td>
+                    </tr>
+
+                    <tr>
+                        <td class="etiq80" style="border-bottom: 1px solid;" title="Acompanhar e fiscalizar a disposição e manutenção dos extintores.">Extintores:</td>
+                        <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
+                            <input type="checkbox" id="fiscalExtintor" title="Acompanhar e fiscalizar a disposição e manutenção dos extintores." onchange="modif();" >
+                            <label for="fiscalExtintor" title="Acompanhar e fiscalizar a disposição e manutenção dos extintores.">fiscalizar e acompanhar a manutenção dos extintores</label>
+                        </td>
+                        <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(19);" title="Guia rápido"></td>
+                    </tr>
 
 
                     <tr>

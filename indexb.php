@@ -151,6 +151,11 @@
                                         document.getElementById("temBensPrazo").style.display = "block";
                                     }
                                     if(parseInt(Resp.contrato1) > 0 || parseInt(Resp.contrato2) > 0){
+                                        if(parseInt(Resp.contrato1) > 0){
+                                            document.getElementById("guardaContrato").value = 1; // a casa contrata
+                                        }else{
+                                            document.getElementById("guardaContrato").value = 2; // a casa é contratada
+                                        }
                                         document.getElementById("temContrato").innerHTML = "Há contrato com prazo para notificação.";
                                         document.getElementById("temContrato").style.display = "block";
                                     }
@@ -221,8 +226,12 @@
             function carregaBens(Valor){
                 $('#container3').load('modulos/bensEncont/pagBens.php?acao='+Valor);
             }
-            function carregaContrato(){
-                $('#container3').load('modulos/contratos/contratos1.php');
+            function carregaContrato(Valor){
+                if(parseInt(Valor) === 1){
+                    $('#container3').load('modulos/contratos/contratosA.php'); // a casa contrata
+                }else{
+                    $('#container3').load('modulos/contratos/contratosB.php'); // a casa é contratada
+                }
             }
             function fechaComemorat(){
                 document.getElementById("modalComemorat").style.display = "none";
@@ -388,6 +397,7 @@
         <input type="hidden" id="teste" value=""/>
         <input type="hidden" id="numTarefa" value = "0"/>
         <input type="hidden" id="selecionar" value = "0"/>
+        <input type="hidden" id="guardaContrato" value = "0"/>
 
         <div id="container0" class="container-fluid"> <!-- página toda -->
             <div id="container1" class="container-fluid corFundo"></div> <!-- cabec.php banner superior dividido em 3 -->
@@ -418,7 +428,7 @@
                     <div id="TemRecado" class="divTemTarefa" onclick="carregaMsgTar();"></div>
                     <div id="temBens" class="divTemBens" onclick="carregaBens('Guardar');"></div>
                     <div id="temBensPrazo" class="divTemBensPrazo" onclick="carregaBens('Destinar');"></div>
-                    <div id="temContrato" class="divTemContrato" onclick="carregaContrato();"></div>
+                    <div id="temContrato" class="divTemContrato" onclick="carregaContrato(document.getElementById('guardaContrato').value);"></div>
 
                     <!-- texto da página inicial  -->
                     <div id="container7" style="padding-left: 10px; padding-right: 10px;"></div>

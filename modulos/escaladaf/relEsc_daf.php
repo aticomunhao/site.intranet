@@ -55,6 +55,19 @@
     }
     $MeuGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
 
+    if(isset($_REQUEST["largTela"])){
+        $LargTela = $_REQUEST["largTela"]; // largura da tela
+        //Salva para uso futuro largura da tela usada por quem edita escala para escala
+        $rsProc = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'poslog' AND COLUMN_NAME = 'largtela'");
+        $rowProc = pg_num_rows($rsProc);
+        if($rowProc > 0){
+            pg_query($Conec, "UPDATE ".$xProj.".poslog SET largtela = '$LargTela' WHERE pessoas_id = ".$_SESSION["usuarioID"]." And ativo = 1");
+        }
+    }else{
+        $LargTela = 1280; // laptop 14pol
+    }
+
+  
     //Provisório - Apaga lançamentos em grupo diferente
     $rs0 = pg_query($Conec, "SELECT pessoas_id, esc_grupo FROM ".$xProj.".poslog WHERE ativo = 1 And esc_grupo = $NumGrupo");
     $row0 = pg_num_rows($rs0);
@@ -81,7 +94,8 @@
                             $IdDia = $tbl[0];
                             $DataDia = addslashes($tbl[3]);
 //                                if($EscalanteDAF == 1 || $Fiscal == 1){
-                            if($EscalanteDAF == 1 && $MeuGrupo == $NumGrupo){
+//                            if($EscalanteDAF == 1 && $MeuGrupo == $NumGrupo){
+                            if($EscalanteDAF == 1 && $MeuGrupo == $NumGrupo || $_SESSION["usuarioID"] == 83){ // Provisório Wil
                                 ?>
                                 <td><div <?php if($tbl[2] == 0 || $tbl[4] == 1){echo "class='quadrodiaClickCinza'";}else{echo "class='quadrodiaClick'";} ?> onclick="abreEdit(<?php echo $IdDia; ?>, '<?php echo $DataDia; ?>');"><?php echo $tbl[1]; ?><br><?php echo $Semana_Extract[$tbl[2]]; ?></div></td>
                                 <?php
@@ -94,13 +108,28 @@
                     } 
                 echo "</td>";
                 echo "<td><img src='imagens/Excel-icon.png' height='20px;' style='cursor: pointer; padding-left: 5px;' onclick='abreExcel();' title='Envia para arquivo Excel'></td>";
-                
+
+                if($LargTela > 1280){
+                    $Quant = 20; // Quantidade de caracteres no nome ou cargo
+                    $Campo = "115px"; // larg campo nome ou cargo 
+                }else{
+                    $Quant = 15;
+                    $Campo = "105px";
+                }
+                if($LargTela < 1270){ // chrome
+                    $Quant = 10;
+                    $Campo = "90px";
+                }
+                if($LargTela == 1900){
+                    $Quant = 20;
+                    $Campo = "150px";
+                }
 
                     $Dia = 1;
                     while($tbl2 = pg_fetch_row($rs2)){
                         $Cod = $tbl2[0]; //pessoas_id de poslog
                         if(is_null($tbl2[2]) || $tbl2[2] == ""){
-                            $Nome = substr($tbl2[1], 0, 15); //nome completo
+                            $Nome = substr($tbl2[1], 0, $Quant); //nome completo
                             if($visuCargo == 0){
                                 $Nome = substr($tbl2[1], 0, 35); //nome completo
                             }
@@ -108,7 +137,7 @@
                             $Nome = substr($tbl2[2], 0, 35); //nome usual
                         }
                         if(!is_null($tbl2[3])){
-                            $Cargo = substr($tbl2[3], 0, 15);
+                            $Cargo = substr($tbl2[3], 0, $Quant); // cargo
                         }else{
                             $Cargo = "&nbsp";    
                         }
@@ -116,11 +145,11 @@
                             echo "<td style='text-align: right;'>";
                                 if($visuCargo == 1){ // Visualizar o cargo junto ao nome
                                     if($PrimCargo == 1){ // Primeiro o cargo depois o nome
-                                        echo "<input disabled type='text' style='width: 105px; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Cargo' />";
-                                        echo "<input disabled type='text' style='width: 105px; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
+                                        echo "<input disabled type='text' style='width: $Campo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Cargo' />";
+                                        echo "<input disabled type='text' style='width: $Campo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
                                     }else{
-                                        echo "<input disabled type='text' style='width: 105px; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
-                                        echo "<input disabled type='text' style='width: 105px; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Cargo' />";
+                                        echo "<input disabled type='text' style='width: $Campo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
+                                        echo "<input disabled type='text' style='width: $Campo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Cargo' />";
                                     }
                                 }else{
                                     echo "<input disabled type='text' style='width: 170px; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
@@ -206,6 +235,6 @@
         }else{
             echo "Nenhum usuário participa desta escala. Use as configurações ";
 //            echo "<img src='imagens/settings.png' height='15px;' style='cursor: pointer;' onclick='abreEscalaConfig();'>";
-            echo "<img src='imagens/settings.png' height='15px;' style='cursor: pointer;'>";
+            echo "<img src='imagens/settings.png' height='15px;'>";
             echo " para definir os participantes.";
         }

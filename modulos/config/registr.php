@@ -394,7 +394,8 @@ if($Acao =="buscausu"){
 //  esc_eft -> eft_daf   esc_edit -> esc_daf 
     $rs = pg_query($Conec, "SELECT adm, codsetor, ativo, to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, lro, bens, fisclro, agua, eletric, arcond, 
     arfisc, nomeusual, eletric2, eletric3, fiscbens, soinsbens, arcond2, arcond3, elev, fiscelev, 
-    eft_daf, esc_daf, esc_grupo, esc_fisc, clav, chave, fisc_clav, contr, fisc_contr, fisc_agua, fisc_eletric 
+    eft_daf, esc_daf, esc_grupo, esc_fisc, clav, chave, fisc_clav, contr, fisc_contr, fisc_agua, 
+    fisc_eletric, extint, fisc_extint 
     FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf' ");  //pessoas_id = $Usu ");
 
     $row = pg_num_rows($rs);
@@ -413,7 +414,7 @@ if($Acao =="buscausu"){
         if($Proc[3] == "01/01/1500 00:00"){
             $UltLog = "";
         }
-        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$UltLog, "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "bens"=>$Proc[6], "lroFiscaliza"=>$Proc[7], "leituraAgua"=>$Proc[8], "leituraEletric"=>$Proc[9], "regarcond"=>$Proc[10], "regarcond2"=>$Proc[17], "regarcond3"=>$Proc[18], "regelev"=>$Proc[19], "fiscelev"=>$Proc[20], "escala"=>$Proc[21], "editaescala"=>$Proc[22], "grupoescala"=>$Proc[23], "fiscescala"=>$Proc[24], "claviculario"=>$Proc[25], "pegachave"=>$Proc[26], "fiscchaves"=>$Proc[27], "contrato"=>$Proc[28], "fisccontrato"=>$Proc[29], "fisc_agua"=>$Proc[30], "fisc_eletric"=>$Proc[31],
+        $var = array("coderro"=>$Erro, "usuario"=>$Proc0[0], "nomecompl"=>$Proc0[1], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$UltLog, "acessos"=>$Proc[4], "lroPortaria"=>$Proc[5], "bens"=>$Proc[6], "lroFiscaliza"=>$Proc[7], "leituraAgua"=>$Proc[8], "leituraEletric"=>$Proc[9], "regarcond"=>$Proc[10], "regarcond2"=>$Proc[17], "regarcond3"=>$Proc[18], "regelev"=>$Proc[19], "fiscelev"=>$Proc[20], "escala"=>$Proc[21], "editaescala"=>$Proc[22], "grupoescala"=>$Proc[23], "fiscescala"=>$Proc[24], "claviculario"=>$Proc[25], "pegachave"=>$Proc[26], "fiscchaves"=>$Proc[27], "contrato"=>$Proc[28], "fisccontrato"=>$Proc[29], "fisc_agua"=>$Proc[30], "fisc_eletric"=>$Proc[31], "extintor"=>$Proc[32], "fisc_extint"=>$Proc[33],
         "fiscarcond"=>$Proc[11], "usuarioNome"=>$Proc[12], "leituraEletric2"=>$Proc[13], "leituraEletric3"=>$Proc[14], "fiscbens"=>$Proc[15], "soinsbens"=>$Proc[16], "diaAniv"=>$Proc0[2], "mesAniv"=>$Proc0[3], "cpf"=>$GuardaCpf);
     }
     $responseText = json_encode($var);
@@ -467,6 +468,9 @@ if($Acao =="salvaUsu"){
     $Contr = (int) filter_input(INPUT_GET, 'contrato');
     $FiscContr = (int) filter_input(INPUT_GET, 'fisccontrato');
 
+    $Extint = (int) filter_input(INPUT_GET, 'Extint');
+    $FiscExtint = (int) filter_input(INPUT_GET, 'fiscExtint');
+
     $Cpf1 = addslashes($Cpf);
     $Cpf2 = str_replace(".", "", $Cpf1);
     $Cpf = str_replace("-", "", $Cpf2);
@@ -487,7 +491,7 @@ if($Acao =="salvaUsu"){
     }
 
     if($Usu > 0){  // salvar não atualiza o campo logfim - logfim conta tempo para apagar (5 anos)
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET codsetor = $Setor, adm = $Adm, ativo = $Ativo, usumodif = $UsuLogado, datamodif = NOW(), nomeusual = '$NomeUsual', nomecompl = '$NomeCompl', lro = $Lro, fisclro = $FiscLro, bens = $Bens, fiscbens =  $FiscBens, soinsbens = $SoInsBens, agua = $Agua, fisc_agua = $FiscAgua, eletric = $Eletric, eletric2 = $Eletric2, eletric3 = $Eletric3, fisc_eletric = $FiscEletric, arcond = $ArCond, arcond2 = $ArCond2, arcond3 = $ArCond3, arfisc = $FiscAr, elev = $Elev, fiscelev = $FiscElev, esc_grupo = $GrupoEsc, esc_daf = $Escalante, esc_fisc = $FiscEscala, clav = $Clavic, chave = $PegaChave, fisc_clav = $FiscChaves, contr = $Contr, fisc_contr = $FiscContr WHERE cpf = '$Cpf'"); 
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET codsetor = $Setor, adm = $Adm, ativo = $Ativo, usumodif = $UsuLogado, datamodif = NOW(), nomeusual = '$NomeUsual', nomecompl = '$NomeCompl', lro = $Lro, fisclro = $FiscLro, bens = $Bens, fiscbens =  $FiscBens, soinsbens = $SoInsBens, agua = $Agua, fisc_agua = $FiscAgua, eletric = $Eletric, eletric2 = $Eletric2, eletric3 = $Eletric3, fisc_eletric = $FiscEletric, arcond = $ArCond, arcond2 = $ArCond2, arcond3 = $ArCond3, arfisc = $FiscAr, elev = $Elev, fiscelev = $FiscElev, esc_grupo = $GrupoEsc, esc_daf = $Escalante, esc_fisc = $FiscEscala, clav = $Clavic, chave = $PegaChave, fisc_clav = $FiscChaves, contr = $Contr, fisc_contr = $FiscContr, extint = $Extint, fisc_extint = $FiscExtint WHERE cpf = '$Cpf'"); 
         pg_query($Conec, "UPDATE ".$xProj.".pessoas SET pessoas_id = $Usu, nome_completo = '$NomeCompl', sexo = $Sexo, status = $Ativo WHERE cpf = '$Cpf' "); //coleção
 // eft_daf = $Escala - só é marcado pelo escalante na página escala DAF
         if(!is_null($DNasc)){
@@ -529,6 +533,9 @@ if($Acao =="salvaUsu"){
             $CodigoNovo = ($Codigo+1); 
             pg_query($Conec, "INSERT INTO ".$xProj.".pessoas (id, pessoas_id, cpf, nome_completo, dt_nascimento, sexo, status, datains) VALUES ($CodigoNovo, $GuardaId, '$Cpf', '$NomeCompl', '$DNasc', $Sexo, $Ativo, NOW() ) "); 
         }
+    }
+    if($GrupoEsc == 0){
+        pg_query($Conec, "UPDATE ".$xProj.".poslog SET eft_daf = 0 WHERE cpf = '$Cpf'");
     }
     $var = array("coderro"=>$Erro, "usuario"=>$Usu, "guardausu"=>$GuardaId, "fiscar"=>$FiscAr);
     $responseText = json_encode($var);

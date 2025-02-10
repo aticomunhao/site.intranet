@@ -49,9 +49,8 @@ if(!isset($_SESSION["usuarioID"])){
                 $Condic2 = " And ".$xProj.".tarefas.tipotar = $Area ";
                 $DescArea = "na Área Administrativa";
             }
-
 //            $vIndex = $xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains DESC, nomecompl";
-            $vIndex = $xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains, nomecompl"; // Sol Will 27/11/2024
+            $vIndex = $xProj.".tarefas.ativo, prio, ".$xProj.".tarefas.datains, nomecompl"; // Modificado por solic Will 27/11/2024
             $Condic = $xProj.".tarefas.ativo > 0".$Condic2;
 
             if($Selec > 0){
@@ -72,15 +71,19 @@ if(!isset($_SESSION["usuarioID"])){
                     $DescSit = "em Minhas Tarefas";
                     $Condic = $xProj.".tarefas.ativo > 0 And usuexec = $UsuLogadoId".$Condic2;
                     if($NumTarefa > 0){
-                        $Condic = $xProj.".tarefas.ativo > 0 And idTar = $NumTarefa".$Condic2;
+                        $Condic = $xProj.".tarefas.ativo > 0 And idTar = $NumTarefa";
                     }
                 }
                 if($Selec == 6){
                     $DescSit = "em Meus Pedidos";
                     $Condic = $xProj.".tarefas.ativo > 0 And ".$xProj.".tarefas.usuins = $UsuLogadoId".$Condic2;
                     if($NumTarefa > 0){
-                        $Condic = $xProj.".tarefas.ativo > 0 And idTar = $NumTarefa".$Condic2;
+                        $Condic = $xProj.".tarefas.ativo > 0 And idTar = $NumTarefa";
                     }
+                }
+                if($Selec == 7){ // ver tarefas que têm mensagem
+                    $DescSit = "com Mensagem";
+                    $Condic = $xProj.".tarefas.ativo > 0 And usuexectar = $UsuLogadoId And execlido = 0 Or usuinstar = $UsuLogadoId And inslido = 0";
                 }
             }
 
@@ -100,38 +103,42 @@ if(!isset($_SESSION["usuarioID"])){
 
             if($Adm > 10){ // Superusuários - confusão
                 $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI')  
-                FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
+                FROM ".$xProj.".tarefas_msg RIGHT JOIN (".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id) ON ".$xProj.".tarefas.idtar = ".$xProj.".tarefas_msg.idtarefa 
                 WHERE $Condic 
                 ORDER BY $vIndex");
             }else{
                 if($VerTarefas == 1){ // 1 = Todos - Liberar a visualização das tarefas para todos
                     $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
-                    FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
+                    FROM ".$xProj.".tarefas_msg RIGHT JOIN (".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id) ON ".$xProj.".tarefas.idtar = ".$xProj.".tarefas_msg.idtarefa 
                     WHERE $Condic 
                     ORDER BY $vIndex");
                 }
                 if($VerTarefas == 2){  // visualização só mandante e executante
                     $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
-                    FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
+                    FROM ".$xProj.".tarefas_msg RIGHT JOIN (".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id) ON ".$xProj.".tarefas.idtar = ".$xProj.".tarefas_msg.idtarefa 
                     WHERE $Condic And ".$xProj.".tarefas.usuexec = $UsuLogadoId Or $Condic And ".$xProj.".tarefas.usuins = $UsuLogadoId
                     ORDER BY $vIndex");
                 }
                 if($VerTarefas == 3){  // visualização por setor 
                     $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
-                    FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
+                    FROM ".$xProj.".tarefas_msg RIGHT JOIN (".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id) ON ".$xProj.".tarefas.idtar = ".$xProj.".tarefas_msg.idtarefa 
                     WHERE $Condic And ".$xProj.".tarefas.setorins = $CodSetorUsu Or $Condic And ".$xProj.".tarefas.setorexec = $CodSetorUsu
                     ORDER BY $vIndex");
                 }
                 if($VerTarefas == 4){  // visualização por posição no organograma 
                     $resultT = pg_query($Conec, "SELECT nomecompl, idtar as chaveTar, ".$xProj.".tarefas.usuins, ".$xProj.".tarefas.usuexec, tittarefa, textotarefa, sit, ".$xProj.".tarefas.ativo, to_char(".$xProj.".tarefas.datains, 'DD/MM/YYYY HH24:MI') AS DataInsert, to_char(datasit1, 'DD/MM/YYYY HH24:MI') AS DataVista, prio, to_char(datasit2, 'DD/MM/YYYY HH24:MI'), to_char(datasit3, 'DD/MM/YYYY HH24:MI'), to_char(datasit4, 'DD/MM/YYYY HH24:MI') 
-                    FROM ".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id 
+                    FROM ".$xProj.".tarefas_msg RIGHT JOIN (".$xProj.".tarefas INNER JOIN ".$xProj.".poslog ON ".$xProj.".tarefas.usuins = ".$xProj.".poslog.pessoas_id) ON ".$xProj.".tarefas.idtar = ".$xProj.".tarefas_msg.idtarefa 
                     WHERE $Condic And ".$xProj.".tarefas.orgins >= $MeuOrg Or $Condic And ".$xProj.".tarefas.orgexec >= $MeuOrg
                     ORDER BY $vIndex");
                 }
             }
             $row = pg_num_rows($resultT);
             if($row > 0){ 
-                echo "<label class='etiqAzul' style='padding-left: 10px;'> Arraste o quadro amarelo para a direita &#8594;</label>"; 
+                if($NumTarefa > 0){
+                    echo "<label class='etiqAzul' style='color: red; font-weight: bold; padding-left: 10px;'> Tem mensagem nesta tarefa</label>"; 
+                }else{
+                    echo "<label class='etiqAzul' style='padding-left: 10px;'> Arraste o quadro amarelo para a direita &#8594;</label>"; 
+                }
             } 
             ?>
             <table style="margin: 0 auto; border: 0; width: 90%;" >
@@ -273,13 +280,13 @@ if(!isset($_SESSION["usuarioID"])){
                                     // Info URGENTE, IMPORTANTE no quadro do statos4 (Terminado)
                                     echo "<div class='etiqueta etiqInat' draggable='false' droppable='true' ondrop='drop(event, 4)' ondragover='allowDrop(event)'>";
                                     if($Priorid == 0){
-                                        echo "<br><p class='blink' style='font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 5px; color: red; font-size: 1.5em; font-weigth: bold; margin: 0; padding: 0;'>URGENTE</p>";
+                                        echo "<br><p class='blink' style='font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 5px; color: red; font-size: 1.5em; font-weight: bold; margin: 0; padding: 0;'>URGENTE</p>";
                                     }
                                     if($Priorid == 1){
-                                        echo "<p style='font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 5px; color: red; font-size: 1.2em; font-weigth: bold; margin: 0; padding: 0;'><br>MUITO IMPORTANTE</p>";
+                                        echo "<p style='font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 5px; color: red; font-size: 1.2em; font-weight: bold; margin: 0; padding: 0;'><br>MUITO IMPORTANTE</p>";
                                     }
                                     if($Priorid == 2){
-                                        echo "<p style='font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 5px; color: red; font-size: 1.2em; font-weigth: bold; margin: 0; padding: 0;'><br>IMPORTANTE</p>";
+                                        echo "<p style='font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 5px; color: red; font-size: 1.2em; font-weight: bold; margin: 0; padding: 0;'><br>IMPORTANTE</p>";
                                     }
                                     echo "</div>";
                                 }

@@ -204,6 +204,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         </style>
         <script>
+            LargTela = $(window).width();
             $(document).ready(function(){
                 //Não vai liberar para os escalados - só o pdf impresso
                 document.getElementById("evliberames").style.visibility = "hidden"; 
@@ -218,6 +219,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("etiqcheckprimcargo").style.visibility = "hidden";
                     document.getElementById("checkprimcargo").style.visibility = "hidden";
                 }
+//alert($(window).width());
 
 //                if(parseInt(document.getElementById("escalante").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // Escalante e Superusuário
                 if(parseInt(document.getElementById("escalante").value) === 1){ // Escalante
@@ -238,7 +240,7 @@ if(!isset($_SESSION["usuarioID"])){
                      document.getElementById("botImprimir").style.visibility = "hidden";
                      document.getElementById("transfMesAnoEsc").style.visibility = "hidden";
                 }else{
-                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
+                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
                     $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                     $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                     $("#faixanotas").load("modulos/escaladaf/notasdaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
@@ -270,7 +272,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                 $("#faixaferiados").load("modulos/escaladaf/infoAgd2.php");
                                                 document.getElementById("botImprimir").style.visibility = "hidden";
                                             }else{
-                                                $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
+                                                $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
                                                 $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                                 $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                                 $("#faixanotas").load("modulos/escaladaf/notasdaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
@@ -370,7 +372,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                             $("#faixaferiados").load("modulos/escaladaf/infoAgd2.php");
                                                             document.getElementById("botImprimir").style.visibility = "hidden";
                                                         }else{
-                                                            $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
+                                                            $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
                                                             $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                                             $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                                             $("#faixanotas").load("modulos/escaladaf/notasdaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
@@ -505,7 +507,7 @@ if(!isset($_SESSION["usuarioID"])){
 //alert(ajax.responseText);
                                     Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                     if(parseInt(Resp.coderro) === 0){
-                                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
+                                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
                                     }else{
                                         alert("Houve um erro no servidor.")
                                     }
@@ -568,7 +570,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("guardanumgrupo").value = document.getElementById("selecGrupo").value;
                                         document.getElementById("etiqSiglaGrupo").innerHTML = "Escala "+Resp.siglagrupo;
-                                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
+                                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
                                         $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                         $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                         $("#faixanotas").load("modulos/escaladaf/notasdaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
@@ -581,9 +583,11 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById("etiqtransfMesAnoEsc").style.visibility = "visible";
                                             document.getElementById("transfMesAnoEsc").style.visibility = "visible";
                                         }else{
+                                            if(parseInt(document.getElementById("guardaUsuId").value) != 83){ // provisório Will
                                             document.getElementById("imgEscalaConfig").style.visibility = "hidden";
                                             document.getElementById("etiqtransfMesAnoEsc").style.visibility = "hidden";
                                             document.getElementById("transfMesAnoEsc").style.visibility = "hidden";
+                                            }
                                         }
                                     }
                                 }
@@ -1143,7 +1147,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             if(parseInt(Resp.coderro) > 0){
                                                 alert("Houve um erro no servidor.");
                                             }else{
-                                                $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
+                                                $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
                                                 $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php");
                                                 $("#faixaferiados").load("modulos/escaladaf/relFeriados.php");
                                             }
@@ -1179,6 +1183,7 @@ if(!isset($_SESSION["usuarioID"])){
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=configMarcaEscala&codigo="+document.getElementById("configSelecEscala").value
+                    +"&numgrupo="+document.getElementById("selecGrupo").value
                     +"&campo="+Campo
                     +"&valor="+Valor
                     , true);
@@ -1214,7 +1219,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         });
                                         return false;
                                     }else{
-                                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
+                                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
                                         $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                         $('#mensagemConfig').fadeIn("slow");
                                         document.getElementById("mensagemConfig").innerHTML = "Valor salvo.";
@@ -1283,11 +1288,11 @@ if(!isset($_SESSION["usuarioID"])){
                                             OK: function(){}
                                         }
                                     });
-                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
+                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
                                     $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                     document.getElementById("relacParticip").style.display = "none";
                                 }else{
-                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
+                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
                                     $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                     document.getElementById("relacParticip").style.display = "none";
                                 }
@@ -1301,7 +1306,7 @@ if(!isset($_SESSION["usuarioID"])){
             function abreEscalaConfig(){
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=procChefeDiv", true);
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=procChefeDiv&numgrupo="+document.getElementById("selecGrupo").value, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -1314,6 +1319,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("checkescalante").checked = false;
                                     document.getElementById("configSelecChefeDiv").value = Resp.chefe;
                                     document.getElementById("configSelecEncarreg").value = Resp.encarreg;
+                                    document.getElementById("etiqNomeGrupo").innerHTML = Resp.siglagrupo; // fiscal editando 
                                     document.getElementById("configCpfEscala").value = "";
                                     document.getElementById("configSelecEscala").value = "";
                                     if(parseInt(Resp.visucargo) === 1){
@@ -1555,7 +1561,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
                                 }else{
-                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
+                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
                                 }
                             }
                         }
@@ -1581,7 +1587,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
                                 }else{
-                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
+                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
                                 }
                             }
                         }
@@ -1953,7 +1959,7 @@ if(!isset($_SESSION["usuarioID"])){
                     ?>
                 </div> <!-- quadro -->
 
-                <div class="col" id="etiqSiglaGrupo" style="text-align: center;">Escala <?php echo $SiglaGrupo; ?></div> <!-- espaçamento entre colunas  -->
+                <div class="col" id="etiqSiglaGrupo" style="text-align: center;">Escala <?php echo $SiglaGrupo; ?> </div> <!-- espaçamento entre colunas  -->
                 <div class="col" style="margin: 0 auto; text-align: center;">
                     <label id="etiqtransfMesAnoEsc" style="padding-left: 40px; font-size: .8rem;">Transferir para o mês: </label>
                     <select id="transfMesAnoEsc" style="font-size: .8rem; width: 90px;" title="Transferir esta escala para o mês/ano escolhido">
@@ -2087,18 +2093,17 @@ if(!isset($_SESSION["usuarioID"])){
                 <div class="container" style="margin: 0 auto;">
                     <div class="row">
                         <div class="col" style="margin: 0 auto;"></div>
-                        <div class="col"><h6 style="text-align: center; color: #666;">Escala <?php echo $SiglaGrupo; ?></h6></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col"><h6 id="etiqNomeGrupo" style="text-align: center; color: #666;">Escala <?php echo $SiglaGrupo; ?></h6></div> <!-- Central - espaçamento entre colunas  -->
                         <div class="col" style="margin: 0 auto; text-align: center;"><button class="botpadrred" style="font-size: 70%;" onclick="resumoUsuEscala();">Resumo em PDF</button></div> 
                     </div>
                 </div>
                 <label class="etiqAzul">Selecione um usuário para ver a configuração:</label>
+                <label id="mensagemConfig" style="color: red; font-weight: bold; padding-left: 30px;"></label>
 
                 <label for='checkvisucargo' id='etiqcheckvisucargo' class='etiqAzul' style='padding-left: 25px'>Mostrar Cargo</label>
                 <input type='checkbox' id='checkvisucargo' onchange='marcaVisuCargo(this);' title='Programador - Visualisar cargo no formulário' >
                 <label for='checkprimcargo' id='etiqcheckprimcargo' class='etiqAzul' style='padding-left: 15px'>Primeiro o Cargo</label> 
                 <input type='checkbox' id='checkprimcargo' onchange='marcaPrimCargo(this);' title='Programador - Primeiro o cargo depois o nome' >
-
-                <div style="position: relative; float: right; color: red; font-weight: bold; padding-right: 200px;" id="mensagemConfig"></div>
                 <table style="margin: 0 auto; width: 95%;">
                     <tr>
                         <td colspan="4" style="text-align: center;"></td>
