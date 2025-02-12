@@ -244,7 +244,7 @@ if(!isset($_SESSION["usuarioID"])){
                     $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                     $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                     $("#faixanotas").load("modulos/escaladaf/notasdaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
-                    $("#faixaferiados").load("modulos/escaladaf/relFeriados.php");
+                    $("#faixaferiados").load("modulos/escaladaf/relFeriados.php?ano="+document.getElementById("guardaAno").value);
                     document.getElementById("botImprimir").style.visibility = "visible";
                     if(parseInt(document.getElementById("escalante").value) === 1){
                         document.getElementById("transfMesAnoEsc").style.visibility = "visible";
@@ -278,7 +278,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                     $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                                     $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                                     $("#faixanotas").load("modulos/escaladaf/notasdaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
-                                                    $("#faixaferiados").load("modulos/escaladaf/relFeriados.php");
+                                                    $("#faixaferiados").load("modulos/escaladaf/relFeriados.php?ano="+document.getElementById("guardaAno").value);
                                                     document.getElementById("botImprimir").style.visibility = "visible";
                                                 }else{
                                                     $("#faixacentral").load("modulos/escaladaf/infoAgd2.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
@@ -382,7 +382,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                             $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                                             $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                                             $("#faixanotas").load("modulos/escaladaf/notasdaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
-                                                            $("#faixaferiados").load("modulos/escaladaf/relFeriados.php");
+                                                            $("#faixaferiados").load("modulos/escaladaf/relFeriados.php?ano="+document.getElementById("guardaAno").value);
                                                             document.getElementById("selecMesAnoEsc").value = document.getElementById("transfMesAnoEsc").value;
                                                             document.getElementById("transfMesAnoEsc").value = "";
                                                             document.getElementById("botImprimir").style.visibility = "visible";
@@ -587,7 +587,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                         $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                         $("#faixanotas").load("modulos/escaladaf/notasdaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
-                                        $("#faixaferiados").load("modulos/escaladaf/relFeriados.php");
+                                        $("#faixaferiados").load("modulos/escaladaf/relFeriados.php?ano="+document.getElementById("guardaAno").value);
                                         document.getElementById("botImprimir").style.visibility = "visible";
                                         document.getElementById("transfMesAnoEsc").style.visibility = "visible";
                                         //Verificar se é igual Meugrupo e Numgrupo
@@ -1117,7 +1117,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     alert("Houve um erro no servidor.");
                                 }else{
                                     $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php");
-                                    $("#faixaferiados").load("modulos/escaladaf/relFeriados.php");
+                                    $("#faixaferiados").load("modulos/escaladaf/relFeriados.php?ano="+document.getElementById("guardaAno").value);
                                     document.getElementById("inserirData").style.display = "none";
                                     document.getElementById("abreinsData").style.visibility = "visible";
                                 }
@@ -1149,7 +1149,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             }else{
                                                 $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
                                                 $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php");
-                                                $("#faixaferiados").load("modulos/escaladaf/relFeriados.php");
+                                                $("#faixaferiados").load("modulos/escaladaf/relFeriados.php?ano="+document.getElementById("guardaAno").value);
                                             }
                                         }
                                     }
@@ -1180,7 +1180,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 }else{
                                     $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
                                     $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php");
-                                    $("#faixaferiados").load("modulos/escaladaf/relFeriados.php");
+                                    $("#faixaferiados").load("modulos/escaladaf/relFeriados.php?ano="+document.getElementById("guardaAno").value);
                                 }
                             }
                         }
@@ -2076,6 +2076,7 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
         <input type="hidden" id="liberadoefetivo" value="<?php echo $MesLiberado; ?>" />
         <input type="hidden" id="guardaCodTurno" value="0" />
         <input type="hidden" id="quantGruposEsc" value="<?php echo $rowGr; ?>" />
+        <input type="hidden" id="guardaAno" value="<?php echo $Ano; ?>" />
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->

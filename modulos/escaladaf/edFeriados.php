@@ -21,11 +21,16 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         </script>
     </head>
     <body> 
-        <div style="margin-top: 15px; text-align: center; font-weight: bold;">Feriados</div>
+        <?php
+        if(isset($_REQUEST["ano"])){
+            $Ano = $_REQUEST["ano"];
+            }else{
+            $Ano = date('Y');
+        }
+        $rs3 = pg_query($Conec, "SELECT id, TO_CHAR(dataescalafer, 'DD/MM'), descr FROM ".$xProj.".escaladaf_fer WHERE ativo = 1 ORDER BY dataescalafer");
+        ?>
+        <div style="margin-top: 15px; text-align: center; font-weight: bold;">Feriados <?php echo $Ano; ?></div>
         <div style="margin: 10px; padding: 10px; text-align: center; border: 2px solid green; border-radius: 15px;">
-            <?php
-            $rs3 = pg_query($Conec, "SELECT id, TO_CHAR(dataescalafer, 'DD/MM'), descr FROM ".$xProj.".escaladaf_fer WHERE ativo = 1 ORDER BY dataescalafer");
-            ?>
             <div style="position: relative; float: right; color: red; font-weight: bold;"></div>
             <table style="margin: 0 auto; width: 85%;">
                 <tr>

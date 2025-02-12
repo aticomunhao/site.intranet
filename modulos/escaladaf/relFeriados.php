@@ -13,6 +13,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <div style="margin-top: 15px;">Feriados</div>
         <?php
             $EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
+            if(isset($_REQUEST["ano"])){
+                $Ano = $_REQUEST["ano"];
+            }else{
+                $Ano = date('Y');
+            }
         ?>
         <div style="margin: 10px; padding: 10px; border: 2px solid green; border-radius: 15px;">
             <div class="row">

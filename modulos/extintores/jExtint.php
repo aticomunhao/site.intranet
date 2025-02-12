@@ -41,6 +41,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     <body>
         <?php
         $TempoAviso  = parAdm("aviso_extint", $Conec, $xProj); // dias de antecedência para aviso
+        $Condic = $xProj.".extintores.ativo = 1";
          if(isset($_REQUEST["acao"])){
             $Acao = $_REQUEST["acao"];
         }else{
