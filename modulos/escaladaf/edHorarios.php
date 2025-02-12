@@ -12,7 +12,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             function insereLetra(){
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=buscaOrdem", true);
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=buscaOrdem&numgrupo="+document.getElementById("guardanumgrupo").value, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -21,15 +21,28 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                 if(parseInt(Resp.coderro) === 1){
                                     document.getElementById("insordem").value = 0;
                                 }else{
-                                    document.getElementById("insordem").value = Resp.ordem;
+                                    if(parseInt(Resp.quantTurno) > 20){
+                                        $.confirm({
+                                            title: 'Ação Suspensa!',
+                                            content: 'Número máximo de turnos (20) atingido',
+                                            draggable: true,
+                                            buttons: {
+                                                OK: function(){}
+                                            }
+                                        });
+                                        return false;
+                                    }else{
+                                        document.getElementById("insordem").value = Resp.ordem;
+                                        document.getElementById("inserirletra").style.display = "block";
+                                        document.getElementById("abreinsletra").style.visibility = "hidden";
+                                    }
                                 }
                             }
                         }
                     };
                     ajax.send(null);
                 }
-                document.getElementById("inserirletra").style.display = "block";
-                document.getElementById("abreinsletra").style.visibility = "hidden";
+
             }
 
             function fechaInsLetra(){
@@ -53,6 +66,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
             $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, ordemletra, destaq, TO_CHAR(cargahora, 'HH24:MI'), TO_CHAR(cargacont, 'HH24:MI'), TO_CHAR(interv, 'HH24:MI'), infotexto, valeref FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And grupo_turnos = $NumGrupo ORDER BY ordemletra");
             ?>
+            <input type="hidden" id="guardanumgrupo" value="<?php echo $NumGrupo; ?>" />
             <div style="position: relative; float: right; color: red; font-weight: bold;" id="mensagemQuadroHorario"></div>
             <table style="margin: 0 auto; width: 95%;">
                 <tr>

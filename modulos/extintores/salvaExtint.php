@@ -179,3 +179,30 @@ if($Acao=="buscaextintor"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
+if($Acao=="salvaaviso"){
+    $Valor = (int) filter_input(INPUT_GET, 'valor');
+    $Erro = 0;
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".paramsis SET aviso_extint = $Valor WHERE idpar = 1");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+if($Acao=="buscaConfig"){
+    $Erro = 0;
+    $rs = pg_query($Conec, "SELECT aviso_extint FROM ".$xProj.".paramsis WHERE idpar = 1");
+    $row = pg_num_rows($rs);
+    if($row > 0){
+        $tbl = pg_fetch_row($rs);
+        $DiasAviso = $tbl[0];
+    }else{
+        $DiasAviso = 30;
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro, "aviso"=>$DiasAviso);
+    $responseText = json_encode($var);
+    echo $responseText;
+}

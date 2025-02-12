@@ -24,6 +24,27 @@
 			//Provisório
 			if(strtotime('2025/03/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
+				//0083
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS aviso_extint smallint NOT NULL DEFAULT 30 ");
+
+				$rs = pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf_fer WHERE ativo = 0 ");
+				$rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescalafer, 'DD/MM/YYYY') FROM ".$xProj.".escaladaf_fer WHERE ativo = 1");
+				$row = pg_num_rows($rs);
+				if($row > 0){
+					while($tbl = pg_fetch_row($rs)){
+						$Cod = $tbl[0];
+						$Data = $tbl[1];
+						$Proc = explode("/", $Data);
+						$Dia = $Proc[0];
+						if(strLen($Dia) < 2){
+							$Dia = "0".$Dia;
+						}
+						$Mes = $Proc[1];
+						$Feriado = "2025/".$Mes."/".$Dia;
+						pg_query($Conec, "UPDATE ".$xProj.".escaladaf_fer SET dataescalafer = '$Feriado' WHERE id = $Cod ");
+					}
+				}
+
 				//0082
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS extint smallint NOT NULL DEFAULT 0 ");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisc_extint smallint NOT NULL DEFAULT 0 ");
@@ -31,6 +52,7 @@
 				pg_query($Conec, "UPDATE ".$xProj.".poslog SET extint = 1 WHERE pessoas_id = 83");
 				pg_query($Conec, "UPDATE ".$xProj.".poslog SET extint = 1 WHERE pessoas_id = 22");
 				pg_query($Conec, "UPDATE ".$xProj.".poslog SET fisc_extint = 1 WHERE pessoas_id = 8");
+
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

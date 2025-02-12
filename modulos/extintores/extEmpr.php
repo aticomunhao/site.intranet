@@ -19,7 +19,7 @@
             <table style="margin: 0 auto; width: 95%">
                 <tr>
                     <td></td>
-                    <td class="etiq aCentro">Relação de Empresas</td>
+                    <td class="etiq aCentro">Empresas de Manutenção de Extintores</td>
                 </tr>
                 <?php
                 if($row0 > 0){

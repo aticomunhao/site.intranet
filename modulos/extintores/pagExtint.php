@@ -98,7 +98,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("botsalvarextint").style.visibility = "visible";
                 }
 
-                $("#faixacentral").load("modulos/extintores/jExtint.php?acao=todos");
+                $("#faixacentral").load("modulos/extintores/jExtint.php?acao="+document.getElementById("guardaAcao").value);
 
                 if(parseInt(document.getElementById("guardaInsExtint").value) === 1){ // editar
                     $('#datarevis').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
@@ -311,6 +311,24 @@ if(!isset($_SESSION["usuarioID"])){
             function carregaConfig(){
                 $("#configEmpr").load("modulos/extintores/extEmpr.php");
                 $("#configTipos").load("modulos/extintores/extTipos.php");
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/extintores/salvaExtint.php?acao=buscaConfig", true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                document.getElementById("diasanteced").value = Resp.aviso;
+                                if(parseInt(Resp.coderro) === 0){
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
                 document.getElementById("relacmodalConfig").style.display = "block";
             }
 
@@ -430,6 +448,34 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("relacEditTipo").style.display = "none";
                 }
             }
+
+            function salvaAviso(){
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/extintores/salvaExtint.php?acao=salvaaviso&valor="+document.getElementById("diasanteced").value, true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 0){
+                                        $('#mensagemConfig').fadeIn("slow");
+                                        document.getElementById("mensagemConfig").innerHTML = "Valor Salvo";
+                                        $('#mensagemConfig').fadeOut(2000);
+                                        $("#faixacentral").load("modulos/extintores/jExtint.php?acao=todos");
+                                    }else{
+                                        alert("Houve um erro no servidor.")
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+            }
+            function mostraExtint(Acao){
+                $("#faixacentral").load("modulos/extintores/jExtint.php?acao="+Acao);
+            }
+
             function fechaEditEmpr(){
                 document.getElementById("relacEditEmpresa").style.display = "none";
             }
@@ -519,6 +565,11 @@ if(!isset($_SESSION["usuarioID"])){
                 pg_query($Conec, "INSERT INTO ".$xProj.".extintores_empr (id, empresa, ender, cep, cidade, uf, telefone, ativo, usuins, datains) 
                 VALUES(1, 'Combate Comércio de Extintores Ltda.', 'QS122 - Conj 11-02 - Samambaia Sul', '72304531', 'Brasília', 'DF', '61999915504', 1, 3, NOW() )");
             }
+            if(isset($_REQUEST["acao"])){
+                $Acao = $_REQUEST["acao"];
+            }else{
+                $Acao = "Todos";
+            }
 
             $rsAno = pg_query($Conec, "SELECT DISTINCT to_char(datacarga, 'YYYY') FROM ".$xProj.".extintores WHERE ativo = 1");
             $AnoIni = date("Y");
@@ -529,6 +580,7 @@ if(!isset($_SESSION["usuarioID"])){
 
             $InsExtint = parEsc("extint", $Conec, $xProj, $_SESSION["usuarioID"]); // procura marca em poslog
             $FiscExtint = parEsc("fisc_extint", $Conec, $xProj, $_SESSION["usuarioID"]);
+            $TempoAviso  = parAdm("aviso_extint", $Conec, $xProj);
     
         ?>
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
@@ -539,7 +591,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardaHoje" value="<?php echo $Hoje; ?>" />
         <input type="hidden" id="guardaCodEmpr" value="0" />
         <input type="hidden" id="guardaCodTipo" value="0" />
-
+        <input type="hidden" id="guardaAcao" value="<?php echo $Acao; ?>" />
 
         <div style="margin: 20px; border: 2px solid blue; border-radius: 15px; padding: 20px; min-height: 200px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
@@ -548,6 +600,10 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <h5>Controle de Extintores</h5>
+                <button class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="mostraExtint('Todos');">Todos</button>
+                <button class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="mostraExtint('vencer');" title="Dentro do prazo para aviso <?php echo $TempoAviso.' dias'; ?>">a Vencer</button>
+                <button class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="mostraExtint('vencidos');" title="Extintores com prazo de validade vencido.">Vencidos</button>
+
             </div>
             <div class="box" style="position: relative; float: right; width: 33%; text-align: right;">
                 <label style="padding-left: 20px;"></label>
@@ -649,17 +705,44 @@ if(!isset($_SESSION["usuarioID"])){
         <div id="relacmodalConfig" class="relacmodal">
             <div class="modal-content-Ins">
                 <span class="close" onclick="fechaModal();">&times;</span>
-                <div style="margin-top: 15px; margin-left: 60px; margin-right: 60px; width: 350px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px;background: linear-gradient(180deg, white, #86c1eb);">
-<!--                    <h5 style="text-align: center; color: #666;">Tipos de Extintores</h5> -->
-                    <div class='divbot corFundo' onclick='insTipo()' title="Adicionar um novo tipo de extintor"> Adicionar </div>
-                    <div id="configTipos" style="margin-bottom: 5px; text-align: center; width: 250px;"></div>
-                </div>
-                <hr>
-                <div style="margin: 20px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px;">
-                    <h5 style="text-align: center; color: #666;">Empresas de Manutenção de Extintores</h5>
-                    <div class='divbot corFundo' onclick='insEmpresa()' title="Adicionar nova empresa"> Adicionar </div>
-                    <div id="configEmpr" style="text-align: center;"></div>
-                </div>
+                <div><H6>Configuração: Extintores</H6></div>
+                
+                
+            <div class="box" style="position: relative; float: left; width: 43%; margin-top: 10px; text-align: center; border: 1px solid; border-radius: 10px; background: linear-gradient(180deg, white, #86c1eb);">
+                <div class='divbot corFundo' style='margin-top: 10px; margin-left: 5px; margin-bottom: 5px;' onclick='insTipo()' title="Adicionar um novo tipo de extintor"> Adicionar </div>
+                <div id="configTipos" style="margin-bottom: 15px; text-align: center; width: 90%;"></div>
+            </div>
+            <div class="box" style="position: relative; float: left; width: 10%; margin-top: 10px; text-align: center;"></div>
+            <div class="box" style="position: relative; float: right; width: 40%; margin-top: 10px; margin-right: 20px; padding-top: 5px; text-align: left; border: 1px solid; border-radius: 10px; min-height: 100px;">
+                <label class="etiqAzul" style="padding-left: 20px;">Aviso de vencimento:</label>
+                <br>
+                <table style="margin: 0 auto; padding-top: 5px;">
+                    <tr>
+                        <td class="etiqAzul"> Avisar com </td>
+                        <td>
+                            <input type="text" id="diasanteced" valor="" onchange="salvaAviso();" style="border: 1px solid; border-radius: 5px; width: 40px; text-align: center;">
+                        </td>
+                        <td class="etiqAzul"> dias de antecedência</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align: center;">
+                        <label id="mensagemConfig" style="color: red; font-weight: bold; padding-left: 30px;"></label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+
+            <table>
+                <tr>
+                    <td>
+                        <div style="margin: 20px; min-width: 500px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px; background: linear-gradient(180deg, white, #86c1eb);">
+                            <div class='divbot corFundo' onclick='insEmpresa()' title="Adicionar nova empresa"> Adicionar </div>
+                            <div id="configEmpr" style="text-align: center;"></div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
             </div>
         </div> <!-- Fim Modal-->
 

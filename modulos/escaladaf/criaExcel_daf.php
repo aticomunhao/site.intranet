@@ -82,11 +82,16 @@
                 
                 $rs1 = pg_query($Conec, "SELECT nomecompl, nomeusual, letraturno, turnoturno, destaque, date_part('dow', dataescala), feriado, valepag 
                 FROM ".$xProj.".escaladaf INNER JOIN (".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_ins.poslog_id = ".$xProj.".poslog.pessoas_id) ON ".$xProj.".escaladaf.id = ".$xProj.".escaladaf_ins.escaladaf_id  
-                WHERE escaladaf_id = $DiaId And grupo_id = $NumGrupo And poslog.eft_daf = 1 And escaladaf.ativo = 1 And escaladaf_ins.ativo = 1 And poslog.ativo = 1 ORDER BY nomeusual");
+                WHERE escaladaf_id = $DiaId And grupo_id = $NumGrupo And poslog.eft_daf = 1 And escaladaf.ativo = 1 And escaladaf_ins.ativo = 1 And poslog.ativo = 1 ORDER BY nomeusual, nomecompl");
                 $row1 = pg_num_rows($rs1);
                 if($row1 > 0){
                     while($tbl1 = pg_fetch_row($rs1)){
-                        $NomeUsual = $tbl1[1];
+                        if(is_null($tbl1[1]) || $tbl1[1] == ""){
+                            $Nome = substr($tbl1[0], 0, 20); //nome completo
+                        }else{
+                            $Nome = substr($tbl1[1], 0, 20); //nome usual
+                        }
+
                         $Letra = $tbl1[2];
                         $Turno = $tbl1[3];
                         $Vale = $tbl1[7];
@@ -94,7 +99,7 @@
                         if($Vale == 0){
                             $DescVale = "Sem Vale";
                         }
-                        $objPHPExcel->getActiveSheet()->setCellValue('C'.$Num, $NomeUsual);
+                        $objPHPExcel->getActiveSheet()->setCellValue('C'.$Num, $Nome);
                         $objPHPExcel->getActiveSheet()->setCellValue('D'.$Num, $Letra);
                         $objPHPExcel->getActiveSheet()->setCellValue('E'.$Num, $Turno);
                         $objPHPExcel->getActiveSheet()->setCellValue('F'.$Num, $DescVale);

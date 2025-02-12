@@ -21,7 +21,13 @@
         'xª'=> ''
     );
 
-    $MesSalvo = parEsc("mes_escdaf", $Conec, $xProj, $_SESSION["usuarioID"]);
+//    $MesSalvo = parEsc("mes_escdaf", $Conec, $xProj, $_SESSION["usuarioID"]);
+    if(isset($_REQUEST["selecmes"])){
+        $MesSalvo = $_REQUEST["selecmes"]; // quando vem do fiscal
+    }else{
+        $MesSalvo = parEsc("mes_escdaf", $Conec, $xProj, $_SESSION["usuarioID"]); 
+    }
+
     if(is_null($MesSalvo) || $MesSalvo == ""){
         $MesSalvo = date("m")."/".date("Y");
     }
@@ -78,6 +84,8 @@
             WHERE poslog_id = $Cod And ativo = 1 And grupo_ins != $NumGrupo And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' ");
         }
     }
+    $rsGr = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_esc WHERE usu_id = ".$_SESSION["usuarioID"]." And ativo = 1");
+    $rowGr = pg_num_rows($rsGr); // quantidade de grupos em que é escalante
 
     $rs2 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual, cargo_daf FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl ");
     $row2 = pg_num_rows($rs2);
@@ -87,21 +95,31 @@
             echo "<tr>";
                 echo "<td>";
                     echo "<div style='width: 150px;'> &nbsp; </div>";
-                    $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala), TO_CHAR(dataescala, 'DD/MM/YYYY'), feriado FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY dataescala");
+                    $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala), TO_CHAR(dataescala, 'DD/MM/YYYY'), feriado, dataescala FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY dataescala");
                     $row = pg_num_rows($rs);
                     if($row > 0){
                         while($tbl = pg_fetch_row($rs)){
                             $IdDia = $tbl[0];
                             $DataDia = addslashes($tbl[3]);
-//                                if($EscalanteDAF == 1 || $Fiscal == 1){
+
+                            $ProcFer = $tbl[5];
+//                            $ProcFer = "2025/".$Mes."/".$tbl[1];
+                            $diaFer = 0;
+                            $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                            $rowFer = pg_num_rows($rsFer);
+                            if($rowFer > 0){
+                                $diaFer = 1;
+                            }
+//                            if($EscalanteDAF == 1 || $Fiscal == 1){
 //                            if($EscalanteDAF == 1 && $MeuGrupo == $NumGrupo){
-                            if($EscalanteDAF == 1 && $MeuGrupo == $NumGrupo || $_SESSION["usuarioID"] == 83){ // Provisório Wil
+//                            if($EscalanteDAF == 1 && $MeuGrupo == $NumGrupo || $_SESSION["usuarioID"] == 83){ // Provisório Wil
+                            if($EscalanteDAF == 1 && $MeuGrupo == $NumGrupo || $rowGr > 1 || $_SESSION["usuarioID"] == 83){ // Provisório Wil
                                 ?>
-                                <td><div <?php if($tbl[2] == 0 || $tbl[4] == 1){echo "class='quadrodiaClickCinza'";}else{echo "class='quadrodiaClick'";} ?> onclick="abreEdit(<?php echo $IdDia; ?>, '<?php echo $DataDia; ?>');"><?php echo $tbl[1]; ?><br><?php echo $Semana_Extract[$tbl[2]]; ?></div></td>
+                                <td><div <?php if($tbl[2] == 0 || $diaFer == 1){echo "class='quadrodiaClickCinza'";}else{echo "class='quadrodiaClick'";} ?> onclick="abreEdit(<?php echo $IdDia; ?>, '<?php echo $DataDia; ?>');"><?php echo $tbl[1]; ?><br><?php echo $Semana_Extract[$tbl[2]]; ?></div></td>
                                 <?php
                             }else{
                                 ?>
-                                <td><div <?php if($tbl[2] == 0 || $tbl[4] == 1){echo "class='quadrodiaCinza'";}else{echo "class='quadrodia'";} ?> ><?php echo $tbl[1]; ?><br><?php echo $Semana_Extract[$tbl[2]]; ?></div></td>
+                                <td><div <?php if($tbl[2] == 0 || $diaFer == 1){echo "class='quadrodiaCinza'";}else{echo "class='quadrodia'";} ?> ><?php echo $tbl[1]; ?><br><?php echo $Semana_Extract[$tbl[2]]; ?></div></td>
                                 <?php
                             }
                         }
@@ -154,7 +172,7 @@
                                 }else{
                                     echo "<input disabled type='text' style='width: 170px; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
                                 }
-                                $rs3 = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala), feriado FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY dataescala");
+                                $rs3 = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala), feriado, dataescala FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY dataescala");
                                 $row3 = pg_num_rows($rs3);
                                 if($row3 > 0){
                                     while($tbl3 = pg_fetch_row($rs3)){
@@ -162,7 +180,16 @@
                                         $Dia = $tbl3[1];
                                         $Sem = $tbl3[2];
 
-                                        $rs4 = pg_query($Conec, "SELECT letraturno, turnoturno, destaque, date_part('dow', dataescala), feriado, valepag 
+                                        $ProcFer = $tbl3[4];
+//                                        $ProcFer = "2025/".$Mes."/".$tbl3[1];
+                                        $diaFer = 0;
+                                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                                        $rowFer = pg_num_rows($rsFer);
+                                        if($rowFer > 0){
+                                            $diaFer = 1;
+                                        }
+
+                                        $rs4 = pg_query($Conec, "SELECT letraturno, turnoturno, destaque, date_part('dow', dataescala), feriado, valepag, dataescala 
                                         FROM ".$xProj.".escaladaf INNER JOIN (".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_ins.poslog_id = ".$xProj.".poslog.pessoas_id) ON ".$xProj.".escaladaf.id = ".$xProj.".escaladaf_ins.escaladaf_id  
                                         WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '$Dia'");
 
@@ -171,6 +198,15 @@
                                         if($row4 > 0){
                                             $tbl4 = pg_fetch_row($rs4);
                                             $ValeRef = $tbl4[5]; // Vale refeição
+
+                                            $ProcFer = $tbl4[6];
+//                                            $ProcFer = "2025/".$Mes."/".$Dia;
+                                            $diaFer = 0;
+                                            $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                                            $rowFer = pg_num_rows($rsFer);
+                                            if($rowFer > 0){
+                                                $diaFer = 1;
+                                            }
 
                                             if($tbl4[2] == 0){ // sem destaque
                                                 if($Sem == 0 || $tbl4[4] == 1){ // domingo ou feriado
@@ -209,7 +245,8 @@
                                                 }
                                             }
                                         }else{
-                                            if($Sem == 0 || $tbl3[3] == 1){ // dom ou feriado
+//                                            if($Sem == 0 || $tbl3[3] == 1){ // dom ou feriado
+                                            if($Sem == 0 || $diaFer == 1){ // dom ou feriado
                                                 echo "<div class='quadrodiaCinza'> &nbsp; </div>";
                                             }else{
                                                 echo "<div class='quadrodia'> &nbsp; </div>";

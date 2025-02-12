@@ -40,9 +40,30 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     </head>
     <body>
         <?php
-        $rs0 = pg_query($Conec, "SELECT ".$xProj.".extintores.id, ext_num, ext_local, desc_tipo, ext_capac, ext_reg, ext_serie, TO_CHAR(datacarga, 'DD/MM/YYYY'), TO_CHAR(datavalid, 'DD/MM/YYYY'), TO_CHAR(datacasco, 'DD/MM/YYYY'), CASE WHEN datavalid <= CURRENT_DATE+30 THEN 'aviso' END, CASE WHEN datavalid <= CURRENT_DATE THEN 'vencido' END 
+        $TempoAviso  = parAdm("aviso_extint", $Conec, $xProj); // dias de antecedência para aviso
+         if(isset($_REQUEST["acao"])){
+            $Acao = $_REQUEST["acao"];
+        }else{
+            $Acao = "Todos";
+        }
+        if($Acao == "Todos"){
+            $Condic = $xProj.".extintores.ativo = 1";
+        }
+        if($Acao == "vencidos"){
+            $Condic = $xProj.".extintores.ativo = 1 And datavalid <= CURRENT_DATE";
+        }
+        if($Acao == "vencer"){
+            $Condic = $xProj.".extintores.ativo = 1 And datavalid BETWEEN CURRENT_DATE AND CURRENT_DATE+$TempoAviso";
+        }
+        if($Acao == "vencervencidos"){
+            $Condic = $xProj.".extintores.ativo = 1 And datavalid <= CURRENT_DATE+$TempoAviso";
+        }
+
+        $rs0 = pg_query($Conec, "SELECT ".$xProj.".extintores.id, ext_num, ext_local, desc_tipo, ext_capac, ext_reg, ext_serie, TO_CHAR(datacarga, 'DD/MM/YYYY'), TO_CHAR(datavalid, 'DD/MM/YYYY'), TO_CHAR(datacasco, 'DD/MM/YYYY'), 
+        CASE WHEN datavalid BETWEEN CURRENT_DATE AND CURRENT_DATE+$TempoAviso THEN 'aviso' WHEN datavalid < CURRENT_DATE THEN 'vencido' END, CASE WHEN datavalid <= CURRENT_DATE THEN 'vencido' END 
         FROM ".$xProj.".extintores INNER JOIN ".$xProj.".extintores_tipo ON ".$xProj.".extintores.ext_tipo = ".$xProj.".extintores_tipo.id
-        WHERE ".$xProj.".extintores.ativo = 1 ORDER BY ext_num");
+        WHERE $Condic ORDER BY ext_num");
+        
         $row0 = pg_num_rows($rs0);
         ?>
         <div style="padding: 10px;">
@@ -85,7 +106,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <td><?php echo $tbl[4]; ?></td>
                         <td><?php echo $tbl[2]; ?></td>
                         <td style="text-align: center;"><?php echo $DataRevis; ?></td>
-                        <td style="text-align: center;<?php if($tbl[10] == 'aviso'){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>"><?php echo $DataValid; ?></td>
+                        <td style="text-align: center;<?php if($tbl[10] == 'aviso'){echo 'color: #FF3E96; font-weight: bold;';}else if($tbl[10] == 'vencido'){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>"><?php echo $DataValid; ?></td>
                         <td style="text-align: center;"><?php if($tbl[11] == 'vencido'){echo "<img src='imagens/oknao.png' title='Vencido'>";} ?></td>
                     </tr>
                     <?php

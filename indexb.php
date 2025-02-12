@@ -68,6 +68,14 @@
                 text-align: center; padding: 10px; border: 2px solid; border-radius: 10px;
                 cursor: pointer;
             }
+            .divTemExtintor{
+                display: none; 
+                margin-bottom: 0px; 
+                color: white; font-weight: bold; 
+                background-color:rgb(182, 9, 9);
+                text-align: center; padding: 10px; border: 2px solid; border-radius: 10px;
+                cursor: pointer;
+            }
             .blink{
                 animation: blink 1.2s infinite;
             }
@@ -108,6 +116,7 @@
                 document.getElementById("temBens").style.display = "none";
                 document.getElementById("temBensPrazo").style.display = "none";
                 document.getElementById("temContrato").style.display = "none";
+                document.getElementById("temExtintor").style.display = "none";
                 
                 $('#container1').load('modulos/cabec.php');
                 $('#container2').load('modulos/menufim.php?diasemana='+document.getElementById('guardadiasemana').value);
@@ -159,7 +168,10 @@
                                         document.getElementById("temContrato").innerHTML = "Há contrato com prazo para notificação.";
                                         document.getElementById("temContrato").style.display = "block";
                                     }
-
+                                    if(parseInt(Resp.temExtintor) > 0){
+                                        document.getElementById("temExtintor").innerHTML = "Há extintor com prazo de validade expirando.";
+                                        document.getElementById("temExtintor").style.display = "block";
+                                    }
                                 }else{
                                     alert("Houve erro ao salvar");
                                 }
@@ -232,6 +244,9 @@
                 }else{
                     $('#container3').load('modulos/contratos/contratosB.php'); // a casa é contratada
                 }
+            }
+            function carregaExtintor(){
+                $('#container3').load('modulos/extintores/pagExtint.php?acao=vencervencidos');
             }
             function fechaComemorat(){
                 document.getElementById("modalComemorat").style.display = "none";
@@ -429,6 +444,7 @@
                     <div id="temBens" class="divTemBens" onclick="carregaBens('Guardar');"></div>
                     <div id="temBensPrazo" class="divTemBensPrazo" onclick="carregaBens('Destinar');"></div>
                     <div id="temContrato" class="divTemContrato" onclick="carregaContrato(document.getElementById('guardaContrato').value);"></div>
+                    <div id="temExtintor" class="divTemExtintor" onclick="carregaExtintor('Vencido');"></div>
 
                     <!-- texto da página inicial  -->
                     <div id="container7" style="padding-left: 10px; padding-right: 10px;"></div>

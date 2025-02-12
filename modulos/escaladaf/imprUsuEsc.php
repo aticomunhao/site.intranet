@@ -162,7 +162,12 @@ if(isset($_REQUEST["acao"])){
         }
 
 
-        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE esc_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo  ORDER BY nomecompl");
+//        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE esc_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo  ORDER BY nomecompl");
+
+        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual 
+        FROM ".$xProj.".poslog INNER JOIN ".$xProj.".escaladaf_esc ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escaladaf_esc.usu_id 
+        WHERE ".$xProj.".poslog.ativo = 1 And ".$xProj.".escaladaf_esc.ativo = 1 And grupo_id = $NumGrupo  ORDER BY nomecompl");
+        
         $row0 = pg_num_rows($rs0);
         $pdf->ln(5);
         $pdf->SetFont('Arial', 'I', 11);
@@ -181,9 +186,14 @@ if(isset($_REQUEST["acao"])){
             while($tbl0 = pg_fetch_row($rs0)){
                 $Cod = $tbl0[0];
                 $pdf->SetX(50); 
-                $pdf->Cell(40, 5, $tbl0[2], 0, 0, 'L');
+                if(is_null($tbl0[2]) || $tbl0[2] == ""){
+                    $Nome = substr($tbl0[1], 0, 15); //nome completo
+                }else{
+                    $Nome = substr($tbl0[2], 0, 20); //nome usual
+                }
+//                $pdf->Cell(40, 5, $tbl0[2], 0, 0, 'L');
+                $pdf->Cell(40, 5, $Nome, 0, 0, 'L');
                 $pdf->Cell(150, 5, $tbl0[1], 0, 1, 'L');
-
                 $lin = $pdf->GetY();
                 $pdf->Line(50, $lin, 200, $lin);
             }
@@ -209,7 +219,7 @@ if(isset($_REQUEST["acao"])){
         $row0 = pg_num_rows($rs0);
         $pdf->ln(3);
         $pdf->SetFont('Arial', 'I', 11);
-        $pdf->MultiCell(0, 3, "Usuários que concorrem à escala de serviço ".$SiglaGrupo, 0, 'L', false);
+        $pdf->MultiCell(0, 3, "Efetivo da escala: ".$SiglaGrupo, 0, 'L', false);
         $pdf->ln(5);
         if($row0 > 0){
             $pdf->SetFont('Arial', 'I', 8);

@@ -11,22 +11,40 @@ if(isset($_REQUEST["acao"])){
 if($Acao == "buscausuario"){
     $Erro = 0;
     $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de poslog
-    $MeuGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]); // meu grupo
+    if(isset($_REQUEST["numgrupo"])){ //grupo escolhido
+        $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal que pode editar escala
+    }else{
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
 
-    $rs1 = pg_query($Conec, "SELECT eft_daf, esc_daf, cpf, enc_escdaf, chefe_escdaf, esc_grupo, cargo_daf FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
+    $rs1 = pg_query($Conec, "SELECT eft_daf, cpf, enc_escdaf, chefe_escdaf, esc_grupo, cargo_daf FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
     $row1 = pg_num_rows($rs1);
     if($row1 > 0){
         $tbl1 = pg_fetch_row($rs1);
-        $Grupo = $tbl1[5];
+        $Grupo = $tbl1[4];  // Grupo em poslog
         $Eft = $tbl1[0]; // Efetivo
-        if($Eft == 1 && $Grupo != $MeuGrupo ){
+        if($Grupo == 0){
+            $Grupo = $NumGrupo;
+            pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_grupo = $NumGrupo WHERE pessoas_id = $Cod");
+        }
+        if($Eft == 1 && $Grupo != $NumGrupo ){
             $Eft = 0;
         }
-        $Esc = $tbl1[1]; // Escalante
-        if($Esc == 1 && $Grupo != $MeuGrupo ){
+//        $Esc = $tbl1[1]; // Escalante
+//        if($Esc == 1 && $Grupo != $MeuGrupo ){
+//            $Esc = 0;
+//        }
+
+        // Escalante
+        $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_esc WHERE usu_id = $Cod And grupo_id = $NumGrupo");
+        $row2 = pg_num_rows($rs2);
+        if($row2 > 0){
+            $Esc = 1;
+        }else{
             $Esc = 0;
         }
-        $var = array("coderro"=>$Erro, "eft"=>$Eft, "esc"=>$Esc, "cpf"=>$tbl1[2], "encarreg"=>$tbl1[3], "chefeadm"=>$tbl1[4], "cargo"=>$tbl1[6]);
+
+        $var = array("coderro"=>$Erro, "eft"=>$Eft, "esc"=>$Esc, "cpf"=>$tbl1[1], "encarreg"=>$tbl1[2], "chefeadm"=>$tbl1[3], "cargo"=>$tbl1[5], "grupo"=>$Grupo, "cod"=>$Cod, "row2"=>$row2);
     }else{
         $Erro = 1;
         $var = array("coderro"=>$Erro);
@@ -181,7 +199,6 @@ if($Acao == "configMarcaEscala__"){
     echo $responseText;
 }
 
-
 if($Acao == "configMarcaEscala"){
     $Erro = 0;
     $Cod = (int) filter_input(INPUT_GET, 'codigo'); // pessoas_id de poslog
@@ -198,7 +215,24 @@ if($Acao == "configMarcaEscala"){
         $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
     }
 
-//    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]); // meu grupo no poslog
+    //Verif se esse grupo já tem datas em escaladaf
+    $rsGrupo = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf WHERE grupo_id = $NumGrupo ");
+    $rowGrupo = pg_num_rows($rsGrupo);
+    $DiaIni = strtotime(date('Y/m/01'));
+    $Amanha = $DiaIni;
+    if($rowGrupo < 120){
+        for($i = 0; $i < 90; $i++){
+            $Data = date("Y/m/d", $Amanha); // data legível
+            $rs0 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf WHERE dataescala = '$Data' And grupo_id = $NumGrupo ");
+            $row0 = pg_num_rows($rs0);
+            if($row0 == 0){
+                pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf (dataescala, grupo_id) VALUES ('$Data', $NumGrupo)");
+            }
+            $Amanha = strtotime("+1 day", $DiaIni);
+            $DiaIni = $Amanha;
+        }
+    }
+
     $CodGrupo = parEsc("esc_grupo", $Conec, $xProj, $Cod); // grupo do selecionado no poslog
     $SiglaGrupo = "";
 
@@ -244,24 +278,30 @@ if($Acao == "configMarcaEscala"){
             }
         }
     }else{ // está em outro grupo
-        //Verifica se está marcado como efetivo naquele grupo
-        $rs2 = pg_query($Conec, "SELECT eft_daf, esc_daf FROM ".$xProj.".poslog WHERE pessoas_id = $Cod;");
-        $tbl2 = pg_fetch_row($rs2);
-        $MarcaEft = $tbl2[0];
-        $MarcaEsc = $tbl2[1];
-        if($MarcaEft == 0 && $MarcaEsc == 0){ // não está marcado como efetivo nem como escalange -> muda o grupo e marca como efetivo no meu grupo
-            pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_grupo = $NumGrupo, $Campo = $Valor, daf_turno = 0, datamodif = NOW(), usumodif = $UsuIns WHERE pessoas_id = $Cod");
-            $CodGrupo = $NumGrupo;
-        }
-        if($MarcaEft == 1 || $MarcaEsc == 1){ // está em outro grupo e está marcado como efetivo ou escalante
-            $rs = pg_query($Conec, "SELECT siglagrupo FROM ".$xProj.".escalas_gr WHERE id = $CodGrupo;");
-            $row = pg_num_rows($rs);
-            if($row > 0){
-                $tbl = pg_fetch_row($rs);
-                $SiglaGrupo = $tbl[0];
+        if($Campo == "eft_daf"){
+            //Verifica se está marcado como efetivo naquele grupo
+            $rs2 = pg_query($Conec, "SELECT eft_daf, esc_daf FROM ".$xProj.".poslog WHERE pessoas_id = $Cod;");
+            $tbl2 = pg_fetch_row($rs2);
+            $MarcaEft = $tbl2[0];
+            $MarcaEsc = $tbl2[1];
+            if($MarcaEft == 0 && $MarcaEsc == 0){ // não está marcado como efetivo nem como escalange -> muda o grupo e marca como efetivo no meu grupo
+                pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_grupo = $NumGrupo, $Campo = $Valor, daf_turno = 0, datamodif = NOW(), usumodif = $UsuIns WHERE pessoas_id = $Cod");
+                $CodGrupo = $NumGrupo;
             }
-            $Erro = 3;
+//          if($MarcaEft == 1 || $MarcaEsc == 1){ // está em outro grupo e está marcado como efetivo ou escalante
+            if($MarcaEft == 1){ // está em outro grupo e está marcado como efetivo ou escalante
+                $rs = pg_query($Conec, "SELECT siglagrupo FROM ".$xProj.".escalas_gr WHERE id = $CodGrupo;");
+                $row = pg_num_rows($rs);
+                if($row > 0){
+                    $tbl = pg_fetch_row($rs);
+                    $SiglaGrupo = $tbl[0];
+                }
+                $Erro = 3;
+            }
         }
+    }
+    if($Campo == "esc_daf"){ // escalante pode gerenciar outros grupos
+        pg_query($Conec, "UPDATE ".$xProj.".poslog SET $Campo = $Valor, datamodif = NOW(), usumodif = $UsuIns WHERE pessoas_id = $Cod");
     }
 
     $var = array("coderro"=>$Erro, "codgrupo"=>$CodGrupo, "meugrupo"=>$NumGrupo, "outrogrupo"=>$SiglaGrupo);
@@ -269,6 +309,69 @@ if($Acao == "configMarcaEscala"){
     echo $responseText;
 }
 
+if($Acao == "configMarcaEscalaEsc"){
+    $Erro = 0;
+    $Cod = (int) filter_input(INPUT_GET, 'codigo'); // pessoas_id de poslog
+    $Valor = (int) filter_input(INPUT_GET, 'valor');
+    if(isset($_REQUEST["numgrupo"])){ //grupo escolhido
+        $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal que pode editar escala
+    }else{
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+    if($NumGrupo == 0 || $NumGrupo == ""){
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+    if($Valor == 1){
+        $rs0 = pg_query($Conec, "SELECT id, ativo FROM ".$xProj.".escaladaf_esc WHERE usu_id = $Cod And grupo_id = $NumGrupo");
+        $row0 = pg_num_rows($rs0);
+        if($row0 == 0){
+            $CodigoNovo = 0;
+            $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_esc");
+            $tblCod = pg_fetch_row($rsCod);
+            $Codigo = $tblCod[0];
+            $CodigoNovo = ($Codigo+1);
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_esc (id, usu_id, grupo_id, ativo, usuins, datains) 
+                VALUES($CodigoNovo, $Cod, $NumGrupo, 1, ".$_SESSION["usuarioID"].", NOW() )");
+                if(!$rs){
+                    $Erro = 1;
+                }
+        }else{ // já tem
+            $tbl0 = pg_fetch_row($rs0);
+            $CodId = $tbl0[0];
+            $Ativo = $tbl0[1];
+            if($Ativo == 0){ // recupera
+                $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_esc SET ativo = 1 WHERE id = $CodId");
+                if(!$rs){
+                    $Erro = 1;
+                }
+            }
+        }
+    }
+    if($Valor == 0){
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_esc SET ativo = 0 WHERE usu_id = $Cod And grupo_id = $NumGrupo");
+        if(!$rs){
+            $Erro = 1;
+        }
+    }
+
+
+    //Marca
+//    $rs0 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_daf = $Valor, datamodif = NOW(), usumodif = $UsuIns WHERE pessoas_id = $Cod");
+//    if(!$rs0){
+//        $Erro = 1;
+//    }
+//    //Verifica se restou algum escalante no grupo
+//    $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE esc_daf = 1 And esc_grupo = $NumGrupo");
+//    $row = pg_num_rows($rs);
+//    if($row == 0){
+//        pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_daf = 1 WHERE pessoas_id = $Cod");
+//        $Erro = 2;
+//    }
+
+    $var = array("coderro"=>$Erro, "numgrupo"=>$NumGrupo);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
 
 if($Acao =="marcaPartic"){
     $Erro = 0;
@@ -344,8 +447,16 @@ if($Acao =="salvaTurnoParticip"){
 
 if($Acao =="salvamesano"){
     $Erro = 0;
+    if(isset($_REQUEST["numgrupo"])){ //grupo escolhido
+        $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal que pode editar escala
+    }else{
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+    if($NumGrupo == 0 || $NumGrupo == ""){
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+
     $MesAno = addslashes(filter_input(INPUT_GET, 'mesano'));
-    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
     $Proc = explode("/", $MesAno);
     $Mes = $Proc[0];
     if(strLen($Mes) < 2){
@@ -366,7 +477,11 @@ if($Acao =="salvamesano"){
     if(!$rs){
         $Erro = 1;
     }
-    $var = array("coderro"=>$Erro, "mesliberado"=>$MesLiberado);
+
+    $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf WHERE grupo_id = $NumGrupo And DATE_PART('MONTH', dataescala) = '$Mes' And DATE_PART('YEAR', dataescala) = '$Ano' ");
+    $row1 = pg_num_rows($rs1);
+
+    $var = array("coderro"=>$Erro, "mesliberado"=>$MesLiberado, "temMes"=>$row1);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -628,10 +743,15 @@ if($Acao =="insereletra"){
     $Erro = 0;
     $Ordem = (int) filter_input(INPUT_GET, 'ordem');
     $Letra = filter_input(INPUT_GET, 'insletra');
-//    $Tur = addslashes(filter_input(INPUT_GET, 'insturno'));
-//     $Turno = limpar_texto($Tur);
-
-    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+//    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    if(isset($_REQUEST["numgrupo"])){ //grupo escolhido
+        $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal que pode editar escala
+    }else{
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+    if($NumGrupo == 0 || $NumGrupo == ""){
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
 
     $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_turnos");
     $tblCod = pg_fetch_row($rsCod);
@@ -709,7 +829,7 @@ if($Acao =="insereFeriado"){
 
     //$AnoHoje = date('Y');
     //$Feriado = $AnoHoje."/".$Mes."/".$Dia;
-    $Feriado = "2024/".$Mes."/".$Dia;
+    $Feriado = "2025/".$Mes."/".$Dia;
 
     $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_fer");
     $tblCod = pg_fetch_row($rsCod);
@@ -895,7 +1015,14 @@ if($Acao =="procChefeDiv"){
 if($Acao =="salvachefediv"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Erro = 0;
-    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    if(isset($_REQUEST["numgrupo"])){
+        $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal que pode editar escala
+    }else{
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+    if($NumGrupo == 0 || $NumGrupo == ""){
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
     $rs = pg_query($Conec, "UPDATE ".$xProj.".escalas_gr SET chefe_escdaf = $Cod WHERE id = $NumGrupo");
     $tbl = pg_fetch_row($rs);
     if(!$rs){
@@ -908,7 +1035,15 @@ if($Acao =="salvachefediv"){
 if($Acao =="salvaencarreg"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Erro = 0;
-    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+//    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    if(isset($_REQUEST["numgrupo"])){
+        $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal que pode editar escala
+    }else{
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+    if($NumGrupo == 0 || $NumGrupo == ""){
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
     $rs = pg_query($Conec, "UPDATE ".$xProj.".escalas_gr SET enc_escdaf = $Cod WHERE id = $NumGrupo");
     $tbl = pg_fetch_row($rs);
     if(!$rs){
@@ -976,9 +1111,26 @@ if($Acao =="trocagrupo"){
             $SiglaGrupo = $tbl[0];
         }else{
             $SiglaGrupo = "";
-        } 
+        }
 //    }
-    $var = array("coderro"=>$Erro, "siglagrupo"=>$SiglaGrupo);
+    //Procura mes de consulta salvo pelo usuário
+//    $MesSalvo = parEsc("mes_escdaf", $Conec, $xProj, $_SESSION["usuarioID"]);
+    if(isset($_REQUEST["selecmes"])){
+        $MesSalvo = $_REQUEST["selecmes"]; // quando vem do fiscal
+    }else{
+        $MesSalvo = parEsc("mes_escdaf", $Conec, $xProj, $_SESSION["usuarioID"]); 
+    }
+    //Ver se o que está guardado em poslog corresponde a algum mes salvo em escaladaf
+    $rsMes = pg_query($Conec, "SELECT id 
+    FROM ".$xProj.".escaladaf WHERE grupo_id = $NumGrupo And CONCAT(TO_CHAR(dataescala, 'MM'), '/', TO_CHAR(dataescala, 'YYYY')) = '$MesSalvo' ");
+    $rowMes = pg_num_rows($rsMes);
+
+    if(is_null($MesSalvo) || $MesSalvo == "" || $rowMes == 0){
+        $MesSalvo = date("m")."/".date("Y");
+        pg_query($Conec, "UPDATE ".$xProj.".poslog SET mes_escdaf = '$MesSalvo' WHERE pessoas_id = ". $_SESSION["usuarioID"]."" );
+    }
+
+    $var = array("coderro"=>$Erro, "siglagrupo"=>$SiglaGrupo, "mesSalvo"=>$MesSalvo, "temMes"=>$rowMes);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -1088,9 +1240,20 @@ if($Acao =="salvaEditaTurno"){
     echo $responseText;
 }
 if($Acao =="buscaOrdem"){
-    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+//    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    if(isset($_REQUEST["numgrupo"])){ //grupo escolhido
+        $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal que pode editar escala
+    }else{
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+    if($NumGrupo == 0 || $NumGrupo == ""){
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
     $Erro = 0;
-    $rs = pg_query($Conec, "SELECT MAX(ordemletra) FROM ".$xProj.".escaladaf_turnos WHERE grupo_turnos = $NumGrupo");
+    $rs0 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_turnos WHERE grupo_turnos = $NumGrupo And ativo = 1");
+    $row0 = pg_num_rows($rs0);
+
+    $rs = pg_query($Conec, "SELECT MAX(ordemletra) FROM ".$xProj.".escaladaf_turnos WHERE grupo_turnos = $NumGrupo And ativo = 1");
     if(!$rs){
         $Erro = 1;
         $Ordem = 0;
@@ -1099,7 +1262,10 @@ if($Acao =="buscaOrdem"){
         $Num = $tbl[0];
         $Ordem = ($Num+1);
     }
-    $var = array("coderro"=>$Erro, "ordem"=>$Ordem);
+    if($Ordem >= 20){
+        $Ordem = 20;
+    }
+    $var = array("coderro"=>$Erro, "ordem"=>$Ordem, "quantTurno"=>$row0);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -1165,3 +1331,51 @@ if($Acao =="marcaPrimCargo"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
+if($Acao =="salvaFeriado"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Data = addslashes(filter_input(INPUT_GET, 'novadata'));
+    $Erro = 0;
+    
+    $Proc = explode("/", $Data);
+    $Dia = $Proc[0];
+    if(strLen($Dia) < 2){
+        $Dia = "0".$Dia;
+    }
+    $Mes = $Proc[1];
+
+    $Feriado = "2025/".$Mes."/".$Dia;
+
+    $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_fer");
+    $tblCod = pg_fetch_row($rsCod);
+    $Codigo = $tblCod[0];
+    $CodigoNovo = ($Codigo+1);
+
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_fer SET dataescalafer = '$Feriado' WHERE id = $Cod");
+    if(!$rs){
+        $Erro = 1;
+    }
+//    pg_query($Conec, "UPDATE ".$xProj.".escaladaf SET feriado = 1 WHERE dataescala = '$Feriado' ");
+
+    $var = array("coderro"=>$Erro, "data"=>$Feriado);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao == "carregames"){ // sem uso
+    if(isset($_REQUEST["numgrupo"])){ //grupo escolhido
+        $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal que pode editar escala
+    }else{
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+    if($NumGrupo == 0 || $NumGrupo == ""){
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+    $rs = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataescala, 'MM'), '/', TO_CHAR(dataescala, 'YYYY')) 
+    FROM ".$xProj.".escaladaf WHERE grupo_id = $NumGrupo GROUP BY TO_CHAR(dataescala, 'MM'), TO_CHAR(dataescala, 'YYYY') ORDER BY TO_CHAR(dataescala, 'YYYY') DESC, TO_CHAR(dataescala, 'MM') DESC ");
+    while ($tbl = pg_fetch_row($rs)){
+       $Meses[] = array('Mes' => $tbl[0]);
+    }
+    $responseText = json_encode($Meses);
+    echo $responseText;
+ }

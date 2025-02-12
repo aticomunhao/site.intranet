@@ -19,6 +19,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             }else{
                 $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);   
             }
+            $rsGr = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_esc WHERE usu_id = ".$_SESSION["usuarioID"]." And ativo = 1");
+            $rowGr = pg_num_rows($rsGr); // quantidade de grupos em que é escalante
         ?>
         <div style="margin: 10px; padding: 20px; border: 2px solid green; border-radius: 15px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->
@@ -174,7 +176,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
                 <div class="col" style="margin: 0 auto; text-align: center;">
                     <?php
-                        if($EscalanteDAF == 1 && $MeuGrupo == $NumGrupo || $_SESSION["usuarioID"] == 83){ // Provisório Wil
+                        if($EscalanteDAF == 1 && $MeuGrupo == $NumGrupo || $rowGr > 1 || $_SESSION["usuarioID"] == 83){ // Provisório Wil
                             ?>
                             <div class='bContainer corFundo' onclick='abreEditHorario()'> Editar </div>
                             <label style="padding-top: 5px;">&nbsp;</label>
