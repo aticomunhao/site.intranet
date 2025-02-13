@@ -27,7 +27,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             }else{
             $Ano = date('Y');
         }
-        $rs3 = pg_query($Conec, "SELECT id, TO_CHAR(dataescalafer, 'DD/MM'), descr FROM ".$xProj.".escaladaf_fer WHERE ativo = 1 ORDER BY dataescalafer");
+        $rs3 = pg_query($Conec, "SELECT id, TO_CHAR(dataescalafer, 'DD/MM'), descr FROM ".$xProj.".escaladaf_fer WHERE ativo = 1 And TO_CHAR(dataescalafer, 'YYYY') = '$Ano' ORDER BY dataescalafer");
         ?>
         <div style="margin-top: 15px; text-align: center; font-weight: bold;">Feriados <?php echo $Ano; ?></div>
         <div style="margin: 10px; padding: 10px; text-align: center; border: 2px solid green; border-radius: 15px;">

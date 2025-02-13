@@ -433,7 +433,7 @@ if($Acao =="buscausu"){
 if($Acao =="salvaUsu"){
     $Usu = (int) filter_input(INPUT_GET, 'numero');
     $GuardaId = (int) filter_input(INPUT_GET, 'guardaidpessoa');
-    $UsuLogado = (int) filter_input(INPUT_GET, 'usulogado');
+    $UsuLogado = (int) filter_input(INPUT_GET, 'usulogado');  // usuarioID
     $Setor = (int) filter_input(INPUT_GET, 'setor');
     $Adm = (int) filter_input(INPUT_GET, 'flAdm');
     $Cpf = filter_input(INPUT_GET, 'cpf');
@@ -467,6 +467,7 @@ if($Acao =="salvaUsu"){
 //    $Escala = (int) filter_input(INPUT_GET, 'escala');
     $GrupoEsc = (int) filter_input(INPUT_GET, 'grupoesc');
     $Escalante = (int) filter_input(INPUT_GET, 'escalante');
+
     $FiscEscala = (int) filter_input(INPUT_GET, 'fiscalescala');
 
 
@@ -514,6 +515,35 @@ if($Acao =="salvaUsu"){
         if(!$rs){
             $Erro = 1;
         }
+
+        if($Escalante == 1){ // atualizar arquivo escaladaf_esc
+            $rs0 = pg_query($Conec, "SELECT id, ativo FROM ".$xProj.".escaladaf_esc WHERE usu_id = $Usu And grupo_id = $GrupoEsc");
+            $row0 = pg_num_rows($rs0);
+            if($row0 == 0){ // se não tem insere
+                $CodigoNovoEsc = 0;
+                $rsCodEsc = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_esc");
+                $tblCodEsc = pg_fetch_row($rsCodEsc);
+                $CodigoEsc = $tblCodEsc[0];
+                $CodigoNovoEsc = ($CodigoEsc+1);
+                $rsEsc = pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_esc (id, usu_id, grupo_id, ativo, usuins, datains) 
+                    VALUES($CodigoNovoEsc, $Usu, $GrupoEsc, 1, ".$_SESSION["usuarioID"].", NOW() )");
+                    if(!$rsEsc){
+                        $Erro = 1;
+                    }
+            }else{ // já tem
+                $tbl0 = pg_fetch_row($rs0);
+                $CodId = $tbl0[0];
+                $Ativo = $tbl0[1];
+                if($Ativo == 0){ // recupera
+                    $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_esc SET ativo = 1 WHERE id = $CodId");
+                    if(!$rs){
+                        $Erro = 1;
+                    }
+                }
+            }
+        }else{ // retirando marca de escalante
+            $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_esc SET ativo = 0 WHERE usu_id = $Usu And grupo_id = $GrupoEsc");
+        }
     }
     if($Usu == 0){ // cadastrar
         if($GuardaId > 0){
@@ -530,6 +560,34 @@ if($Acao =="salvaUsu"){
             if(!$rs){
                 $Erro = 12;
             }
+
+            if($Escalante == 1){ // atualizar arquivo escaladaf_esc
+                $rs0 = pg_query($Conec, "SELECT id, ativo FROM ".$xProj.".escaladaf_esc WHERE usu_id = $GuardaId And grupo_id = $GrupoEsc");
+                $row0 = pg_num_rows($rs0);
+                if($row0 == 0){ // se não tem insere
+                    $CodigoNovoEsc = 0;
+                    $rsCodEsc = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_esc");
+                    $tblCodEsc = pg_fetch_row($rsCodEsc);
+                    $CodigoEsc = $tblCodEsc[0];
+                    $CodigoNovoEsc = ($CodigoEsc+1);
+                    $rsEsc = pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_esc (id, usu_id, grupo_id, ativo, usuins, datains) 
+                        VALUES($CodigoNovoEsc, $GuardaId, $GrupoEsc, 1, ".$_SESSION["usuarioID"].", NOW() )");
+                        if(!$rsEsc){
+                            $Erro = 1;
+                        }
+                }else{ // já tem
+                    $tbl0 = pg_fetch_row($rs0);
+                    $CodId = $tbl0[0];
+                    $Ativo = $tbl0[1];
+                    if($Ativo == 0){ // recupera
+                        $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_esc SET ativo = 1 WHERE id = $CodId");
+                        if(!$rs){
+                            $Erro = 1;
+                        }
+                    }
+                }
+            }
+
         }else{
             $Erro = 13;
         }
@@ -543,7 +601,7 @@ if($Acao =="salvaUsu"){
             pg_query($Conec, "INSERT INTO ".$xProj.".pessoas (id, pessoas_id, cpf, nome_completo, dt_nascimento, sexo, status, datains) VALUES ($CodigoNovo, $GuardaId, '$Cpf', '$NomeCompl', '$DNasc', $Sexo, $Ativo, NOW() ) "); 
         }
     }
-    if($GrupoEsc == 0){
+    if($GrupoEsc == 0){ // Sem grupo, tira marca de efetivo
         pg_query($Conec, "UPDATE ".$xProj.".poslog SET eft_daf = 0 WHERE cpf = '$Cpf'");
     }
     $var = array("coderro"=>$Erro, "usuario"=>$Usu, "guardausu"=>$GuardaId, "fiscar"=>$FiscAr);

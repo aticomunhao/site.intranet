@@ -113,6 +113,7 @@ if(!isset($_SESSION["usuarioID"])){
                 background: linear-gradient(180deg, white, #00BFFF);
                 margin: 12% auto;
                 padding: 10px;
+                padding-top: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
                 width: 40%;
@@ -229,7 +230,9 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("selecGrupo").style.visibility = "visible"; 
                     document.getElementById("etiqGrupo").style.visibility = "visible"; 
                 }
+
                 document.getElementById("selecMesAnoEsc").value = document.getElementById("guardamesano").value;
+                document.getElementById("selecGrupo").value = document.getElementById("guardanumgrupo").value;
 
                 if(parseInt(document.getElementById("liberadoefetivo").value) === 0 && parseInt(document.getElementById("escalante").value) === 0 && parseInt(document.getElementById("fiscal").value) === 0){
                     $("#faixacentral").load("modulos/escaladaf/infoAgd1.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
@@ -352,7 +355,9 @@ if(!isset($_SESSION["usuarioID"])){
                                     ajaxIni();
                                     if(ajax){
                                         ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=transfmesano&mesano="+encodeURIComponent(document.getElementById("transfMesAnoEsc").value)
-                                        +"&transfde="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value), true);
+                                        +"&transfde="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value)
+                                        +"&numgrupo="+document.getElementById("selecGrupo").value
+                                        , true);
                                         ajax.onreadystatechange = function(){
                                             if(ajax.readyState === 4 ){
                                                 if(ajax.responseText){
@@ -613,6 +618,13 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
 
+                $("#selecAnoFer").change(function(){
+                    if(document.getElementById("selecAnoFer").value == ""){
+                        return false;
+                    }
+                    $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php?ano="+document.getElementById("selecAnoFer").value);
+                });
+
                 modalParticip = document.getElementById('relacParticip'); //span[0]
                 window.onclick = function(event){
                     if(event.target === modalParticip){
@@ -663,7 +675,8 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function abreEditFeriados(){
-                $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php");
+                $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php?ano="+document.getElementById("guardaAno").value);
+                document.getElementById("selecAnoFer").value = document.getElementById("guardaAno").value;
                 document.getElementById("relacQuadroFeriados").style.display = "block";
             }
 
@@ -1103,11 +1116,11 @@ if(!isset($_SESSION["usuarioID"])){
                     });
                     return false;
                 }
-
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=insereFeriado&insdata="+document.getElementById("insdata").value
-                    +"&insdescr="+encodeURIComponent(document.getElementById("insdescr").value), true);
+                    +"&insdescr="+encodeURIComponent(document.getElementById("insdescr").value)
+                    +"&ano="+document.getElementById("selecAnoFer").value, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -1116,7 +1129,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
                                 }else{
-                                    $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php");
+                                    $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php?ano="+document.getElementById("selecAnoFer").value);
                                     $("#faixaferiados").load("modulos/escaladaf/relFeriados.php?ano="+document.getElementById("guardaAno").value);
                                     document.getElementById("inserirData").style.display = "none";
                                     document.getElementById("abreinsData").style.visibility = "visible";
@@ -1148,7 +1161,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                 alert("Houve um erro no servidor.");
                                             }else{
                                                 $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
-                                                $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php");
+                                                $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php?ano="+document.getElementById("guardaAno").value);
                                                 $("#faixaferiados").load("modulos/escaladaf/relFeriados.php?ano="+document.getElementById("guardaAno").value);
                                             }
                                         }
@@ -1167,9 +1180,11 @@ if(!isset($_SESSION["usuarioID"])){
                 if(Valor == ""){
                     return false;
                 }
+//alert(Cod);
+//return false;
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaFeriado&codigo="+Cod+"&novadata="+encodeURIComponent(Valor), true);
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaFeriado&codigo="+Cod+"&novadata="+encodeURIComponent(Valor)+"&ano="+document.getElementById("selecAnoFer").value, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -1179,7 +1194,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     alert("Houve um erro no servidor.");
                                 }else{
                                     $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
-                                    $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php");
+                                    $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php?ano="+document.getElementById("selecAnoFer").value);
                                     $("#faixaferiados").load("modulos/escaladaf/relFeriados.php?ano="+document.getElementById("guardaAno").value);
                                 }
                             }
@@ -1187,7 +1202,32 @@ if(!isset($_SESSION["usuarioID"])){
                     };
                     ajax.send(null);
                 }
+            }
 
+            function editaDescrFer(Cod, Valor){
+                if(Valor == ""){
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaDescFeriado&codigo="+Cod+"&descfer="+encodeURIComponent(Valor), true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
+                                    $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php?ano="+document.getElementById("selecAnoFer").value);
+                                    $("#faixaferiados").load("modulos/escaladaf/relFeriados.php?ano="+document.getElementById("guardaAno").value);
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
             }
 
             function marcaConfigEscalaEsc(obj){
@@ -1442,7 +1482,6 @@ if(!isset($_SESSION["usuarioID"])){
             function fechaQuadroFeriados(){
                 document.getElementById("relacQuadroFeriados").style.display = "none";
             }
-
             function resumoUsuEscala(){
                 window.open("modulos/escaladaf/imprUsuEsc.php?acao=listaUsuarios&numgrupo="+document.getElementById("guardanumgrupo").value, "EscalaUsu");
             }
@@ -1592,17 +1631,17 @@ if(!isset($_SESSION["usuarioID"])){
                     draggable: true,
                     buttons: {
                         Sim: function () {
-                ajaxIni();
-                if(ajax){
-                    ajax.open("POST", "modulos/escaladaf/criaExcel_daf.php?acao=listaturnos&numgrupo="+document.getElementById("guardanumgrupo").value, true);
-                    ajax.onreadystatechange = function(){
-                        if(ajax.readyState === 4 ){
-                            if(ajax.responseText){
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/escaladaf/criaExcel_daf.php?acao=listaturnos&numgrupo="+document.getElementById("guardanumgrupo").value, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
 //alert(ajax.responseText);
-                                Resp = eval("(" + ajax.responseText + ")");
-                                if(parseInt(Resp.coderro) === 1){
-                                    alert("Houve um erro no servidor.");
-                                }else{
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro no servidor.");
+                                            }else{
                                     //Salva arquivo xlsx
 //                                    $(location).attr("href", "modulos/conteudo/arquivos/ListaTurnos.xlsx");
 window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
@@ -1614,13 +1653,13 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
 //                                            OK: function(){}
 //                                        }
 //                                    });
-                                }
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
                             }
-                        }
-                    };
-                    ajax.send(null);
-                }
-            },
+                        },
                         Não: function () {
                         }
                     }
@@ -1717,7 +1756,6 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
             jQuery(function($){
                 $("#relacParticip").draggable();
                 $("#modalEscalaConfig").draggable();
-//                $("#relacQuadroHorario").draggable();
             });
 
         </script>
@@ -1996,7 +2034,7 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
     $DiaIni = strtotime(date('Y/m/01')); // número - para começar com o dia 1
     $DiaIni = strtotime("-1 day", $DiaIni); // para começar com o dia 1 no loop for
 
-    //Mantem a tabela meses à frente
+    //Mantem a tabela escaladaf meses à frente
     for($i = 0; $i < 180; $i++){
         $Amanha = strtotime("+1 day", $DiaIni);
         $DiaIni = $Amanha;
@@ -2007,7 +2045,6 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
             pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf (dataescala, grupo_id) VALUES ('$Data', $NumGrupo)");
         }
     }
-
 
     $Escalante = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
     $Fiscal = parEsc("esc_fisc", $Conec, $xProj, $_SESSION["usuarioID"]);
@@ -2040,27 +2077,43 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
 
     $MesLiberado = 0; // só o escalante verá a página
 
-        // Marcar Feriados em escaladaf
-//    $rsFer = pg_query($Conec, "SELECT TO_CHAR(dataescalafer, 'DD'), TO_CHAR(dataescalafer, 'MM') FROM ".$xProj.".escaladaf_fer WHERE ativo = 1 ORDER BY dataescalafer ");
-//    $rowFer = pg_num_rows($rsFer);
-//    if($rowFer > 0){
-//        while($tblFer = pg_fetch_row($rsFer)){
-//            $DiaFer = $tblFer[0];
-//            $MesFer = $tblFer[1];
-//            pg_query($Conec, "UPDATE ".$xProj.".escaladaf SET feriado = 1 WHERE TO_CHAR(dataescala, 'DD') = '$DiaFer' And TO_CHAR(dataescala, 'MM') = '$MesFer' And grupo_id = $NumGrupo ");
-//        }
-//    }
-
-    // Marcar Feriados em escaladaf
-    $rsFer = pg_query($Conec, "SELECT dataescalafer FROM ".$xProj.".escaladaf_fer WHERE ativo = 1 And DATE_PART('YEAR', dataescalafer) = '$Ano' ORDER BY dataescalafer ");
-    $rowFer = pg_num_rows($rsFer);
-    if($rowFer > 0){
+if($MesLiberado == 1){ // suspenso
+    //Mantém feriados dois anos à frente
+    $rsFer = pg_query($Conec, "SELECT id, TO_CHAR(dataescalafer, 'DD'), TO_CHAR(dataescalafer, 'MM'), descr FROM ".$xProj.".escaladaf_fer WHERE ativo = 1 And DATE_PART('YEAR', dataescalafer) = '$Ano'");
+	$rowFer = pg_num_rows($rsFer);
+	if($rowFer > 0){
         while($tblFer = pg_fetch_row($rsFer)){
-            $DiaFer = $tblFer[0];
-            pg_query($Conec, "UPDATE ".$xProj.".escaladaf SET feriado = 1 WHERE dataescala = '$DiaFer' ");
+            $Cod = $tblFer[0];
+            $Descr = $tblFer[3];
+            $DiaFer = $tblFer[1];
+            $MesFer = $tblFer[2];
+            $Feriado = ($Ano+1)."/".$MesFer."/".$DiaFer;
+            $rsProc = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE ativo = 1 And dataescalafer = '$Feriado'");
+            $rowProc = pg_num_rows($rsProc);
+            if($rowProc == 0){
+                $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_fer");
+                $tblCod = pg_fetch_row($rsCod);
+                $Codigo = $tblCod[0];
+                $CodigoNovo = ($Codigo+1);
+                pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, ativo) 
+                VALUES($CodigoNovo, '$Feriado', '$Descr', 1) ");
+            }
+
+            $Feriado = ($Ano+2)."/".$MesFer."/".$DiaFer;
+            $rsProc = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE ativo = 1 And dataescalafer = '$Feriado'");
+            $rowProc = pg_num_rows($rsProc);
+            if($rowProc == 0){
+                $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_fer");
+                $tblCod = pg_fetch_row($rsCod);
+                $Codigo = $tblCod[0];
+                $CodigoNovo = ($Codigo+1);
+                pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, ativo) 
+                VALUES($CodigoNovo, '$Feriado', '$Descr', 1) ");
+            }
+
         }
     }
-
+}
 
     ?>
         <input type="hidden" id="guardamesano" value="<?php echo addslashes($MesSalvo); ?>" />
@@ -2240,7 +2293,21 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
         <div id="relacQuadroFeriados" class="relacmodal">
             <div class="modal-content-relacFeriados">
                 <span class="close" onclick="fechaQuadroFeriados();">&times;</span>
-                <div id="relacaoFeriados" style="border: 2px solid #C6E2FF; border-radius: 10px;"></div>
+
+                <label class="etiqAzul" style="padding-left: 15px;">Selecione o Ano: </label>
+                <select id="selecAnoFer" style="font-size: .8rem; width: 90px;" title="Selecione o ano.">
+                    <?php 
+                        $OpcoesAno = pg_query($Conec, "SELECT TO_CHAR(dataescalafer, 'YYYY') FROM ".$xProj.".escaladaf_fer WHERE ativo = 1 GROUP BY TO_CHAR(dataescalafer, 'YYYY') ORDER BY TO_CHAR(dataescalafer, 'YYYY')");
+                        if($OpcoesAno){
+                            while ($Opcoes = pg_fetch_row($OpcoesAno)){ ?>
+                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                            <?php 
+                        }
+                    }
+                    ?>
+                </select>
+
+                <div id="relacaoFeriados"></div>
             </div>
         </div> <!-- Fim Modal-->
 

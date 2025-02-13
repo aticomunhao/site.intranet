@@ -102,8 +102,7 @@
                             $IdDia = $tbl[0];
                             $DataDia = addslashes($tbl[3]);
 
-                            $ProcFer = $tbl[5];
-//                            $ProcFer = "2025/".$Mes."/".$tbl[1];
+                            $ProcFer = $tbl[5]; // $ProcFer = "2025/".$Mes."/".$tbl[1];
                             $diaFer = 0;
                             $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
                             $rowFer = pg_num_rows($rsFer);
@@ -181,7 +180,6 @@
                                         $Sem = $tbl3[2];
 
                                         $ProcFer = $tbl3[4];
-//                                        $ProcFer = "2025/".$Mes."/".$tbl3[1];
                                         $diaFer = 0;
                                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
                                         $rowFer = pg_num_rows($rsFer);
@@ -200,7 +198,6 @@
                                             $ValeRef = $tbl4[5]; // Vale refeição
 
                                             $ProcFer = $tbl4[6];
-//                                            $ProcFer = "2025/".$Mes."/".$Dia;
                                             $diaFer = 0;
                                             $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
                                             $rowFer = pg_num_rows($rsFer);
@@ -209,7 +206,7 @@
                                             }
 
                                             if($tbl4[2] == 0){ // sem destaque
-                                                if($Sem == 0 || $tbl4[4] == 1){ // domingo ou feriado
+                                                if($Sem == 0 || $diaFer == 1){ // domingo ou feriado
                                                     if($ValeRef == 0){ // sem Vale refeição
                                                         echo "<div class='quadrodiaCinza' style='border-width: 2px; border-color: red;' title='Sem vale refeição'> $tbl4[0] </div>";
                                                     }else{

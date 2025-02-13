@@ -819,7 +819,8 @@ if($Acao =="insereFeriado"){
     $Erro = 0;
     $Data = addslashes(filter_input(INPUT_GET, 'insdata'));
     $Descr = filter_input(INPUT_GET, 'insdescr');
-    
+    $Ano = filter_input(INPUT_GET, 'ano');
+
     $Proc = explode("/", $Data);
     $Dia = $Proc[0];
     if(strLen($Dia) < 2){
@@ -829,7 +830,7 @@ if($Acao =="insereFeriado"){
 
     //$AnoHoje = date('Y');
     //$Feriado = $AnoHoje."/".$Mes."/".$Dia;
-    $Feriado = "2025/".$Mes."/".$Dia;
+    $Feriado = $Ano."/".$Mes."/".$Dia;
 
     $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_fer");
     $tblCod = pg_fetch_row($rsCod);
@@ -869,8 +870,15 @@ if($Acao =="apagadatafer"){
 
 if($Acao =="transfmesano"){
     $Erro = 0;
+    if(isset($_REQUEST["numgrupo"])){
+        $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal que pode editar escala
+    }else{
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+    if($NumGrupo == 0 || $NumGrupo == ""){
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
 
-    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
     $MesAno = addslashes(filter_input(INPUT_GET, 'mesano')); // mes a transferir
     $Proc = explode("/", $MesAno);
     $Mes = $Proc[0];
@@ -1335,6 +1343,7 @@ if($Acao =="marcaPrimCargo"){
 if($Acao =="salvaFeriado"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Data = addslashes(filter_input(INPUT_GET, 'novadata'));
+    $Ano = filter_input(INPUT_GET, 'ano');
     $Erro = 0;
     
     $Proc = explode("/", $Data);
@@ -1344,19 +1353,25 @@ if($Acao =="salvaFeriado"){
     }
     $Mes = $Proc[1];
 
-    $Feriado = "2025/".$Mes."/".$Dia;
-
-    $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_fer");
-    $tblCod = pg_fetch_row($rsCod);
-    $Codigo = $tblCod[0];
-    $CodigoNovo = ($Codigo+1);
+    $Feriado = $Ano."/".$Mes."/".$Dia;
 
     $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_fer SET dataescalafer = '$Feriado' WHERE id = $Cod");
     if(!$rs){
         $Erro = 1;
     }
-//    pg_query($Conec, "UPDATE ".$xProj.".escaladaf SET feriado = 1 WHERE dataescala = '$Feriado' ");
+    $var = array("coderro"=>$Erro, "data"=>$Feriado);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
 
+if($Acao =="salvaDescFeriado"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Desc = addslashes(filter_input(INPUT_GET, 'descfer'));
+    $Erro = 0;
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_fer SET descr = '$Desc' WHERE id = $Cod");
+    if(!$rs){
+        $Erro = 1;
+    }
     $var = array("coderro"=>$Erro, "data"=>$Feriado);
     $responseText = json_encode($var);
     echo $responseText;

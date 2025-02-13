@@ -16,7 +16,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     </head>
     <body> 
         <?php
-//            $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
             if(isset($_REQUEST["numgrupo"])){
                 $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal
             }else{

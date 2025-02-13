@@ -10,7 +10,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <title></title>
     </head>
     <body> 
-        <div style="margin-top: 15px;">Feriados</div>
         <?php
             $EscalanteDAF = parEsc("esc_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
             if(isset($_REQUEST["ano"])){
@@ -19,11 +18,12 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 $Ano = date('Y');
             }
         ?>
+        <div style="margin-top: 15px;">Feriados <?php echo $Ano; ?></div>
         <div style="margin: 10px; padding: 10px; border: 2px solid green; border-radius: 15px;">
             <div class="row">
                 <div class="col" style="margin: 0 auto; text-align: left;">
                     <?php
-                    $rs3 = pg_query($Conec, "SELECT id, TO_CHAR(dataescalafer, 'DD/MM'), descr FROM ".$xProj.".escaladaf_fer WHERE ativo = 1 ORDER BY dataescalafer");
+                    $rs3 = pg_query($Conec, "SELECT id, TO_CHAR(dataescalafer, 'DD/MM'), descr FROM ".$xProj.".escaladaf_fer WHERE ativo = 1 And DATE_PART('YEAR', dataescalafer) = '$Ano' ORDER BY dataescalafer");
                     ?>
                     <table class="display" style="margin: 0 auto; text-align: center; width: 100%;">
                         <?php 
