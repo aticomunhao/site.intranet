@@ -151,7 +151,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
                 <div class="col" style="margin: 0 auto; text-align: center;">
                     <?php
-                        $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq, TO_CHAR(cargacont, 'HH24:MI'), infotexto FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 15 And ordemletra <= 20 And grupo_turnos = $NumGrupo ORDER BY letra");
+                        $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq, TO_CHAR(cargacont, 'HH24:MI'), infotexto, ordemletra FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 15 And ordemletra <= 20 And grupo_turnos = $NumGrupo ORDER BY letra");
                     ?>
                     <table class="display" style="margin: 0 auto; width:85%;">
                         <?php 

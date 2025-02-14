@@ -80,7 +80,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     <td class="etiqAzul aCentro">Dia</td>
                     <td></td>
                     <td class="etiqAzul aEsq">Nome</td>
-                    <td class="etiqAzul aCentro">Turno</td>
+                    <td class="etiqAzul aCentro">Letra-Turno-Carga</td>
                     <td class="etiqAzul aCentro">Interv</td>
                     <td class="etiqAzul aCentro">Descanso</td>
                 </tr>
@@ -91,10 +91,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     $Dia = $tbl0[1];
                     $Turno = $tbl0[4]; // turnoturno
                     $PoslogId = $tbl0[6]; // pessas_id em poslog
-                    $Interv = $tbl0[9];
-//                    $InfoTexto = $tbl0[10];
-
-                    $TurnosId = $tbl0[7]; // turnos_id em escaladaf_ins
+                    $TurnosId = $tbl0[7]; // turnos_id em escaladaf_ins - melhor usar a letra
                     
                     $Letra = $tbl0[9];
                     $HoraFolga = $tbl0[5];
@@ -104,7 +101,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         $Nome = substr($tbl0[2], 0, 22); //nomeusual
                     }
 
-//                    if(is_null($HoraFolga) || $HoraFolga == ""){
                     if(is_null($HoraFolga)){
                         $rs1 = pg_query($Conec, "SELECT horafolga 
                         FROM ".$xProj.".escaladaf_ins 
@@ -117,20 +113,24 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         }
                     } 
 
-                    $rs2 = pg_query($Conec, "SELECT horaturno, interv, infotexto 
+                    $rs2 = pg_query($Conec, "SELECT horaturno, TO_CHAR(interv, 'HH24:MI'), infotexto, TO_CHAR(cargahora, 'HH24:MI') 
                     FROM ".$xProj.".escaladaf_turnos 
-                    WHERE id = $TurnosId And interv IS NOT NULL And ativo = 1 And grupo_turnos = $NumGrupo ");
+                    WHERE letra = '$Letra' And interv IS NOT NULL And ativo = 1 And grupo_turnos = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
                         $Turno = $tbl2[0];
+                        $CargaHora = " - ".$tbl2[3];
                         $Interv = $tbl2[1];
                         $InfoTexto = $tbl2[2];
                     }else{
                         $Interv = "";
                         $InfoTexto = 0;
                     }
-
+                    if($InfoTexto == 1){
+                        $CargaHora = "";
+                        $Interv = "";
+                    }
                     ?>
                     <tr>
                         <td style="display: none;"></td>
@@ -138,7 +138,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <td class="etiqAzul90 aCentro" title="<?php echo "Dia ".$tbl0[1]."/".$Mes."/".$Ano; ?>" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?>> <?php if($ContDia == 1){echo "<div style='border: 1px solid; border-radius: 3px;'>".$tbl0[1]."</div>";} ?></td> <!-- Dia -->
                         <td class="etiqAzul aCentro" title="Dia da semana" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?>><?php if($ContDia == 1){echo $Semana_Extract[$tbl0[8]];} ?></td>
                         <td class="etiqAzul90 aEsq" style="padding-left: 5px; <?php if($ContDia == 1){echo "border-top: 1px solid;";}; ?> "><?php echo "<div style='border: 1px solid; border-radius: 3px; padding-left: 3px;'>".$Nome."</div>"; ?></td> <!-- Nome -->
-                        <td class="etiqAzul aCentro" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?> ><?php echo $Letra." (".$Turno.")"; ?></td> <!-- Turno escalado -->
+                        <td class="etiqAzul aCentro" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?> ><?php echo $Letra." - ".$Turno.$CargaHora; ?></td> <!-- Turno escalado -->
                         <td class="etiqAzul aCentro" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?>><?php echo $Interv; ?></td> <!-- Intervalo de Turno - vem de escaladaf_turnos -->
                         <td <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; if($InfoTexto == 1){echo "font-size: 80%;";} ?>><input <?php if($InfoTexto == 1){echo "disabled";} ?> type="text" value="<?php if($InfoTexto == 0){echo $HoraFolga;}else{echo $tbl0[4];} ?>" style="width: 120px; text-align: center; border: 1px solid; border-radius: 3px;" onchange="editaFolga(<?php echo $Cod; ?>, value);" title="Período de descanso no formato 00:00/00:00"/></td>
                     </tr>

@@ -2147,7 +2147,7 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
         <input type="hidden" id="fiscal" value="<?php echo $Fiscal; ?>" />
         <input type="hidden" id="guardameugrupo" value="<?php echo $MeuGrupo; ?>" />
         <input type="hidden" id="guardanumgrupo" value="<?php echo $NumGrupo; ?>" />
-        <input type="text" id="guardaDiaId" value="" />
+        <input type="hidden" id="guardaDiaId" value="" />
         <input type="hidden" id="guardacod" value="" />
         <input type="hidden" id="mudou" value="0" />
         <input type="hidden" id="liberadoefetivo" value="<?php echo $MesLiberado; ?>" />
