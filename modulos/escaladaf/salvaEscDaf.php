@@ -488,7 +488,7 @@ if($Acao =="salvamesano"){
 
 if($Acao =="insParticipante"){
     $Erro = 0;
-    $CodDia = (int) filter_input(INPUT_GET, 'diaIdEscala'); // pessoas_id
+    $CodDia = (int) filter_input(INPUT_GET, 'diaIdEscala'); // id de escaladaf
     if(isset($_REQUEST["numgrupo"])){
         $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal
     }else{

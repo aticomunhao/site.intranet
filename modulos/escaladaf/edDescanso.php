@@ -68,10 +68,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             $rsEft = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo");
             $Eft = pg_num_rows($rsEft); // Número de escalados
 
-            $rs0 = pg_query($Conec, "SELECT ".$xProj.".escaladaf_ins.id, TO_CHAR(dataescala, 'DD'), feriado, nomeusual, turnoturno, horafolga, ".$xProj.".escaladaf_ins.poslog_id, ".$xProj.".escaladaf_ins.turnos_id, nomecompl, date_part('dow', dataescala) 
-            FROM ".$xProj.".poslog INNER JOIN (".$xProj.".escaladaf INNER JOIN ".$xProj.".escaladaf_ins ON ".$xProj.".escaladaf.id = ".$xProj.".escaladaf_ins.escaladaf_id) ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escaladaf_ins.poslog_id 
+            $rs0 = pg_query($Conec, "SELECT ".$xProj.".escaladaf_ins.id, TO_CHAR(dataescala, 'DD'), nomeusual, nomecompl, turnoturno, horafolga, ".$xProj.".escaladaf_ins.poslog_id, ".$xProj.".escaladaf_ins.turnos_id, date_part('dow', dataescala), letraturno 
+            FROM ".$xProj.".escaladaf INNER JOIN (".$xProj.".poslog INNER JOIN ".$xProj.".escaladaf_ins ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escaladaf_ins.poslog_id) ON ".$xProj.".escaladaf.id = ".$xProj.".escaladaf_ins.escaladaf_id 
             WHERE ".$xProj.".poslog.eft_daf = 1 And ".$xProj.".escaladaf_ins.ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And esc_grupo = $NumGrupo ORDER BY dataescala, nomeusual");
-
             ?>
             <div style="position: relative; float: right; color: red; font-weight: bold;" id="mensagemQuadroHorario"></div>
             <table style="margin: 0 auto; width: 95%;">
@@ -89,14 +88,20 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 $ContDia = 1;
                 while($tbl0 = pg_fetch_row($rs0)){
                     $Cod = $tbl0[0]; // id em escaladaf_ins
-                    $PoslogId = $tbl0[6]; // pessas_id em poslog
-                    $TurnosId = $tbl0[7]; // turnos_id em escaladaf_ins
                     $Dia = $tbl0[1];
+                    $Turno = $tbl0[4]; // turnoturno
+                    $PoslogId = $tbl0[6]; // pessas_id em poslog
+                    $Interv = $tbl0[9];
+//                    $InfoTexto = $tbl0[10];
+
+                    $TurnosId = $tbl0[7]; // turnos_id em escaladaf_ins
+                    
+                    $Letra = $tbl0[9];
                     $HoraFolga = $tbl0[5];
-                    if(is_null($tbl0[3]) || $tbl0[3] == ""){
-                        $Nome = substr($tbl0[8], 0, 20); // nomecompl
+                    if(is_null($tbl0[2]) || $tbl0[2] == ""){
+                        $Nome = substr($tbl0[3], 0, 20); // nomecompl
                     }else{
-                        $Nome = substr($tbl0[3], 0, 22); //nomeusual
+                        $Nome = substr($tbl0[2], 0, 22); //nomeusual
                     }
 
 //                    if(is_null($HoraFolga) || $HoraFolga == ""){
@@ -110,13 +115,15 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             $HoraFolga = $tbl1[0];
                             pg_query($Conec, "UPDATE ".$xProj.".escaladaf_ins SET horafolga = '$HoraFolga' WHERE id = $Cod");
                         }
-                    }
+                    } 
+
                     $rs2 = pg_query($Conec, "SELECT horaturno, interv, infotexto 
                     FROM ".$xProj.".escaladaf_turnos 
-                    WHERE id = $TurnosId And interv IS NOT NULL And ativo = 1 ");
+                    WHERE id = $TurnosId And interv IS NOT NULL And ativo = 1 And grupo_turnos = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $Turno = $tbl2[0];
                         $Interv = $tbl2[1];
                         $InfoTexto = $tbl2[2];
                     }else{
@@ -129,9 +136,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <td style="display: none;"></td>
                         <td style="display: none;"><?php echo $tbl0[0]; ?></td>
                         <td class="etiqAzul90 aCentro" title="<?php echo "Dia ".$tbl0[1]."/".$Mes."/".$Ano; ?>" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?>> <?php if($ContDia == 1){echo "<div style='border: 1px solid; border-radius: 3px;'>".$tbl0[1]."</div>";} ?></td> <!-- Dia -->
-                        <td class="etiqAzul aCentro" title="Dia da semana" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?>><?php if($ContDia == 1){echo $Semana_Extract[$tbl0[9]];} ?></td>
+                        <td class="etiqAzul aCentro" title="Dia da semana" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?>><?php if($ContDia == 1){echo $Semana_Extract[$tbl0[8]];} ?></td>
                         <td class="etiqAzul90 aEsq" style="padding-left: 5px; <?php if($ContDia == 1){echo "border-top: 1px solid;";}; ?> "><?php echo "<div style='border: 1px solid; border-radius: 3px; padding-left: 3px;'>".$Nome."</div>"; ?></td> <!-- Nome -->
-                        <td class="etiqAzul aCentro" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?> ><?php echo $tbl0[4]; ?></td> <!-- Turno escalado -->
+                        <td class="etiqAzul aCentro" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?> ><?php echo $Letra." (".$Turno.")"; ?></td> <!-- Turno escalado -->
                         <td class="etiqAzul aCentro" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?>><?php echo $Interv; ?></td> <!-- Intervalo de Turno - vem de escaladaf_turnos -->
                         <td <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; if($InfoTexto == 1){echo "font-size: 80%;";} ?>><input <?php if($InfoTexto == 1){echo "disabled";} ?> type="text" value="<?php if($InfoTexto == 0){echo $HoraFolga;}else{echo $tbl0[4];} ?>" style="width: 120px; text-align: center; border: 1px solid; border-radius: 3px;" onchange="editaFolga(<?php echo $Cod; ?>, value);" title="Período de descanso no formato 00:00/00:00"/></td>
                     </tr>

@@ -1383,7 +1383,7 @@ if(!isset($_SESSION["usuarioID"])){
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=insParticipante"
                     +"&diaIdEscala="+document.getElementById("guardaDiaId").value
-                    +"&numgrupo="+document.getElementById("guardanumgrupo").value, true);
+                    +"&numgrupo="+document.getElementById("selecGrupo").value, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -1960,6 +1960,7 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
         pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(7, '2025/11/15', 'Proclamação da República', 3, NOW() )");
         pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(8, '2025/12/25', 'Natal', 3, NOW() )");
     }
+
     //pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escalas_gr");
     pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escalas_gr (
         id SERIAL PRIMARY KEY, 
@@ -2004,6 +2005,30 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
                 $Cont++;
             }
         }
+    }
+
+    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_fer_padr (
+        id SERIAL PRIMARY KEY, 
+        dataescalafer date DEFAULT '3000-12-31',
+        descr VARCHAR(200), 
+        ativo smallint NOT NULL DEFAULT 1 
+        ) 
+    ");
+    $rs7 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer_padr LIMIT 2");
+    $row7 = pg_num_rows($rs7);
+    if($row7 == 0){
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(1, '2025/01/01', 'Confraternização Universal', 1 )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(2, '2025/04/21', 'Tiradentes', 1 )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(3, '2025/05/01', 'Dia do Trabalhador', 1 )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(4, '2025/09/07', 'Proclamação da Independência', 1 )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(5, '2025/10/12', 'Padroeira do Brasil', 1 )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(6, '2025/11/02', 'Dia de Finados', 1 )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(7, '2025/11/15', 'Proclamação da República', 1 )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(8, '2025/12/25', 'Natal', 1 )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(9, '2025/12/24', 'Véspera de Natal', 1 )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(10, '2025/12/31', 'Véspera de Ano Novo', 1 )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(11, '2025/11/30', 'Dia do Evangélico', 1 )");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(12, '2025/11/20', 'Dia Nacional de Zumbi e Consciência Negra', 1 )");
     }
 //------------
 
@@ -2077,9 +2102,8 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
 
     $MesLiberado = 0; // só o escalante verá a página
 
-if($MesLiberado == 1){ // suspenso
-    //Mantém feriados dois anos à frente
-    $rsFer = pg_query($Conec, "SELECT id, TO_CHAR(dataescalafer, 'DD'), TO_CHAR(dataescalafer, 'MM'), descr FROM ".$xProj.".escaladaf_fer WHERE ativo = 1 And DATE_PART('YEAR', dataescalafer) = '$Ano'");
+    //Mantém feriados fixos dois anos à frente atualizando com o arquivo escaladaf_fer_padr
+    $rsFer = pg_query($Conec, "SELECT id, TO_CHAR(dataescalafer, 'DD'), TO_CHAR(dataescalafer, 'MM'), descr FROM ".$xProj.".escaladaf_fer_padr WHERE ativo = 1");
 	$rowFer = pg_num_rows($rsFer);
 	if($rowFer > 0){
         while($tblFer = pg_fetch_row($rsFer)){
@@ -2113,7 +2137,7 @@ if($MesLiberado == 1){ // suspenso
 
         }
     }
-}
+
 
     ?>
         <input type="hidden" id="guardamesano" value="<?php echo addslashes($MesSalvo); ?>" />
@@ -2123,7 +2147,7 @@ if($MesLiberado == 1){ // suspenso
         <input type="hidden" id="fiscal" value="<?php echo $Fiscal; ?>" />
         <input type="hidden" id="guardameugrupo" value="<?php echo $MeuGrupo; ?>" />
         <input type="hidden" id="guardanumgrupo" value="<?php echo $NumGrupo; ?>" />
-        <input type="hidden" id="guardaDiaId" value="" />
+        <input type="text" id="guardaDiaId" value="" />
         <input type="hidden" id="guardacod" value="" />
         <input type="hidden" id="mudou" value="0" />
         <input type="hidden" id="liberadoefetivo" value="<?php echo $MesLiberado; ?>" />
@@ -2293,9 +2317,8 @@ if($MesLiberado == 1){ // suspenso
         <div id="relacQuadroFeriados" class="relacmodal">
             <div class="modal-content-relacFeriados">
                 <span class="close" onclick="fechaQuadroFeriados();">&times;</span>
-
                 <label class="etiqAzul" style="padding-left: 15px;">Selecione o Ano: </label>
-                <select id="selecAnoFer" style="font-size: .8rem; width: 90px;" title="Selecione o ano.">
+                <select id="selecAnoFer" style="font-size: .8rem; width: 70px;" title="Selecione o ano.">
                     <?php 
                         $OpcoesAno = pg_query($Conec, "SELECT TO_CHAR(dataescalafer, 'YYYY') FROM ".$xProj.".escaladaf_fer WHERE ativo = 1 GROUP BY TO_CHAR(dataescalafer, 'YYYY') ORDER BY TO_CHAR(dataescalafer, 'YYYY')");
                         if($OpcoesAno){

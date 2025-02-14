@@ -191,7 +191,13 @@ if(!isset($_SESSION['AdmUsu'])){
                 while($tbl1 = pg_fetch_row($rs1)){
                     $Cod = $tbl1[0];
                     $pdf->SetX(10); 
-                    $pdf->Cell(27, 5, substr($tbl1[2], 0, 16), 0, 0, 'L');
+//                    $pdf->Cell(27, 5, substr($tbl1[2], 0, 16), 0, 0, 'L');
+                    if(is_null($tbl1[2]) || $tbl1[2] == ""){
+                        $Nome = substr($tbl1[1], 0, 13); //nome completo
+                    }else{
+                        $Nome = substr($tbl1[2], 0, 16); //nome usual
+                    }
+                    $pdf->Cell(27, 5, $Nome, 0, 0, 'L');
                     
                 //Carga horária Semanal
                     //Seleciona as semanas do mês e ano para os escalados do grupo

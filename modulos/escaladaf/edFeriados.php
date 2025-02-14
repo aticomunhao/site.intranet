@@ -24,7 +24,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <?php
         if(isset($_REQUEST["ano"])){
             $Ano = $_REQUEST["ano"];
-            }else{
+        }else{
             $Ano = date('Y');
         }
         $rs3 = pg_query($Conec, "SELECT id, TO_CHAR(dataescalafer, 'DD/MM'), descr FROM ".$xProj.".escaladaf_fer WHERE ativo = 1 And TO_CHAR(dataescalafer, 'YYYY') = '$Ano' ORDER BY dataescalafer");
@@ -63,7 +63,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <td style="display: none;"></td>
                         <td style="display: none;"></td>
                         <td>Data</td>
-                        <td>Feriado</td>
+                        <td>Feriado <?php echo $Ano; ?></td>
                     </tr>
                     <tr>
                         <td style="display: none;"></td>
@@ -80,7 +80,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 </table>
                 <button class="botpadrblue" onclick="salvaDataFer();">Salvar</button>
             </div>
-
             <br>
             <button id="abreinsData" class="botpadrblue" onclick="insereData();">Inserir Feriado</button>
         </div>
