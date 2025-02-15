@@ -80,7 +80,7 @@ if(!isset($_SESSION["usuarioID"])){
                             if(ajax.responseText){
 
 //if(document.getElementById("guardausu_cpf").value == "13652176049"){
-//    alert(ajax.responseText);
+//alert(ajax.responseText);
 //}
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 if(parseInt(Resp.coderro) === 2){

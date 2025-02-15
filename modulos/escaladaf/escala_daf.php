@@ -220,6 +220,10 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("etiqcheckprimcargo").style.visibility = "hidden";
                     document.getElementById("checkprimcargo").style.visibility = "hidden";
                 }
+                if(parseInt(document.getElementById("guardaUsuId").value) != 3 && parseInt(document.getElementById("guardaUsuId").value) != 83){ // Programador
+                    document.getElementById("etiqchecksemanaIniFim").style.visibility = "hidden";
+                    document.getElementById("checksemanaIniFim").style.visibility = "hidden";
+                }
 //alert($(window).width());
 
 //                if(parseInt(document.getElementById("escalante").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // Escalante e Superusuário
@@ -255,7 +259,6 @@ if(!isset($_SESSION["usuarioID"])){
                 }
 
                 $("#edinterv").mask("99:99");
-//                $("#insdata").mask("99/99");
 
                 $("#selecMesAnoEsc").change(function(){
                     if(parseInt(document.getElementById("selecMesAnoEsc").value) > 0){
@@ -281,11 +284,10 @@ if(!isset($_SESSION["usuarioID"])){
                                                     $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                                     $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                                     $("#faixanotas").load("modulos/escaladaf/notasdaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
-                                                    $("#faixaferiados").load("modulos/escaladaf/relFeriados.php?ano="+document.getElementById("guardaAno").value);
+                                                    $("#faixaferiados").load("modulos/escaladaf/relFeriados.php?ano="+Resp.anoselec);  //document.getElementById("guardaAno").value);
                                                     document.getElementById("botImprimir").style.visibility = "visible";
                                                 }else{
                                                     $("#faixacentral").load("modulos/escaladaf/infoAgd2.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
-//                                                    $("#faixaquadro").load("modulos/escaladaf/infoAgd2.php");
                                                 }
                                             }
                                             if(parseInt(Resp.mesliberado) === 0){
@@ -1455,6 +1457,11 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("checkprimcargo").checked = false;
                                     }
+                                    if(parseInt(Resp.semanaIniFim) === 1){
+                                        document.getElementById("checksemanaIniFim").checked = true;
+                                    }else{
+                                        document.getElementById("checksemanaIniFim").checked = false;
+                                    }
                                     document.getElementById("modalEscalaConfig").style.display = "block";
                                }
                             }
@@ -1580,17 +1587,6 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 if(document.getElementById("boxtextoTurno").checked == false){
                     InfoTexto = 0;
-                    if(parseInt(document.getElementById("selecHor2").value) < parseInt(document.getElementById("selecHor1").value)){
-                        $.confirm({
-                            title: 'Ação Suspensa!',
-                            content: 'Verifique a hora do final do turno.',
-                            draggable: true,
-                            buttons: {
-                                OK: function(){}
-                            }
-                        });
-                        return false;
-                    }
                     Turno = document.getElementById("selecHor1").value+":"+document.getElementById("selecMin1").value+" / "+document.getElementById("selecHor2").value+":"+document.getElementById("selecMin2").value
                 }else{ // só texto
                     InfoTexto = 1;
@@ -1600,7 +1596,8 @@ if(!isset($_SESSION["usuarioID"])){
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaEditaTurno&codigo="+document.getElementById("guardaCodTurno").value
                     +"&numgrupo="+document.getElementById("guardanumgrupo").value
-                    +"&turno="+encodeURIComponent(Turno)+"&infotexto="+InfoTexto
+                    +"&turno="+encodeURIComponent(Turno)
+                    +"&infotexto="+InfoTexto
                     +"&mesano="+document.getElementById("guardamesano").value
                     +"&letra="+document.getElementById("etiqletra").innerHTML, true);
                     ajax.onreadystatechange = function(){
@@ -1637,7 +1634,9 @@ if(!isset($_SESSION["usuarioID"])){
                                 ajax.onreadystatechange = function(){
                                     if(ajax.readyState === 4 ){
                                         if(ajax.responseText){
-//alert(ajax.responseText);
+if(parseInt(document.getElementById("guardaUsuId").value) === 3){
+alert(ajax.responseText);
+}
                                             Resp = eval("(" + ajax.responseText + ")");
                                             if(parseInt(Resp.coderro) === 1){
                                                 alert("Houve um erro no servidor.");
@@ -1718,6 +1717,32 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
                 }
             }
 
+            function marcaSemanaIniFim(obj, Cod){
+                if(obj.checked === true){
+                    Valor = 1;
+                }else{
+                    Valor = 0;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=marcaSemanaIniFim&valor="+Valor, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("selecGrupo").value);
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
             function carregaMes(){ // sem uso
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=carregames&numgrupo="+document.getElementById("selecGrupo").value, true);
@@ -1733,6 +1758,27 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
                                 });
                                 $("#selecMesAnoEsc").html(options);
                                 document.getElementById("selecMesAnoEsc").value = document.getElementById("guardamesano").value;
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function renumeraLetras(){
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=renumeraletras&numgrupo="+document.getElementById("selecGrupo").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php?numgrupo="+document.getElementById("selecGrupo").value);
+                                    $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("selecGrupo").value);
+                                }                                
                             }
                         }
                     };
@@ -2350,10 +2396,12 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
                 <label class="etiqAzul">Selecione um usuário para ver a configuração:</label>
                 <label id="mensagemConfig" style="color: red; font-weight: bold; padding-left: 30px;"></label>
 
-                <label for='checkvisucargo' id='etiqcheckvisucargo' class='etiqAzul' style='padding-left: 25px'>Mostrar Cargo</label>
-                <input type='checkbox' id='checkvisucargo' onchange='marcaVisuCargo(this);' title='Programador - Visualisar cargo no formulário' >
+                <label for='checkvisucargo' id='etiqcheckvisucargo' class='etiqAzul' style='padding-left: 15px'>Mostrar Cargo</label>
+                <input type='checkbox' id='checkvisucargo' onchange='marcaVisuCargo(this);' title='Visualisar cargo no formulário' >
                 <label for='checkprimcargo' id='etiqcheckprimcargo' class='etiqAzul' style='padding-left: 15px'>Primeiro o Cargo</label> 
-                <input type='checkbox' id='checkprimcargo' onchange='marcaPrimCargo(this);' title='Programador - Primeiro o cargo depois o nome' >
+                <input type='checkbox' id='checkprimcargo' onchange='marcaPrimCargo(this);' title='Primeiro o cargo depois o nome' >
+                <label for='checksemanaIniFim' id='etiqchecksemanaIniFim' class='etiqAzul' style='padding-left: 15px'>Semanas Inicial e Final</label> 
+                <input type='checkbox' id='checksemanaIniFim' onchange='marcaSemanaIniFim(this);' title='Mostar as semanas inicial e final na contagem da carga horária' >
                 <table style="margin: 0 auto; width: 95%;">
                     <tr>
                         <td colspan="4" style="text-align: center;"></td>

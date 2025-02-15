@@ -29,15 +29,13 @@ function cleanString($text) {
     $arquivo = $_FILES['arquivo'];  //recebe o arquivo do formulário
 
     //Verificar as extensões outra vez - já foi feito no custom.js - O js não está entendendo o MIME type pptx e ppsx - está sendo filtrado só aqui
-    if($arquivo['type'] == 'application/pdf' || $arquivo['type'] == 'application/msword' || $arquivo['type'] == 'application/vnd.openxmlformats' || $arquivo['type'] == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || $arquivo['type'] == 'text/plain' || $arquivo['type'] == 'application/vnd.openxmlformats-officedocument.presentationml.presentation' || $arquivo['type'] == 'application/vnd.openxmlformats-officedocument.presentationml.slideshow'){
+    if($arquivo['type'] == 'application/pdf' || $arquivo['type'] == 'application/msword' || $arquivo['type'] == 'application/vnd.openxmlformats' || $arquivo['type'] == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || $arquivo['type'] == 'text/plain' || $arquivo['type'] == 'application/vnd.openxmlformats-officedocument.presentationml.presentation' || $arquivo['type'] == 'application/vnd.openxmlformats-officedocument.presentationml.slideshow' || $arquivo['type'] == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'){
         // MIME docx = application/vnd.openxmlformats-officedocument.wordprocessingml.document
         // MIME pptx = application/vnd.openxmlformats-officedocument.presentationml.presentation 
-
+        // MIME xlsx = application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
         $DescSetor = "Sistema";
         // Seleciona o setor do usuário
-//        $rs0 = pg_query($Conec, "SELECT siglasetor FROM ".$xProj.".usuarios INNER JOIN ".$xProj.".setores ON ".$xProj.".usuarios.codsetor = ".$xProj.".setores.codset WHERE ".$xProj.".usuarios.id = ".$_SESSION["usuarioID"]." And codsubsetor = 1 ");
-
-//Verificar onde estará o código do setor
+        //Verificar onde estará o código do setor
         $rs0 = pg_query($Conec, "SELECT siglasetor FROM ".$xProj.".poslog INNER JOIN ".$xProj.".setores ON ".$xProj.".poslog.codsetor = ".$xProj.".setores.codset 
         WHERE ".$xProj.".poslog.pessoas_id = ".$_SESSION["usuarioID"]." ");
         $row0 = pg_num_rows($rs0);

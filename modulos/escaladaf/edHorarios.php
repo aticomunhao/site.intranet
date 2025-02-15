@@ -21,10 +21,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                 if(parseInt(Resp.coderro) === 1){
                                     document.getElementById("insordem").value = 0;
                                 }else{
-                                    if(parseInt(Resp.quantTurno) > 20){
+                                    if(parseInt(Resp.quantTurno) > 25){
                                         $.confirm({
                                             title: 'Ação Suspensa!',
-                                            content: 'Número máximo de turnos (20) atingido',
+                                            content: 'Número máximo de turnos (25) atingido',
                                             draggable: true,
                                             buttons: {
                                                 OK: function(){}
@@ -63,7 +63,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             }else{
                 $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);   
             }
-
+            if($NumGrupo == 0 || $NumGrupo == ""){
+                $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+            }
             $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, ordemletra, destaq, TO_CHAR(cargahora, 'HH24:MI'), TO_CHAR(cargacont, 'HH24:MI'), TO_CHAR(interv, 'HH24:MI'), infotexto, valeref FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And grupo_turnos = $NumGrupo ORDER BY ordemletra");
             ?>
             <input type="hidden" id="guardanumgrupo" value="<?php echo $NumGrupo; ?>" />
@@ -130,6 +132,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 }
                 ?>
             </table>
+            <div style="text-align: left; padding-left: 10px;">
+                <button class="botpadramarelo" style="font-size: 70%; padding: 1px;" onclick="renumeraLetras();">Renumerar</button>
+            </div>
             <br>
 
             <div id="inserirletra" style="display: none; margin: 0 auto; width: 400px; text-align: center; border: 1px solid; border-radius: 10px; padding: 2px;">

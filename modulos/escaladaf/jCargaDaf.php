@@ -50,7 +50,7 @@ $Mes_Extract = array(
     }
     if(is_null($Proc[1])){
         $Ano = date("Y");
-        }else{
+    }else{
         $Ano = $Proc[1];
     }
 
@@ -58,6 +58,14 @@ $Mes_Extract = array(
         $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal
     }else{
         $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);   
+    }
+    //Provisório até rodar o 0088
+    $rsS = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'paramsis' AND COLUMN_NAME = 'seminifim_daf'");
+    $rowS = pg_num_rows($rsS);
+    if($rowS > 0){
+        $SemaIniFim = parAdm("seminifim_daf", $Conec, $xProj); // visualisar a semana inicial e a final 
+    }else{
+        $SemaIniFim = 0;
     }
     ?>
     <div style="text-align: center;">
@@ -71,7 +79,9 @@ $Mes_Extract = array(
                         <tr>
                             <td colspan="2" style="text-align: center; padding-top: 15px;">Carga Mensal</td>
                         </tr>
-
+                        <tr>
+                            <td colspan='2' class="etiq aEsq" style="text-align: center;">Mês: <?php echo $Mes_Extract[$Mes]; ?></td>
+                        </tr>
                         <?php
                         $rs = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl"); 
                         $row = pg_num_rows($rs);
@@ -118,52 +128,97 @@ $Mes_Extract = array(
                     ?>
                     <div class="col" style="margin: 0 auto; text-align: left;">
                         <table style="margin: 0 auto;">
-                            <tr>
-                                <td colspan="2" style="text-align: center; padding-top: 15px;">Jornada Semanal</td>
-                            </tr>
                             <?php
-
                             //Dia de início dessa Semana
                             $a = new DateTime();
                             $a->setISODate($Ano, $SemanaNum);
                             $DiaIniSem = $a->format('d/m');
+                            $MesIniSem = $a->format('m');
 
                             //Dia final dessa semana
                             $b = new DateTime();
                             $b->setISODate($Ano, $SemanaNum, 7);
                             $DiaFimSem = $b->format('d/m');
-                            ?>
-                            <tr>
-                                <td colspan='2' class="etiq aEsq">Semana: <?php echo $DiaIniSem." a ".$DiaFimSem; ?></td>
-                            </tr>
-                            <?php
-                            $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl"); 
-                            $row0 = pg_num_rows($rs0);
-                            if($row0 > 0){
-                                while($tbl0 = pg_fetch_row($rs0)){
-                                    $Cod1 = $tbl0[0];
-                                    $Nome = substr($tbl0[2], 0, 13);
-                                    if(is_null($tbl0[2]) || $tbl0[2] == ""){
-                                        $Nome = substr($tbl0[1], 0, 13);
-                                    }
+                            $MesFimSem = $b->format('m');
 
-                                    $CargaHoraCor =  0;
-
-                                    //Carga Semanal turno1
-                                    $rs1 = pg_query($Conec, "SELECT TO_CHAR(SUM(cargatime), 'HH24:MI') 
-                                    FROM ".$xProj.".escaladaf LEFT JOIN ".$xProj.".escaladaf_ins ON ".$xProj.".escaladaf.id = ".$xProj.".escaladaf_ins.escaladaf_id 
-                                    WHERE poslog_id = $Cod1 And TO_CHAR(dataescala, 'IW') = '$SemanaNum' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo");
-                                    $row1 = pg_num_rows($rs1);
-                                    if($row1 > 0){
-                                        $tbl1 = pg_fetch_row($rs1);
-                                        $CargaHoraCor =  $tbl1[0]; 
-                                    }
+                            if($SemaIniFim == 0){ 
+                                if($SemaIniFim == 0 && $MesIniSem == $Mes && $MesFimSem == $Mes){ // Wil pediu para não mostrar 14/02/2025 
                                     ?>
                                     <tr>
-                                        <td style="text-align: left; font-size: 90%;"><div class='quadrodia' style="padding-left: 3px; padding-right: 3px; font-size: 90%;"><?php echo $Nome; ?></div></td>
-                                        <td><div class='quadrodia' style="text-align: center; padding-left: 3px; padding-right: 3px; font-size: 90%;"><?php if($CargaHoraCor == 0){echo "&nbsp;";}else{echo $CargaHoraCor;} ?></div></td>
+                                        <td colspan="2" style="text-align: center; padding-top: 15px;">Jornada Semanal</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan='2' class="etiq aEsq">Semana: <?php echo $DiaIniSem." a ".$DiaFimSem; ?></td>
                                     </tr>
                                     <?php
+                                    $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl"); 
+                                    $row0 = pg_num_rows($rs0);
+                                    if($row0 > 0){
+                                        while($tbl0 = pg_fetch_row($rs0)){
+                                            $Cod1 = $tbl0[0];
+                                            $Nome = substr($tbl0[2], 0, 13);
+                                            if(is_null($tbl0[2]) || $tbl0[2] == ""){
+                                                $Nome = substr($tbl0[1], 0, 13);
+                                            }
+
+                                            $CargaHoraCor =  0;
+
+                                            //Carga Semanal turno1
+                                            $rs1 = pg_query($Conec, "SELECT TO_CHAR(SUM(cargatime), 'HH24:MI') 
+                                            FROM ".$xProj.".escaladaf LEFT JOIN ".$xProj.".escaladaf_ins ON ".$xProj.".escaladaf.id = ".$xProj.".escaladaf_ins.escaladaf_id 
+                                            WHERE poslog_id = $Cod1 And TO_CHAR(dataescala, 'IW') = '$SemanaNum' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo");
+                                            $row1 = pg_num_rows($rs1);
+                                            if($row1 > 0){
+                                                $tbl1 = pg_fetch_row($rs1);
+                                                $CargaHoraCor =  $tbl1[0]; 
+                                            }
+                                            ?>
+                                            <tr>
+                                                <td style="text-align: left; font-size: 90%;"><div class='quadrodia' style="padding-left: 3px; padding-right: 3px; font-size: 90%;"><?php echo $Nome; ?></div></td>
+                                                <td><div class='quadrodia' style="text-align: center; padding-left: 3px; padding-right: 3px; font-size: 90%;"><?php if($CargaHoraCor == 0){echo "&nbsp;";}else{echo $CargaHoraCor;} ?></div></td>
+                                            </tr>
+                                            <?php
+                                        }
+                                    }
+                                }
+
+                            }else{
+                                ?>
+                                <tr>
+                                    <td colspan="2" style="text-align: center; padding-top: 15px;">Jornada Semanal</td>
+                                </tr>
+                                <tr>
+                                    <td colspan='2' class="etiq aEsq">Semana: <?php echo $DiaIniSem." a ".$DiaFimSem; ?></td>
+                                </tr>
+                                <?php
+                                $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl"); 
+                                $row0 = pg_num_rows($rs0);
+                                if($row0 > 0){
+                                    while($tbl0 = pg_fetch_row($rs0)){
+                                        $Cod1 = $tbl0[0];
+                                        $Nome = substr($tbl0[2], 0, 13);
+                                        if(is_null($tbl0[2]) || $tbl0[2] == ""){
+                                            $Nome = substr($tbl0[1], 0, 13);
+                                        }
+
+                                        $CargaHoraCor =  0;
+
+                                        //Carga Semanal turno1
+                                        $rs1 = pg_query($Conec, "SELECT TO_CHAR(SUM(cargatime), 'HH24:MI') 
+                                        FROM ".$xProj.".escaladaf LEFT JOIN ".$xProj.".escaladaf_ins ON ".$xProj.".escaladaf.id = ".$xProj.".escaladaf_ins.escaladaf_id 
+                                        WHERE poslog_id = $Cod1 And TO_CHAR(dataescala, 'IW') = '$SemanaNum' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo");
+                                        $row1 = pg_num_rows($rs1);
+                                        if($row1 > 0){
+                                            $tbl1 = pg_fetch_row($rs1);
+                                            $CargaHoraCor =  $tbl1[0]; 
+                                        }
+                                        ?>
+                                        <tr>
+                                            <td style="text-align: left; font-size: 90%;"><div class='quadrodia' style="padding-left: 3px; padding-right: 3px; font-size: 90%;"><?php echo $Nome; ?></div></td>
+                                            <td><div class='quadrodia' style="text-align: center; padding-left: 3px; padding-right: 3px; font-size: 90%;"><?php if($CargaHoraCor == 0){echo "&nbsp;";}else{echo $CargaHoraCor;} ?></div></td>
+                                        </tr>
+                                        <?php
+                                    }
                                 }
                             }
                             ?>

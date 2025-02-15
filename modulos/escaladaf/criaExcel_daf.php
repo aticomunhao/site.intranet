@@ -123,10 +123,22 @@
         $writer->save('..\conteudo\arquivos\ListaTurnos.xlsx');
     }
 
-    if($writer){
-        $var = array("coderro"=>0);
+    if($objPHPExcel){
+        $ObjPHP = 1;
     }else{
-        $var = array("coderro"=>1);
+        $ObjPHP = 0;
+    }
+
+    if(file_exists("..\conteudo\arquivos\ListaTurnos.xlsx")){
+        $Arquivo = 1;
+    }else{
+        $Arquivo = 0;
+    }
+
+    if($writer){
+        $var = array("coderro"=>0, "criaobjphp"=>$ObjPHP, "arquivo"=>$Arquivo);
+    }else{
+        $var = array("coderro"=>1, "criaobjphp"=>$ObjPHP);
     }
     $responseText = json_encode($var);
     echo $responseText;

@@ -24,8 +24,8 @@
 			//Provisório
 			if(strtotime('2025/03/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-
-
+				//0088
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS seminifim_daf smallint NOT NULL DEFAULT 1 "); // mostra/oculta a carga das semanas inicial e final das escalas jCargaDaf.php
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

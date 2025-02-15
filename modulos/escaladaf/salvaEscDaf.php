@@ -5,6 +5,7 @@ $Acao = "";
 if(isset($_REQUEST["acao"])){
     $Acao = $_REQUEST["acao"];
     $Hoje = date('d/m/Y');
+    $HojeIng = date('Y/m/d');
     $UsuIns = $_SESSION['usuarioID'];
 }
 
@@ -481,7 +482,7 @@ if($Acao =="salvamesano"){
     $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf WHERE grupo_id = $NumGrupo And DATE_PART('MONTH', dataescala) = '$Mes' And DATE_PART('YEAR', dataescala) = '$Ano' ");
     $row1 = pg_num_rows($rs1);
 
-    $var = array("coderro"=>$Erro, "mesliberado"=>$MesLiberado, "temMes"=>$row1);
+    $var = array("coderro"=>$Erro, "mesliberado"=>$MesLiberado, "temMes"=>$row1, "anoselec"=>$Ano);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -743,7 +744,7 @@ if($Acao =="insereletra"){
     $Erro = 0;
     $Ordem = (int) filter_input(INPUT_GET, 'ordem');
     $Letra = filter_input(INPUT_GET, 'insletra');
-//    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+
     if(isset($_REQUEST["numgrupo"])){ //grupo escolhido
         $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal que pode editar escala
     }else{
@@ -1005,17 +1006,19 @@ if($Acao =="procChefeDiv"){
     if(!$rs){
         $Erro = 1;
     }
-    $rs1 = pg_query($Conec, "SELECT visucargo_daf, primcargo_daF FROM ".$xProj.".paramsis WHERE idpar = 1");
+    $rs1 = pg_query($Conec, "SELECT visucargo_daf, primcargo_daF, seminifim_daf FROM ".$xProj.".paramsis WHERE idpar = 1");
     if($rs1){
         $tbl1 = pg_fetch_row($rs1);
         $VisuCargo = $tbl1[0];
         $PrimCargo = $tbl1[1];
+        $SemaIniFim = $tbl1[2];
     }else{
         $VisuCargo = 0;
         $PrimCargo = 0;
+        $SemaIniFim = 0;
     }
 
-    $var = array("coderro"=>$Erro, "chefe"=>$tbl[0], "encarreg"=>$tbl[1], "visucargo"=>$VisuCargo, "primcargo"=>$PrimCargo, "siglagrupo"=>$SiglaGrupo);
+    $var = array("coderro"=>$Erro, "chefe"=>$tbl[0], "encarreg"=>$tbl[1], "visucargo"=>$VisuCargo, "primcargo"=>$PrimCargo, "siglagrupo"=>$SiglaGrupo, "semanaIniFim"=>$SemaIniFim);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -1207,9 +1210,22 @@ if($Acao =="salvaEditaTurno"){
         $HoraF = $Proc[1];
         $TurnoIni = $Hoje." ".$HoraI;
         $TurnoFim = $Hoje." ".$HoraF;
+        $Turno24 = 0;
+        if(strtotime($HoraI) == strtotime($HoraF)){
+//            $RevData = implode("/", array_reverse(explode("/", $Hoje)));
+//            $Ini = strtotime(date($RevData)); // número
+//            $Amanha = strtotime("+1 day", $Ini);
+//            $TurnoF = date("d/m/Y", $Amanha); // data legível
+//            $TurnoFim = $TurnoF." ".$HoraF;
+            $Turno24 = 1;
+        }
 
         pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET calcdataini = '$TurnoIni', calcdatafim = '$TurnoFim' WHERE id = $Cod");
-        pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargahora = (calcdatafim - calcdataini) WHERE id = $Cod");
+        if($Turno24 == 0){
+            pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargahora = (calcdatafim - calcdataini) WHERE id = $Cod");
+        }else{
+            pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargahora = '24:00' WHERE id = $Cod");
+        }
 
         pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '01:00'), interv = '01:00' WHERE cargahora >= '08:00' And id = $Cod ");
         pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '00:15'), interv = '00:15' WHERE cargahora >= '06:00' And cargahora < '08:00' And id = $Cod ");
@@ -1220,30 +1236,7 @@ if($Acao =="salvaEditaTurno"){
         pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = '00:00:00' WHERE id = $Cod");
     }
 
-//Se for para acertar a carga horária do mês - não afeta meses passados
-// Pode haver confusão
-//    $MesAno = addslashes(filter_input(INPUT_GET, 'mesano'));
-//    $Letra = addslashes(filter_input(INPUT_GET, 'letra'));
-//    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
-//    $Proc = explode("/", $MesAno);
-//    $Mes = $Proc[0];
-//    if(strLen($Mes) < 2){
-//        $Mes = "0".$Mes;
-//    }
-//    $Ano = $Proc[1];
-//
-//    $rs1 = pg_query($Conec, "SELECT cargacont FROM ".$xProj.".escaladaf_turnos WHERE id = $Cod");
-//    $row1 = pg_num_rows($rs1);
-//    if($row1 > 0){
-//        $tbl1 = pg_fetch_row($rs1);
-//        $Carga = $tbl1[0];
-//        pg_query($Conec, "UPDATE ".$xProj.".escaladaf_ins 
-//        SET cargatime = '$Carga' 
-//        WHERE letraturno = '$Letra' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
-//     }
-//
-
-    $var = array("coderro"=>$Erro);
+    $var = array("coderro"=>$Erro, "horaini"=>$TurnoIni, "horafim"=>$TurnoFim, "codigo"=>$Cod);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -1270,9 +1263,9 @@ if($Acao =="buscaOrdem"){
         $Num = $tbl[0];
         $Ordem = ($Num+1);
     }
-    if($Ordem >= 20){
-        $Ordem = 20;
-    }
+//    if($Ordem >= 25){
+//        $Ordem = 25;
+//    }
     $var = array("coderro"=>$Erro, "ordem"=>$Ordem, "quantTurno"=>$row0);
     $responseText = json_encode($var);
     echo $responseText;
@@ -1340,6 +1333,18 @@ if($Acao =="marcaPrimCargo"){
     echo $responseText;
 }
 
+if($Acao =="marcaSemanaIniFim"){
+    $Erro = 0;
+    $Valor = filter_input(INPUT_GET, 'valor');
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".paramsis SET seminifim_daf = $Valor WHERE idpar = 1");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
 if($Acao =="salvaFeriado"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Data = addslashes(filter_input(INPUT_GET, 'novadata'));
@@ -1394,3 +1399,64 @@ if($Acao == "carregames"){ // sem uso
     $responseText = json_encode($Meses);
     echo $responseText;
  }
+
+ if($Acao =="renumeraletras"){
+    if(isset($_REQUEST["numgrupo"])){ //grupo escolhido
+        $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal que pode editar escala
+    }else{
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+    if($NumGrupo == 0 || $NumGrupo == ""){
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+
+    $Erro = 0;
+    // seleciona os turnos 
+    $rs1 = pg_query($Conec, "SELECT id, ordemletra FROM ".$xProj.".escaladaf_turnos WHERE grupo_turnos = $NumGrupo And ativo = 1 And infotexto = 0 ORDER BY letra");
+    $row1 = pg_num_rows($rs1);
+
+    //Seleciona os textos informativos
+    $rs2 = pg_query($Conec, "SELECT id, ordemletra FROM ".$xProj.".escaladaf_turnos WHERE grupo_turnos = $NumGrupo And ativo = 1 And infotexto = 1 ORDER BY letra");
+    $row2 = pg_num_rows($rs2);
+
+    // Numera primeiro os que são turnos
+    if($row1 > 0){
+        $Num1 = 1;
+        while($tbl1 = pg_fetch_row($rs1)){
+            $Cod = $tbl1[0];
+            pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET ordemletra = $Num1 WHERE id = $Cod ");
+            $Num1++;
+        }
+    }
+    if($row2 > 0){
+        $rsCod = pg_query($Conec, "SELECT MAX(ordemletra) FROM ".$xProj.".escaladaf_turnos WHERE grupo_turnos = $NumGrupo And ativo = 1 And infotexto = 0");
+        $tblCod = pg_fetch_row($rsCod);
+        $Tot = $tblCod[0];
+        $Num2 = ($Tot+1);
+
+        if($Num1 <= 20){
+            $Num2 = 21;
+        }
+        if($Num1 <= 16){
+            $Num2 = 16;
+        }
+        if($Num1 <= 10){
+            $Num2 = 11;
+        }
+        if($Num1 > 20){
+            $Num2 = 25;
+        }
+        while($tbl2 = pg_fetch_row($rs2)){
+            $Cod = $tbl2[0];
+            pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET ordemletra = $Num2 WHERE id = $Cod ");
+            $Num2++;
+        }
+    }
+    if(!$rs1){
+        $Erro = 1;
+    }
+
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
