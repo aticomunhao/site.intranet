@@ -29,7 +29,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             // seleciona os turnos 
             $rs1 = pg_query($Conec, "SELECT id, ordemletra FROM ".$xProj.".escaladaf_turnos WHERE grupo_turnos = $NumGrupo And ativo = 1 And infotexto = 0 ORDER BY letra");
             $row1 = pg_num_rows($rs1);
-
+ 
             //Seleciona os textos informativos
             $rs2 = pg_query($Conec, "SELECT id, ordemletra FROM ".$xProj.".escaladaf_turnos WHERE grupo_turnos = $NumGrupo And ativo = 1 And infotexto = 1 ORDER BY letra");
             $row2 = pg_num_rows($rs2);
@@ -53,7 +53,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <tr>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"><?php echo $tbl3[0]; ?></td>
-                                <td style="font-size: 80%; color: gray;"><?php echo "<sup>".$tbl3[6]."</sup>"; ?></td>
+<!--                                <td style="font-size: 80%; color: gray;"><?php echo "<sup>".$tbl3[6]."</sup>"; ?></td> -->
                                 <td><div <?php if($tbl3[3] == 0){echo "class='quadroletra'";
                                 }else{
                                     if($tbl3[3] == 1){
@@ -97,7 +97,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <tr>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"><?php echo $tbl3[0]; ?></td>
-                                <td style="font-size: 80%; color: gray;"><?php echo "<sup>".$tbl3[6]."</sup>"; ?></td>
+<!--                                <td style="font-size: 80%; color: gray;"><?php echo "<sup>".$tbl3[6]."</sup>"; ?></td> -->
                                 <td><div 
                                     <?php 
                                     if($tbl3[3] == 0){
@@ -148,7 +148,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <tr>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"><?php echo $tbl3[0]; ?></td>
-                                <td style="font-size: 80%; color: gray;"><?php echo "<sup>".$tbl3[6]."</sup>"; ?></td>
+<!--                                <td style="font-size: 80%; color: gray;"><?php echo "<sup>".$tbl3[6]."</sup>"; ?></td> -->
                                 <td><div <?php if($tbl3[3] == 0){echo "class='quadroletra'";
                                 }else{
                                     if($tbl3[3] == 1){
@@ -190,7 +190,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <tr>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"><?php echo $tbl3[0]; ?></td>
-                                <td style="font-size: 80%; color: gray;"><?php echo "<sup>".$tbl3[6]."</sup>"; ?></td>
+<!--                                <td style="font-size: 80%; color: gray;"><?php echo "<sup>".$tbl3[6]."</sup>"; ?></td> -->
                                 <td><div <?php if($tbl3[3] == 0){echo "class='quadroletra'";
                                 }else{
                                     if($tbl3[3] == 1){
@@ -218,7 +218,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
                 <div class="col" style="margin: 0 auto; text-align: center; padding: 5px;">
                     <?php
-                        if($row1 > 20){
+                        if($row1 >= 20){
                             $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq, TO_CHAR(cargacont, 'HH24:MI'), infotexto, ordemletra FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 24 And ordemletra <= 30 And grupo_turnos = $NumGrupo ORDER BY letra");
                         }else{
                             $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq, TO_CHAR(cargacont, 'HH24:MI'), infotexto, ordemletra FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 20 And ordemletra <= 25 And grupo_turnos = $NumGrupo ORDER BY letra");
@@ -232,7 +232,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <tr>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"><?php echo $tbl3[0]; ?></td>
-                                <td style="font-size: 80%; color: gray;"><?php echo "<sup>".$tbl3[6]."</sup>"; ?></td>
+<!--                                <td style="font-size: 80%; color: gray;"><?php echo "<sup>".$tbl3[6]."</sup>"; ?></td> -->
                                 <td><div <?php if($tbl3[3] == 0){echo "class='quadroletra'";
                                 }else{
                                     if($tbl3[3] == 1){

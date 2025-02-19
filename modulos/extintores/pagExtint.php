@@ -713,7 +713,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <div id="configTipos" style="margin-bottom: 15px; text-align: center; width: 90%;"></div>
             </div>
             <div class="box" style="position: relative; float: left; width: 10%; margin-top: 10px; text-align: center;"></div>
-            <div class="box" style="position: relative; float: right; width: 40%; margin-top: 10px; margin-right: 20px; padding-top: 5px; text-align: left; border: 1px solid; border-radius: 10px; min-height: 100px;">
+            <div class="box" style="position: relative; float: right; width: 40%; margin-top: 10px; margin-right: 20px; padding-top: 5px; text-align: left; border: 2px solid green; border-radius: 10px; min-height: 100px;">
                 <label class="etiqAzul" style="padding-left: 20px;">Aviso de vencimento:</label>
                 <br>
                 <table style="margin: 0 auto; padding-top: 5px;">

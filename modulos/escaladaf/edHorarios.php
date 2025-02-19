@@ -9,6 +9,40 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title></title>
         <script>
+            $(document).ready(function(){
+                $("#insletra").change(function(){
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=buscaLetra&numgrupo="+document.getElementById("guardanumgrupo").value+"&letra="+document.getElementById("insletra").value, true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    document.getElementById("insletra").value = "";
+                                }else{
+                                    if(parseInt(Resp.jatem) > 0){
+                                        document.getElementById("insletra").value = "";
+                                        $.confirm({
+                                            title: 'Ação Suspensa!',
+                                            content: 'Letra já existe',
+                                            draggable: true,
+                                            buttons: {
+                                                OK: function(){}
+                                            }
+                                        });
+                                        return false;
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+                });
+            });
+
             function insereLetra(){
                 ajaxIni();
                 if(ajax){
@@ -16,7 +50,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
-//alert(ajax.responseText);
+alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");
                                 if(parseInt(Resp.coderro) === 1){
                                     document.getElementById("insordem").value = 0;
@@ -42,7 +76,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     };
                     ajax.send(null);
                 }
-
             }
 
             function fechaInsLetra(){
@@ -150,7 +183,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <td style="display: none;"></td>
                         <td style="display: none;">0</td>
                         <td><input type="text" id="insordem" value="" style="width: 70px; text-align: center; border: 1px solid; border-radius: 3px;" onkeypress="if(event.keyCode===13){javascript:foco('insletra');return false;}" /></td>
-                        <td><input type="text" id="insletra" value="" style="width: 70px; text-align: center; border: 1px solid; border-radius: 3px;" onkeypress="if(event.keyCode===13){javascript:foco('insturno');return false;}" /></td>
+                        <td><input type="text" id="insletra" value="" style="width: 70px; text-align: center; border: 1px solid; border-radius: 3px;" onkeypress="if(event.keyCode===13){javascript:foco('insordem');return false;}" /></td>
                     </tr>
                     <tr>
                         <td style="display: none;"></td>

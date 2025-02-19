@@ -21,7 +21,6 @@
         'xª'=> ''
     );
 
-//    $MesSalvo = parEsc("mes_escdaf", $Conec, $xProj, $_SESSION["usuarioID"]);
     if(isset($_REQUEST["selecmes"])){
         $MesSalvo = $_REQUEST["selecmes"]; // quando vem do fiscal
     }else{
@@ -73,7 +72,22 @@
         $LargTela = 1280; // laptop 14pol
     }
 
-  
+    if($LargTela > 1280){
+        $Quant = 20; // Quantidade de caracteres no nome ou cargo
+        $Campo = "115px"; // larg campo nome ou cargo 
+    }else{
+        $Quant = 15;
+        $Campo = "105px";
+    }
+    if($LargTela < 1270){ // chrome
+        $Quant = 10;
+        $Campo = "90px";
+    }
+    if($LargTela == 1900){
+        $Quant = 20;
+        $Campo = "150px";
+    }
+
     //Provisório - Apaga lançamentos em grupo diferente
     $rs0 = pg_query($Conec, "SELECT pessoas_id, esc_grupo FROM ".$xProj.".poslog WHERE ativo = 1 And esc_grupo = $NumGrupo");
     $row0 = pg_num_rows($rs0);
@@ -93,8 +107,21 @@
     if($row2 > 0){
         echo "<table style='margin: 0 auto; width: 99%;'>";
             echo "<tr>";
-                echo "<td>";
-                    echo "<div style='width: 150px;'> &nbsp; </div>";
+                echo "<td style='text-align: right;'>";
+                    echo "<div style='width: 150px;'>&nbsp; </div>";
+
+                    if($visuCargo == 1){ // Visualizar o cargo junto ao nome
+                        if($PrimCargo == 1){ 
+                            echo "<input disabled type='text' style='width: $Campo; font-size: 80%; border: 0px solid; text-align: center;' value='Cargo/FG' />";
+                            echo "<input disabled type='text' style='width: $Campo; font-size: 80%; border: 0px solid; text-align: center;' value='Nome' />";
+                        }else{
+                            echo "<input disabled type='text' style='width: $Campo; font-size: 80%; border: 0px solid; text-align: center;' value='Nome' />";
+                            echo "<input disabled type='text' style='width: $Campo; font-size: 80%; border: 0px solid; text-align: center;' value='Cargo/FG' />";
+                        }
+                    }else{
+                        echo "<input disabled type='text' style='width: $Campo; font-size: 80%; border: 0px solid; text-align: center;' value='Nome' />";
+                    }
+
                     $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala), TO_CHAR(dataescala, 'DD/MM/YYYY'), feriado, dataescala FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY dataescala");
                     $row = pg_num_rows($rs);
                     if($row > 0){
@@ -125,24 +152,9 @@
                     } 
                 echo "</td>";
                 echo "<td><img src='imagens/Excel-icon.png' height='20px;' style='cursor: pointer; padding-left: 5px;' onclick='abreExcel();' title='Envia para arquivo Excel'></td>";
-
-                if($LargTela > 1280){
-                    $Quant = 20; // Quantidade de caracteres no nome ou cargo
-                    $Campo = "115px"; // larg campo nome ou cargo 
-                }else{
-                    $Quant = 15;
-                    $Campo = "105px";
-                }
-                if($LargTela < 1270){ // chrome
-                    $Quant = 10;
-                    $Campo = "90px";
-                }
-                if($LargTela == 1900){
-                    $Quant = 20;
-                    $Campo = "150px";
-                }
-
+              
                 $Dia = 1;
+                $Cont = 1;
                 while($tbl2 = pg_fetch_row($rs2)){
                     $Cod = $tbl2[0]; //pessoas_id de poslog
                     if(is_null($tbl2[2]) || $tbl2[2] == ""){
@@ -160,6 +172,9 @@
                     }
                     echo "<tr>";
                         echo "<td style='text-align: right;'>";
+                            if($LargTela > 1380){
+                                echo "<input disabled type='text' style='font-size: 80%; width: 30px; border: 0px solid; text-align: center;' value=$Cont />";
+                            }
                             if($visuCargo == 1){ // Visualizar o cargo junto ao nome
                                 if($PrimCargo == 1){ // Primeiro o cargo depois o nome
                                     echo "<input disabled type='text' style='width: $Campo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Cargo' />";
@@ -242,7 +257,6 @@
                                             }
                                         }
                                     }else{
-//                                            if($Sem == 0 || $tbl3[3] == 1){ // dom ou feriado
                                         if($Sem == 0 || $diaFer == 1){ // dom ou feriado
                                             echo "<div class='quadrodiaCinza'> &nbsp; </div>";
                                         }else{
@@ -263,6 +277,7 @@
                         echo "</td>";
                     echo "</tr>";
                     $Dia++;
+                    $Cont++;
                 }
             echo "</tr>";
         echo "</table>";

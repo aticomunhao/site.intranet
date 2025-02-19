@@ -120,6 +120,7 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->SetTextColor(25, 25, 112);
     $pdf->SetFillColor(255, 255, 255); // branco
     $pdf->SetTextColor(0, 0, 0);
+    $pdf->SetAutoPageBreak(true, 10); //margen inferior 1 cm
 
     if($Acao == "imprPlan"){
         $Busca = addslashes(filter_input(INPUT_GET, 'mesano')); 
@@ -133,14 +134,20 @@ if(!isset($_SESSION['AdmUsu'])){
         $pdf->SetFont('Arial', '' , 10);
         $pdf->SetTextColor(25, 25, 112);
         $pdf->MultiCell(0, 3, "Escala ".$DescMes."/".$Ano, 0, 'C', false);
+        $pdf->SetTextColor(0, 0, 0);
         $pdf->ln();
         $pdf->SetDrawColor(200);
         $pdf->ln(2);
 
+        $rsEft = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ");
+        $rowEft = pg_num_rows($rsEft);
+        if($rowEft < 7 ){
+            $pdf->SetAutoPageBreak(false); // não passa para outra página pq vai caber
+        }
+
         $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala)  
         FROM ".$xProj.".escaladaf 
         WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY dataescala");
-
         $row = pg_num_rows($rs);
         $Cont = 1;
         if($row > 0){
@@ -161,14 +168,16 @@ if(!isset($_SESSION['AdmUsu'])){
             }
             $pdf->Cell(7, 5, "", 0, 1, 'L');
 
-            $pdf->SetX(42); 
             $pdf->SetFont('Arial', '' , 8);
-            $pdf->Cell(7, 5, "Carga Semanal", 0, 0, 'L', true);
-
+            $pdf->SetX(10); 
+            $pdf->SetTextColor(152, 152, 152);
+            $pdf->Cell(27, 5, "Cargo/FG", "B", 0, 'L');
+            $pdf->Cell(1, 5, " ", 0, 0, 'L');
+            $pdf->Cell(31, 5, "Nome", "B", 0, 'L');
+            $pdf->SetTextColor(0, 0, 0);
 
             $pdf->SetFont('Arial', '' , 10);
             $pdf->SetX(70); 
-
             //Semana
             $rs1 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
             FROM ".$xProj.".escaladaf 
@@ -183,63 +192,29 @@ if(!isset($_SESSION['AdmUsu'])){
                 $pdf->Cell(7, 5, $Semana_Extract[$tbl1[1]], 1, 0, 'C', true);
             }
             $pdf->Cell(7, 5, "", 0, 1, 'L');
-
             
-            $rs1 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl ");
+            $rs1 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual, cargo_daf FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl ");
             $row1 = pg_num_rows($rs1);
             if($row1 > 0){
                 while($tbl1 = pg_fetch_row($rs1)){
                     $Cod = $tbl1[0];
                     $pdf->SetX(10); 
-//                    $pdf->Cell(27, 5, substr($tbl1[2], 0, 16), 0, 0, 'L');
                     if(is_null($tbl1[2]) || $tbl1[2] == ""){
-                        $Nome = substr($tbl1[1], 0, 13); //nome completo
+                        $Nome = substr($tbl1[1], 0, 17); //nome completo
                     }else{
-                        $Nome = substr($tbl1[2], 0, 16); //nome usual
+                        $Nome = substr($tbl1[2], 0, 20); //nome usual
                     }
-                    $pdf->Cell(27, 5, $Nome, 0, 0, 'L');
+                    if(!is_null($tbl1[3])){
+                        $Cargo = substr($tbl1[3], 0, 20);
+                    }else{
+                        $Cargo = "";
+                    }
+
+                    $pdf->Cell(27, 5, $Cargo, "B", 0, 'L');
+                    $pdf->Cell(1, 5, " ", 0, 0, 'L');
+                    $pdf->Cell(31, 5, $Nome, "B", 0, 'L');
                     
-                //Carga horária Semanal
-                    //Seleciona as semanas do mês e ano para os escalados do grupo
-                    $rsS = pg_query($Conec, "SELECT DISTINCT TO_CHAR(dataescala, 'IW') FROM ".$xProj.".escaladaf 
-                    WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY TO_CHAR(dataescala, 'IW') ");
-                    $rowS = pg_num_rows($rsS);
-                    while($tblS = pg_fetch_row($rsS)){
-                        $SemanaNum = $tblS[0]; // número da semana no ano
-                        //Dia de início dessa Semana
-                        $a = new DateTime();
-                        $a->setISODate($Ano, $SemanaNum);
-                        $DiaIniSem = $a->format('d/m');
-                        $IniSem = $a->format('m');
-
-                        //Dia final dessa semana
-                        $b = new DateTime();
-                        $b->setISODate($Ano, $SemanaNum, 7);
-                        $DiaFimSem = $b->format('d/m');
-                        $FimSem = $b->format('m');
-
-                        $CargaHoraCor =  0;
-
-                        //Carga Semanal turno1
-                        $rsS1 = pg_query($Conec, "SELECT TO_CHAR(SUM(cargatime), 'HH24:MI') 
-                        FROM ".$xProj.".escaladaf LEFT JOIN ".$xProj.".escaladaf_ins ON ".$xProj.".escaladaf.id = ".$xProj.".escaladaf_ins.escaladaf_id 
-                        WHERE poslog_id = $Cod And TO_CHAR(dataescala, 'IW') = '$SemanaNum' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And ".$xProj.".escaladaf_ins.grupo_ins = $NumGrupo ");
-                        $rowS1 = pg_num_rows($rsS1);
-                        if($rowS1 > 0){
-                            $tblS1 = pg_fetch_row($rsS1);
-                            $CargaHoraCor =  $tblS1[0]; 
-                        }
-                        $pdf->SetFont('Arial','' , 8); 
-                        if($IniSem == $Mes && $FimSem == $Mes){
-                            if($rowS == 5){
-                                $pdf->Cell(10, 5, $CargaHoraCor, 1, 0, 'C');
-                            }else{
-                                $pdf->Cell(8, 5, $CargaHoraCor, 1, 0, 'C');
-                            }
-                        }
-                    }
-
-                    //Quadrinho dias 01, 02, 03, ...
+                     //Quadrinho dias 01, 02, 03, ...
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '01' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
@@ -1228,8 +1203,6 @@ if(!isset($_SESSION['AdmUsu'])){
                                 $pdf->Cell(7, 5, "", 1, 0, 'C');
                             }
                         }
-                    }else{ // se o dia não existir 
-//                        $pdf->Cell(7, 5, "", 0, 1, 'C');
                     }
 
                     if(buscaDia($Conec, $xProj, $Mes, $Ano, 30) == 1){ //Ver se o dia existe neste mes
@@ -1266,8 +1239,6 @@ if(!isset($_SESSION['AdmUsu'])){
                                 $pdf->Cell(7, 5, "", 1, 0, 'C');
                             }
                         }
-                    }else{
-//                        $pdf->Cell(7, 5, "", 0, 1, 'C');
                     }
 
                     if(buscaDia($Conec, $xProj, $Mes, $Ano, 31) == 1){ //Ver se o dia existe neste mes
@@ -1291,7 +1262,6 @@ if(!isset($_SESSION['AdmUsu'])){
                             if($tbl2[2] == 3){
                                 $pdf->SetFillColor(0, 255, 127); // fundo verde
                             }
-//                            $pdf->Cell(7, 5, $tbl2[0], 1, 1, 'C', true); // letra
                             $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                         }else{
                             $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
@@ -1299,20 +1269,15 @@ if(!isset($_SESSION['AdmUsu'])){
                             $tbl3 = pg_fetch_row($rs3);
                             if($tbl3[1] == 0){
                                 $pdf->SetFillColor(232, 232, 232); // fundo cinza
-//                                $pdf->Cell(7, 5, "", 1, 1, 'C', true);
                                 $pdf->SetFillColor(255, 255, 255);
                             }else{
-//                                $pdf->Cell(7, 5, "", 1, 1, 'C');
                                 $pdf->Cell(7, 5, "", 1, 0, 'C'); // montar só os quadrinhos
                             }
                         }
                     }else{
-//                        $pdf->Cell(7, 5, "", 0, 1, 'C');
                     }
                     //Conta o número de serviços
-//                    $rs5 = pg_query($Conec, "SELECT COUNT(poslog_id) FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'MM') = '$Mes' And grupo_ins = $NumGrupo And letraturno != 'F' And letraturno != 'X' And letraturno != 'Y' ");
-                    $rs5 = pg_query($Conec, "SELECT COUNT(poslog_id) 
-                    FROM ".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".escaladaf_turnos ON ".$xProj.".escaladaf_ins.turnos_id = ".$xProj.".escaladaf_turnos.id 
+                    $rs5 = pg_query($Conec, "SELECT COUNT(poslog_id) FROM ".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".escaladaf_turnos ON ".$xProj.".escaladaf_ins.turnos_id = ".$xProj.".escaladaf_turnos.id 
                     WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'MM') = '$Mes' And grupo_ins = $NumGrupo And infotexto = 0 ");
                     $tbl5 = pg_fetch_row($rs5);
                     $pdf->SetFillColor(255, 255, 255);
@@ -1321,7 +1286,6 @@ if(!isset($_SESSION['AdmUsu'])){
                     $pdf->Cell(5, 5, $tbl5[0], 0, 1, 'C', true);
                     $pdf->SetTextColor(0, 0, 0);
                     $pdf->SetFont('Arial', '' , 10);
-
                 }
             }
 
@@ -1640,11 +1604,12 @@ if(!isset($_SESSION['AdmUsu'])){
                 $pdf->Cell(35, 5, "", 0, 1, 'C');
             }
 
-
-            
-// Encarregado - order by datamodif DESC para pegar sempre o último chefe marcado  
-            $pdf->ln(7);
-//            $rs2 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE enc_escdaf = 1 And ativo = 1 ORDER BY datamodif DESC");
+            // Encarregado - order by datamodif DESC para pegar sempre o último chefe marcado
+            if($rowEft == 7 ){
+                $pdf->ln(2); // para caber 7 na página
+            }else{
+                $pdf->ln(7);
+            }
             $rs2 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog INNER JOIN ".$xProj.".escalas_gr ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escalas_gr.enc_escdaf WHERE ".$xProj.".escalas_gr.id = $NumGrupo And ".$xProj.".escalas_gr.ativo = 1 ");
             $row2 = pg_num_rows($rs2);
             $pdf->SetX(140); 
@@ -1662,12 +1627,55 @@ if(!isset($_SESSION['AdmUsu'])){
                 $pdf->Cell(100, 5, "", 0, 1, 'C');
             }
 
+            $pdf->ln(3);
+            $lin = $pdf->GetY();
+            $pdf->Line(10, $lin, 290, $lin);
+            $pdf->ln(1);
+            $pdf->Cell(50, 5, "Carga Mensal:", 0, 1, 'L');
+            $pdf->ln(1);
+
+            $rs4 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl"); 
+            $row4 = pg_num_rows($rs4);
+            if($row4 > 0){
+                $Cont = 1;
+                while($tbl4 = pg_fetch_row($rs4)){
+                    $Cod = $tbl4[0];
+                    $Nome = substr($tbl4[2], 0, 13);
+                    if(is_null($tbl4[2]) || $tbl4[2] == ""){
+                        $Nome = substr($tbl4[1], 0, 13);
+                    }
+                    $CargaMes = 0;
+                    $rs5 = pg_query($Conec, "SELECT TO_CHAR(SUM(cargatime), 'HH24:MI') 
+                    FROM ".$xProj.".escaladaf_ins 
+                    WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
+                    $row5 = pg_num_rows($rs5);
+                    if($row5 > 0){
+                        $tbl5 = pg_fetch_row($rs5);
+                        $CargaMes =  $tbl5[0]; 
+                        if($CargaMes == ""){
+                            $CargaMes = "00:00";
+                        }
+                    }
+                    if($Cont == 6 && $rowEft > 6 || $Cont == 12 && $rowEft > 12 || $Cont == 18 && $rowEft > 18){ // mudar de linha
+                        $pdf->Cell(37, 5, $Nome." ".$CargaMes." ", 1, 1, 'C');
+                        $pdf->ln(1);
+                    }else{
+                        $pdf->Cell(37, 5, $Nome." ".$CargaMes." ", 1, 0, 'C');
+                        $pdf->Cell(5, 5, " ", 0, 0, 'L');
+                    }
+                    $Cont++;
+                }
+                $pdf->Cell(50, 5, "", 0, 1, 'L');
+            }
+
+            if($rowEft > 7 ){
+                $pdf->AddPage("L", "A4"); // outra página para as notas 
+            }
 
 //Notas
             $pdf->ln(3);
             $lin = $pdf->GetY();
             $pdf->Line(10, $lin, 290, $lin);
-            $pdf->ln(5);
             $pdf->SetFont('Arial', '' , 10);
             $pdf->SetX(15); 
             $pdf->Cell(20, 7, "Notas:", 0, 1, 'L');
@@ -1682,7 +1690,6 @@ if(!isset($_SESSION['AdmUsu'])){
                     $pdf->ln(1);
                 }
             }
-
         }else{
             $pdf->SetFont('Arial', '' , 10);
             $pdf->MultiCell(0, 5, "Nada foi Encontrado.", 0, 'C', false);

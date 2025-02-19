@@ -250,19 +250,13 @@
 						<a href='#' onclick='openhref(73);'>Elevadores</a>
 					</li>
 					<?php
-
-		//Para evitar erro a quem estiver logado
-        $rsProc = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'poslog' AND COLUMN_NAME = 'extint'");
-        $rowProc = pg_num_rows($rsProc);
-        if($rowProc > 0){
 						$Extint = parEsc("extint", $Conec, $xProj, $_SESSION["usuarioID"]);
 						$Fisc_Extint = parEsc("fisc_extint", $Conec, $xProj, $_SESSION["usuarioID"]);
 						if($Extint == 1 || $Fisc_Extint == 1){
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(91);'>Extintores</a>";
 							echo "</li>";
-						}
-		}
+						}		
 					?>
 				</ul>
 			</li>

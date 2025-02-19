@@ -202,7 +202,6 @@ if(!isset($_SESSION["usuarioID"])){
                 border-radius: 15px;
                 width: 40%;
             }
-
         </style>
         <script>
             LargTela = $(window).width();
@@ -213,6 +212,12 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("selecGrupo").style.visibility = "hidden"; 
                 document.getElementById("etiqGrupo").style.visibility = "hidden"; 
                 document.getElementById("imgEscalaConfig").style.visibility = "hidden";
+                document.getElementById("imprGrupos").style.visibility = "hidden"; 
+                document.getElementById("imgEspera").style.visibility = "hidden"; 
+
+                if(parseInt(document.getElementById("UsuAdm").value) > 6){ // Superusuário
+                    document.getElementById("imprGrupos").style.visibility = "visible"; 
+                }
 
                 if(parseInt(document.getElementById("guardaUsuId").value) != 3){ // Programador
                     document.getElementById("etiqcheckvisucargo").style.visibility = "hidden";
@@ -226,7 +231,6 @@ if(!isset($_SESSION["usuarioID"])){
                 }
 //alert($(window).width());
 
-//                if(parseInt(document.getElementById("escalante").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // Escalante e Superusuário
                 if(parseInt(document.getElementById("escalante").value) === 1 || parseInt(document.getElementById("quantGruposEsc").value) > 1){ // Escalante ou é escalante em mais de um grupo
                     document.getElementById("imgEscalaConfig").style.visibility = "visible"; 
                 }
@@ -279,7 +283,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                 $("#faixaferiados").load("modulos/escaladaf/infoAgd2.php");
                                                 document.getElementById("botImprimir").style.visibility = "hidden";
                                             }else{
-                                                if(parseInt(Resp.temMes) > 0){
+                                                if(parseInt(Resp.temMes) > 27){
                                                     $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
                                                     $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                                     $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
@@ -320,7 +324,6 @@ if(!isset($_SESSION["usuarioID"])){
                         document.getElementById("transfMesAnoEsc").value = "";
                         return false;
                     }
-
                     if(parseInt(document.getElementById("transfMesAnoEsc").value) > parseInt(document.getElementById("selecMesAnoEsc").value)+1){
                         $.confirm({
                             title: 'Ação Suspensa!',
@@ -345,7 +348,21 @@ if(!isset($_SESSION["usuarioID"])){
                         document.getElementById("transfMesAnoEsc").value = "";
                         return false;
                     }
+                    if(parseInt(document.getElementById("selecMesAnoEsc").value) !== 12){
+                        if(parseInt(document.getElementById("transfMesAnoEsc").value) < parseInt(document.getElementById("selecMesAnoEsc").value)){
+                            $.confirm({
+                            title: 'Ação Suspensa!',
+                            content: 'Mês escolhido é anterior a '+document.getElementById("selecMesAnoEsc").value,
+                            draggable: true,
+                            buttons: {
+                                OK: function(){}
+                            }
+                        });
+                        document.getElementById("transfMesAnoEsc").value = "";
+                        return false;
 
+                        }
+                    }
                     if(parseInt(document.getElementById("transfMesAnoEsc").value) > 0){
                         $.confirm({
                             title: 'Transferir escala.',
@@ -426,7 +443,8 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=buscausuario&codigo="+document.getElementById("configSelecEscala").value+"&numgrupo="+document.getElementById("guardanumgrupo").value, true);
+                        ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=buscausuario&codigo="+document.getElementById("configSelecEscala").value
+                        +"&numgrupo="+document.getElementById("selecGrupo").value, true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -572,6 +590,9 @@ if(!isset($_SESSION["usuarioID"])){
                 });
 
                 $("#selecGrupo").change(function(){
+                    if(parseInt(document.getElementById("selecGrupo").value) === 0){
+                        return false;
+                    }
                     ajaxIni();
                     if(ajax){
                         ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=trocagrupo&grupo="+document.getElementById("selecGrupo").value+"&selecmes="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value), true);
@@ -585,20 +606,19 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("guardanumgrupo").value = document.getElementById("selecGrupo").value;
                                         document.getElementById("etiqSiglaGrupo").innerHTML = "Escala "+Resp.siglagrupo;
-//                                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
-                                        if(parseInt(Resp.temMes) > 0){ // encontrados lançamentos do mês e ano
+                                        if(parseInt(Resp.temMes) > 27){ // encontrados lançamentos do mês e ano
                                             $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela+"&selecmes="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                            $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                         }else{
                                             $("#faixacentral").load("modulos/escaladaf/infoAgd2.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                            $("#faixacarga").load("modulos/escaladaf/infoAgd2.php");
                                         }
-                                        $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
-                                        $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
+                                        $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);                                        
                                         $("#faixanotas").load("modulos/escaladaf/notasdaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                         $("#faixaferiados").load("modulos/escaladaf/relFeriados.php?ano="+document.getElementById("guardaAno").value);
                                         document.getElementById("botImprimir").style.visibility = "visible";
                                         document.getElementById("transfMesAnoEsc").style.visibility = "visible";
                                         //Verificar se é igual Meugrupo e Numgrupo
-//                                        if(parseInt(document.getElementById("escalante").value) === 1 && parseInt(document.getElementById("guardanumgrupo").value) === parseInt(document.getElementById("guardameugrupo").value)){ // Se for Escalante e está no próprio grupo
                                         if(parseInt(document.getElementById("escalante").value) === 1 || parseInt(document.getElementById("quantGruposEsc").value) > 1){ // Se for Escalante ou é escalante de vários grupos
                                             document.getElementById("imgEscalaConfig").style.visibility = "visible";
                                             document.getElementById("etiqtransfMesAnoEsc").style.visibility = "visible";
@@ -610,8 +630,6 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById("transfMesAnoEsc").style.visibility = "hidden";
                                             }
                                         }
-//                                        carregaMes();
-//                                        document.getElementById("selecMesAnoEsc").value = Resp.mesSalvo;  // document.getElementById("guardamesano").value;
                                     }
                                 }
                             }
@@ -1249,6 +1267,22 @@ if(!isset($_SESSION["usuarioID"])){
                     $('#mensagemConfig').fadeOut(2000);
                     return false;
                 }
+                if(parseInt(document.getElementById("UsuAdm").value) < 7){
+                    $.confirm({
+                        title: '<img src="imagens/LogoComunhao.png" height="20px;">',
+                        content: 'Requer nível administrativo mais alto.',
+                        draggable: true,
+                        buttons: {
+                            OK: function(){}
+                        }
+                    });
+                    if(obj.checked === true){
+                        obj.checked = false;
+                    }else{
+                        obj.checked = true;
+                    }
+                    return false;
+                }
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=configMarcaEscalaEsc&codigo="+document.getElementById("configSelecEscala").value
@@ -1266,7 +1300,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         obj.checked = true;
                                         $.confirm({
                                             title: 'Ação Suspensa!',
-                                            content: 'Não restaria outro marcado para gerenciar a escala.',
+                                            content: 'Não restaria outro escalante para gerenciar a escala.',
                                             draggable: true,
                                             buttons: {
                                                 OK: function(){}
@@ -1288,7 +1322,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-            function marcaConfigEscala(obj, Campo){
+            function marcaConfigEscalaEft(obj){
                 if(obj.checked === true){
                     Valor = 1;
                 }else{
@@ -1309,7 +1343,6 @@ if(!isset($_SESSION["usuarioID"])){
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=configMarcaEscala&codigo="+document.getElementById("configSelecEscala").value
                     +"&numgrupo="+document.getElementById("selecGrupo").value
-                    +"&campo="+Campo
                     +"&valor="+Valor
                     , true);
                     ajax.onreadystatechange = function(){
@@ -1320,21 +1353,10 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
                                 }else{
-                                    if(parseInt(Resp.coderro) === 2){
-                                        obj.checked = true;
-                                        $.confirm({
-                                            title: 'Ação Suspensa!',
-                                            content: 'Não restaria outro marcado para gerenciar a escala.',
-                                            draggable: true,
-                                            buttons: {
-                                                OK: function(){}
-                                            }
-                                        });
-                                        return false;
-                                    }else if(parseInt(Resp.coderro) === 3){
+                                    if(parseInt(Resp.jaesta) === 1){
                                         obj.checked = false;
                                         $.confirm({
-                                            title: 'Atenção!',
+                                            title: '<img src="imagens/LogoComunhao.png" height="20px;">',
                                             content: 'Usuário participa de outra escala:<br>'+Resp.outrogrupo+".<br>Solicite à ATI modificar o grupo para fins de escala, se for o caso.",
                                             autoClose: 'OK|15000',
                                             draggable: true,
@@ -1492,6 +1514,9 @@ if(!isset($_SESSION["usuarioID"])){
             function resumoUsuEscala(){
                 window.open("modulos/escaladaf/imprUsuEsc.php?acao=listaUsuarios&numgrupo="+document.getElementById("guardanumgrupo").value, "EscalaUsu");
             }
+            function geralEscala(){
+                window.open("modulos/escaladaf/imprEscGrupos.php?acao=listaGrupos", "EscalaGrupos");
+            }
             function imprPlanilha(){
                 window.open("modulos/escaladaf/imprEscDaf.php?acao=imprPlan&mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value)+"&numgrupo="+document.getElementById("guardanumgrupo").value, document.getElementById("selecMesAnoEsc").value);
             }
@@ -1628,6 +1653,7 @@ if(!isset($_SESSION["usuarioID"])){
                     draggable: true,
                     buttons: {
                         Sim: function () {
+                            document.getElementById("imgEspera").style.visibility = "visible"; 
                             ajaxIni();
                             if(ajax){
                                 ajax.open("POST", "modulos/escaladaf/criaExcel_daf.php?acao=listaturnos&numgrupo="+document.getElementById("guardanumgrupo").value, true);
@@ -1638,20 +1664,15 @@ if(parseInt(document.getElementById("guardaUsuId").value) === 3){
 alert(ajax.responseText);
 }
                                             Resp = eval("(" + ajax.responseText + ")");
+                                            document.getElementById("imgEspera").style.visibility = "hidden"; 
                                             if(parseInt(Resp.coderro) === 1){
                                                 alert("Houve um erro no servidor.");
+                                            }else if(parseInt(Resp.criaobjphp) ===0){
+                                                alert("Plugin do Office não encontrado.");
+                                            }else if(parseInt(Resp.arquivo) === 0){
+                                                alert("O arquivo Excel não pode ser criado.");
                                             }else{
-                                    //Salva arquivo xlsx
-//                                    $(location).attr("href", "modulos/conteudo/arquivos/ListaTurnos.xlsx");
-window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
-//                                    $.confirm({
-//                                        title: 'Sucesso',
-//                                        content: 'Arquivo baixado para o diretório de downloads.',
-//                                        draggable: true,
-//                                        buttons: {
-//                                            OK: function(){}
-//                                        }
-//                                    });
+                                                window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
                                             }
                                         }
                                     }
@@ -2083,7 +2104,7 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
 
     $rsGr = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_esc WHERE usu_id = ".$_SESSION["usuarioID"]." And ativo = 1");
     $rowGr = pg_num_rows($rsGr); // quantidade de grupos em que é escalante
-
+    
     if($_SESSION["usuarioID"] == 83){ // provisório
         $OpcoesGrupo = pg_query($Conec, "SELECT id, siglagrupo FROM ".$xProj.".escalas_gr WHERE ativo = 1 ORDER BY siglagrupo");
     }else{
@@ -2146,7 +2167,7 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
         $MesLiberado = 1;
     }
 
-    $MesLiberado = 0; // só o escalante verá a página
+    $MesLiberado = 0;
 
     //Mantém feriados fixos dois anos à frente atualizando com o arquivo escaladaf_fer_padr
     $rsFer = pg_query($Conec, "SELECT id, TO_CHAR(dataescalafer, 'DD'), TO_CHAR(dataescalafer, 'MM'), descr FROM ".$xProj.".escaladaf_fer_padr WHERE ativo = 1");
@@ -2258,6 +2279,9 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
                     </select>
                     <label style="padding-left: 20px;"></label>
                     <button id="botImprimir" class="botpadrred" onclick="imprPlanilha();">PDF</button>
+                    <div style="text-align: left;">
+                        <img src="imagens/gears-512.gif" height="20px;" id="imgEspera">
+                    </div>
                 </div> <!-- quadro -->
             </div>
         </div>
@@ -2388,19 +2412,19 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
                 <!-- div três colunas -->
                 <div class="container" style="margin: 0 auto;">
                     <div class="row">
-                        <div class="col" style="margin: 0 auto;"></div>
+                        <div class="col" style="margin: 0 auto;"><button class="botpadrred" id="imprGrupos" style="font-size: 70%;" onclick="geralEscala();" title="Mostra a relação dos chefes, escalantes e efetivo das escalas">Geral Grupos</button></div>
                         <div class="col"><h6 id="etiqNomeGrupo" style="text-align: center; color: #666;">Escala <?php echo $SiglaGrupo; ?></h6></div> <!-- Central - espaçamento entre colunas  -->
-                        <div class="col" style="margin: 0 auto; text-align: center;"><button class="botpadrred" style="font-size: 70%;" onclick="resumoUsuEscala();">Resumo em PDF</button></div> 
+                        <div class="col" style="margin: 0 auto; text-align: center;"><button class="botpadrred" style="font-size: 70%;" onclick="resumoUsuEscala();" title="Mostra uma relação dos chefes, escalante e efetivo deste grupo">Resumo do Grupo</button></div> 
                     </div>
                 </div>
                 <label class="etiqAzul">Selecione um usuário para ver a configuração:</label>
-                <label id="mensagemConfig" style="color: red; font-weight: bold; padding-left: 30px;"></label>
+                
 
                 <label for='checkvisucargo' id='etiqcheckvisucargo' class='etiqAzul' style='padding-left: 15px'>Mostrar Cargo</label>
                 <input type='checkbox' id='checkvisucargo' onchange='marcaVisuCargo(this);' title='Visualisar cargo no formulário' >
                 <label for='checkprimcargo' id='etiqcheckprimcargo' class='etiqAzul' style='padding-left: 15px'>Primeiro o Cargo</label> 
                 <input type='checkbox' id='checkprimcargo' onchange='marcaPrimCargo(this);' title='Primeiro o cargo depois o nome' >
-                <label for='checksemanaIniFim' id='etiqchecksemanaIniFim' class='etiqAzul' style='padding-left: 15px'>Semanas Inicial e Final</label> 
+                <label for='checksemanaIniFim' id='etiqchecksemanaIniFim' class='etiqAzul' style='padding-left: 15px' title='Mostar as semanas inicial e final na contagem da carga horária'>Semanas Inicial e Final</label> 
                 <input type='checkbox' id='checksemanaIniFim' onchange='marcaSemanaIniFim(this);' title='Mostar as semanas inicial e final na contagem da carga horária' >
                 <table style="margin: 0 auto; width: 95%;">
                     <tr>
@@ -2440,12 +2464,16 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
                 <table style="margin: 0 auto; width: 85%;">
                     <tr>
                         <td class="etiq80">Escala DAF:</td>
-                        <td colspan="4">
-                            <input type="checkbox" id="checkefetivo" onchange="marcaConfigEscala(this, 'eft_daf');" >
+                        <td colspan="2">
+                            <input type="checkbox" id="checkefetivo" onchange="marcaConfigEscalaEft(this);" >
                             <label for="checkefetivo">efetivo da escala</label>
+
+                            
+                        </td>
+                        <td colspan="2">
+                        <label id="mensagemConfig" style="color: red; font-weight: bold;"></label>
                         </td>
                     </tr>
-
                     <tr>
                         <td class="etiq80">Escala DAF:</td>
                         <td colspan="4">
@@ -2488,7 +2516,11 @@ window.open("modulos/conteudo/arquivos/ListaTurnos.xlsx", '_blank');
                                 }
                                 ?>
                             </select>
-
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="etiq80"></td>
+                        <td colspan="4">
                         </td>
                     </tr>
                 </table>

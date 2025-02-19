@@ -240,7 +240,7 @@ $Semana_Extract = array(
 
                     $rs2 = pg_query($Conec, "SELECT horafolga, date_part('dow', dataescalains), destaque, turnoturno, infotexto 
                     FROM ".$xProj.".escaladaf_turnos INNER JOIN (".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".poslog on ".$xProj.".escaladaf_ins.poslog_id = ".$xProj.".poslog.pessoas_id) ON ".$xProj.".escaladaf_turnos.id = ".$xProj.".escaladaf_ins.turnos_id
-                    WHERE ".$xProj.".poslog.eft_daf = 1 And TO_CHAR(dataescalains, 'DD') = '$Dia' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And esc_grupo = $NumGrupo And ".$xProj.".escaladaf_ins.ativo = 1 ORDER BY nomeusual");
+                    WHERE ".$xProj.".poslog.ativo = 1 And ".$xProj.".poslog.eft_daf = 1 And TO_CHAR(dataescalains, 'DD') = '$Dia' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And esc_grupo = $NumGrupo And ".$xProj.".escaladaf_ins.ativo = 1 ORDER BY nomeusual");
 
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX($Marg); 
