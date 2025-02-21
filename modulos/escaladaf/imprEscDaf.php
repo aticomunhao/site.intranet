@@ -193,7 +193,7 @@ if(!isset($_SESSION['AdmUsu'])){
             }
             $pdf->Cell(7, 5, "", 0, 1, 'L');
             
-            $rs1 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual, cargo_daf FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl ");
+            $rs1 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual, cargo_daf FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl ");
             $row1 = pg_num_rows($rs1);
             if($row1 > 0){
                 while($tbl1 = pg_fetch_row($rs1)){
@@ -1634,7 +1634,7 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->Cell(50, 5, "Carga Mensal:", 0, 1, 'L');
             $pdf->ln(1);
 
-            $rs4 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl"); 
+            $rs4 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl"); 
             $row4 = pg_num_rows($rs4);
             if($row4 > 0){
                 $Cont = 1;

@@ -680,7 +680,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 document.getElementById("guardaDiaId").value = DiaId; // id do dia em escaladaf
                 document.getElementById("titulomodal").innerHTML = DataDia;
-                $("#relacaoParticip").load("modulos/escaladaf/equipe.php?diaid="+DiaId+"&numgrupo="+document.getElementById("guardanumgrupo").value);
+                $("#relacaoParticip").load("modulos/escaladaf/equipe.php?diaid="+DiaId+"&numgrupo="+document.getElementById("selecGrupo").value);
                 document.getElementById("relacParticip").style.display = "block";
             }
 
@@ -1860,6 +1860,42 @@ alert(ajax.responseText);
                 $SiglaGrupo = "";
             }
 
+//Provisório
+if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
+    $rs1 = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'poslog' AND COLUMN_NAME = 'ordem_daf'");
+    $row1 = pg_num_rows($rs1);
+    if($row1 == 0){
+        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS ordem_daf smallint NOT NULL DEFAULT 0 ");
+    }
+//Provisório
+    $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE ativo = 1 And ordem_daf = 0 ");
+    $row1 = pg_num_rows($rs1);
+    if($row1 > 0){
+        //acertar a numeração nos grupos
+        pg_query($Conec, "UPDATE ".$xProj.".poslog SET nomeusual = 'Alcir' WHERE pessoas_id = 6273");
+        pg_query($Conec, "UPDATE ".$xProj.".poslog SET nomeusual = 'Giovanna' WHERE pessoas_id = 9055");
+
+        $rs2 = pg_query($Conec, "SELECT id, esc_grupo, ordem_daf FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY esc_grupo, nomeusual ");
+        $row2 = pg_num_rows($rs2);
+        if($row2 > 0){
+            while($tbl2 = pg_fetch_row($rs2)){
+                $CodGrupo = $tbl2[1];
+                $Num = 1;
+                $rs3 = pg_query($Conec, "SELECT id, esc_grupo, ordem_daf FROM ".$xProj.".poslog WHERE ativo = 1 And esc_grupo = $CodGrupo ORDER BY nomeusual ");
+                $row3 = pg_num_rows($rs3);
+                if($row3 > 0){
+                    while($tbl3 = pg_fetch_row($rs3)){
+                        $Cod = $tbl3[0];
+                        pg_query($Conec, "UPDATE ".$xProj.".poslog SET ordem_daf = $Num WHERE id = $Cod And ativo = 1");
+                        $Num++;
+                    }
+                }
+            }
+        }
+    }
+}
+
+
 //Provisórios
 //    pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf");
     pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf (
@@ -2354,7 +2390,7 @@ alert(ajax.responseText);
         <div id="relacQuadroNotas" class="relacmodal">
             <div class="modal-content-relacNotas">
                 <span class="close" onclick="fechaQuadroNotas();">&times;</span>
-                <h5 id="titulomodal" style="text-align: center;color: #666;">Edição de Nota ao Horário de Trabalho</h5>
+                <h5 style="text-align: center;color: #666;">Edição de Nota ao Horário de Trabalho</h5>
                 <div style="border: 2px solid #C6E2FF; border-radius: 10px;">
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>
@@ -2418,7 +2454,6 @@ alert(ajax.responseText);
                     </div>
                 </div>
                 <label class="etiqAzul">Selecione um usuário para ver a configuração:</label>
-                
 
                 <label for='checkvisucargo' id='etiqcheckvisucargo' class='etiqAzul' style='padding-left: 15px'>Mostrar Cargo</label>
                 <input type='checkbox' id='checkvisucargo' onchange='marcaVisuCargo(this);' title='Visualisar cargo no formulário' >

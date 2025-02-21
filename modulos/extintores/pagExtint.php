@@ -475,7 +475,9 @@ if(!isset($_SESSION["usuarioID"])){
             function mostraExtint(Acao){
                 $("#faixacentral").load("modulos/extintores/jExtint.php?acao="+Acao);
             }
-
+            function imprExtint(){
+                window.open("modulos/extintores/imprExtint.php?acao=imprExtint", "ImprExtint");
+            } 
             function fechaEditEmpr(){
                 document.getElementById("relacEditEmpresa").style.display = "none";
             }
@@ -607,7 +609,7 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
             <div class="box" style="position: relative; float: right; width: 33%; text-align: right;">
                 <label style="padding-left: 20px;"></label>
-<!--                <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprAr();">PDF</button> -->
+                <button class="botpadrred" style="font-size: 80%;" onclick="imprExtint();">PDF</button>
             </div>
 
             <div id="faixacentral"></div>
@@ -706,43 +708,40 @@ if(!isset($_SESSION["usuarioID"])){
             <div class="modal-content-Ins">
                 <span class="close" onclick="fechaModal();">&times;</span>
                 <div><H6>Configuração: Extintores</H6></div>
-                
-                
-            <div class="box" style="position: relative; float: left; width: 43%; margin-top: 10px; text-align: center; border: 1px solid; border-radius: 10px; background: linear-gradient(180deg, white, #86c1eb);">
-                <div class='divbot corFundo' style='margin-top: 10px; margin-left: 5px; margin-bottom: 5px;' onclick='insTipo()' title="Adicionar um novo tipo de extintor"> Adicionar </div>
-                <div id="configTipos" style="margin-bottom: 15px; text-align: center; width: 90%;"></div>
-            </div>
-            <div class="box" style="position: relative; float: left; width: 10%; margin-top: 10px; text-align: center;"></div>
-            <div class="box" style="position: relative; float: right; width: 40%; margin-top: 10px; margin-right: 20px; padding-top: 5px; text-align: left; border: 2px solid green; border-radius: 10px; min-height: 100px;">
-                <label class="etiqAzul" style="padding-left: 20px;">Aviso de vencimento:</label>
-                <br>
-                <table style="margin: 0 auto; padding-top: 5px;">
+                <div class="box" style="position: relative; float: left; width: 43%; margin-top: 10px; text-align: center; border: 1px solid; border-radius: 10px; background: linear-gradient(180deg, white, #86c1eb);">
+                    <div class='divbot corFundo' style='margin-top: 10px; margin-left: 5px; margin-bottom: 5px;' onclick='insTipo()' title="Adicionar um novo tipo de extintor"> Adicionar </div>
+                    <div id="configTipos" style="margin-bottom: 15px; text-align: center; width: 90%;"></div>
+                </div>
+                <div class="box" style="position: relative; float: left; width: 10%; margin-top: 10px; text-align: center;"></div>
+                <div class="box" style="position: relative; float: right; width: 40%; margin-top: 10px; margin-right: 20px; padding-top: 5px; text-align: left; border: 2px solid green; border-radius: 10px; min-height: 100px;">
+                    <label class="etiqAzul" style="padding-left: 20px;">Aviso de vencimento:</label>
+                    <br>
+                    <table style="margin: 0 auto; padding-top: 5px;">
+                        <tr>
+                            <td class="etiqAzul"> Avisar com </td>
+                            <td>
+                                <input type="text" id="diasanteced" valor="" onchange="salvaAviso();" style="border: 1px solid; border-radius: 5px; width: 40px; text-align: center;">
+                            </td>
+                            <td class="etiqAzul"> dias de antecedência</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: center;">
+                            <label id="mensagemConfig" style="color: red; font-weight: bold; padding-left: 30px;"></label>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <table>
                     <tr>
-                        <td class="etiqAzul"> Avisar com </td>
                         <td>
-                            <input type="text" id="diasanteced" valor="" onchange="salvaAviso();" style="border: 1px solid; border-radius: 5px; width: 40px; text-align: center;">
-                        </td>
-                        <td class="etiqAzul"> dias de antecedência</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" style="text-align: center;">
-                        <label id="mensagemConfig" style="color: red; font-weight: bold; padding-left: 30px;"></label>
+                            <div style="margin: 20px; min-width: 500px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px; background: linear-gradient(180deg, white, #86c1eb);">
+                                <div class='divbot corFundo' onclick='insEmpresa()' title="Adicionar nova empresa"> Adicionar </div>
+                                <div id="configEmpr" style="text-align: center;"></div>
+                            </div>
                         </td>
                     </tr>
                 </table>
-            </div>
-
-            <table>
-                <tr>
-                    <td>
-                        <div style="margin: 20px; min-width: 500px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px; background: linear-gradient(180deg, white, #86c1eb);">
-                            <div class='divbot corFundo' onclick='insEmpresa()' title="Adicionar nova empresa"> Adicionar </div>
-                            <div id="configEmpr" style="text-align: center;"></div>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-
             </div>
         </div> <!-- Fim Modal-->
 

@@ -67,8 +67,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         
         $row0 = pg_num_rows($rs0);
         ?>
-        <div style="padding: 10px;">
-            <table id="idTabela" class="display" style="width:90%;">
+        <div style="padding: 5px;">
+            <table id="idTabela" class="display" style="width:99%;">
                 <thead>
                     <tr>
                         <th style="display: none;"></th>
@@ -107,7 +107,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <td><?php echo $tbl[4]; ?></td>
                         <td><?php echo $tbl[2]; ?></td>
                         <td style="text-align: center;"><?php echo $DataRevis; ?></td>
-                        <td style="text-align: center;<?php if($tbl[10] == 'aviso'){echo 'color: #FF3E96; font-weight: bold;';}else if($tbl[10] == 'vencido'){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>"><?php echo $DataValid; ?></td>
+                        <td style="text-align: center;<?php if($tbl[10] == 'aviso'){echo 'color: #CD00CD; font-weight: bold;';}else if($tbl[10] == 'vencido'){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>"><?php echo $DataValid; ?></td>
                         <td style="text-align: center;"><?php if($tbl[11] == 'vencido'){echo "<img src='imagens/oknao.png' title='Vencido'>";} ?></td>
                     </tr>
                     <?php

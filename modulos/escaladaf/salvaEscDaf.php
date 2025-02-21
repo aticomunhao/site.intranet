@@ -1403,3 +1403,26 @@ if($Acao =="buscaLetra"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
+if($Acao =="salvaDragEquipe"){
+    if(isset($_REQUEST["numgrupo"])){ //grupo escolhido
+        $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal que pode editar escala
+    }else{
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+    if($NumGrupo == 0 || $NumGrupo == ""){
+        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+    }
+    $Erro = 0;
+    if(isset($_POST['posicao']) && is_array( $_POST['posicao'])){
+        $Pos = $_POST['posicao'];
+        for($i = 0; $i < count($Pos); $i++) {
+           pg_query($Conec, "UPDATE ".$xProj.".poslog SET ordem_daf = ".($i+1)." WHERE pessoas_id =". intval($Pos[$i])."");
+        }
+    }else{
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro, "grupo"=>$NumGrupo);
+    $responseText = json_encode($var);
+    echo $responseText;
+}

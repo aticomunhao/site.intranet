@@ -50,8 +50,8 @@
                             </td>
                             <td><div class="quadrinho"> <?php echo $tbl[4]; ?></div></td>
                             <td><div class="quadrinho"> <?php echo $tbl[2]; ?></div></td>
-                            <td><div class="quadrinho"> <?php echo $tbl[3]; ?></div></td>
-                            <td><div class="quadrinho" style="font-size: 80%;"> <?php echo $tbl[5]; ?></div></td>
+                            <td><div class="quadrinho" style="font-size: 80%; text-align: left;"> <?php echo $tbl[3]; ?></div></td>
+                            <td><div class="quadrinho" style="font-size: 80%; text-align: left;"> <?php echo $tbl[5]; ?></div></td>
                             <td class="etiq aCentro">
                                 <?php
                                 if($tbl[6] == 1){

@@ -97,7 +97,8 @@ if(isset($_REQUEST["acao"])){
         if($row > 0){
             $tbl = pg_fetch_row($rs);
             $CodChave = $tbl[0];
-            $ChaveNum = str_pad($tbl[1], 3, 0, STR_PAD_LEFT).$tbl[2];
+//            $ChaveNum = str_pad($tbl[1], 3, 0, STR_PAD_LEFT).$tbl[2];
+            $ChaveNum = str_pad($tbl[1], 3, 0, STR_PAD_LEFT);
             pg_query($Conec, "UPDATE ".$xProj.".chaves SET presente = 1 WHERE id = $CodChave");
         }
         if(!$rs){

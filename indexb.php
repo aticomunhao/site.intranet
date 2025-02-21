@@ -25,7 +25,7 @@
         <script src="comp/js/jquery-confirm.min.js"></script>   <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
         <script src="comp/js/eventos.js"></script>
         <style>
-            .bContainer{ /* botão upload */
+            .bContainer{ 
                 position: absolute; 
                 right: 30px;
                 margin-top: -20px; 
@@ -374,7 +374,6 @@
                     }
                     if(parseInt(seg) == parseInt(document.getElementById("guardatempo").value)){
                         location.replace('modulos/cansei.php');
-                        $('#container3').load('modulos/config.php');
                         clearInterval(contaTempo);
                     }
                 }else{

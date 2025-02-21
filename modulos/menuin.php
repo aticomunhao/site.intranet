@@ -24,15 +24,18 @@
 			//Provisório
 			if(strtotime('2025/03/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//0089
-				pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET infotexto = 1 WHERE horaturno = 'FOLGA' and grupo_turnos = 10 ");
-				pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET infotexto = 1 WHERE horaturno = 'FÉRIAS' and grupo_turnos = 10 ");
-				pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET infotexto = 1 WHERE horaturno = 'INSS' and grupo_turnos = 10 ");
-				pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET infotexto = 1 WHERE horaturno = 'AULA IAQ' and grupo_turnos = 10 ");
-				pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET infotexto = 1 WHERE horaturno = 'IAO' and grupo_turnos = 10 ");
-				//0088
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS seminifim_daf smallint NOT NULL DEFAULT 1 "); // mostra/oculta a carga das semanas inicial e final das escalas jCargaDaf.php
-
+				//0090
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".extintores ALTER COLUMN ext_local TYPE VARCHAR(150) ");
+				$rs = pg_query($ConecPes, "SELECT nome_resumido FROM ".$xPes.".pessoas WHERE id = 6273");
+				$row = pg_num_rows($rs);
+				if($row > 0){
+					$tbl = pg_fetch_row($rs);
+					if(is_null($tbl[0]) || $tbl[0] == ""){
+						pg_query($ConecPes, "UPDATE ".$xPes.".pessoas SET nome_resumido = 'Alcir' WHERE id = 6273");
+						pg_query($ConecPes, "UPDATE ".$xPes.".pessoas SET nome_resumido = 'Giovanna' WHERE id = 9055");
+					}
+				}
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS ordem_daf smallint NOT NULL DEFAULT 0 ");
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

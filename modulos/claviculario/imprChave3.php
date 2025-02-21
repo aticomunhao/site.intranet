@@ -67,7 +67,7 @@ if(isset($_REQUEST["acao"])){
             }
         }
     }
-//    $pdf->SetX(40); 
+ 
     $pdf->SetFont('Arial','' , 14); 
     $pdf->Cell(0, 5, $Cabec1, 0, 2, 'C');
     $pdf->SetFont('Arial','' , 12); 
@@ -121,11 +121,11 @@ if(isset($_REQUEST["acao"])){
             $pdf->Cell(20, 3, "Chave", 0, 0, 'L');
             $pdf->Cell(80, 3, "Local", 0, 0, 'L');
             $pdf->Cell(20, 3, "Sala", 0, 0, 'R');
-            $pdf->Cell(150, 3, "Obs", 0, 0, 'L');
-            $pdf->ln(4);
+            $pdf->Cell(150, 3, "Obs", 0, 1, 'L');
             $lin = $pdf->GetY();
             $pdf->Line(25, $lin, 282, $lin);
             $pdf->SetFont('Arial', '', 10);
+            $pdf->ln(2);
 
             while($tbl0 = pg_fetch_row($rs0)){
                 $Cod = $tbl0[0];
@@ -136,7 +136,7 @@ if(isset($_REQUEST["acao"])){
                 $pdf->Cell(80, 5, $tbl0[3], 0, 0, 'L');
                 $pdf->Cell(20, 5, $tbl0[4], 0, 0, 'R');
                 $pdf->SetFont('Arial', '', 8);
-                $pdf->MultiCell(0, 4, $tbl0[5], 0, 'L', false);
+                $pdf->MultiCell(0, 5, $tbl0[5], 0, 'L', false);
                 $pdf->SetFont('Arial', '', 10);
                 $lin = $pdf->GetY();
                 $pdf->Line(25, $lin, 282, $lin);
@@ -211,7 +211,7 @@ if(isset($_REQUEST["acao"])){
                         $pdf->Line(50, $lin, 282, $lin);
                     }
                 }
-                $pdf->ln(5);
+                $pdf->ln(8);
             }
             
             $lin = $pdf->GetY();               
@@ -227,7 +227,6 @@ if(isset($_REQUEST["acao"])){
 
 
     $pdf->AddPage();
-    $pdf->ln(10);
     if($Acao == "listamesChaves"){
         $rs0 = pg_query($Conec, "SELECT id, chavenum, chavenumcompl, chavelocal, chavesala FROM ".$xProj.".chaves3  
         WHERE ativo = 1 And chavenum != 0 ORDER BY chavenum");
@@ -267,7 +266,6 @@ if(isset($_REQUEST["acao"])){
         }       
     }
 
-    $pdf->ln(10);
     if($Acao == "listaanoChaves"){
         $rs0 = pg_query($Conec, "SELECT id, chavenum, chavenumcompl, chavelocal, chavesala FROM ".$xProj.".chaves3  
         WHERE ativo = 1 And chavenum != 0 ORDER BY chavenum");
@@ -305,7 +303,5 @@ if(isset($_REQUEST["acao"])){
             }
         }       
     }
-
-
  }
  $pdf->Output();

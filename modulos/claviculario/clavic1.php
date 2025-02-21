@@ -5,6 +5,8 @@ if(!isset($_SESSION["usuarioID"])){
     session_destroy();
     header("Location: ../../index.php");
 }
+// Claviculário portaria -> marca no Cadastro de Usuários. 
+// Claviculário DAF e Chaves Lacradas -> marca na configuração da página (roda dentada)
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -1123,7 +1125,6 @@ if(!isset($_SESSION["usuarioID"])){
 
 
 //---------------  Provisório
-
 //        pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".chaves");
         pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".chaves (
             id SERIAL PRIMARY KEY, 
@@ -1140,13 +1141,6 @@ if(!isset($_SESSION["usuarioID"])){
             dataedit timestamp without time zone DEFAULT '3000-12-31' 
             )
         ");
-
-//Tabela antiga - apagar
-$rs = pg_query($Conec, "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'chaves_ctl' AND COLUMN_NAME = 'chaves_id'");
-$row = pg_num_rows($rs);
-if($row == 0){ // não tinha a coluna chaves_id
-   pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".chaves_ctl");
-}
 
 //        pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".chaves_ctl");
         pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".chaves_ctl (
@@ -1183,7 +1177,6 @@ if($row == 0){ // não tinha a coluna chaves_id
             )
         ");
 
-
         $rs = pg_query($Conec, "SELECT chavenum FROM ".$xProj.".chaves LIMIT 3 ");
         $row = pg_num_rows($rs);
         if($row == 0){
@@ -1199,7 +1192,6 @@ if($row == 0){ // não tinha a coluna chaves_id
 
 //______________________
 
-
         $Clav = parEsc("clav", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
         $Chave = parEsc("chave", $Conec, $xProj, $_SESSION["usuarioID"]); // pode pegar chaves
         $FiscClav = parEsc("fisc_clav", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
@@ -1214,8 +1206,7 @@ if($row == 0){ // não tinha a coluna chaves_id
         FROM ".$xProj.".chaves_ctl GROUP BY 1 ORDER BY 1 DESC ");
 
         ?>
-<!--         <div style="margin: 20px; "> -->
-         <div style="margin: 20px; padding: 10px; border: 2px solid; border-radius: 10px; min-height: 52px;">
+        <div style="margin: 20px; padding: 10px; border: 2px solid; border-radius: 10px; min-height: 52px;">
             <div class="box" style="position: relative; float: left; width: 17%;">
                 <input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Inserir Nova Chave" onclick="insChave();">
                 <img src="imagens/settings.png" height="20px;" id="imgChavesconfig" style="cursor: pointer; padding-left: 30px;" onclick="abreChavesConfig();" title="Configurar o acesso às chaves no claviculário da Portaria">
@@ -1234,7 +1225,6 @@ if($row == 0){ // não tinha a coluna chaves_id
             </div>
         </div>
 
-  
         <!-- div três colunas -->
         <div style="margin: 0 auto; text-align: center;">
             <div style="position: relative; float: left; margin: 5px; text-align: center; width: 16%; border: 1px solid; border-radius: 10px;"><div id="faixaagenda"></div></div>
@@ -1261,7 +1251,7 @@ if($row == 0){ // não tinha a coluna chaves_id
                     <tr>
                         <td class="etiq" style="padding-bottom: 7px;">Chave: </td>
                         <td style="padding-bottom: 10px;"><input type="text" id="numchave" style="width: 70px; text-align: center;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('complemchave');return false;}" title="Número da chave. Preferencialmente único."/>
-                            <input type="text" id="complemchave" style="width: 250px; text-align: center;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('localchave');return false;}" title="Complemento para o caso de chaves com o mesmo número"/>
+                            <input type="text" id="complemchave" style="width: 250px; text-align: center;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('localchave');return false;}" title="Nome da Sala"/>
                     </td>
                         <td style="padding-bottom: 10px;"></td>
                     </tr>
