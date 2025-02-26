@@ -1046,7 +1046,7 @@ if(!isset($_SESSION["usuarioID"])){
             <input type="radio" name="verTipo" id="verTipo4" value="4" onclick="carregaTipo(value);"><label for="verTipo4" style="font-size: 12px; padding-left: 3px; padding-right: 25px;"> Terminadas</label>
             <input type="radio" name="verTipo" id="verTipo5" value="5" onclick="carregaTipo(value);"><label for="verTipo5" style="font-size: 12px; padding-left: 3px; color: #FF6600; font-weight: bold;"> Minhas Tarefas</label> <label id="quantMinhas" style="padding-right: 25px; font-size: 65%; color: #036; font-style: italic; vertical-align: super;" title="Minhas tarefas ainda não terminadas"></label>
             <input type="radio" name="verTipo" id="verTipo6" value="6" onclick="carregaTipo(value);"><label for="verTipo6" style="font-size: 12px; padding-left: 3px; color: #0000CD; font-weight: bold;"> Meus Pedidos</label> <label id="quantPagas" style="padding-right: 25px; font-size: 65%; color: #036; font-style: italic; vertical-align: super;" title="Meus pedidos ainda não terminados"></label>
-            <input type="radio" name="verTipo" id="verTipo7" value="7" onclick="carregaTipo(value);"><label for="verTipo7" style="font-size: 12px; padding-left: 3px;"> com Mensagem</label>
+            <input type="radio" name="verTipo" id="verTipo7" value="7" onclick="carregaTipo(value);" title="Tarefas com mensagens não lidas"><label for="verTipo7" style="font-size: 12px; padding-left: 3px;" title="Tarefas com mensagens não lidas"> com Mensagem</label>
         </div>
 
         <div id="faixaTarefa"></div>

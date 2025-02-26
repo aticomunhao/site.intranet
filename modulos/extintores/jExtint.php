@@ -45,18 +45,18 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
          if(isset($_REQUEST["acao"])){
             $Acao = $_REQUEST["acao"];
         }else{
-            $Acao = "Todos";
+            $Acao = "ext_todos";
         }
-        if($Acao == "Todos"){
+        if($Acao == "ext_todos"){
             $Condic = $xProj.".extintores.ativo = 1";
         }
-        if($Acao == "vencidos"){
+        if($Acao == "ext_vencidos"){
             $Condic = $xProj.".extintores.ativo = 1 And datavalid <= CURRENT_DATE";
         }
-        if($Acao == "vencer"){
+        if($Acao == "ext_vencer"){
             $Condic = $xProj.".extintores.ativo = 1 And datavalid BETWEEN CURRENT_DATE AND CURRENT_DATE+$TempoAviso";
         }
-        if($Acao == "vencervencidos"){
+        if($Acao == "ext_vencervencidos"){
             $Condic = $xProj.".extintores.ativo = 1 And datavalid <= CURRENT_DATE+$TempoAviso";
         }
 

@@ -63,21 +63,35 @@ if(isset($_REQUEST["acao"])){
     $pdf->Cell(0, 5, $Cabec3, 0, 2, 'C');
     $pdf->SetFont('Arial', '' , 10);
     $pdf->SetTextColor(25, 25, 112);
-    $pdf->MultiCell(0, 3, "Controle de Extintores de Incêndio", 0, 'C', false);
-
-    $pdf->SetTextColor(0, 0, 0);
-    $pdf->SetFont('Arial', '', 6);
-    $pdf->ln();
-    $lin = $pdf->GetY();
-    $pdf->Line(10, $lin, 200, $lin);
-    $pdf->SetDrawColor(200); // cinza claro  
-    $pdf->SetFont('Arial', '', 10);
-    $TempoAviso  = parAdm("aviso_extint", $Conec, $xProj); // dias de antecedência para aviso
+    $pdf->MultiCell(0, 4, "Controle de Extintores de Incêndio", 0, 'C', false);
 
     if($Acao == "imprExtint"){
+        $TempoAviso  = parAdm("aviso_extint", $Conec, $xProj); // dias de antecedência para aviso
+        $Condic = "ativo = 1";
+        if(isset($_REQUEST["valor"])){
+            $Cond = $_REQUEST["valor"];
+            if($Cond == "vencer"){
+                $Condic = "ativo = 1 And datavalid BETWEEN CURRENT_DATE AND CURRENT_DATE+$TempoAviso";
+                $pdf->SetTextColor(205, 0, 205);
+                $pdf->MultiCell(0, 3, "Próximos ao Vencimento", 0, 'C', false);
+            }
+            if($Cond == "vencidos"){
+                $Condic = "ativo = 1 And datavalid < CURRENT_DATE";
+                $pdf->SetTextColor(255, 0, 0);
+                $pdf->MultiCell(0, 3, "Extintores Vencidos", 0, 'C', false);
+            }
+        }
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->SetFont('Arial', '', 6);
+        $pdf->ln();
+        $lin = $pdf->GetY();
+        $pdf->Line(10, $lin, 200, $lin);
+        $pdf->SetDrawColor(200); // cinza claro  
+        $pdf->SetFont('Arial', '', 10);
+
         $rs0 = pg_query($Conec, "SELECT id, ext_num, ext_local, ext_empresa, ext_tipo, ext_capac, ext_reg, ext_serie, TO_CHAR(datacarga, 'DD/MM/YYYY'), TO_CHAR(datavalid, 'DD/MM/YYYY'), TO_CHAR(datacasco, 
         'DD/MM/YYYY'), TO_CHAR(datacasco, 'YYYY'), CASE WHEN datavalid BETWEEN CURRENT_DATE AND CURRENT_DATE+$TempoAviso THEN 'aviso' WHEN datavalid < CURRENT_DATE THEN 'vencido' END, CASE WHEN datavalid <= CURRENT_DATE THEN 'vencido' END
-        FROM ".$xProj.".extintores WHERE ativo = 1 ORDER BY ext_num");
+        FROM ".$xProj.".extintores WHERE $Condic ORDER BY ext_num");
         $row0 = pg_num_rows($rs0);
         $pdf->ln(5);
         if($row0 > 0){
@@ -160,10 +174,18 @@ if(isset($_REQUEST["acao"])){
             }
         }else{
             $pdf->SetFont('Arial', 'I', 10);
-            $pdf->SetX(30);
-            $pdf->Cell(0, 5, 'Nada foi encontrado.', 0, 1, 'C');
+            $pdf->SetX(20);
+            if($Cond == "vencidos"){
+                $pdf->Cell(0, 10, 'Nenhum extintor vencido.', 0, 1, 'C');
+            }
+            if($Cond == "vencer"){
+                $pdf->Cell(0, 10, 'Nenhum extintor próximo ao vencimento.', 0, 1, 'C');
+            }
+            if($Cond == "todos"){
+                $pdf->Cell(0, 10, 'Nada foi encontrado.', 0, 1, 'C');
+            }
             $lin = $pdf->GetY();               
-            $pdf->Line(20, $lin, 200, $lin);
+            $pdf->Line(10, $lin, 200, $lin);
             $pdf->ln(10);
         }
     }

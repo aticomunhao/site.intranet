@@ -100,7 +100,6 @@ if(isset($_REQUEST["acao"])){
         $Ano = filter_input(INPUT_GET, 'ano'); 
     }
 
-
     if($Acao == "listamesChaves" || $Acao == "listaanoChaves"){
         $rs0 = pg_query($Conec, "SELECT ".$xProj.".chaves3.id, chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente 
         FROM ".$xProj.".chaves3  
@@ -118,9 +117,10 @@ if(isset($_REQUEST["acao"])){
         if($row0 > 0){
             $pdf->SetFont('Arial', 'I', 8);
             $pdf->SetX(25);
-            $pdf->Cell(20, 3, "Chave", 0, 0, 'L');
+            $pdf->Cell(10, 3, "Chave", 0, 0, 'L');
+            $pdf->Cell(20, 3, "Sala", 0, 0, 'L');
+            $pdf->Cell(60, 3, "Nome", 0, 0, 'L');
             $pdf->Cell(80, 3, "Local", 0, 0, 'L');
-            $pdf->Cell(20, 3, "Sala", 0, 0, 'R');
             $pdf->Cell(150, 3, "Obs", 0, 1, 'L');
             $lin = $pdf->GetY();
             $pdf->Line(25, $lin, 282, $lin);
@@ -131,12 +131,28 @@ if(isset($_REQUEST["acao"])){
                 $Cod = $tbl0[0];
                 $pdf->SetX(25); 
                 $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(20, 5, str_pad($tbl0[1], 3, 0, STR_PAD_LEFT), 0, 0, 'L');
+                $pdf->Cell(10, 5, str_pad($tbl0[1], 3, 0, STR_PAD_LEFT), 0, 0, 'L');
                 $pdf->SetFont('Arial', '', 10);
-                $pdf->Cell(80, 5, $tbl0[3], 0, 0, 'L');
-                $pdf->Cell(20, 5, $tbl0[4], 0, 0, 'R');
+                if(is_null($tbl0[4]) || $tbl0[4] == ""){
+                    $Sala = "";
+                }else{
+                    $Sala = $tbl0[4];
+                }
+                if(is_null($tbl0[2]) || $tbl0[2] == ""){
+                    $NomeSala = "";
+                }else{
+                    $NomeSala = $tbl0[2];
+                }
+                if(is_null($tbl0[3]) || $tbl0[3] == ""){
+                    $Local = "";
+                }else{
+                    $Local = $tbl0[3];
+                }
+                $pdf->Cell(20, 5, substr($Sala, 0, 10), 0, 0, 'L'); // sala
+                $pdf->Cell(60, 5, substr($NomeSala, 0, 26), 0, 0, 'L'); // nome
                 $pdf->SetFont('Arial', '', 8);
-                $pdf->MultiCell(0, 5, $tbl0[5], 0, 'L', false);
+                $pdf->Cell(80, 5, substr($Local, 0, 45), 0, 0, 'L'); // Local
+                $pdf->MultiCell(0, 5, $tbl0[5], 0, 'L', false); // Obs
                 $pdf->SetFont('Arial', '', 10);
                 $lin = $pdf->GetY();
                 $pdf->Line(25, $lin, 282, $lin);
@@ -159,7 +175,7 @@ if(isset($_REQUEST["acao"])){
                     $pdf->Cell(30, 3, "Devolução", 0, 0, 'C');
                     $pdf->Cell(70, 3, "Retirada por", 0, 0, 'L');
                     $pdf->Cell(70, 3, "Devolvida por", 0, 0, 'L');
-                    $pdf->Cell(30, 3, "Tempo de uso (Dia h:min)", 0, 1, 'R');
+                    $pdf->Cell(30, 3, "Tempo de uso (dias h:min)", 0, 1, 'R');
 
                     $pdf->SetFont('Arial', '', 10);
 

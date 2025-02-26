@@ -32,12 +32,18 @@ if($Acao == "buscarelempresas"){
  if($Acao=="buscaempresa"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Erro = 0;
-    $rs = pg_query($Conec, "SELECT empresa FROM ".$xProj.".extintores_empr WHERE id = $Cod And ativo = 1");
+    $rs = pg_query($Conec, "SELECT empresa, ender, cep, cidade, uf, cnpjempr, inscrempr, telefone, contato, obsempr FROM ".$xProj.".extintores_empr WHERE id = $Cod And ativo = 1");
     if(!$rs){
         $Erro = 1;
     }
     $tbl = pg_fetch_row($rs);
-    $var = array("coderro"=>$Erro, "nome"=>$tbl[0] );
+    if(is_null($tbl[5])){
+        $Cnpj = "";    
+    }else{
+        $Cnpj = $tbl[5];
+    }
+
+    $var = array("coderro"=>$Erro, "nome"=>$tbl[0], "ender"=>$tbl[1], "cep"=>$tbl[2], "cidade"=>$tbl[3], "uf"=>$tbl[4], "cnpjempr"=>$Cnpj, "inscrempr"=>$tbl[6], "telefone"=>$tbl[7], "contato"=>$tbl[8], "obsempr"=>$tbl[9]);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -68,15 +74,31 @@ if($Acao=="buscanumero"){
 if($Acao=="salvanomeempresa"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Nome = filter_input(INPUT_GET, 'nomeempresa');
-     $Erro = 0;
+    $editEnder = filter_input(INPUT_GET, 'editEnder');
+    $editCEP = filter_input(INPUT_GET, 'editCEP');
+    $editCidade = filter_input(INPUT_GET, 'editCidade');
+    $editUF = filter_input(INPUT_GET, 'editUF');
+    if(strlen($editUF) == 2 ){
+        $editUF = strtoupper($editUF);
+    }
+    $editC = addslashes(filter_input(INPUT_GET, 'editCNPJ'));
+    $editCN = str_replace(".", "", $editC);
+    $editCNP = str_replace("/", "", $editCN);
+    $editCNPJ = str_replace("-", "", $editCNP);
+    $editInscr = filter_input(INPUT_GET, 'editInscr');
+    $editTelef = filter_input(INPUT_GET, 'editTelef');
+    $editContato = filter_input(INPUT_GET, 'editContato');
+    $editObs = filter_input(INPUT_GET, 'editObs');
+    $Erro = 0;
     if($Cod > 0){ // salvar
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".extintores_empr SET empresa = '$Nome' WHERE id = $Cod ");
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".extintores_empr SET empresa = '$Nome', ender = '$editEnder', cep = '$editCEP', cidade = '$editCidade', uf = '$editUF', cnpjempr = '$editCNPJ', inscrempr = '$editInscr', telefone = '$editTelef', contato = '$editContato', obsempr = '$editObs', usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE id = $Cod ");
     }else{ // inserir
         $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".extintores_empr");
         $tblCod = pg_fetch_row($rsCod);
         $Codigo = $tblCod[0];
         $CodigoNovo = ($Codigo+1);
-        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".extintores_empr (id, empresa) VALUES ($CodigoNovo, '$Nome') ");
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".extintores_empr (id, empresa, ender, cep, cidade, uf, cnpjempr, inscrempr, telefone, contato, obsempr, usuins, datains) 
+        VALUES ($CodigoNovo, '$Nome', '$editEnder', '$editCEP', '$editCidade', '$editUF', '$editCNPJ', '$editInscr', '$editTelef', '$editContato', '$editObs', ".$_SESSION["usuarioID"].", NOW() )");
     }
     if(!$rs){
         $Erro = 1;

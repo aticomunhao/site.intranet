@@ -52,6 +52,7 @@ if(!isset($_SESSION["usuarioID"])){
                 padding-left: 5px;
                 padding-right: 5px;
                 cursor: pointer;
+                background: #FFFFF0;
             }
             .quadrgrupo {
                 font-size: 90%;
@@ -1206,20 +1207,18 @@ if(!isset($_SESSION["usuarioID"])){
         FROM ".$xProj.".chaves_ctl GROUP BY 1 ORDER BY 1 DESC ");
 
         ?>
-        <div style="margin: 20px; padding: 10px; border: 2px solid; border-radius: 10px; min-height: 52px;">
+        <div style="margin: 20px; padding: 10px; border: 2px solid; border-radius: 10px; min-height: 52px; background: #FFFFF0;">
             <div class="box" style="position: relative; float: left; width: 17%;">
                 <input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Inserir Nova Chave" onclick="insChave();">
                 <img src="imagens/settings.png" height="20px;" id="imgChavesconfig" style="cursor: pointer; padding-left: 30px;" onclick="abreChavesConfig();" title="Configurar o acesso às chaves no claviculário da Portaria">
             </div>
             <div class="box" style="position: relative; float: left; width: 55%; text-align: center;">
                 <h5><img src="imagens/Chave.png" height="40px;" style="padding-right: 20px; padding-bottom: 10px;" title="Controle de Chaves na Portaria">Controle de Chaves Portaria<img src="imagens/Chave.png" height="40px;" style="padding-left: 20px; padding-bottom: 10px;" title="Controle de Chaves na Portaria"></h5>
-                
             </div>
             <div class="box" style="position: relative; float: left; width: 25%; text-align: right;">
                 <label style="padding-left: 20px;"></label>
                 <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="abreImprChaves();">PDF</button>
             </div>
-
             <div id="faixaMensagem" style="display: none; position: relative; margin: 70px; padding: 20px; text-align: center;">
                 <br><br><br>Usuário não cadastrado.
             </div>

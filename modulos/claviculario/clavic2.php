@@ -58,6 +58,7 @@ if(!isset($_SESSION["usuarioID"])){
                 padding-left: 5px;
                 padding-right: 5px;
                 cursor: pointer;
+                background: #E0FFFF;
             }
             .quadrgrupo {
                 font-size: 90%;
@@ -1215,8 +1216,7 @@ if(!isset($_SESSION["usuarioID"])){
         FROM ".$xProj.".chaves2_ctl GROUP BY 1 ORDER BY 1 DESC ");
 
         ?>
-
-        <div style="margin: 20px; padding: 10px; border: 2px solid; border-radius: 10px; min-height: 52px; background: #99CCFF;">
+        <div style="margin: 20px; padding: 10px; border: 2px solid; border-radius: 10px; min-height: 52px; background: #E0FFFF;">
             <div class="box" style="position: relative; float: left; width: 17%;">
                 <input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Inserir Nova Chave" onclick="insChave();">
                 <img src="imagens/settings.png" height="20px;" id="imgChavesconfig" style="cursor: pointer; padding-left: 30px;" onclick="abreChavesConfig();" title="Configurar o acesso às chaves no claviculário da DAF">

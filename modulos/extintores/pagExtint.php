@@ -65,9 +65,7 @@ if(!isset($_SESSION["usuarioID"])){
             .alinhaCentro{
                 text-align: center;
             }
-            tr td {
-                border: 0px solid;
-            }
+
         </style>
 
         <script type="text/javascript">
@@ -296,7 +294,13 @@ if(!isset($_SESSION["usuarioID"])){
                                         alert("Houve um erro no servidor.")
                                     }else{
                                         document.getElementById("relacmodalIns").style.display = "none";
-                                        $("#faixacentral").load("modulos/extintores/jExtint.php?acao=todos");
+                                        $("#faixacentral").load("modulos/extintores/jExtint.php?acao=ext_todos");
+                                        var element = document.getElementById("ext_vencer");
+                                        element.classList.remove("fundoAzul");
+                                        var element = document.getElementById("ext_vencidos");
+                                        element.classList.remove("fundoAzul");
+                                        var element = document.getElementById("ext_todos");
+                                        element.classList.add("fundoAzul");
                                     }
                                 }
                             }
@@ -335,7 +339,16 @@ if(!isset($_SESSION["usuarioID"])){
             function insEmpresa(){
                 document.getElementById("guardaCodEmpr").value = "0";
                 document.getElementById("editNomeEmpr").value = "";
-                document.getElementById("titulomodalEmpr").innerHTML = "Nome da nova empresa";
+                document.getElementById("editEnder").value = "";
+                document.getElementById("editCEP").value = "";
+                document.getElementById("editCidade").value = "";
+                document.getElementById("editUF").value = "DF";
+                document.getElementById("editCNPJ").value = "";
+                document.getElementById("editInscr").value = "";
+                document.getElementById("editTelef").value = "";
+                document.getElementById("editContato").value = "";
+                document.getElementById("editObs").value = "";
+                document.getElementById("titulomodalEmpr").innerHTML = "Nova Empresa";
                 document.getElementById("relacEditEmpresa").style.display = "block";
             }
             function insTipo(){
@@ -357,7 +370,16 @@ if(!isset($_SESSION["usuarioID"])){
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 if(parseInt(Resp.coderro) === 0){
                                     document.getElementById("editNomeEmpr").value = Resp.nome;
-                                    document.getElementById("titulomodalEmpr").innerHTML = "Edita nome da empresa";
+                                    document.getElementById("editEnder").value = Resp.ender;
+                                    document.getElementById("editCEP").value = Resp.cep;
+                                    document.getElementById("editCidade").value = Resp.cidade;
+                                    document.getElementById("editUF").value = Resp.uf;
+                                    document.getElementById("editCNPJ").value = format_CnpjCpf(Resp.cnpjempr);
+                                    document.getElementById("editInscr").value = Resp.inscrempr;
+                                    document.getElementById("editTelef").value = Resp.telefone;
+                                    document.getElementById("editContato").value = Resp.contato;
+                                    document.getElementById("editObs").value = Resp.obsempr;
+                                    document.getElementById("titulomodalEmpr").innerHTML = "Edita Empresa";
                                     document.getElementById("relacEditEmpresa").style.display = "block";
                                 }else{
                                     alert("Houve um erro no servidor.")
@@ -394,11 +416,33 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function salvaEditEmpr(){
+                if(document.getElementById("editNomeEmpr").value == ""){
+                    $.confirm({
+                        title: 'Informação!',
+                        content: 'O nome da empresa é obrigatório.',
+                        autoClose: 'OK|5000',
+                        draggable: true,
+                        buttons: {
+                            OK: function(){}
+                        }
+                    });
+                    return false;
+                }
                 if(document.getElementById("mudou").value != "0"){
                     ajaxIni();
                     if(ajax){
                         ajax.open("POST", "modulos/extintores/salvaExtint.php?acao=salvanomeempresa&codigo="+document.getElementById("guardaCodEmpr").value 
-                        +"&nomeempresa="+encodeURIComponent(document.getElementById("editNomeEmpr").value), true);
+                        +"&nomeempresa="+encodeURIComponent(document.getElementById("editNomeEmpr").value)
+                        +"&editEnder="+encodeURIComponent(document.getElementById("editEnder").value)
+                        +"&editCEP="+encodeURIComponent(document.getElementById("editCEP").value)
+                        +"&editCidade="+encodeURIComponent(document.getElementById("editCidade").value)
+                        +"&editUF="+encodeURIComponent(document.getElementById("editUF").value)
+                        +"&editCNPJ="+encodeURIComponent(document.getElementById("editCNPJ").value)
+                        +"&editInscr="+encodeURIComponent(document.getElementById("editInscr").value)
+                        +"&editTelef="+encodeURIComponent(document.getElementById("editTelef").value)
+                        +"&editContato="+encodeURIComponent(document.getElementById("editContato").value)
+                        +"&editObs="+encodeURIComponent(document.getElementById("editObs").value)
+                        , true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -462,7 +506,13 @@ if(!isset($_SESSION["usuarioID"])){
                                         $('#mensagemConfig').fadeIn("slow");
                                         document.getElementById("mensagemConfig").innerHTML = "Valor Salvo";
                                         $('#mensagemConfig').fadeOut(2000);
-                                        $("#faixacentral").load("modulos/extintores/jExtint.php?acao=todos");
+                                        $("#faixacentral").load("modulos/extintores/jExtint.php?acao=ext_todos");
+                                        var element = document.getElementById("ext_vencer");
+                                        element.classList.remove("fundoAzul");
+                                        var element = document.getElementById("ext_vencidos");
+                                        element.classList.remove("fundoAzul");
+                                        var element = document.getElementById("ext_todos");
+                                        element.classList.add("fundoAzul");
                                     }else{
                                         alert("Houve um erro no servidor.")
                                     }
@@ -472,12 +522,30 @@ if(!isset($_SESSION["usuarioID"])){
                         ajax.send(null);
                     }
             }
+            //põe fundo azul no botão Todos
+            var element = document.getElementById("ext_todos");
+            element.classList.add("fundoAzul");
+
             function mostraExtint(Acao){
+                var element = document.getElementById("ext_todos");
+                element.classList.remove("fundoAzul");
+                var element = document.getElementById("ext_vencer");
+                element.classList.remove("fundoAzul");
+                var element = document.getElementById("ext_vencidos");
+                element.classList.remove("fundoAzul");
                 $("#faixacentral").load("modulos/extintores/jExtint.php?acao="+Acao);
+                var element = document.getElementById(Acao);
+                element.classList.add("fundoAzul");
             }
-            function imprExtint(){
-                window.open("modulos/extintores/imprExtint.php?acao=imprExtint", "ImprExtint");
-            } 
+            function imprExtintModal(){
+                document.getElementById("relacimprExtint").style.display = "block";
+            }
+            function ImprExtint(Valor){
+                window.open("modulos/extintores/imprExtint.php?acao=imprExtint&valor="+Valor, Valor);
+            }
+            function fechaModalImpr(){
+                document.getElementById("relacimprExtint").style.display = "none";
+            }
             function fechaEditEmpr(){
                 document.getElementById("relacEditEmpresa").style.display = "none";
             }
@@ -487,6 +555,23 @@ if(!isset($_SESSION["usuarioID"])){
             function modif(){ // assinala se houve qualquer modificação nos campos do modal durante a edição para evitar salvar desnecessariamente
                 document.getElementById("mudou").value = "1";
             }
+            function foco(id){
+                document.getElementById(id).focus();
+            }
+            function format_CnpjCpf(value){
+                //https://gist.github.com/davidalves1/3c98ef866bad4aba3987e7671e404c1e
+                const CPF_LENGTH = 11;
+                const cnpjCpf = value.replace(/\D/g, '');
+                if (cnpjCpf.length === CPF_LENGTH) {
+                    return cnpjCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/g, "\$1.\$2.\$3-\$4");
+                } 
+                  return cnpjCpf.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g, "\$1.\$2.\$3/\$4-\$5");
+            }
+
+            $("#editCEP").mask("99999-999");
+            $("#editTelef").mask("(99) 9999-9999");
+            $("#editCNPJ").mask("99.999.999/9999-99");
+ 
         </script>
     </head>
     <body>
@@ -570,7 +655,7 @@ if(!isset($_SESSION["usuarioID"])){
             if(isset($_REQUEST["acao"])){
                 $Acao = $_REQUEST["acao"];
             }else{
-                $Acao = "Todos";
+                $Acao = "ext_todos";
             }
 
             $rsAno = pg_query($Conec, "SELECT DISTINCT to_char(datacarga, 'YYYY') FROM ".$xProj.".extintores WHERE ativo = 1");
@@ -602,14 +687,13 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <h5>Controle de Extintores</h5>
-                <button class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="mostraExtint('Todos');">Todos</button>
-                <button class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="mostraExtint('vencer');" title="Dentro do prazo para aviso <?php echo $TempoAviso.' dias'; ?>">a Vencer</button>
-                <button class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="mostraExtint('vencidos');" title="Extintores com prazo de validade vencido.">Vencidos</button>
-
+                <button id="ext_todos" class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="mostraExtint(id);">Todos</button>
+                <button id="ext_vencer" class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="mostraExtint(id);" title="Dentro do prazo para aviso <?php echo $TempoAviso.' dias'; ?>">a Vencer</button>
+                <button id="ext_vencidos" class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="mostraExtint(id);" title="Extintores com prazo de validade vencido.">Vencidos</button>
             </div>
             <div class="box" style="position: relative; float: right; width: 33%; text-align: right;">
                 <label style="padding-left: 20px;"></label>
-                <button class="botpadrred" style="font-size: 80%;" onclick="imprExtint();">PDF</button>
+                <button class="botpadrred" style="font-size: 80%;" onclick="imprExtintModal();">PDF</button>
             </div>
 
             <div id="faixacentral"></div>
@@ -619,7 +703,6 @@ if(!isset($_SESSION["usuarioID"])){
         </div>
 
         <div id="faixacentral"></div>
-
 
         <!-- div para inserção novo aparelho  -->
         <div id="relacmodalIns" class="relacmodal">
@@ -752,9 +835,44 @@ if(!isset($_SESSION["usuarioID"])){
                     <table style="margin: 0 auto; width: 90%">
                         <tr>
                             <td class="etiq aDir">Empresa: </td>
-                            <td><input type="text" id="editNomeEmpr" valor="" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 90%;"></td>
-                            <td></td>
-                            <td></td>
+                            <td colspan="3"><input type="text" id="editNomeEmpr" valor="" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 90%;" onkeypress="if(event.keyCode===13){javascript:foco('editCEP');return false;}"></td>
+                        </tr>
+                        <tr>
+                            <td class="etiq aDir">Ender: </td>
+                            <td colspan="3">
+                                <textarea id="editEnder" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="2" cols="40" title="Endereço da Empresa" onchange="modif();"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="etiq aDir">CEP: </td>
+                            <td colspan="3">
+                                <input type="text" id="editCEP" valor="" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 90px; font-size: 80%; text-align: center;" onkeypress="if(event.keyCode===13){javascript:foco('editCidade');return false;}">
+                                <label class="etiq aDir">Cidade: </label>
+                                <input type="text" id="editCidade" valor="" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 250px; font-size: 80%;" onkeypress="if(event.keyCode===13){javascript:foco('editUF');return false;}">
+                                <label class="etiq aDir">UF: </label>
+                                <input type="text" id="editUF" valor="" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 60px; font-size: 80%; text-align: center;" onkeypress="if(event.keyCode===13){javascript:foco('editCNPJ');return false;}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="etiq aDir">CNPJ: </td>
+                            <td><input type="text" id="editCNPJ" valor="" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 90%; text-align: center;" onkeypress="if(event.keyCode===13){javascript:foco('editInscr');return false;}"></td>
+                            <td class="etiq aDir">Inscrição: </td>
+                            <td><input type="text" id="editInscr" valor="" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 90%; text-align: center;" onkeypress="if(event.keyCode===13){javascript:foco('editTelef');return false;}"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="padding-top: 5px;"></td>
+                        </tr>
+                        <tr>
+                            <td class="etiq aDir">Telef: </td>
+                            <td><input type="text" id="editTelef" valor="" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 90%;" onkeypress="if(event.keyCode===13){javascript:foco('editContato');return false;}"></td>
+                            <td class="etiq aDir">Contato: </td>
+                            <td><input type="text" id="editContato" valor="" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 90%;" onkeypress="if(event.keyCode===13){javascript:foco('editNomeEmpr');return false;}"></td>
+                        </tr>
+                        <tr>
+                            <td class="etiq aDir">Observ: </td>
+                            <td colspan="3">
+                                <textarea id="editObs" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="2" cols="58" title="Observações sobre a Empresa" onchange="modif();"></textarea>
+                            </td>
                         </tr>
                     </table>
                     <br>
@@ -784,6 +902,27 @@ if(!isset($_SESSION["usuarioID"])){
                 </div>
             </div>
         </div> <!-- Fim Modal-->
-        
+
+        <!-- div modal para imprimir em pdf  -->
+        <div id="relacimprExtint" class="relacmodal">
+            <div class="modal-content-Ins">
+                <span class="close" onclick="fechaModalImpr();">&times;</span>
+                <h5 id="titulomodal" style="text-align: center;color: #666;">Controle de Manutenção de Extintores</h5>
+                <h6 id="titulomodal" style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
+                <div>
+                    <table style="margin: 0 auto;">
+                        <tr>
+                            <td><div style="margin: 5px; padding: 5px; border: 2px solid #C6E2FF; border-radius: 10px;"><button class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="ImprExtint('todos');">Todos</button></div></td>
+                            <td><div style="margin: 5px; padding: 5px; border: 2px solid #C6E2FF; border-radius: 10px;"><button class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="ImprExtint('vencer');" title="Dentro do prazo para aviso <?php echo $TempoAviso.' dias'; ?>">a Vencer</button></div></td>
+                            <td><div style="margin: 5px; padding: 5px; border: 2px solid #C6E2FF; border-radius: 10px;"><button class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="ImprExtint('vencidos');" title="Extintores com prazo de validade vencido.">Vencidos</button></div></td>
+                        </tr>
+                    </table>
+
+                </div>
+                <div style="padding-bottom: 20px;"></div>
+           </div>
+           <br><br>
+        </div> <!-- Fim Modal-->
+
     </body>
 </html>

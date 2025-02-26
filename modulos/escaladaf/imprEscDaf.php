@@ -139,6 +139,35 @@ if(!isset($_SESSION['AdmUsu'])){
         $pdf->SetDrawColor(200);
         $pdf->ln(2);
 
+        $CorListas = 1;
+        $CorListas = parEsc("corlistas_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
+
+        if($CorListas == 0){  //Branco
+            $CorFundo1 = 255;
+            $CorFundo2 = 255;
+            $CorFundo3 = 255;
+        }
+        if($CorListas == 1){  //Cornsilk
+            $CorFundo1 = 255;
+            $CorFundo2 = 248;
+            $CorFundo3 = 220;
+        }
+        if($CorListas == 2){  //Azure1
+            $CorFundo1 = 240;
+            $CorFundo2 = 255;
+            $CorFundo3 = 255;
+        }
+        if($CorListas == 3){  //Lavanda
+            $CorFundo1 = 230;
+            $CorFundo2 = 230;
+            $CorFundo3 = 255;
+        }
+        if($CorListas == 4){  //Marfim
+            $CorFundo1 = 238;
+            $CorFundo2 = 238;
+            $CorFundo3 = 224;
+        }
+
         $rsEft = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ");
         $rowEft = pg_num_rows($rsEft);
         if($rowEft < 7 ){
@@ -149,7 +178,6 @@ if(!isset($_SESSION['AdmUsu'])){
         FROM ".$xProj.".escaladaf 
         WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY dataescala");
         $row = pg_num_rows($rs);
-        $Cont = 1;
         if($row > 0){
             $lin = $pdf->GetY();
             $pdf->Line(10, $lin, 290, $lin);
@@ -162,15 +190,16 @@ if(!isset($_SESSION['AdmUsu'])){
                 if($tbl[2] == 0){
                     $pdf->SetFillColor(232, 232, 232); // fundo cinza
                 }else{
-                    $pdf->SetFillColor(255, 255, 255);
+                    $pdf->SetFillColor(255, 255, 255); // fundo branco
                 }
-                $pdf->Cell(7, 5, $tbl[1], 1, 0, 'C', true);
+                $pdf->Cell(7, 5, $tbl[1], 1, 0, 'C', true); // Dia numeral
             }
             $pdf->Cell(7, 5, "", 0, 1, 'L');
 
             $pdf->SetFont('Arial', '' , 8);
             $pdf->SetX(10); 
             $pdf->SetTextColor(152, 152, 152);
+            $pdf->Cell(3, 5, "", 0, 0, 'C', true); // para acomodar o número do efetivo
             $pdf->Cell(27, 5, "Cargo/FG", "B", 0, 'L');
             $pdf->Cell(1, 5, " ", 0, 0, 'L');
             $pdf->Cell(31, 5, "Nome", "B", 0, 'L');
@@ -187,14 +216,15 @@ if(!isset($_SESSION['AdmUsu'])){
                 if($tbl1[1] == 0){
                     $pdf->SetFillColor(232, 232, 232); // fundo cinza
                 }else{
-                    $pdf->SetFillColor(255, 255, 255);
+                    $pdf->SetFillColor(255, 255, 255); // fundo branco
                 }
-                $pdf->Cell(7, 5, $Semana_Extract[$tbl1[1]], 1, 0, 'C', true);
+                $pdf->Cell(7, 5, $Semana_Extract[$tbl1[1]], 1, 0, 'C', true); // Dia da semana
             }
             $pdf->Cell(7, 5, "", 0, 1, 'L');
-            
+
             $rs1 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual, cargo_daf FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl ");
             $row1 = pg_num_rows($rs1);
+            $Cont = 1;
             if($row1 > 0){
                 while($tbl1 = pg_fetch_row($rs1)){
                     $Cod = $tbl1[0];
@@ -210,9 +240,21 @@ if(!isset($_SESSION['AdmUsu'])){
                         $Cargo = "";
                     }
 
-                    $pdf->Cell(27, 5, $Cargo, "B", 0, 'L');
+                    //Nummeração do efetivo
+                    $pdf->SetTextColor(152, 152, 152);
+                    $pdf->SetFont('Arial', '' , 7);
+                    $pdf->Cell(3, 5, $Cont, 0, 0, 'C', true);
+                    $pdf->SetTextColor(0, 0, 0);
+                    $pdf->SetFont('Arial', '' , 10);
+
+                    if($Cont % 2 == 0){ // linhas pares
+                        $pdf->SetFillColor(255, 255, 255); // branco
+                    }else{
+                        $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                    }
+                    $pdf->Cell(27, 5, $Cargo, "B", 0, 'L', true);
                     $pdf->Cell(1, 5, " ", 0, 0, 'L');
-                    $pdf->Cell(31, 5, $Nome, "B", 0, 'L');
+                    $pdf->Cell(31, 5, $Nome, "B", 0, 'L', true);
                     
                      //Quadrinho dias 01, 02, 03, ...
                     $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
@@ -224,7 +266,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -260,7 +306,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -294,7 +344,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -328,7 +382,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -362,7 +420,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -396,7 +458,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -430,7 +496,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -464,7 +534,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -498,7 +572,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -532,7 +610,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -566,7 +648,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -600,7 +686,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -634,7 +724,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -668,7 +762,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -702,7 +800,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -736,7 +838,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -770,7 +876,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -804,7 +914,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -838,7 +952,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -872,7 +990,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -906,7 +1028,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -940,7 +1066,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -974,7 +1104,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -1008,7 +1142,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -1042,7 +1180,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -1076,7 +1218,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -1110,7 +1256,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -1144,7 +1294,11 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[1] == 0){
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
-                            $pdf->SetFillColor(255, 255, 255);
+                            if($Cont % 2 == 0){ // linhas pares
+                                $pdf->SetFillColor(255, 255, 255); // branco
+                            }else{
+                                $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                            }
                         }
                         if($tbl2[2] == 1){
                             $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -1179,7 +1333,11 @@ if(!isset($_SESSION['AdmUsu'])){
                             if($tbl2[1] == 0){
                                 $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             }else{
-                                $pdf->SetFillColor(255, 255, 255);
+                                if($Cont % 2 == 0){ // linhas pares
+                                    $pdf->SetFillColor(255, 255, 255); // branco
+                                }else{
+                                    $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                                }
                             }
                             if($tbl2[2] == 1){
                                 $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -1215,7 +1373,11 @@ if(!isset($_SESSION['AdmUsu'])){
                             if($tbl2[1] == 0){
                                 $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             }else{
-                                $pdf->SetFillColor(255, 255, 255);
+                                if($Cont % 2 == 0){ // linhas pares
+                                    $pdf->SetFillColor(255, 255, 255); // branco
+                                }else{
+                                    $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                                }
                             }
                             if($tbl2[2] == 1){
                                 $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -1251,7 +1413,11 @@ if(!isset($_SESSION['AdmUsu'])){
                             if($tbl2[1] == 0){
                                 $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             }else{
-                                $pdf->SetFillColor(255, 255, 255);
+                                if($Cont % 2 == 0){ // linhas pares
+                                    $pdf->SetFillColor(255, 255, 255); // branco
+                                }else{
+                                    $pdf->SetFillColor($CorFundo1, $CorFundo2, $CorFundo3);
+                                }
                             }
                             if($tbl2[2] == 1){
                                 $pdf->SetFillColor(255, 255, 0); // fundo amarelo
@@ -1286,6 +1452,8 @@ if(!isset($_SESSION['AdmUsu'])){
                     $pdf->Cell(5, 5, $tbl5[0], 0, 1, 'C', true);
                     $pdf->SetTextColor(0, 0, 0);
                     $pdf->SetFont('Arial', '' , 10);
+
+                    $Cont++;
                 }
             }
 
@@ -1637,7 +1805,7 @@ if(!isset($_SESSION['AdmUsu'])){
             $rs4 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl"); 
             $row4 = pg_num_rows($rs4);
             if($row4 > 0){
-                $Cont = 1;
+                $ContLinha = 1;
                 while($tbl4 = pg_fetch_row($rs4)){
                     $Cod = $tbl4[0];
                     $Nome = substr($tbl4[2], 0, 13);
@@ -1656,14 +1824,14 @@ if(!isset($_SESSION['AdmUsu'])){
                             $CargaMes = "00:00";
                         }
                     }
-                    if($Cont == 6 && $rowEft > 6 || $Cont == 12 && $rowEft > 12 || $Cont == 18 && $rowEft > 18){ // mudar de linha
+                    if($ContLinha == 6 && $rowEft > 6 || $ContLinha == 12 && $rowEft > 12 || $ContLinha == 18 && $rowEft > 18){ // mudar de linha
                         $pdf->Cell(37, 5, $Nome." ".$CargaMes." ", 1, 1, 'C');
                         $pdf->ln(1);
                     }else{
                         $pdf->Cell(37, 5, $Nome." ".$CargaMes." ", 1, 0, 'C');
                         $pdf->Cell(5, 5, " ", 0, 0, 'L');
                     }
-                    $Cont++;
+                    $ContLinha++;
                 }
                 $pdf->Cell(50, 5, "", 0, 1, 'L');
             }

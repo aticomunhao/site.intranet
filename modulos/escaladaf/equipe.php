@@ -80,7 +80,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             <input type="hidden" id="modificavel" value="<?php echo $Modificavel; ?>" />
 
             <div style="text-align: left; padding-left: 30px;">
-                <label class="etiqAzul">Esta sequência pode ser modificada arrantando os nomes com o mouse para cima ou pra baixo</label>
+                <label class="etiqAzul">Esta sequência pode ser modificada arrastando os nomes com o mouse, para cima ou pra baixo</label>
             </div>
             <table id="tabelaEquipe" class="display" style="margin: 0 auto; width:95%;">
                 <tbody id="sortabletab">

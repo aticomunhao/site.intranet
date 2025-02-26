@@ -107,8 +107,8 @@ if($Acao=="salvaReg"){
     $Turno = (int) filter_input(INPUT_GET, 'turno');
     $UsuAnt = (int) filter_input(INPUT_GET, 'usuant');
     $UsuProx = (int) filter_input(INPUT_GET, 'usuprox');
-    $Relato = addslashes($_REQUEST['relato']);
-    $Subst = addslashes($_REQUEST['substit']);
+    $Relato = trim(addslashes($_REQUEST['relato']));
+    $Subst = trim(addslashes($_REQUEST['substit']));
 
     $Envia = (int) filter_input(INPUT_GET, 'envia');
     $JaTem = (int) filter_input(INPUT_GET, 'jatem');
@@ -184,8 +184,8 @@ if($Acao=="salvaRegCompl"){ // Salva complemento
     $RevData = implode("-", array_reverse(explode("/", $Data)));
     $Turno = (int) filter_input(INPUT_GET, 'turno');
     $UsuAnt = (int) filter_input(INPUT_GET, 'usuant');
-    $Relato = addslashes($_REQUEST['relato']);
-    $Subst = addslashes($_REQUEST['substit']);
+    $Relato = trim(addslashes($_REQUEST['relato']));
+    $Subst = trim(addslashes($_REQUEST['substit']));
     $Envia = (int) filter_input(INPUT_GET, 'envia');
     $JaTem = 1;
     $Ocor = 1; // tem ocorrência

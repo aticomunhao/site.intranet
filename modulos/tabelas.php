@@ -119,7 +119,6 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bensachados (
 
    }
 
-
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bensprocessos (
       id SERIAL PRIMARY KEY, 
       processo VARCHAR(50) ) 
@@ -181,7 +180,15 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".paramsis (
    valorinieletric2 double precision NOT NULL DEFAULT 0,
    valorinieletric3 double precision NOT NULL DEFAULT 0,
    editpagini smallint NOT NULL DEFAULT 2,
-   marcaescala character varying(10)
+   guardaescala character varying(10),
+   dialeit_eletr character varying(2),
+   fatorcor_eletr character varying(10),
+   valorkwh double precision NOT NULL DEFAULT 0.5,
+   tempoinat smallint NOT NULL DEFAULT 1800,
+   visucargo_daf smallint NOT NULL DEFAULT 1, 
+   primcargo_daf smallint NOT NULL DEFAULT 1, 
+   aviso_extint smallint NOT NULL DEFAULT 30, 
+   seminifim_daf smallint NOT NULL DEFAULT 1 
    ) ");
 
    echo "Tabela ".$xProj.".paramsis checada. <br>";
@@ -637,6 +644,10 @@ echo "Tabela ".$xProj.".visitas_ar checada. <br>";
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf (
       id SERIAL PRIMARY KEY, 
       dataescala date DEFAULT '3000-12-31',
+      marcadaf smallint NOT NULL DEFAULT 0,
+      liberames smallint NOT NULL DEFAULT 0,
+      feriado smallint NOT NULL DEFAULT 0,
+      grupo_id integer NOT NULL DEFAULT 0,
       ativo smallint DEFAULT 1 NOT NULL, 
       usuins integer DEFAULT 0 NOT NULL,
       datains timestamp without time zone DEFAULT '3000-12-31',
@@ -646,19 +657,23 @@ echo "Tabela ".$xProj.".visitas_ar checada. <br>";
   ");
   echo "Tabela ".$xProj.".escaladaf checada. <br>";
       pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_ins (
-        id SERIAL PRIMARY KEY, 
-        escaladaf_id bigint NOT NULL DEFAULT 0,
-        dataescalains date DEFAULT '3000-12-31',
-        poslog_id INT NOT NULL DEFAULT 0,
-        letraturno VARCHAR(3), 
-        turnoturno VARCHAR(30), 
-        destaque smallint NOT NULL DEFAULT 0,
-        marcadaf smallint NOT NULL DEFAULT 0,
-        ativo smallint NOT NULL DEFAULT 1, 
-        usuins bigint NOT NULL DEFAULT 0, 
-        datains timestamp without time zone DEFAULT '3000-12-31', 
-        usuedit bigint NOT NULL DEFAULT 0, 
-        dataedit timestamp without time zone DEFAULT '3000-12-31' 
+         id SERIAL PRIMARY KEY, 
+         escaladaf_id bigint NOT NULL DEFAULT 0,
+         dataescalains date DEFAULT '3000-12-31'::date,
+         poslog_id integer NOT NULL DEFAULT 0,
+         letraturno character varying(3),
+         turnoturno character varying(30),
+         destaque smallint NOT NULL DEFAULT 0,
+         cargatime time without time zone NOT NULL DEFAULT '00:00:00',
+         grupo_ins integer NOT NULL DEFAULT 0,
+         turnos_id smallint NOT NULL DEFAULT 0,
+         horafolga character varying(11),
+         valepag smallint NOT NULL DEFAULT 1,
+         ativo smallint NOT NULL DEFAULT 1,
+         usuins bigint NOT NULL DEFAULT 0,
+         datains timestamp without time zone DEFAULT '3000-12-31 00:00:00',
+         usuedit bigint NOT NULL DEFAULT 0,
+         dataedit timestamp without time zone DEFAULT '3000-12-31 00:00:00' 
         )
     ");
     echo "Tabela ".$xProj.".escaladaf_ins checada. <br>"; 
@@ -670,6 +685,15 @@ echo "Tabela ".$xProj.".visitas_ar checada. <br>";
       ordemletra smallint NOT NULL DEFAULT 0,
       destaq smallint NOT NULL DEFAULT 0,
       ativo smallint NOT NULL DEFAULT 1, 
+      calcdataini timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+      calcdatafim timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+      cargahor character varying(20),
+      cargahora time without time zone DEFAULT '00:00:00',
+      interv time without time zone DEFAULT '00:00:00',
+      cargacont time without time zone NOT NULL DEFAULT '00:00:00',
+      grupo_turnos integer NOT NULL DEFAULT 0,
+      infotexto smallint NOT NULL DEFAULT 0,
+      valeref smallint NOT NULL DEFAULT 1,
       usuins bigint NOT NULL DEFAULT 0,
       datains timestamp without time zone DEFAULT '3000-12-31',
       usuedit bigint NOT NULL DEFAULT 0,
@@ -725,6 +749,7 @@ echo "Tabela ".$xProj.".visitas_ar checada. <br>";
       id SERIAL PRIMARY KEY, 
       numnota smallint NOT NULL DEFAULT 0,
       textonota text, 
+      grupo_notas integer NOT NULL DEFAULT 0, 
       ativo smallint NOT NULL DEFAULT 1, 
       usuins bigint NOT NULL DEFAULT 0,
       datains timestamp without time zone DEFAULT '3000-12-31',
@@ -770,6 +795,66 @@ echo "Tabela ".$xProj.".visitas_ar checada. <br>";
       pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, usuins, datains) VALUES(8, '2024/12/25', 'Natal', 3, NOW() )");
   }
   echo "Tabela ".$xProj.".escaladaf_fer checada. <br>";
+
+
+  pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".extintores (
+      id SERIAL PRIMARY KEY, 
+      ext_num integer NOT NULL DEFAULT 0,
+      ext_local character varying(150),
+      ext_empresa smallint NOT NULL DEFAULT 0,
+      ext_tipo smallint NOT NULL DEFAULT 0,
+      ext_capac character varying(50),
+      ext_reg character varying(50),
+      ext_serie character varying(50),
+      datacarga timestamp without time zone DEFAULT '3000-12-31 00:00:00',
+      datavalid timestamp without time zone DEFAULT '3000-12-31 00:00:00',
+      datacasco timestamp without time zone DEFAULT '3000-12-31 00:00:00',
+      ativo smallint NOT NULL DEFAULT 1,
+      usuins integer NOT NULL DEFAULT 0,
+      datains timestamp without time zone DEFAULT '3000-12-31 00:00:00',
+      usuedit integer NOT NULL DEFAULT 0,
+      dataedit timestamp without time zone DEFAULT '3000-12-31 00:00:00'
+      )
+   ");
+
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".extintores_empr (
+      id SERIAL PRIMARY KEY, 
+      empresa character varying(150),
+      ender character varying(250),
+      cep character varying(15),
+      cidade character varying(50),
+      uf character varying(3),
+      telefone character varying(20),
+      contato character varying(50),
+      cnpjempr character varying(20),
+      inscrempr character varying(20),
+      obsempr text,
+      ativo smallint NOT NULL DEFAULT 1,
+      usuins integer NOT NULL DEFAULT 0,
+      datains timestamp without time zone DEFAULT '3000-12-31 00:00:00',
+      usuedit integer NOT NULL DEFAULT 0,
+      dataedit timestamp without time zone DEFAULT '3000-12-31 00:00:00',
+      usudel integer NOT NULL DEFAULT 0,
+      datadel timestamp without time zone DEFAULT '3000-12-31 00:00:00'
+      )
+   ");
+
+   
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".extintores_tipo (
+      id SERIAL PRIMARY KEY, 
+      desc_tipo character varying(50),
+      ativo smallint NOT NULL DEFAULT 1,
+      usuins integer NOT NULL DEFAULT 0,
+      datains timestamp without time zone DEFAULT '3000-12-31 00:00:00',
+      usuedit integer NOT NULL DEFAULT 0,
+      dataedit timestamp without time zone DEFAULT '3000-12-31 00:00:00',
+      usudel integer NOT NULL DEFAULT 0,
+      datadel timestamp without time zone DEFAULT '3000-12-31 00:00:00'
+      )
+   ");
+   
+
+   echo "Tabelas ".$xProj.".extintores checada. <br>";
 
 
 

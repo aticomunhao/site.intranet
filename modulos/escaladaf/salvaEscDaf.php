@@ -622,43 +622,6 @@ if($Acao =="salvanota"){
     echo $responseText;
 }
 
-if($Acao =="insereletra__"){
-    $Erro = 0;
-    $Ordem = (int) filter_input(INPUT_GET, 'ordem');
-    $Letra = filter_input(INPUT_GET, 'insletra');
-    $Tur = addslashes(filter_input(INPUT_GET, 'insturno'));
-     $Turno = limpar_texto($Tur);
-
-    $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
-
-    $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_turnos");
-    $tblCod = pg_fetch_row($rsCod);
-    $Codigo = $tblCod[0];
-    $CodigoNovo = ($Codigo+1);
-
-    $rs = pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, ordemletra, letra, horaturno, usuins, datains) 
-    VALUES($CodigoNovo, $NumGrupo, $Ordem, UPPER('$Letra'), '$Turno', $UsuIns, NOW() )");
-    if(!$rs){
-        $Erro = 1;
-    }
-        //Calcular carga horaria
-        $Proc = explode("/", $Turno);
-        $HoraI = $Proc[0];
-        $HoraF = $Proc[1];
-        $TurnoIni = $Hoje." ".$HoraI;
-        $TurnoFim = $Hoje." ".$HoraF;
-        pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET calcdataini = '$TurnoIni', calcdatafim = '$TurnoFim' WHERE id = $CodigoNovo");
-        pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargahora = (calcdatafim - calcdataini) WHERE id = $CodigoNovo");
-
-        pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '01:00'), interv = '01:00' WHERE cargahora >= '08:00' And id = $CodigoNovo ");
-        pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '00:15'), interv = '00:15' WHERE cargahora >= '06:00' And cargahora < '08:00' And id = $CodigoNovo ");
-        pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = cargahora, interv = '00:00' WHERE cargahora <= '06:00' And id = $CodigoNovo ");
-
-    $var = array("coderro"=>$Erro);
-    $responseText = json_encode($var);
-    echo $responseText;
-}
-
 if($Acao =="insereletra"){
     $Erro = 0;
     $Ordem = (int) filter_input(INPUT_GET, 'ordem');
@@ -1423,6 +1386,18 @@ if($Acao =="salvaDragEquipe"){
         $Erro = 1;
     }
     $var = array("coderro"=>$Erro, "grupo"=>$NumGrupo);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="salvaCorListas"){
+    $Cor = (int) filter_input(INPUT_GET, 'valor');
+    $Erro = 0;
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET corlistas_daf = $Cor WHERE pessoas_id = ".$_SESSION["usuarioID"]." And ativo = 1");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
     $responseText = json_encode($var);
     echo $responseText;
 }

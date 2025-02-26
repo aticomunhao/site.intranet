@@ -49,7 +49,8 @@
     $Fiscal = parEsc("esc_fisc", $Conec, $xProj, $_SESSION["usuarioID"]);
     $visuCargo = parAdm("visucargo_daf", $Conec, $xProj); // visualisar cargo no quadro
     $PrimCargo = parAdm("primcargo_daf", $Conec, $xProj); // visualisar primeiro o cargo no quadro
-    
+    $CorListas = parEsc("corlistas_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
+
     echo "Mês: ".$MesSalvo;
     echo "<br><br>";
 
@@ -157,6 +158,25 @@
                 $Cont = 1;
                 while($tbl2 = pg_fetch_row($rs2)){
                     $Cod = $tbl2[0]; //pessoas_id de poslog
+                    if($Cont % 2 == 0){ // linhas pares
+                        $CorFundo = "#FFFAFA"; // Branco - corFundo em indlog.css
+                    }else{
+                        if($CorListas == 0){
+                            $CorFundo = "#FFFAFA"; //Branco
+                        }
+                        if($CorListas == 1){
+                            $CorFundo = "#FFF8DC"; //Cornsilk1
+                        }
+                        if($CorListas == 2){
+                            $CorFundo = "#F0FFFF"; //Azure
+                        }
+                        if($CorListas == 3){
+                            $CorFundo = "#E6E6FA"; //Lavanda
+                        }
+                        if($CorListas == 4){
+                            $CorFundo = "#EEEEE0"; //Marfim
+                        }
+                    }
                     if(is_null($tbl2[2]) || $tbl2[2] == ""){
                         $Nome = substr($tbl2[1], 0, $Quant); //nome completo
                         if($visuCargo == 0){
@@ -177,14 +197,14 @@
                             }
                             if($visuCargo == 1){ // Visualizar o cargo junto ao nome
                                 if($PrimCargo == 1){ // Primeiro o cargo depois o nome
-                                    echo "<input disabled type='text' style='width: $Campo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Cargo' />";
-                                    echo "<input disabled type='text' style='width: $Campo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
+                                    echo "<input disabled type='text' style='width: $Campo; background-color: $CorFundo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Cargo' />";
+                                    echo "<input disabled type='text' style='width: $Campo; background-color: $CorFundo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
                                 }else{
-                                    echo "<input disabled type='text' style='width: $Campo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
-                                    echo "<input disabled type='text' style='width: $Campo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Cargo' />";
+                                    echo "<input disabled type='text' style='width: $Campo; background-color: $CorFundo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
+                                    echo "<input disabled type='text' style='width: $Campo; background-color: $CorFundo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Cargo' />";
                                 }
                             }else{
-                                echo "<input disabled type='text' style='width: 170px; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
+                                echo "<input disabled type='text' style='width: 170px; font-size: 90%; background-color: $CorFundo; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
                             }
                             $rs3 = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala), feriado, dataescala FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY dataescala");
                             $row3 = pg_num_rows($rs3);
@@ -229,9 +249,9 @@
                                                 }
                                             }else{
                                                 if($ValeRef == 0){ // sem Vale refeição
-                                                    echo "<div class='quadrodia' style='border-width: 2px; border-color: red;' title='Sem vale refeição'> $tbl4[0] </div>";
+                                                    echo "<div class='quadrodia' style='border-width: 2px; border-color: red; background-color: $CorFundo;' title='Sem vale refeição'> $tbl4[0] </div>";
                                                 }else{
-                                                    echo "<div class='quadrodia'> $tbl4[0] </div>";
+                                                    echo "<div class='quadrodia' style='background-color: $CorFundo;'> $tbl4[0] </div>";
                                                 }
                                             }
                                         }else{ // com destaque
