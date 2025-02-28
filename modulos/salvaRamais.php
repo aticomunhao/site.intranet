@@ -190,12 +190,18 @@ if($Tipo == 2){ // ramais externos
         $NomeEmpresa = trim(filter_input(INPUT_GET, 'NomeEmpresa'));
         $Setor = filter_input(INPUT_GET, 'Setor');
         $TelefoneFixo = filter_input(INPUT_GET, 'TelefoneFixo');
-        $TelefoneCel = filter_input(INPUT_GET, 'TelefoneCel');
-        if(strlen($TelefoneFixo) == 6){
+        if(strlen($TelefoneFixo) <= 8){ // telefones de três números, ex 193, 195, etc 
             $TelefoneFixo = str_replace("(", "", $TelefoneFixo);
             $TelefoneFixo = str_replace(")", "", $TelefoneFixo);
             $TelefoneFixo = str_replace(" ", "", $TelefoneFixo);
         }
+        $TelefoneCel = filter_input(INPUT_GET, 'TelefoneCel');
+        if(strlen($TelefoneCel) <= 8){ // telefones de três números, ex 193, 195, etc 
+            $TelefoneCel = str_replace("(", "", $TelefoneCel);
+            $TelefoneCel = str_replace(")", "", $TelefoneCel);
+            $TelefoneCel = str_replace(" ", "", $TelefoneCel);
+        }
+
         $ContatoNome = filter_input(INPUT_GET, 'ContatoNome');
         $UsuLogado = $_SESSION["usuarioID"]; //$_REQUEST["usulogado"];
         $Erro = 0;
@@ -223,7 +229,7 @@ if($Tipo == 2){ // ramais externos
                 }
             }
         }
-        $var = array("coderro"=>$Erro, "id"=>$id, "row"=>$row);
+        $var = array("coderro"=>$Erro, "id"=>$id, "row"=>$row, "telcelleng"=>$TelefoneCel);
         $responseText = json_encode($var);
         echo $responseText;
     }

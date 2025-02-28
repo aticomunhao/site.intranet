@@ -146,7 +146,9 @@ function openhref(Num){
     if(parseInt(Num) === 91){
         $('#container3').load('modulos/extintores/pagExtint.php');
     }
-    
+    if(parseInt(Num) === 92){
+        $('#container3').load('modulos/config/logsusu.php');
+    }
 
 }
 

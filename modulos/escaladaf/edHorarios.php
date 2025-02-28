@@ -50,7 +50,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
-alert(ajax.responseText);
+//alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");
                                 if(parseInt(Resp.coderro) === 1){
                                     document.getElementById("insordem").value = 0;

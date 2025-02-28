@@ -268,12 +268,9 @@
 							echo "<li>";
 								echo "<a href='#'>Acertos</a>";
 								echo "<ul>";
-									echo "<li>";
-									echo "<a href='#' onclick='openhref(60);'>Tabelas</a>";
-									echo "</li>";
-									echo "<li>";
-									echo "<a href='#' onclick='openhref(66);'>php Info</a>";
-									echo "</li>";
+//									echo "<li><a href='#' onclick='openhref(92);'>Logs Usuários</a></li>";
+									echo "<li><a href='#' onclick='openhref(60);'>Tabelas</a></li>";
+									echo "<li><a href='#' onclick='openhref(66);'>php Info</a></li>";
 								echo "</ul>";
 							echo "</li>";
 						}

@@ -938,6 +938,8 @@ if(!isset($_SESSION["usuarioID"])){
         if($row7 > 0){
             $tbl7 = pg_fetch_row($rs7);
             $SiglaSetor = $tbl7[0];
+        }else{
+            $SiglaSetor = "-";
         }
         $MeuOrg = parEsc("orgtarefa", $Conec, $xProj, $_SESSION["usuarioID"]); // nível no organograma
 
@@ -958,7 +960,11 @@ if(!isset($_SESSION["usuarioID"])){
             $OpcoesExecutante = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
         }
         if($VerTarefas == 3){ // 3 = visualização por setor 
-            $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm <= $Adm And grupotarefa = $CodSetorUsu ORDER BY nomeusual, nomecompl");
+            if($CodSetorUsu == 0){ // usuário sem grupo
+                $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE pessoas_id = ".$_SESSION["usuarioID"]." And ativo = 1 ");
+            }else{
+                $OpcoesUsers = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And adm <= $Adm And grupotarefa = $CodSetorUsu ORDER BY nomeusual, nomecompl");
+            }
             $OpcoesTransf = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And grupotarefa = $CodSetorUsu And pessoas_id != $UsuLogadoId ORDER BY nomeusual, nomecompl");
             $OpcoesUserMand = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And grupotarefa = $CodSetorUsu ORDER BY nomecompl, nomeusual");
             $OpcoesUserExec = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 And grupotarefa = $CodSetorUsu ORDER BY nomecompl, nomeusual");
@@ -1007,7 +1013,14 @@ if(!isset($_SESSION["usuarioID"])){
                 </div>
 
                 <div class="col" style="text-align: center;">
-                    <h4 id="etiqGrupoTar">Tarefas <?php if($VerTarefas == 3){ echo "Grupo ".$SiglaSetor; } ?> </h4>
+                    <h4 id="etiqGrupoTar" style="padding-bottom: 1px;">Tarefas <?php if($VerTarefas == 3){ echo "Grupo ".$SiglaSetor; } ?> </h4>
+                    <?php 
+                    if($VerTarefas == 3){ // se for por grupos
+                        if($CodSetorUsu == 0){
+                            echo "<label class='etiqAzul' style='text-align: center;'>Usuário sem grupo. Só pode inserir tarefas para si mesmo. <br>A atribuição de grupo é feita pela DAF ou ATI.</label>";
+                        }
+                    }
+                    ?>
                 </div> <!-- Central - espaçamento entre colunas  -->
                 <div class="col" style="margin: 0 auto; text-align: right;">
                     <button class="botpadrred" style="font-size: 80%;" id="botimprTarefas" onclick="escImprTarefas();">Gerar PDF</button>
@@ -1032,7 +1045,6 @@ if(!isset($_SESSION["usuarioID"])){
                 </td>
             </tr>
         </table>
-
 
         <div class="container" style="margin: 0 auto; padding-top: 2px; text-align: center;">
             <label class="etiqAzul" style="padding-right: 10px;">Visualizar Tarefas 
@@ -1191,7 +1203,7 @@ if(!isset($_SESSION["usuarioID"])){
             <div class="modalTransf-content">
                 <span class="close" onclick="fechaModalTransf();">&times;</span>
                 <h3 id="tituloMsgTransf" style="text-align: center; color: #666;">Transferir Acompanhamento</h3>
-                <div style="text-align: center;"><label class="etiqAqul">Transferir o acompanhamento das Tarefas para outro usuário</label></div>
+                <div style="text-align: center;"><label class="etiqAqul">Transferir o acompanhamento dos Meus Pedidos de Tarefa para outro usuário</label></div>
                 <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px; text-align: center;">
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>

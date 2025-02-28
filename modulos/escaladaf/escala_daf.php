@@ -214,6 +214,8 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("imgEscalaConfig").style.visibility = "hidden";
                 document.getElementById("imprGrupos").style.visibility = "hidden"; 
                 document.getElementById("imgEspera").style.visibility = "hidden"; 
+                document.getElementById("etiqtransfMesAnoEsc").style.visibility = "hidden";
+                document.getElementById("transfMesAnoEsc").style.visibility = "hidden";
 
                 if(parseInt(document.getElementById("UsuAdm").value) > 6){ // Superusuário
                     document.getElementById("imprGrupos").style.visibility = "visible"; 
@@ -257,7 +259,8 @@ if(!isset($_SESSION["usuarioID"])){
                     $("#faixanotas").load("modulos/escaladaf/notasdaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                     $("#faixaferiados").load("modulos/escaladaf/relFeriados.php?ano="+document.getElementById("guardaAno").value);
                     document.getElementById("botImprimir").style.visibility = "visible";
-                    if(parseInt(document.getElementById("escalante").value) === 1){
+                    if(parseInt(document.getElementById("escalante").value) === 1 || parseInt(document.getElementById("guardaUsuId").value) === 83){
+                        document.getElementById("etiqtransfMesAnoEsc").style.visibility = "visible";
                         document.getElementById("transfMesAnoEsc").style.visibility = "visible";
                     }
                 }

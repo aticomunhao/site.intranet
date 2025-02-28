@@ -1,25 +1,25 @@
 <?php
-session_start(); 
-if(!isset($_SESSION["usuarioID"])){
-    session_destroy();
-    header("Location: ../../index.php");
-}
-require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
-date_default_timezone_set('America/Sao_Paulo'); 
-$Mes_Extract = array(
-    '01' => 'Janeiro',
-    '02' => 'Fevereiro',
-    '03' => 'Março',
-    '04' => 'Abril',
-    '05' => 'Maio',
-    '06' => 'Junho',
-    '07' => 'Julho',
-    '08' => 'Agosto',
-    '09' => 'Setembro',
-    '10' => 'Outubro',
-    '11' => 'Novembro',
-    '12' => 'Dezembro',
-);
+    session_start(); 
+    if(!isset($_SESSION["usuarioID"])){
+        session_destroy();
+        header("Location: ../../index.php");
+    }
+    require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
+    date_default_timezone_set('America/Sao_Paulo'); 
+    $Mes_Extract = array(
+        '01' => 'Janeiro',
+        '02' => 'Fevereiro',
+        '03' => 'Março',
+        '04' => 'Abril',
+        '05' => 'Maio',
+        '06' => 'Junho',
+        '07' => 'Julho',
+        '08' => 'Agosto',
+        '09' => 'Setembro',
+        '10' => 'Outubro',
+        '11' => 'Novembro',
+        '12' => 'Dezembro',
+    );
     function SomaCarga($Hora, $Min){
         if($Min < 0){
             $Min = ($Min+60); // $Min será negativo
@@ -73,7 +73,6 @@ $Mes_Extract = array(
         <div style="margin: 10px; padding: 20px; border: 2px solid green; border-radius: 15px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->
                 <div class="col" style="margin: 0 auto; text-align: left;">
-
                     <!-- Mensal -->
                     <table style="margin: 0 auto;">
                         <tr>
@@ -83,7 +82,7 @@ $Mes_Extract = array(
                             <td colspan='2' class="etiq aEsq" style="text-align: center;">Mês: <?php echo $Mes_Extract[$Mes]; ?></td>
                         </tr>
                         <?php
-                        $rs = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl"); 
+                        $rs = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl"); 
                         $row = pg_num_rows($rs);
                         if($row > 0){
                             while($tbl = pg_fetch_row($rs)){
@@ -124,7 +123,6 @@ $Mes_Extract = array(
 
                 while($tbl = pg_fetch_row($rs)){
                     $SemanaNum = $tbl[0]; // número da semana no ano
-//echo $SemanaNum." ";
                     ?>
                     <div class="col" style="margin: 0 auto; text-align: left;">
                         <table style="margin: 0 auto;">
@@ -151,7 +149,7 @@ $Mes_Extract = array(
                                         <td colspan='2' class="etiq aEsq">Semana: <?php echo $DiaIniSem." a ".$DiaFimSem; ?></td>
                                     </tr>
                                     <?php
-                                    $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl"); 
+                                    $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl"); 
                                     $row0 = pg_num_rows($rs0);
                                     if($row0 > 0){
                                         while($tbl0 = pg_fetch_row($rs0)){
@@ -181,7 +179,6 @@ $Mes_Extract = array(
                                         }
                                     }
                                 }
-
                             }else{
                                 ?>
                                 <tr>
@@ -191,7 +188,7 @@ $Mes_Extract = array(
                                     <td colspan='2' class="etiq aEsq">Semana: <?php echo $DiaIniSem." a ".$DiaFimSem; ?></td>
                                 </tr>
                                 <?php
-                                $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomeusual, nomecompl"); 
+                                $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl"); 
                                 $row0 = pg_num_rows($rs0);
                                 if($row0 > 0){
                                     while($tbl0 = pg_fetch_row($rs0)){

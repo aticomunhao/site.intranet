@@ -818,7 +818,7 @@ if($Acao =="transfmesano"){
     pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf_ins WHERE TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
 
     //Inicia selecionando 
-    $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescalains, 'DD'), poslog_id, letraturno, turnoturno, destaque, cargatime, turnos_id 
+    $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescalains, 'DD'), poslog_id, letraturno, turnoturno, destaque, cargatime, turnos_id, horafolga 
     FROM ".$xProj.".escaladaf_ins 
     WHERE TO_CHAR(dataescalains, 'MM') = '$MesFrom' And TO_CHAR(dataescalains, 'YYYY') = '$AnoFrom' And grupo_ins = $NumGrupo And TO_CHAR(dataescalains, 'DD') >= '$DiaSemDia' And TO_CHAR(dataescalains, 'DD') <= '$UltDiaProxMes' ORDER BY dataescalains ");
     $row = pg_num_rows($rs);
@@ -835,6 +835,7 @@ if($Acao =="transfmesano"){
                 $Dest = $tbl[5];
                 $Carga = $tbl[6];
                 $TurnoId = $tbl[7]; // usado para carregar o turno do dia clicado
+                $HoraFolga = $tbl[8];
 
                 $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf WHERE dataescala = '$NovaData' And grupo_id = $NumGrupo ");
                 $row1 = pg_num_rows($rs1);
@@ -846,8 +847,8 @@ if($Acao =="transfmesano"){
                     $Codigo = $tblCod[0];
                     $CodigoNovo = ($Codigo+1);
 
-                    pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_ins (id, escaladaf_id, dataescalains, poslog_id, letraturno, turnoturno, destaque, cargatime, usuins, datains, grupo_ins, turnos_id) 
-                    VALUES ($CodigoNovo, $CodIdEscala, '$NovaData', $PoslogId, '$Letra', '$Turno', $Dest, '$Carga', $UsuIns, NOW(), $NumGrupo, $TurnoId ) ");
+                    pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_ins (id, escaladaf_id, dataescalains, poslog_id, letraturno, turnoturno, destaque, cargatime, usuins, datains, grupo_ins, turnos_id, horafolga) 
+                    VALUES ($CodigoNovo, $CodIdEscala, '$NovaData', $PoslogId, '$Letra', '$Turno', $Dest, '$Carga', $UsuIns, NOW(), $NumGrupo, $TurnoId, '$HoraFolga' ) ");
                 }
             }
         }

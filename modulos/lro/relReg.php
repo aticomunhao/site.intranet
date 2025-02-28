@@ -41,8 +41,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <script>
            new DataTable('#idTabela', {
                 lengthMenu: [
-                    [200, 500],
-                    [200, 500]
+                    [200, 500, 1000, 2000],
+                    [200, 500, 1000, 2000]
                 ],
                 language: {
                     info: 'Mostrando Página _PAGE_ of _PAGES_',
@@ -88,8 +88,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id
             WHERE ".$xProj.".livroreg.ativo = 1 And AGE(".$xProj.".livroreg.dataocor, CURRENT_DATE) <= '1 YEAR' 
             ORDER BY ".$xProj.".livroreg.dataocor DESC, ".$xProj.".livroreg.turno DESC, ".$xProj.".livroreg.numrelato DESC");
+            $row0 = pg_num_rows($rs0);
+
             ?>
             <table id="idTabela" class="display" style="width:85%;">
+                <caption><?php echo "Total ".$row0." registros"; ?></caption>
                 <thead>
                     <tr>
                         <th style="display: none;"></th>

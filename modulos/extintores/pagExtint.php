@@ -702,7 +702,7 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
         </div>
 
-        <div id="faixacentral"></div>
+
 
         <!-- div para inserção novo aparelho  -->
         <div id="relacmodalIns" class="relacmodal">

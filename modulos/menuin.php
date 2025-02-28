@@ -24,14 +24,16 @@
 			//Provisório
 			if(strtotime('2025/03/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//0091
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".extintores_empr ADD COLUMN IF NOT EXISTS cnpjempr VARCHAR(20) ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".extintores_empr ADD COLUMN IF NOT EXISTS inscrempr VARCHAR(20) ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".extintores_empr ADD COLUMN IF NOT EXISTS obsempr text ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS corlistas_daf smallint NOT NULL DEFAULT 1 ");
-				//0090
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".extintores ALTER COLUMN ext_local TYPE VARCHAR(150) ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS ordem_daf smallint NOT NULL DEFAULT 0 ");
+				//0092
+				pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".usulog (
+					id SERIAL PRIMARY KEY, 
+					pessoas_id bigint NOT NULL DEFAULT 0, 
+					datalogin timestamp without time zone DEFAULT CURRENT_TIMESTAMP, 
+					datalogout timestamp without time zone DEFAULT CURRENT_TIMESTAMP, 
+					navegador VARCHAR(20),
+					ativo smallint NOT NULL DEFAULT 1 
+					)" 
+				);
 
 			} // fim data limite
         ?>

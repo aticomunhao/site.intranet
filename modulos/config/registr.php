@@ -112,6 +112,14 @@ if($Acao =="loglog"){
                     // Aumenta número de acessos e grava data hora do login  - logfim = now() para mostrar on line
                     pg_query($Conec, "UPDATE ".$xProj.".poslog SET numacessos = (numacessos + 1), logini = NOW(), logfim = NOW() WHERE pessoas_id = $id "); 
 
+                    $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".usulog"); // guarda login e logout
+                    $tblCod = pg_fetch_row($rsCod);
+                    $Codigo = $tblCod[0];
+                    $CodigoNovo = ($Codigo+1);
+                    $Naveg = Navegador();
+                    pg_query($Conec, "INSERT INTO ".$xProj.".usulog (id, pessoas_id, datalogin, navegador) VALUES ($CodigoNovo, $id, NOW(), '$Naveg') "); //grava data login
+                    $_SESSION["CodUsuLog"] = $CodigoNovo;
+
                     $_SESSION["AdmBens"] = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // ver se está marcado para administrar bens encontrados
                     $_SESSION["FiscBens"] = parEsc("fiscbens", $Conec, $xProj, $_SESSION["usuarioID"]); // ver se está marcado para ver bens encontrados
                     $_SESSION["SoInsBens"] = parEsc("soinsbens", $Conec, $xProj, $_SESSION["usuarioID"]);
@@ -166,8 +174,8 @@ if($Acao =="loglog"){
                                 pg_query($Conec, "DELETE FROM ".$xProj.".livroreg WHERE datains < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros do livro de ocorrências há mais de $PrazoDel anos
                                 pg_query($Conec, "DELETE FROM ".$xProj.".bensachados WHERE datains < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros do achados e perdidos há mais de $PrazoDel anos
                                 pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE logfim < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros de usuários com último log há mais de $PrazoDel anos
-                                pg_query($Conec, "DELETE FROM ".$xProj.".ramais_int WHERE ativo = 0 And datains < CURRENT_DATE - interval '$PrazoDel years'"); 
-                                pg_query($Conec, "DELETE FROM ".$xProj.".ramais_ext WHERE ativo = 0 And datains < CURRENT_DATE - interval '$PrazoDel years'"); 
+                                pg_query($Conec, "DELETE FROM ".$xProj.".ramais_int WHERE ativo = 0 And datains < CURRENT_DATE - interval '$PrazoDel years' And ativo = 0"); 
+                                pg_query($Conec, "DELETE FROM ".$xProj.".ramais_ext WHERE ativo = 0 And datains < CURRENT_DATE - interval '$PrazoDel years' And ativo = 0"); 
                                 pg_query($Conec, "DELETE FROM ".$xProj.".arqsetor WHERE dataapag < CURRENT_DATE - interval '$PrazoDel years'"); // apaga nome dos arquivos de upload
                                 pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
                                 pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar2 WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
@@ -176,6 +184,7 @@ if($Acao =="loglog"){
                                 pg_query($Conec, "DELETE FROM ".$xProj.".chaves_ctl WHERE datavolta < CURRENT_DATE - interval '$PrazoDel years'");
                                 pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf WHERE dataescala < CURRENT_DATE - interval '$PrazoDel years'");
                                 pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf WHERE dataescala < CURRENT_DATE - interval '2 months' And ativo = 0;");
+                                pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf WHERE datains < CURRENT_DATE - interval '$PrazoDel years' And ativo = 0"); // Apaga só os deletados
                             }
                             $rs6 = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog ");
                             $row6 = pg_num_rows($rs6); // atualiza nomes de poslog com pessoas
@@ -1067,14 +1076,16 @@ if($Acao =="checaLogFim"){
     if(!$rs){
         $Erro = 1;
     }
-    $rs1 = pg_query($Conec, "SELECT EXTRACT(HOURS FROM (NOW()-logini)) as horas FROM  ".$xProj.".poslog WHERE pessoas_id = ".$_SESSION["usuarioID"]."");
-    $tbl1 = pg_fetch_row($rs1);
-    if($tbl1[0] > 15){ // 15 horas logado - reiniciar
-        session_start();
-        $_SESSION = array();
-        session_destroy();
-        header("Location: ../../index.php");
-    }
+
+// substituído pelo temporizador
+//    $rs1 = pg_query($Conec, "SELECT EXTRACT(HOURS FROM (NOW()-logini)) as horas FROM  ".$xProj.".poslog WHERE pessoas_id = ".$_SESSION["usuarioID"]."");
+//    $tbl1 = pg_fetch_row($rs1);
+//    if($tbl1[0] > 15){ // 15 horas logado - reiniciar
+//        session_start();
+//        $_SESSION = array();
+//        session_destroy();
+//        header("Location: ../../index.php");
+//    }
 
     $rs2 = pg_query($Conec, "SELECT pico_online, pico_dia FROM ".$xProj.".paramsis WHERE idpar = 1 ");
     $tbl2 = pg_fetch_row($rs2);
@@ -1152,6 +1163,23 @@ if($Acao =="insexectarefa"){
     echo $responseText;
 }
 
+if($Acao == "fechalog"){
+    $Erro = 0;
+    pg_query($Conec, "UPDATE ".$xProj.".usulog SET datalogout = NOW() WHERE id = ".$_SESSION["CodUsuLog"].""); 
+    if(!$rs){
+        $Erro = 1;
+    }
+
+//    session_start();
+//    $_SESSION = array();
+//    session_destroy();
+//    header("Location: ../index.php"); 
+// um F5 causaria o fechamento da sessão
+
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
 
 function removeInj($VemDePost){  // função para remover injeções SQL
     $VemDePost = addslashes($VemDePost);
@@ -1167,3 +1195,32 @@ function removeInj($VemDePost){  // função para remover injeções SQL
     $VemDePost = str_replace("DATABASE","",$VemDePost);
     return $VemDePost; 
  }
+
+ function Navegador(){
+    $MSIE = strpos($_SERVER['HTTP_USER_AGENT'],"MSIE");
+    $Firefox = strpos($_SERVER['HTTP_USER_AGENT'],"Firefox");
+    $Mozilla = strpos($_SERVER['HTTP_USER_AGENT'],"Mozilla");
+    $Chrome = strpos($_SERVER['HTTP_USER_AGENT'],"Chrome");
+    $Chromium = strpos($_SERVER['HTTP_USER_AGENT'],"Chromium");
+    $Safari = strpos($_SERVER['HTTP_USER_AGENT'],"Safari");
+    $Opera = strpos($_SERVER['HTTP_USER_AGENT'],"Opera");
+
+    if($MSIE == true){
+        $navegador = "IE"; 
+    }else if($Firefox == true){
+        $navegador = "Firefox"; 
+    }else if($Mozilla == true){
+        $navegador = "Firefox"; 
+    }else if($Chrome == true){
+        $navegador = "Chrome"; 
+    }else if($Chromium == true){
+        $navegador = "Chromium"; 
+    }else if($Safari == true){ 
+        $navegador = "Safari"; 
+    }else if($Opera == true){
+        $navegador = "Opera"; 
+    }else{
+        $navegador = $_SERVER['HTTP_USER_AGENT']; 
+    }
+    return $navegador;
+}

@@ -78,6 +78,8 @@ if(!isset($_SESSION["usuarioID"])){
                     }else{
                         $("#container5").load("modulos/leituras/carMsg.php?msgtipo=1");
                         $("#container6").load("modulos/leituras/carMsg.php?msgtipo=1");
+                        document.getElementById("botgrafico").style.visibility = "hidden"; 
+                        document.getElementById("botImprimir").disabled = true;
                     }
                     if(parseInt(document.getElementById("InsLeitura").value) === 0){
                         document.getElementById("botInserir").style.visibility = "hidden"; 

@@ -86,11 +86,14 @@ if(!isset($_SESSION["usuarioID"])){
                     }else{
                         $("#container5").load("modulos/leituras/carMsg.php?msgtipo=1");
                         $("#container6").load("modulos/leituras/carMsg.php?msgtipo=1");
+                        document.getElementById("imgEletric3config").style.visibility = "hidden";
+                        document.getElementById("botgrafico").style.visibility = "hidden"; 
+                        document.getElementById("botImprimir").disabled = true;
                     }
                     //para editar obedece ao nivel administrativo
                     if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) || parseInt(document.getElementById("UsuAdm").value) > 6){
                         document.getElementById("botImprimir").style.visibility = "visible"; 
-                        document.getElementById("imgEletric3config").style.visibility = "visible"; 
+//                        document.getElementById("imgEletric3config").style.visibility = "visible"; 
                     }else{
                         document.getElementById("botImprimir").style.visibility = "hidden"; 
                     }

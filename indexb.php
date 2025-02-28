@@ -347,6 +347,21 @@
                 }
             }
 
+			function fechaLog(){
+				ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/config/registr.php?acao=fechalog", true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+			}
+
             function abreEdit(){
                 document.getElementById("modalEditPagIni").style.display = "block";
             }
@@ -384,7 +399,7 @@
 
         </script>
     </head>
-    <body>
+    <body onbeforeunload="return fechaLog()"> <!-- https://www.w3schools.com/jsref/event_onbeforeunload.asp -->
         <?php
             require_once("modulos/config/modais.php");
             date_default_timezone_set('America/Sao_Paulo'); //  echo date("l, d/m/Y");
@@ -408,7 +423,7 @@
         <input type="hidden" id="guardaAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>"/> <!-- nível administrativo do usuário logado -->
         <input type="hidden" id="guardamsgcalend" value="0"/>
         <input type="hidden" id="guardatempo" value="<?php echo $TempoInat; ?>"/>
-        <input type="hidden" id="teste" value=""/>
+        <input type="hidden" id="teste" style="font-size: 200%; color: black;" value=""/>
         <input type="hidden" id="numTarefa" value = "0"/>
         <input type="hidden" id="selecionar" value = "0"/>
         <input type="hidden" id="guardaContrato" value = "0"/>

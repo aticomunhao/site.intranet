@@ -1348,7 +1348,7 @@ if(!isset($_SESSION["usuarioID"])){
                     Regras inseridas:
                     <ul>
                         <li>1 - O Livro de Registro de Ocorrências (LRO) destina-se a registrar os acontecimentos dignos de registro durante os turnos de serviço na portaria.</li>
-                        <li>2 - O funcionário designado para o inserir o registro deve anotar ao final do turno (botão Inserir Registro) tudo o que ocorreu durante seu serviço.</li>
+                        <li>2 - O funcionário designado para inserir o registro deve anotar ao final do turno (botão Inserir Registro) tudo o que ocorreu durante seu serviço.</li>
                         <li>3 - Se quiser, o funcionário pode iniciar o registro (botão Inserir Registro) já no início do turno, salvar e deixar para enviar o relato ao final do serviço (botão Enviar).</li>
                         <li>4 - Ao salvar o registro, ele aparecerá no topo da relação e pode ser editado até o final do turno. Basta clicar sobre linha do registro e depois em Editar na caixa que aparece.</li>
                         <li>5 - Ao final do turno um clique no botão Enviar encerra o serviço e envia o relato para a administração.</li>

@@ -98,7 +98,7 @@ session_start();
                     }
                 };
 
-                $("#TelefoneCel").mask("(99) 99999-9999");
+//                $("#TelefoneCel").mask("(99) 99999-9999");
             });
 
             function carregaModal(id){
@@ -185,7 +185,7 @@ session_start();
                 document.getElementById("Setor").value = "";
 				document.getElementById("ContatoNome").value = "";
                 document.getElementById("TelefoneFixo").value = "";
-//				document.getElementById("TelefoneCel").value = "";
+				document.getElementById("TelefoneCel").value = "";
                 document.getElementById("guardaid_click").value = 0;
                 document.getElementById("botapagar").disabled = true;
                 document.getElementById("titulomodal").innerHTML = "Inserção de Telefones Úteis";
@@ -236,12 +236,40 @@ session_start();
                 input.value = phoneMask(input.value);
             }
             const phoneMask = (value) => {
-                if (!value) return ""
+                if(!value){
+                    return "";
+                }else{ 
                     value = value.replace(/\D/g,'');
                     value = value.replace(/(\d{2})(\d)/,"($1) $2");
                     value = value.replace(/(\d)(\d{4})$/,"$1-$2");
                     return value;
                 }
+            }
+            
+            //máscara para telefone celular
+            function maskTel(o, f) {
+                setTimeout(function() {
+                    var v = mphone(o.value);
+                    if (v != o.value) {
+                        o.value = v;
+                    }
+                }, 1);
+            }
+            function mphone(v) {
+                var r = v.replace(/\D/g, "");
+                r = r.replace(/^0/, "");
+                if (r.length > 10) {
+                    r = r.replace(/^(\d\d)(\d{5})(\d{4}).*/, "($1) $2-$3");
+                } else if (r.length > 5) {
+                    r = r.replace(/^(\d\d)(\d{4})(\d{0,4}).*/, "($1) $2-$3");
+                } else if (r.length > 2) {
+                    r = r.replace(/^(\d\d)(\d{0,5})/, "($1) $2");
+                } else {
+                    r = r.replace(/^(\d*)/, "($1");
+                }
+                return r;
+            }
+
         </script>
     </head>
     <body>
@@ -340,7 +368,9 @@ session_start();
                         <td id="etiqRamal" class="etiq">Telefone</td>
                         <td><input type="tel" id="TelefoneFixo" style="width: 99%;" placeholder="Telefone" onkeyup="handlePhone(event);" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('TelefoneCel');return false;}"></td>
                         <td id="etiqCelular" class="etiq">Celular</td>
-                        <td><input type="tel" id="TelefoneCel" style="width: 99%;" placeholder="Celular" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('Setor');return false;}"></td>
+<!--                        <td><input type="tel" id="TelefoneCel" style="width: 99%;" placeholder="Celular" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('Setor');return false;}"></td>  -->
+                        <td><input type="tel" id="TelefoneCel" style="width: 99%;" placeholder="Celular" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('Setor');return false;}else{maskTel(this, mphone);}" onblur="maskTel(this, mphone);" ></td>
+
                     </tr>
                     <tr>
                         <td id="etiqSetor" class="etiq">Setor</td>
