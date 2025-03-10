@@ -884,6 +884,12 @@ if(!isset($_SESSION["usuarioID"])){
     </head>
     <body>
         <?php
+            $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog'");
+            $rowSis = pg_num_rows($rsSis);
+            if($rowSis == 0){
+                echo "Sem contato com os arquivos do sistema. Informe à ATI.";
+                return false;
+            }
             if(isset($_REQUEST["tipo"])){
                 $Tipo = $_REQUEST["tipo"];
             }else{
@@ -1124,14 +1130,14 @@ if(!isset($_SESSION["usuarioID"])){
                             <input type="checkbox" id="leituraEletric3" title="Pode registrar as leituras diárias do consumo de energia elétrica" onchange="modif();" >
                             <label for="leituraEletric3" title="Pode registrar as leituras diárias do consumo de energia elétrica do medidor da operadora">registrar leitura do Medidor de Energia Elétrica - <?php echo $Menu3; ?></label>
                         </td>
-                        <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(2);" title="Guia rápido"></td>
+                        <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(2);" title="Guia rápido"></td>
                     </tr>
 
                     <tr>
                         <td class="etiq80" style="border-bottom: 1px solid;" title="Ver os registros de leituras do consumo de eletricidade - Só fiscaliza. Não pode registrar.">Eletricidade:</td>
                         <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
                             <input type="checkbox" id="fisc_Eletric" title="Visualizar os registros dos medidores do consumo de eletricidade - Só fiscaliza. Não pode registrar." onchange="modif();" >
-                            <label for="fisc_Eletric" title="Visualizar os registros dos medidores do consumo de eletricidade">Visualizar o consumo de eletricidade</label>
+                            <label for="fisc_Eletric" title="Visualizar os registros dos medidores do consumo de eletricidade">fiscalizar o consumo de eletricidade</label>
                         </td>
                         <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(17);" title="Guia rápido"></td>
                     </tr>
@@ -1290,7 +1296,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td class="etiq80" title="Gerenciar a disposição e manutenção dos extintores.">Extintores:</td>
                         <td colspan="4">
                             <input type="checkbox" id="insExtintor" title="Gerenciar a disposição e manutenção dos extintores." onchange="modif();" >
-                            <label for="insExtintor" title="Gerenciar a disposição e manutenção dos extintores.">gerenciar disposição e manutenção dos extintores</label>
+                            <label for="insExtintor" title="Gerenciar a disposição e manutenção dos extintores.">gerenciar a disposição e manutenção dos extintores de incêndio</label>
                         </td>
                         <td style="text-align: center;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(18);" title="Guia rápido"></td>
                     </tr>
@@ -1299,7 +1305,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td class="etiq80" style="border-bottom: 1px solid;" title="Acompanhar e fiscalizar a disposição e manutenção dos extintores.">Extintores:</td>
                         <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
                             <input type="checkbox" id="fiscalExtintor" title="Acompanhar e fiscalizar a disposição e manutenção dos extintores." onchange="modif();" >
-                            <label for="fiscalExtintor" title="Acompanhar e fiscalizar a disposição e manutenção dos extintores.">fiscalizar e acompanhar a manutenção dos extintores</label>
+                            <label for="fiscalExtintor" title="Acompanhar e fiscalizar a disposição e manutenção dos extintores.">fiscalizar e acompanhar a manutenção dos extintores de incêndio</label>
                         </td>
                         <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(19);" title="Guia rápido"></td>
                     </tr>

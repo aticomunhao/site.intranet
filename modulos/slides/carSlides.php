@@ -8,6 +8,12 @@
     <body>
         <?php
             require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
+            $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog'");
+            $rowSis = pg_num_rows($rsSis);
+            if($rowSis == 0){
+                echo "Sem contato com os arquivos do sistema. Informe à ATI.";
+                return false;
+            }
             //  o nome da imagem é modificado a cada mudança para contornar o cache de imagem
             $rs1 = pg_query($Conec, "SELECT codcar, descarq FROM ".$xProj.".carousel WHERE codcar = 1");
             $tbl1 = pg_fetch_row($rs1);

@@ -73,10 +73,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 $SomaLeit1 = 0;
                 $SomaLeitAnt = 0;
 
-                $rsCusto = pg_query($Conec, "SELECT valorkwh FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura1) = $Mes And DATE_PART('YEAR', dataleitura1) = '$Ano' And colec = 1 And ativo = 1 And leitura1 != 0 ");
+                $rsCusto = pg_query($Conec, "SELECT valorkwh FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura2) = $Mes And DATE_PART('YEAR', dataleitura2) = '$Ano' And colec = 2 And ativo = 1 And leitura2 != 0 ");
                 $rowCusto = pg_num_rows($rsCusto); // dá a quantidade de dias no mês
 
-                $rsSoma = pg_query($Conec, "SELECT SUM(valorkwh) FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura1) = $Mes And DATE_PART('YEAR', dataleitura1) = '$Ano' And colec = 1 And ativo = 1 And leitura1 != 0 ");
+                $rsSoma = pg_query($Conec, "SELECT SUM(valorkwh) FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura2) = $Mes And DATE_PART('YEAR', dataleitura2) = '$Ano' And colec = 2 And ativo = 1 And leitura2 != 0 ");
                 $tblSoma = pg_fetch_row($rsSoma);
                 $CalcValorKwh = ($tblSoma[0]/$rowCusto);
 

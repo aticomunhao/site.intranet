@@ -26,7 +26,7 @@ if(isset($_REQUEST["acao"])){
         $Cod = (int) filter_input(INPUT_GET, 'codigo');
         $Tipo = (int) filter_input(INPUT_GET, 'tipo');
         $Erro = 0;
-        $rs = pg_query($Conec, "SELECT TO_CHAR(dataassinat, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), numcontrato, codsetor, codempresa, objetocontr, observ, notific, diasnotific, vigencia, pararaviso FROM ".$xProj.".contratos".$Tipo." WHERE id = $Cod");
+        $rs = pg_query($Conec, "SELECT TO_CHAR(dataassinat, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), numcontrato, codsetor, codempresa, objetocontr, observ, notific, diasnotific, vigencia, pararaviso, emvigor FROM ".$xProj.".contratos".$Tipo." WHERE id = $Cod");
         if(!$rs){
             $Erro = 1;
             $var = array("coderro"=>$Erro);
@@ -36,7 +36,7 @@ if(isset($_REQUEST["acao"])){
                 $tbl = pg_fetch_row($rs);
                 $Vig = str_replace("meses", "", $tbl[10]);
                 $Vigencia = str_replace("mês", "", $Vig);
-                $var = array("coderro"=>$Erro, "dataassinat"=>$tbl[0], "datavencim"=>$tbl[1], "dataaviso"=>$tbl[2], "numcontrato"=>$tbl[3], "codsetor"=>$tbl[4], "codempresa"=>$tbl[5], "objcontrato"=>$tbl[6], "obs"=>$tbl[7], "notific"=>$tbl[8], "diasnotific"=>$tbl[9], "vigencia"=>trim($Vigencia), "pararaviso"=>$tbl[11]);
+                $var = array("coderro"=>$Erro, "dataassinat"=>$tbl[0], "datavencim"=>$tbl[1], "dataaviso"=>$tbl[2], "numcontrato"=>$tbl[3], "codsetor"=>$tbl[4], "codempresa"=>$tbl[5], "objcontrato"=>$tbl[6], "obs"=>$tbl[7], "notific"=>$tbl[8], "diasnotific"=>$tbl[9], "vigencia"=>trim($Vigencia), "pararaviso"=>$tbl[11], "emvigor"=>$tbl[12]);
             }
         }
         $responseText = json_encode($var);
@@ -306,4 +306,17 @@ if(isset($_REQUEST["acao"])){
         echo $responseText;
      }
 
+     if($Acao == "statuscontrato"){
+        $Erro = 0;
+        $Cod = (int) filter_input(INPUT_GET, 'codigo');
+        $Tipo = (int) filter_input(INPUT_GET, 'tipo');
+        $Valor = (int) filter_input(INPUT_GET, 'valor');
+        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".contratos".$Tipo." SET emvigor = $Valor WHERE id = $Cod");
+        if(!$rs1){
+            $Erro = 1;
+        }
+        $var = array("coderro"=>$Erro);
+        $responseText = json_encode($var);
+        echo $responseText;
+    }
 }

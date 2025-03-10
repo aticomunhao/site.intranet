@@ -400,7 +400,7 @@ if(!isset($_SESSION["usuarioID"])){
         <?php
             $Hoje = date('d/m/Y');
             $Erro = 0;
-            $rs = pg_query($Conec, "SELECT column_name, data_type, character_maximum_length FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'leitura_agua'");
+            $rs = pg_query($Conec, "SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_schema = 'cesb' And table_name = 'leitura_agua'");
             $row = pg_num_rows($rs);
             if($row == 0){
                 $Erro = 1;

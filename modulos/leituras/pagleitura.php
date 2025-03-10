@@ -69,7 +69,6 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.")
                                 }else{
-//                                    document.getElementById("insdata").disabled = true;
                                     document.getElementById("insdata").value = Resp.data;
                                     document.getElementById("insdiasemana").innerHTML = Resp.sem;
                                     document.getElementById("insleitura1").value = Resp.leitura1;
@@ -148,8 +147,6 @@ if(!isset($_SESSION["usuarioID"])){
                                         $('#mensagemLeitura').fadeIn("slow");
                                         document.getElementById("mensagemLeitura").innerHTML = "Essa data já foi lançada.";
                                         $('#mensagemLeitura').fadeOut(3000);
-
-
                                     }
                                 }
                             }
@@ -204,8 +201,6 @@ if(!isset($_SESSION["usuarioID"])){
                     };
                     ajax.send(null);
                 }
-
-
             }
             function fechaModal(){
                 document.getElementById("relacmodalLeitura").style.display = "none";
@@ -238,11 +233,8 @@ if(!isset($_SESSION["usuarioID"])){
             <div style="padding: 10px; display: flex; align-items: center; justify-content: center;"> 
                 <div class="row" style="width: 95%;">
                     <div id="container5" class="col quadro" style="margin: 0 auto; width: 100%;"></div> <!-- quadro -->
-
                     <div class="col-1" style="width: 1%;"></div> <!-- espaçamento entre colunas  -->
-
                     <div id="container6" class="col quadro" style="margin: 0 auto; width: 100%;"></div> <!-- quadro -->
-
                 </div> <!-- row  -->
             </div> <!-- container  -->
         </div>

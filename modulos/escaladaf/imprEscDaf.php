@@ -81,7 +81,6 @@ if(!isset($_SESSION['AdmUsu'])){
         return $escSis;
     }
 
-
     class PDF extends FPDF{
         function Footer(){
            // Vai para 1.5 cm da parte inferior
@@ -174,7 +173,7 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->SetAutoPageBreak(false); // não passa para outra página pq vai caber
         }
 
-        $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala)  
+        $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala), dataescala 
         FROM ".$xProj.".escaladaf 
         WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY dataescala");
         $row = pg_num_rows($rs);
@@ -187,7 +186,15 @@ if(!isset($_SESSION['AdmUsu'])){
             //Dia
             $pdf->SetX(70); 
             while($tbl = pg_fetch_row($rs)){
-                if($tbl[2] == 0){
+                $ProcFer = $tbl[3]; // dataescala
+                $diaFer = 0;
+                $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                $rowFer = pg_num_rows($rsFer);
+                if($rowFer > 0){ // dataescala = dataescalafer
+                    $diaFer = 1;
+                }
+
+                if($tbl[2] == 0 || $diaFer == 1){ // Domingo ou Feriado
                     $pdf->SetFillColor(232, 232, 232); // fundo cinza
                 }else{
                     $pdf->SetFillColor(255, 255, 255); // fundo branco
@@ -208,12 +215,19 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->SetFont('Arial', '' , 10);
             $pdf->SetX(70); 
             //Semana
-            $rs1 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+            $rs1 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
             FROM ".$xProj.".escaladaf 
             WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY dataescala");
             $rowMes = pg_num_rows($rs1);
             while($tbl1 = pg_fetch_row($rs1)){
-                if($tbl1[1] == 0){
+                $ProcFer = $tbl1[2]; // dataescala
+                $diaFer = 0;
+                $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                $rowFer = pg_num_rows($rsFer);
+                if($rowFer > 0){ // dataescala = dataescalafer
+                    $diaFer = 1;
+                }
+                if($tbl1[1] == 0 || $diaFer == 1){ // Domingo ou Feridado
                     $pdf->SetFillColor(232, 232, 232); // fundo cinza
                 }else{
                     $pdf->SetFillColor(255, 255, 255); // fundo branco
@@ -257,13 +271,21 @@ if(!isset($_SESSION['AdmUsu'])){
                     $pdf->Cell(31, 5, $Nome, "B", 0, 'L', true);
                     
                      //Quadrinho dias 01, 02, 03, ...
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains 
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '01' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(70); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -284,11 +306,18 @@ if(!isset($_SESSION['AdmUsu'])){
 
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '01' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo");
                         $tbl3 = pg_fetch_row($rs3);
 
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -297,13 +326,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
                     
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '02' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(77); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -323,10 +359,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra  
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '02' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -335,13 +378,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '03' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(84); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -361,10 +411,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '03' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -373,13 +430,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '04' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(91); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -399,10 +463,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '04' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -411,13 +482,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '05' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(98); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -437,10 +515,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '05' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -449,13 +534,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '06' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(105); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -475,10 +567,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '06' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -487,13 +586,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '07' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(112); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -513,10 +619,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '07' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -525,13 +638,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '08' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(119); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -551,10 +671,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '08' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -563,13 +690,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '09' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(126); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -589,10 +723,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '09' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -601,13 +742,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '10' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(133); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -627,10 +775,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '10' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -639,13 +794,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '11' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(140); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -665,10 +827,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '11' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -677,13 +846,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '12' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(147); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -703,10 +879,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '12' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -715,13 +898,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque 
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains 
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '13' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(154); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -741,10 +931,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '13' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -753,13 +950,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
    
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque 
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains 
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '14' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(161); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -779,10 +983,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '14' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -791,13 +1002,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
    
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '15' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(168); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -817,10 +1035,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '15' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -829,13 +1054,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '16' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(175); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -855,10 +1087,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '16' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -867,13 +1106,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '17' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(182); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -893,10 +1139,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '17' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -905,13 +1158,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '18' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(189); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -931,10 +1191,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '18' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -943,13 +1210,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '19' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(196); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -969,10 +1243,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '19' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -981,13 +1262,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '20' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(203); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -1007,10 +1295,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '20' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -1019,13 +1314,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '21' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(210); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -1045,10 +1347,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '21' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -1057,13 +1366,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '22' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(217); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -1083,10 +1399,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '22' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -1095,13 +1418,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '23' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(224); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -1121,10 +1451,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '23' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -1133,13 +1470,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque , dataescalains 
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '24' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(231); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -1159,10 +1503,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '24' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -1171,13 +1522,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '25' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(238); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -1197,10 +1555,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '25' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -1209,13 +1574,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '26' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(245); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -1235,10 +1607,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '26' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -1247,13 +1626,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '27' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(252); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -1273,10 +1659,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '27' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -1285,13 +1678,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '28' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(259); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
-                        if($tbl2[1] == 0){
+                        $ProcFer = $tbl2[3]; // dataescalains
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
@@ -1311,10 +1711,17 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                     }else{
-                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                        $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '28' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                         $tbl3 = pg_fetch_row($rs3);
-                        if($tbl3[1] == 0){
+                        $ProcFer = $tbl3[2]; // dataescala
+                        $diaFer = 0;
+                        $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                        $rowFer = pg_num_rows($rsFer);
+                        if($rowFer > 0){ // dataescala = dataescalafer
+                            $diaFer = 1;
+                        }
+                        if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
@@ -1324,13 +1731,20 @@ if(!isset($_SESSION['AdmUsu'])){
                     }
 
                     if(buscaDia($Conec, $xProj, $Mes, $Ano, 29) == 1){ //Ver se o dia existe neste mes
-                        $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                        $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                         FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '29' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                         $row2 = pg_num_rows($rs2);
                         $pdf->SetX(266); 
                         if($row2 > 0){
                             $tbl2 = pg_fetch_row($rs2);
-                            if($tbl2[1] == 0){
+                            $ProcFer = $tbl2[3]; // dataescalains
+                            $diaFer = 0;
+                            $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                            $rowFer = pg_num_rows($rsFer);
+                            if($rowFer > 0){ // dataescala = dataescalafer
+                                $diaFer = 1;
+                            }
+                            if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                                 $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             }else{
                                 if($Cont % 2 == 0){ // linhas pares
@@ -1350,10 +1764,17 @@ if(!isset($_SESSION['AdmUsu'])){
                             }
                             $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                         }else{
-                            $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                            $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                             FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '29' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                             $tbl3 = pg_fetch_row($rs3);
-                            if($tbl3[1] == 0){
+                            $ProcFer = $tbl3[2]; // dataescala
+                            $diaFer = 0;
+                            $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                            $rowFer = pg_num_rows($rsFer);
+                            if($rowFer > 0){ // dataescala = dataescalafer
+                                $diaFer = 1;
+                            }
+                            if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                                 $pdf->SetFillColor(232, 232, 232); // fundo cinza
                                 $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                                 $pdf->SetFillColor(255, 255, 255);
@@ -1364,13 +1785,20 @@ if(!isset($_SESSION['AdmUsu'])){
                     }
 
                     if(buscaDia($Conec, $xProj, $Mes, $Ano, 30) == 1){ //Ver se o dia existe neste mes
-                        $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                        $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                         FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '30' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                         $row2 = pg_num_rows($rs2);
                         $pdf->SetX(273); 
                         if($row2 > 0){
                             $tbl2 = pg_fetch_row($rs2);
-                            if($tbl2[1] == 0){
+                            $ProcFer = $tbl2[3]; // dataescalains
+                            $diaFer = 0;
+                            $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                            $rowFer = pg_num_rows($rsFer);
+                            if($rowFer > 0){ // dataescala = dataescalafer
+                                $diaFer = 1;
+                            }
+                            if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                                 $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             }else{
                                 if($Cont % 2 == 0){ // linhas pares
@@ -1390,10 +1818,17 @@ if(!isset($_SESSION['AdmUsu'])){
                             }
                             $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                         }else{
-                            $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                            $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                             FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '30' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                             $tbl3 = pg_fetch_row($rs3);
-                            if($tbl3[1] == 0){
+                            $ProcFer = $tbl3[2]; // dataescala
+                            $diaFer = 0;
+                            $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                            $rowFer = pg_num_rows($rsFer);
+                            if($rowFer > 0){ // dataescala = dataescalafer
+                                $diaFer = 1;
+                            }
+                            if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                                 $pdf->SetFillColor(232, 232, 232); // fundo cinza
                                 $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                                 $pdf->SetFillColor(255, 255, 255);
@@ -1404,13 +1839,20 @@ if(!isset($_SESSION['AdmUsu'])){
                     }
 
                     if(buscaDia($Conec, $xProj, $Mes, $Ano, 31) == 1){ //Ver se o dia existe neste mes
-                        $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque  
+                        $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
                         FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '31' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                         $row2 = pg_num_rows($rs2);
                         $pdf->SetX(280); 
                         if($row2 > 0){
                             $tbl2 = pg_fetch_row($rs2);
-                            if($tbl2[1] == 0){
+                            $ProcFer = $tbl2[3]; // dataescalains
+                            $diaFer = 0;
+                            $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                            $rowFer = pg_num_rows($rsFer);
+                            if($rowFer > 0){ // dataescala = dataescalafer
+                                $diaFer = 1;
+                            }
+                            if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
                                 $pdf->SetFillColor(232, 232, 232); // fundo cinza
                             }else{
                                 if($Cont % 2 == 0){ // linhas pares
@@ -1430,10 +1872,17 @@ if(!isset($_SESSION['AdmUsu'])){
                             }
                             $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
                         }else{
-                            $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala) 
+                            $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                             FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '31' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
                             $tbl3 = pg_fetch_row($rs3);
-                            if($tbl3[1] == 0){
+                            $ProcFer = $tbl3[2]; // dataescala
+                            $diaFer = 0;
+                            $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
+                            $rowFer = pg_num_rows($rsFer);
+                            if($rowFer > 0){ // dataescala = dataescalafer
+                                $diaFer = 1;
+                            }
+                            if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
                                 $pdf->SetFillColor(232, 232, 232); // fundo cinza
                                 $pdf->SetFillColor(255, 255, 255);
                             }else{

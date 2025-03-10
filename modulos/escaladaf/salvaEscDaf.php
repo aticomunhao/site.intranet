@@ -1317,7 +1317,7 @@ if($Acao == "carregames"){ // sem uso
         $Tot = $tblCod[0];
         $Num2 = ($Tot+1);
 
-        if($Num1 <= 20){
+        if($Num1 <= 21){
             $Num2 = 21;
         }
         if($Num1 <= 16){
@@ -1326,7 +1326,7 @@ if($Acao == "carregames"){ // sem uso
         if($Num1 <= 10){
             $Num2 = 11;
         }
-        if($Num1 > 20){
+        if($Num1 > 21){
             $Num2 = 25;
         }
         while($tbl2 = pg_fetch_row($rs2)){
@@ -1339,7 +1339,7 @@ if($Acao == "carregames"){ // sem uso
         $Erro = 1;
     }
 
-    $var = array("coderro"=>$Erro);
+    $var = array("coderro"=>$Erro, "Num1"=>$Num1);
     $responseText = json_encode($var);
     echo $responseText;
 }

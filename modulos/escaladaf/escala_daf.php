@@ -10,7 +10,7 @@ if(!isset($_SESSION["usuarioID"])){
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
+        <title>Escala</title>
         <link rel="stylesheet" type="text/css" media="screen" href="class/bootstrap/css/bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-ui.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
@@ -655,7 +655,6 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 };
 
-
             }); // fim do ready
 
             function ajaxIni(){
@@ -830,7 +829,6 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("insturno").value == ""){
                     return false;
                 }
-
                 let Turno = document.getElementById("insturno").value;
                 let Valor_Length = 13;
                 if (Turno.length !== Valor_Length) {
@@ -844,7 +842,6 @@ if(!isset($_SESSION["usuarioID"])){
                     });
                     return false;
                 }
-
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=insereletra&ordem="+document.getElementById("insordem").value
@@ -934,7 +931,6 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
             }
-
 
 //Sem uso no momento
 //            function abreDestacaDia(){ // está em relEsc_daf.php
@@ -1098,7 +1094,7 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 }
             }
-            
+
             function MarcaPartic(Cod){ // vem de equipe.php
                 ajaxIni();
                 if(ajax){
@@ -1203,8 +1199,6 @@ if(!isset($_SESSION["usuarioID"])){
                 if(Valor == ""){
                     return false;
                 }
-//alert(Cod);
-//return false;
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaFeriado&codigo="+Cod+"&novadata="+encodeURIComponent(Valor)+"&ano="+document.getElementById("selecAnoFer").value, true);
@@ -1828,7 +1822,7 @@ alert(ajax.responseText);
                     };
                     ajax.send(null);
                 }
-            } 
+            }
 
             function fechaQuadroTurnos(){
                 document.getElementById("relacQuadroTurnos").style.display = "none";
@@ -1853,6 +1847,12 @@ alert(ajax.responseText);
     <body>
         <?php
             require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
+            $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog'");
+            $rowSis = pg_num_rows($rsSis);
+            if($rowSis == 0){
+                echo "Sem contato com os arquivos do sistema. Informe à ATI.";
+				return false;
+            }
             //Meu grupo não varia, embora tenha poderes para ver outros grupos
             $MeuGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
             if($MeuGrupo == 0){ // está sem grupo
@@ -1861,7 +1861,7 @@ alert(ajax.responseText);
                 if($row0 > 0){
                     $tbl0 = pg_fetch_row($rs0);
                     $MeuGrupo = $tbl0[0];
-                }    
+                }
             }
 
             //NumGrupo pode variar se é Fiscal de grupos
@@ -1887,27 +1887,9 @@ alert(ajax.responseText);
 
 //Provisório
 if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
-    //0090
-    $rs1 = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'poslog' AND COLUMN_NAME = 'ordem_daf'");
-    $row1 = pg_num_rows($rs1);
-    if($row1 == 0){
-        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS ordem_daf smallint NOT NULL DEFAULT 0 ");
-    }
-    //0091
-    $rs2 = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'poslog' AND COLUMN_NAME = 'corlistas_daf'");
-    $row2 = pg_num_rows($rs2);
-    if($row2 == 0){
-        pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS corlistas_daf smallint NOT NULL DEFAULT 1 ");
-    }
-
-//Provisório
     $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE ativo = 1 And ordem_daf = 0 ");
     $row1 = pg_num_rows($rs1);
     if($row1 > 0){
-        //acertar a numeração nos grupos
-        pg_query($Conec, "UPDATE ".$xProj.".poslog SET nomeusual = 'Alcir' WHERE pessoas_id = 6273");
-        pg_query($Conec, "UPDATE ".$xProj.".poslog SET nomeusual = 'Giovanna' WHERE pessoas_id = 9055");
-
         $rs2 = pg_query($Conec, "SELECT id, esc_grupo, ordem_daf FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY esc_grupo, nomeusual ");
         $row2 = pg_num_rows($rs2);
         if($row2 > 0){
@@ -1926,34 +1908,7 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
             }
         }
     }
-
-//Provisório
-
-    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_fer_padr (
-        id SERIAL PRIMARY KEY, 
-        dataescalafer date DEFAULT '3000-12-31',
-        descr VARCHAR(200), 
-        ativo smallint NOT NULL DEFAULT 1 
-        ) 
-    ");
-    $rs7 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer_padr LIMIT 2");
-    $row7 = pg_num_rows($rs7);
-    if($row7 == 0){
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(1, '2025/01/01', 'Confraternização Universal', 1 )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(2, '2025/04/21', 'Tiradentes', 1 )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(3, '2025/05/01', 'Dia do Trabalhador', 1 )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(4, '2025/09/07', 'Proclamação da Independência', 1 )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(5, '2025/10/12', 'Padroeira do Brasil', 1 )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(6, '2025/11/02', 'Dia de Finados', 1 )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(7, '2025/11/15', 'Proclamação da República', 1 )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(8, '2025/12/25', 'Natal', 1 )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(9, '2025/12/24', 'Véspera de Natal', 1 )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(10, '2025/12/31', 'Véspera de Ano Novo', 1 )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(11, '2025/11/30', 'Dia do Evangélico', 1 )");
-        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer_padr (id, dataescalafer, descr, ativo) VALUES(12, '2025/11/20', 'Dia Nacional de Zumbi e Consciência Negra', 1 )");
-    }
 }
-
 //------------
 
     $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataescala, 'MM'), '/', TO_CHAR(dataescala, 'YYYY')) 

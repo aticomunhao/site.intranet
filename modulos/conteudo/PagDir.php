@@ -111,10 +111,16 @@ if(!isset($_SESSION["usuarioID"])){
     </head>
     <body>
         <?php
+            require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
+            $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog'");
+            $rowSis = pg_num_rows($rsSis);
+            if($rowSis == 0){
+                echo "Sem contato com os arquivos do sistema. Informe à ATI.";
+                return false;
+            }
             $Dir = (int) filter_input(INPUT_GET, 'Diretoria');// número para selecionar o setor e só os arquivos do setor - atravessando para PagDir carrega RelArq
             $SubDir = (int) filter_input(INPUT_GET, 'Subdiretoria');
 
-            require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             $rs0 = pg_query($Conec, "SELECT siglasetor, descsetor FROM ".$xProj.".setores WHERE codset = $Dir");
             $Proc0 = pg_fetch_row($rs0);
             $Sigla = $Proc0[0];  // SiglaSetor

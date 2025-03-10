@@ -1244,7 +1244,20 @@ if(!isset($_SESSION["usuarioID"])){
     <body>
         <?php
             if(!$Conec){
-                echo "Sem contato com o PostGresql";
+                echo "Sem contato com o Servidor";
+                return false;
+            }
+            $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog'");
+            $rowSis = pg_num_rows($rsSis);
+            if($rowSis == 0){
+                echo "Sem contato com os arquivos do sistema. Informe à ATI.";
+                return false;
+            }
+            $rs = pg_query($Conec, "SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_name = 'bensachados'");
+            $row = pg_num_rows($rs);
+            if($row == 0){
+                $Erro = 1;
+                echo "Faltam tabelas. Informe à ATI.";
                 return false;
             }
 
@@ -1257,13 +1270,6 @@ if(!isset($_SESSION["usuarioID"])){
         date_default_timezone_set('America/Sao_Paulo');
         $Hoje = date('d/m/Y');
 
-        $rs = pg_query($Conec, "SELECT column_name, data_type, character_maximum_length FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'livroreg'");
-        $row = pg_num_rows($rs);
-        if($row == 0){
-            $Erro = 1;
-            echo "Faltam tabelas. Informe à ATI.";
-            return false;
-        }
         $admIns = parAdm("insbens", $Conec, $xProj);   // nível para inserir 
         $admEdit = parAdm("editbens", $Conec, $xProj); // nível para editar -> foi para relBens.php
         $escEdit = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // está marcado no cadastro de usuários

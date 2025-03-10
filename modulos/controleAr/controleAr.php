@@ -707,7 +707,12 @@ if(!isset($_SESSION["usuarioID"])){
     </head>
     <body>
         <?php
-
+        $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog'");
+        $rowSis = pg_num_rows($rsSis);
+        if($rowSis == 0){
+            echo "Sem contato com os arquivos do sistema. Informe à ATI.";
+            return false;
+        }
         date_default_timezone_set('America/Sao_Paulo');
         $rsEmpr = pg_query($Conec, "SELECT id, empresa FROM ".$xProj.".empresas_ar WHERE ativo = 1");
         $rsEmprLocal = pg_query($Conec, "SELECT id, empresa FROM ".$xProj.".empresas_ar WHERE ativo = 1");

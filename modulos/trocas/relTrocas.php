@@ -225,6 +225,12 @@ if(!isset($_SESSION["usuarioID"])){
     <body>
         <?php
             require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
+            $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog'");
+            $rowSis = pg_num_rows($rsSis);
+            if($rowSis == 0){
+                echo "Sem contato com os arquivos do sistema. Informe à ATI.";
+                return false;
+            }
             $admIns = parAdm("instroca", $Conec, $xProj);   // nível para inserir
             $admEdit = parAdm("edittroca", $Conec, $xProj); // nível para editar - atravessado para relTrocas.php
         ?>

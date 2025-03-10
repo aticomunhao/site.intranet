@@ -122,7 +122,6 @@
                     }else{
                         echo "<input disabled type='text' style='width: $Campo; font-size: 80%; border: 0px solid; text-align: center;' value='Nome' />";
                     }
-
                     $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala), TO_CHAR(dataescala, 'DD/MM/YYYY'), feriado, dataescala FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY dataescala");
                     $row = pg_num_rows($rs);
                     if($row > 0){
@@ -130,11 +129,11 @@
                             $IdDia = $tbl[0];
                             $DataDia = addslashes($tbl[3]);
 
-                            $ProcFer = $tbl[5]; // $ProcFer = "2025/".$Mes."/".$tbl[1];
+                            $ProcFer = $tbl[5]; // dataescala  // $ProcFer = "2025/".$Mes."/".$tbl[1];
                             $diaFer = 0;
                             $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
                             $rowFer = pg_num_rows($rsFer);
-                            if($rowFer > 0){
+                            if($rowFer > 0){ // dataescala = dataescalafer
                                 $diaFer = 1;
                             }
 //                            if($EscalanteDAF == 1 || $Fiscal == 1){
@@ -153,7 +152,7 @@
                     } 
                 echo "</td>";
                 echo "<td><img src='imagens/Excel-icon.png' height='20px;' style='cursor: pointer; padding-left: 5px;' onclick='abreExcel();' title='Envia para arquivo Excel'></td>";
-              
+
                 $Dia = 1;
                 $Cont = 1;
                 while($tbl2 = pg_fetch_row($rs2)){
@@ -214,7 +213,7 @@
                                     $Dia = $tbl3[1];
                                     $Sem = $tbl3[2];
 
-                                    $ProcFer = $tbl3[4];
+                                    $ProcFer = $tbl3[4]; // dataescala 
                                     $diaFer = 0;
                                     $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
                                     $rowFer = pg_num_rows($rsFer);

@@ -228,3 +228,78 @@ if($Acao=="buscaConfig"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+if($Acao=="apagaextint"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Erro = 0;
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".extintores SET ativo = 0 WHERE id = $Cod");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+if($Acao == "buscausuario"){
+    $Erro = 0;
+    $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de polog
+    $rs1 = pg_query($Conec, "SELECT extint, fisc_extint, cpf FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
+    $row1 = pg_num_rows($rs1);
+    if($row1 > 0){
+        $tbl1 = pg_fetch_row($rs1);
+        $var = array("coderro"=>$Erro, "extint"=>$tbl1[0], "fiscextint"=>$tbl1[1], "cpf"=>$tbl1[2]);
+    }else{
+        $Erro = 1;
+        $var = array("coderro"=>$Erro);
+    }        
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+if($Acao == "buscacpfusuario"){
+    $Erro = 0;
+    $Cpf = filter_input(INPUT_GET, 'cpf'); 
+    $Cpf1 = addslashes($Cpf);
+    $Cpf2 = str_replace(".", "", $Cpf1);
+    $GuardaCpf = str_replace("-", "", $Cpf2);
+
+    $rs1 = pg_query($Conec, "SELECT extint, fisc_extint, cpf, pessoas_id FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf'");
+    if(!$rs1){
+        $Erro = 1;
+        $var = array("coderro"=>$Erro);
+    }
+    $row1 = pg_num_rows($rs1);
+    if($row1 > 0){
+        $tbl1 = pg_fetch_row($rs1);
+        $var = array("coderro"=>$Erro, "extint"=>$tbl1[0], "fiscextint"=>$tbl1[1], "cpf"=>$tbl1[2], "PosCod"=>$tbl1[3]);
+    }else{
+        $Erro = 2;
+        $var = array("coderro"=>$Erro);
+    }        
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+if($Acao == "configMarcaCheckBox"){
+    $Erro = 0;
+    $Cod = (int) filter_input(INPUT_GET, 'codigo'); // pessoas_id de poslog
+    $Campo = filter_input(INPUT_GET, 'campo');
+    $Valor = (int) filter_input(INPUT_GET, 'valor');
+
+    if($Campo == "extint" && $Valor == 0){
+        $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE extint = 1");
+        $row = pg_num_rows($rs);
+        if($row == 1){
+            $Erro = 2;
+            $var = array("coderro"=>$Erro);
+            $responseText = json_encode($var);
+            echo $responseText;
+            return false;
+        }
+    }
+
+    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".poslog SET $Campo = $Valor WHERE pessoas_id = $Cod");
+    if(!$rs1){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}

@@ -72,7 +72,7 @@ if(!isset($_SESSION["usuarioID"])){
                 if(parseInt(document.getElementById("guardaerro").value) === 0){
                     document.getElementById("botInserir").style.visibility = "hidden"; 
                     document.getElementById("botImprimir").style.visibility = "hidden"; 
-                    document.getElementById("imgEletric3config").style.visibility = "hidden"; 
+                    document.getElementById("imgEletricConfig").style.visibility = "hidden"; 
                     if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 || parseInt(document.getElementById("FiscEletric").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // // se estiver marcado em cadusu para fazer a leitura
                         if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
                             document.getElementById("botInserir").style.visibility = "visible"; 
@@ -86,19 +86,22 @@ if(!isset($_SESSION["usuarioID"])){
                     }else{
                         $("#container5").load("modulos/leituras/carMsg.php?msgtipo=1");
                         $("#container6").load("modulos/leituras/carMsg.php?msgtipo=1");
-                        document.getElementById("imgEletric3config").style.visibility = "hidden";
+                        document.getElementById("imgEletricConfig").style.visibility = "hidden";
                         document.getElementById("botgrafico").style.visibility = "hidden"; 
                         document.getElementById("botImprimir").disabled = true;
                     }
                     //para editar obedece ao nivel administrativo
                     if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) || parseInt(document.getElementById("UsuAdm").value) > 6){
                         document.getElementById("botImprimir").style.visibility = "visible"; 
-//                        document.getElementById("imgEletric3config").style.visibility = "visible"; 
+//                        document.getElementById("imgEletricConfig").style.visibility = "visible"; 
                     }else{
                         document.getElementById("botImprimir").style.visibility = "hidden"; 
                     }
                     if(parseInt(document.getElementById("InsLeituraEletric").value) === 0){
                         document.getElementById("botInserir").style.visibility = "hidden"; 
+                    }
+                    if(parseInt(document.getElementById("UsuAdm").value) > 6){
+                        document.getElementById("imgEletricConfig").style.visibility = "visible";
                     }
                 };
                 $("#configCpfEletric").mask("999.999.999-99");
@@ -555,35 +558,13 @@ if(!isset($_SESSION["usuarioID"])){
         <?php
             $Hoje = date('d/m/Y');
             $Erro = 0;
-            $rs = pg_query($Conec, "SELECT column_name, data_type, character_maximum_length FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'leitura_eletric'");
+            $rs = pg_query($Conec, "SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_schema = 'cesb' And table_name = 'leitura_eletric'");
             $row = pg_num_rows($rs);
             if($row == 0){
                 $Erro = 1;
                 echo "Faltam tabelas. Informe à ATI.";
                 return false;
             }
-            $rs1 = pg_query($Conec, "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'leitura_eletric' AND COLUMN_NAME = 'dataleitura'");
-            $row1 = pg_num_rows($rs1);
-            if($row1 > 0){
-                pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".leitura_eletric");
-            
-                pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".leitura_eletric (
-                    id SERIAL PRIMARY KEY, 
-                    colec smallint NOT NULL DEFAULT 0, 
-                    dataleitura1 date DEFAULT CURRENT_TIMESTAMP,
-                    leitura1 double precision NOT NULL DEFAULT 0,
-                    dataleitura2 date DEFAULT CURRENT_TIMESTAMP,
-                    leitura2 double precision NOT NULL DEFAULT 0,
-                    dataleitura3 date DEFAULT CURRENT_TIMESTAMP,
-                    leitura3 double precision NOT NULL DEFAULT 0,
-                    ativo smallint DEFAULT 1 NOT NULL,
-                    usuins integer DEFAULT 0 NOT NULL,
-                    datains timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-                    usumodif integer DEFAULT 0 NOT NULL,
-                    datamodif timestamp without time zone DEFAULT CURRENT_TIMESTAMP) 
-                ");
-            }
-
             $admIns = parAdm("insleituraeletric", $Conec, $xProj);   // nível para inserir 
             $admEdit = parAdm("editleituraeletric", $Conec, $xProj); // nível para editar
             $InsEletric = parEsc("eletric3", $Conec, $xProj, $_SESSION["usuarioID"]); // procura coluna eletric em poslog 
@@ -615,7 +596,7 @@ if(!isset($_SESSION["usuarioID"])){
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->
                 <div class="col" style="margin: 0 auto; text-align: left;" title="Inserir leitura do medidor de energia elétrica">
-                    <img src="imagens/settings.png" height="20px;" id="imgEletric3config" style="cursor: pointer; padding-left: 30px;" onclick="abreEletric2Config();" title="Configurar o acesso ao processamento">
+                    <img src="imagens/settings.png" height="20px;" id="imgEletricConfig" style="cursor: pointer; padding-left: 30px;" onclick="abreEletric2Config();" title="Configurar o acesso ao processamento">
                     <label style="padding-right: 40px;"></label>
                     <button id="botInserir" class="botpadrblue" onclick="insereModal();">Inserir</button>
                 </div> <!-- quadro -->

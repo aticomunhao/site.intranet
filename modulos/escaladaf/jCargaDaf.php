@@ -59,19 +59,12 @@
     }else{
         $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);   
     }
-    //Provisório até rodar o 0088
-    $rsS = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'paramsis' AND COLUMN_NAME = 'seminifim_daf'");
-    $rowS = pg_num_rows($rsS);
-    if($rowS > 0){
-        $SemaIniFim = parAdm("seminifim_daf", $Conec, $xProj); // visualisar a semana inicial e a final 
-    }else{
-        $SemaIniFim = 0;
-    }
+    $SemaIniFim = parAdm("seminifim_daf", $Conec, $xProj); // visualisar a semana inicial e a final 
     ?>
     <div style="text-align: center;">
         <h5>Carga Mensal e Semanal</h5>
         <div style="margin: 10px; padding: 20px; border: 2px solid green; border-radius: 15px;">
-            <div class="row"> <!-- botões Inserir e Imprimir-->
+            <div class="row">
                 <div class="col" style="margin: 0 auto; text-align: left;">
                     <!-- Mensal -->
                     <table style="margin: 0 auto;">
@@ -120,7 +113,6 @@
                 $rs = pg_query($Conec, "SELECT DISTINCT TO_CHAR(dataescala, 'IW') FROM ".$xProj.".escaladaf 
                 WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY TO_CHAR(dataescala, 'IW') ");
                 $row = pg_num_rows($rs);
-
                 while($tbl = pg_fetch_row($rs)){
                     $SemanaNum = $tbl[0]; // número da semana no ano
                     ?>
@@ -139,8 +131,8 @@
                             $DiaFimSem = $b->format('d/m');
                             $MesFimSem = $b->format('m');
 
-                            if($SemaIniFim == 0){ 
-                                if($SemaIniFim == 0 && $MesIniSem == $Mes && $MesFimSem == $Mes){ // Wil pediu para não mostrar 14/02/2025 
+                            if($SemaIniFim == 0){  // Wil pediu para não mostrar 14/02/202 - deixei opcional nas configurações
+                                if($MesIniSem == $Mes && $MesFimSem == $Mes){
                                     ?>
                                     <tr>
                                         <td colspan="2" style="text-align: center; padding-top: 15px;">Jornada Semanal</td>
@@ -224,7 +216,6 @@
                 <?php
                 }
                 ?>
-                
             </div>
         </div>
     </div>

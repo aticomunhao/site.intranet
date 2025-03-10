@@ -120,7 +120,7 @@
         $objPHPExcel->getActiveSheet()->getStyle('C')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
 
         $writer = new Xlsx($objPHPExcel);
-        $writer->save('..\conteudo\arquivos\ListaTurnos.xlsx');
+        $writer->save('../conteudo/arquivos/ListaTurnos.xlsx');
     }
 
     if($objPHPExcel){
@@ -129,7 +129,7 @@
         $ObjPHP = 0;
     }
 
-    if(file_exists("..\conteudo\arquivos\ListaTurnos.xlsx")){
+    if(file_exists("../conteudo/arquivos/ListaTurnos.xlsx")){
         $Arquivo = 1;
     }else{
         $Arquivo = 0;

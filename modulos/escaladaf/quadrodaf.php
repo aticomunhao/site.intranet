@@ -219,7 +219,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 <div class="col" style="margin: 0 auto; text-align: center; padding: 5px;">
                     <?php
                         if($row1 >= 20){
-                            $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq, TO_CHAR(cargacont, 'HH24:MI'), infotexto, ordemletra FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 24 And ordemletra <= 30 And grupo_turnos = $NumGrupo ORDER BY letra");
+                            $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq, TO_CHAR(cargacont, 'HH24:MI'), infotexto, ordemletra FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 20 And ordemletra <= 30 And grupo_turnos = $NumGrupo ORDER BY letra");
                         }else{
                             $rs3 = pg_query($Conec, "SELECT id, letra, horaturno, destaq, TO_CHAR(cargacont, 'HH24:MI'), infotexto, ordemletra FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And ordemletra > 20 And ordemletra <= 25 And grupo_turnos = $NumGrupo ORDER BY letra");
                         }

@@ -937,7 +937,7 @@ if(!isset($_SESSION["usuarioID"])){
             echo "Sem contato com o PostGresql";
             return false;
         }
-        $rs = pg_query($Conec, "SELECT column_name, data_type, character_maximum_length FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'livroreg'");
+        $rs = pg_query($Conec, "SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_schema = 'cesb' And table_name = 'livroreg'");
         $row = pg_num_rows($rs);
         if($row == 0){
             $Erro = 1;

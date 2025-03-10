@@ -1,42 +1,13 @@
 <?php
 //tabelas necessárias
 require_once("config/abrealas.php");
-
+$rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog'");
+$rowSis = pg_num_rows($rsSis);
+if($rowSis == 0){
+    echo "Sem contato com os arquivos do sistema. Informe à ATI.";
+    return false;
+}
 echo "<br>";
-
-$rs = pg_query($Conec, "SELECT prazodel FROM ".$xProj.".paramsis WHERE idpar = 1 ");
-$row = pg_num_rows($rs);
-if($row > 0){ 
-    $tbl = pg_fetch_row($rs);
-    $PrazoDel = $tbl[0];
-}else{
-   $PrazoDel = 10;
-}
-if($PrazoDel < 1000){
-   echo "Prazo para eliminação de registros antigos fixado em $PrazoDel anos. <br>";
-   pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ativo = 0"); //Elimina dados apagados da tabela calendário
-   pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ((CURRENT_DATE - dataini)/365 > $PrazoDel)"); //Apaga da tabela calendário eventos passados há mais de $PrazoDel anos
-   pg_query($Conec, "DELETE FROM ".$xProj.".leitura_agua WHERE ((CURRENT_DATE - dataleitura)/365 > $PrazoDel)"); //Apaga da tabela lançamentos de leitura do hidrômetro passados há mais de $PrazoDel anos
-   pg_query($Conec, "DELETE FROM ".$xProj.".tarefas WHERE datains < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga da tabela lançamentos de tarefas há mais de $PrazoDel anos
-   pg_query($Conec, "DELETE FROM ".$xProj.".tarefas_msg WHERE datamsg < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga mensagens trocadas nas tarefas há mais de $PrazoDel anos
-   pg_query($Conec, "DELETE FROM ".$xProj.".livroreg WHERE datains < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros do livro de ocorrências há mais de $PrazoDel anos
-   pg_query($Conec, "DELETE FROM ".$xProj.".bensachados WHERE datains < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros do achados e perdidos há mais de $PrazoDel anos
-   pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE logfim < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros de usuários com último log há mais de $PrazoDel anos
-   pg_query($Conec, "DELETE FROM ".$xProj.".ramais_int WHERE ativo = 0 And datains < CURRENT_DATE - interval '$PrazoDel years' And ativo = 0"); 
-   pg_query($Conec, "DELETE FROM ".$xProj.".ramais_ext WHERE ativo = 0 And datains < CURRENT_DATE - interval '$PrazoDel years' And ativo = 0"); 
-   pg_query($Conec, "DELETE FROM ".$xProj.".arqsetor WHERE dataapag < CURRENT_DATE - interval '$PrazoDel years'"); // apaga nome dos arquivos de upload
-   pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
-   pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar2 WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
-   pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar3 WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
-   pg_query($Conec, "DELETE FROM ".$xProj.".visitas_el WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
-   pg_query($Conec, "DELETE FROM ".$xProj.".chaves_ctl WHERE datavolta < CURRENT_DATE - interval '$PrazoDel years'");
-   pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf WHERE dataescala < CURRENT_DATE - interval '$PrazoDel years'");
-   pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf WHERE dataescala < CURRENT_DATE - interval '2 months' And ativo = 0;");
-   pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf WHERE datains < CURRENT_DATE - interval '$PrazoDel years' And ativo = 0"); // Apaga só os deletados
-
-}else{
-   echo "Eliminação de registros antigos desativado. <br>";   
-}
 
 
 $rs = pg_query($Conec, "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'bensachados' AND COLUMN_NAME = 'cpfpropriet'");
@@ -78,6 +49,13 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bensachados (
    usudestino bigint NOT NULL DEFAULT 0,
    datadestino date, 
    setordestino VARCHAR(200), 
+   usuencdestino bigint NOT NULL DEFAULT 0, 
+   dataencdestino timestamp without time zone DEFAULT '3000-12-31', 
+   codencdestino smallint NOT NULL DEFAULT 0, 
+   descencdestino VARCHAR(50), 
+   codencprocesso smallint NOT NULL DEFAULT 0,
+   descencprocesso VARCHAR(50), 
+
    nomerecebeudestino VARCHAR(200), 
    destinonodestino integer NOT NULL DEFAULT 0, 
    dataarquivou date,
@@ -129,7 +107,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bensachados (
       pg_query($Conec, "INSERT INTO ".$xProj.".bensprocessos (id, processo)  VALUES (4, 'Venda')");
    }
 
-pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".paramsis (
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".paramsis (
    idpar integer NOT NULL,
    admvisu smallint DEFAULT 0,
    admcad smallint DEFAULT 0,
@@ -264,6 +242,57 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
       fisceletric smallint NOT NULL DEFAULT 0,
       fiscbens smallint NOT NULL DEFAULT 0,
       soinsbens smallint NOT NULL DEFAULT 0
+
+      arcond2 smallint NOT NULL DEFAULT 0,
+      arcond3 smallint NOT NULL DEFAULT 0,
+      elev smallint NOT NULL DEFAULT 0,
+      fiscelev smallint NOT NULL DEFAULT 0,
+      esc_eft smallint NOT NULL DEFAULT 0,
+      esc_edit smallint NOT NULL DEFAULT 0,
+      esc_grupo smallint NOT NULL DEFAULT 0,
+      esc_fisc smallint NOT NULL DEFAULT 0,
+      esc_horaini character varying(10) DEFAULT '08:00',
+      esc_horafim character varying(10) DEFAULT '17:00',
+      esc_marca smallint NOT NULL DEFAULT 1,
+      clav smallint NOT NULL DEFAULT 0,
+      chave smallint NOT NULL DEFAULT 1,
+      fisc_clav smallint NOT NULL DEFAULT 0,
+      datanasc date DEFAULT '1500-01-01',
+      contr smallint NOT NULL DEFAULT 0,
+      fisc_contr smallint NOT NULL DEFAULT 0,
+      calcdata1 date DEFAULT '3000-12-31',
+      calcdata2 date DEFAULT '3000-12-31',
+      esc_daf smallint NOT NULL DEFAULT 0,
+      eft_daf smallint NOT NULL DEFAULT 0,
+      daf_marca smallint NOT NULL DEFAULT 0,
+      daf_turno smallint NOT NULL DEFAULT 0,
+      mes_escdaf character varying(10),
+      chefe_escdaf smallint NOT NULL DEFAULT 0,
+      enc_escdaf smallint NOT NULL DEFAULT 0,
+      clav2 smallint NOT NULL DEFAULT 0,
+      chave2 smallint NOT NULL DEFAULT 1,
+      fisc_clav2 smallint NOT NULL DEFAULT 0,
+      clav3 smallint NOT NULL DEFAULT 0,
+      chave3 smallint NOT NULL DEFAULT 1,
+      fisc_clav3 smallint NOT NULL DEFAULT 0,
+      grupotarefa smallint NOT NULL DEFAULT 0,
+      usumodifgrupo bigint NOT NULL DEFAULT 0,
+      datamodifgrupo timestamp without time zone DEFAULT '3000-12-31 00:00:00',
+      fisc_agua smallint NOT NULL DEFAULT 0,
+      fisc_eletric smallint NOT NULL DEFAULT 0,
+      encbens smallint NOT NULL DEFAULT 0,
+      orgtarefa smallint NOT NULL DEFAULT 60,
+      usumodiforg bigint NOT NULL DEFAULT 0,
+      datamodiforg timestamp without time zone DEFAULT '3000-12-31 00:00:00',
+      areatar smallint NOT NULL DEFAULT 1,
+      cargo_daf character varying(50),
+      extint smallint NOT NULL DEFAULT 0,
+      fisc_extint smallint NOT NULL DEFAULT 0,
+      largtela character varying(30),
+      ordem_daf smallint NOT NULL DEFAULT 0,
+      corlistas_daf smallint NOT NULL DEFAULT 1,
+      combust smallint NOT NULL DEFAULT 0, 
+      fisc_combust smallint NOT NULL DEFAULT 0 
       ) ");
    
    echo "Tabela ".$xProj.".poslog checada. <br>";
@@ -286,20 +315,25 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
 
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".leitura_eletric (
       id SERIAL PRIMARY KEY, 
-      colec smallint NOT NULL DEFAULT 0, 
+      colec smallint NOT NULL DEFAULT 0,
       dataleitura1 date DEFAULT CURRENT_TIMESTAMP,
       leitura1 double precision NOT NULL DEFAULT 0,
       dataleitura2 date DEFAULT CURRENT_TIMESTAMP,
       leitura2 double precision NOT NULL DEFAULT 0,
       dataleitura3 date DEFAULT CURRENT_TIMESTAMP,
       leitura3 double precision NOT NULL DEFAULT 0,
+      ativo smallint NOT NULL DEFAULT 1,
+      usuins integer NOT NULL DEFAULT 0,
+      datains timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+      usumodif integer NOT NULL DEFAULT 0,
+      datamodif timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
       dataleitura4 date DEFAULT CURRENT_TIMESTAMP,
       leitura4 double precision NOT NULL DEFAULT 0,
-      ativo smallint DEFAULT 1 NOT NULL,
-      usuins integer DEFAULT 0 NOT NULL,
-      datains timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-      usumodif integer DEFAULT 0 NOT NULL,
-      datamodif timestamp without time zone DEFAULT CURRENT_TIMESTAMP) 
+      fator double precision NOT NULL DEFAULT 40,
+      valorkwh double precision NOT NULL DEFAULT 1,
+      consdiario1 double precision NOT NULL DEFAULT 0,
+      consdiario2 double precision NOT NULL DEFAULT 0,
+      consdiario3 double precision NOT NULL DEFAULT 0,
       ");
    echo "Tabela ".$xProj.".leitura_eletric. <br>";   
 
@@ -852,6 +886,40 @@ echo "Tabela ".$xProj.".visitas_ar checada. <br>";
 
    echo "Tabelas ".$xProj.".extintores checada. <br>";
 
+
+   $rs = pg_query($Conec, "SELECT prazodel FROM ".$xProj.".paramsis WHERE idpar = 1 ");
+   $row = pg_num_rows($rs);
+   if($row > 0){ 
+       $tbl = pg_fetch_row($rs);
+       $PrazoDel = $tbl[0];
+   }else{
+      $PrazoDel = 10;
+   }
+   if($PrazoDel < 1000){
+      echo "Prazo para eliminação de registros antigos fixado em $PrazoDel anos. <br>";
+      pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ativo = 0"); //Elimina dados apagados da tabela calendário
+      pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ((CURRENT_DATE - dataini)/365 > $PrazoDel)"); //Apaga da tabela calendário eventos passados há mais de $PrazoDel anos
+      pg_query($Conec, "DELETE FROM ".$xProj.".leitura_agua WHERE ((CURRENT_DATE - dataleitura)/365 > $PrazoDel)"); //Apaga da tabela lançamentos de leitura do hidrômetro passados há mais de $PrazoDel anos
+      pg_query($Conec, "DELETE FROM ".$xProj.".tarefas WHERE datains < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga da tabela lançamentos de tarefas há mais de $PrazoDel anos
+      pg_query($Conec, "DELETE FROM ".$xProj.".tarefas_msg WHERE datamsg < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga mensagens trocadas nas tarefas há mais de $PrazoDel anos
+      pg_query($Conec, "DELETE FROM ".$xProj.".livroreg WHERE datains < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros do livro de ocorrências há mais de $PrazoDel anos
+      pg_query($Conec, "DELETE FROM ".$xProj.".bensachados WHERE datains < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros do achados e perdidos há mais de $PrazoDel anos
+      pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE logfim < CURRENT_DATE - interval '$PrazoDel years' "); //Apaga registros de usuários com último log há mais de $PrazoDel anos
+      pg_query($Conec, "DELETE FROM ".$xProj.".ramais_int WHERE ativo = 0 And datains < CURRENT_DATE - interval '$PrazoDel years' And ativo = 0"); 
+      pg_query($Conec, "DELETE FROM ".$xProj.".ramais_ext WHERE ativo = 0 And datains < CURRENT_DATE - interval '$PrazoDel years' And ativo = 0"); 
+      pg_query($Conec, "DELETE FROM ".$xProj.".arqsetor WHERE dataapag < CURRENT_DATE - interval '$PrazoDel years'"); // apaga nome dos arquivos de upload
+      pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
+      pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar2 WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
+      pg_query($Conec, "DELETE FROM ".$xProj.".visitas_ar3 WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
+      pg_query($Conec, "DELETE FROM ".$xProj.".visitas_el WHERE datavis < CURRENT_DATE - interval '$PrazoDel years'");
+      pg_query($Conec, "DELETE FROM ".$xProj.".chaves_ctl WHERE datavolta < CURRENT_DATE - interval '$PrazoDel years'");
+      pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf WHERE dataescala < CURRENT_DATE - interval '$PrazoDel years'");
+      pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf WHERE dataescala < CURRENT_DATE - interval '2 months' And ativo = 0;");
+      pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf WHERE datains < CURRENT_DATE - interval '$PrazoDel years' And ativo = 0"); // Apaga só os deletados
+   
+   }else{
+      echo "Eliminação de registros antigos desativado. <br>";   
+   }
 
 
 echo "<br><br>";

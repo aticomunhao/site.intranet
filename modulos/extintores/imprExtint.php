@@ -44,7 +44,7 @@ if(isset($_REQUEST["acao"])){
     $pdf->AliasNbPages(); // pega o número total de páginas
     $pdf->AddPage();
     $pdf->SetLeftMargin(20);
-    $pdf->SetTitle('Escala DAF', $isUTF8=TRUE);      
+    $pdf->SetTitle('Extintores', $isUTF8=TRUE);      
     $pdf->SetFont('Arial', '' , 12); //Monta o arquivo pdf  
     if($Dom != "" && $Dom != "NULL"){
         if(file_exists('../../imagens/'.$Dom)){

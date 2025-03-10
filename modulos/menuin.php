@@ -24,6 +24,23 @@
 			//Provisório
 			if(strtotime('2025/03/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
+				//0093
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS viatura smallint NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisc_viat smallint NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS tema smallint NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET viatura = 1 WHERE pessoas_id = 3");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET viatura = 1 WHERE pessoas_id = 83");
+                pg_query($Conec, "UPDATE ".$xProj.".poslog SET viatura = 1 WHERE pessoas_id = 22");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".contratos1 ADD COLUMN IF NOT EXISTS emvigor smallint NOT NULL DEFAULT 1 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".contratos2 ADD COLUMN IF NOT EXISTS emvigor smallint NOT NULL DEFAULT 1 ");
+
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".leitura_eletric ADD COLUMN IF NOT EXISTS dataleitura5 date DEFAULT CURRENT_TIMESTAMP ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".leitura_eletric ADD COLUMN IF NOT EXISTS leitura5 double precision NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".leitura_eletric ADD COLUMN IF NOT EXISTS consdiario5 double precision NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS eletric5 smallint NOT NULL DEFAULT 0 ;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS datainieletric5 date DEFAULT '3000-12-31' ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS valorinieletric5 double precision NOT NULL DEFAULT 0 ");
+
 				//0092
 				pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".usulog (
 					id SERIAL PRIMARY KEY, 

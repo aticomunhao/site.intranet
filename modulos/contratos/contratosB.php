@@ -54,6 +54,15 @@ if(!isset($_SESSION["usuarioID"])){
                 width: 55%;
                 max-width: 900px;
             }
+            .modal-content-ImprEmpresasB{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 10% auto; /* 10% do topo e centrado */
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 65%;
+                max-width: 500px;
+            }
             .quadrinho {
                 font-size: 90%;
                 border: 1px solid #C0C0C0;
@@ -227,6 +236,7 @@ if(!isset($_SESSION["usuarioID"])){
                 if(parseInt(Tipo) === 2){
                     document.getElementById("titmodaledit").innerHTML = "Contratantes";
                 }
+                document.getElementById("vigorcontrato1").checked = true;
                 document.getElementById("guardaCod").value = 0;
                 document.getElementById("guardaTipo").value = Tipo;
                 document.getElementById("guardaPrazo").value = "";
@@ -320,7 +330,15 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("pararaviso").checked = false;
                                     }
-
+                                    if(parseInt(Resp.emvigor) === 1){
+                                        document.getElementById("vigorcontrato1").checked = true;
+                                    }
+                                    if(parseInt(Resp.emvigor) === 2){
+                                        document.getElementById("vigorcontrato2").checked = true;
+                                    }
+                                    if(parseInt(Resp.emvigor) === 3){
+                                        document.getElementById("vigorcontrato3").checked = true;
+                                    }
                                     document.getElementById("editaModalContratos").style.display = "block";
                                 }else{
                                     alert("Houve um erro no servidor.")
@@ -748,6 +766,28 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
+            function mudaStatus(Valor){
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/contratos/salvaContrato.php?acao=statuscontrato&valor="+Valor+"&codigo="+document.getElementById("guardaCod").value
+                    +"&tipo="+document.getElementById("guardaTipo").value, true);                    
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 0){
+                                    $("#faixacontatante").load("modulos/contratos/jContratA.php");
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
             function insEmpresa(){
                 document.getElementById("guardaCodEmpr").value = "0";
                 document.getElementById("editNomeEmpr").value = "";
@@ -761,13 +801,16 @@ if(!isset($_SESSION["usuarioID"])){
             function imprListaContratos(){
                 window.open("modulos/contratos/imprContr1.php?acao=listaContratos", "ListaContratos");
             }
-            function imprContratadas(){
-                window.open("modulos/contratos/imprContr1.php?acao=listaContratadas", "listaContratadas");
+            function fechaModalImprB(){
+                document.getElementById("relacimprContratosB").style.display = "none";
             }
             function imprContratantes(){
-                window.open("modulos/contratos/imprContr1.php?acao=listaContratantes", "listaContratantes");
+                document.getElementById("relacimprContratosB").style.display = "block";
+//                window.open("modulos/contratos/imprContr1.php?acao=listaContratantes", "listaContratantes");
             }
-
+            function ImprContratosB(Valor){
+                window.open("modulos/contratos/imprContr1.php?acao=listaContratantes&selec="+Valor, "listaContratantes");
+            }
             function fechaContratosConfig(){
                 document.getElementById("modalContratosConfig").style.display = "none";
             }
@@ -829,6 +872,12 @@ if(!isset($_SESSION["usuarioID"])){
         <?php
         if(!$Conec){
             echo "Sem contato com o PostGresql";
+            return false;
+        }
+        $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog'");
+        $rowSis = pg_num_rows($rsSis);
+        if($rowSis == 0){
+            echo "Sem contato com os arquivos do sistema. Informe à ATI.";
             return false;
         }
         date_default_timezone_set('America/Sao_Paulo'); //Um dia = 86.400 seg
@@ -899,13 +948,13 @@ if(!isset($_SESSION["usuarioID"])){
             die("<br>Faltam tabelas. Informe à ATI");
             return false;
         }
-
         $Contr = parEsc("contr", $Conec, $xProj, $_SESSION["usuarioID"]);
         $FiscContr = parEsc("fisc_contr", $Conec, $xProj, $_SESSION["usuarioID"]);
-
         $OpSetor = pg_query($ConecPes, "SELECT id, sigla FROM ".$xPes.".setor WHERE dt_fim IS NULL ORDER BY sigla");
         $OpDias = pg_query($Conec, "SELECT codesc FROM ".$xProj.".escolhas WHERE codesc <= 120 ORDER BY codesc");
         $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
+       //Verificar término de validade dos constratos
+        pg_query($Conec, "UPDATE ".$xProj.".contratos2 SET emvigor = 2 WHERE datavencim <= CURRENT_DATE And emvigor != 3 ");
         ?>
         <input type="hidden" id="UsuAdm" value = "<?php echo $_SESSION["AdmUsu"]; ?>" />
         <input type="hidden" id="guardaContr" value = "<?php echo $Contr; ?>" />
@@ -921,8 +970,8 @@ if(!isset($_SESSION["usuarioID"])){
                 <?php
                 if($Contr == 1){
                 ?>
-                <img src="imagens/settings.png" height="20px;" style="cursor: pointer; padding-left: 30px;" onclick="abreContratosConfig();" title="Configurar o acesso aos contratos">
-                <button class="botpadrblue" id="botInsEmpr" onclick="Empresas();" title="Editar/Adicionar empresas">Empresas</button>
+                    <button class="botpadrblue" id="botInsEmpr" onclick="Empresas();" title="Editar/Adicionar empresas">Empresas</button>
+                    <img src="imagens/settings.png" height="20px;" style="cursor: pointer; padding-left: 30px;" onclick="abreContratosConfig();" title="Configurar o acesso aos contratos">
                 <?php
                 }else{
                     echo "&nbsp;";
@@ -968,9 +1017,13 @@ if(!isset($_SESSION["usuarioID"])){
                         <tr>
                             <td class="etiq" style="padding-bottom: 7px;">Contrato: </td>
                             <td style="padding-bottom: 10px;"><input type="text" id="numcontrato" style="width: 200px; text-align: center; border:1px solid; border-radius: 5px;"/></td>
+                            <td>
+                                <input type="radio" name="vigorcontrato" id="vigorcontrato1" value="1" title="Contrato em vigor" onclick="mudaStatus(value);"><label for="vigorcontrato1" class="etiqAzul" style="padding-left: 3px;"> Em Vigor</label>
+                                <input type="radio" name="vigorcontrato" id="vigorcontrato2" value="2" title="Contrato vencido." onclick="mudaStatus(value);"><label for="vigorcontrato2" class="etiqAzul" style="padding-left: 3px;"> Vencido</label>
+                                <input type="radio" name="vigorcontrato" id="vigorcontrato3" value="3" title="Contrato vencido." onclick="mudaStatus(value);"><label for="vigorcontrato3" class="etiqAzul" style="padding-left: 3px;"> Rescindido</label>
+                            </td>
+                            <td></td>
                             <td class="etiq" style="padding-bottom: 7px;"><label id="numsequencia" style="font-size: 150%; border:1px solid; border-radius: 5px; padding-left: 3px; padding-right: 3px;" title="Mera sugestão para numeração."></label></td>
-                            <td></td>
-                            <td></td>
                         </tr>
                         <tr>
                             <td class="etiq">Setor: </td>
@@ -1208,6 +1261,28 @@ if(!isset($_SESSION["usuarioID"])){
                     </div>
                 </div>
             </div>
+        </div> <!-- Fim Modal-->
+
+        <!-- div modal para imprimir em pdf  -->
+        <div id="relacimprContratosB" class="relacmodal">
+            <div class="modal-content-ImprEmpresasB">
+                <span class="close" onclick="fechaModalImprB();">&times;</span>
+                <h5 id="titulomodal" style="text-align: center;color: #666;">Contratos - Empresas Contratantes</h5>
+                <h6 id="titulomodal" style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
+                <div>
+                    <table style="margin: 0 auto;">
+                        <tr>
+                            <td><div style="margin: 5px; padding: 5px; border: 2px solid #C6E2FF; border-radius: 10px;"><button class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="ImprContratosB('todos');">Todos</button></div></td>
+                            <td><div style="margin: 5px; padding: 5px; border: 2px solid #C6E2FF; border-radius: 10px;"><button class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="ImprContratosB('vigor');" title="Contratos em vigor">em Vigor</button></div></td>
+                            <td><div style="margin: 5px; padding: 5px; border: 2px solid #C6E2FF; border-radius: 10px;"><button class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="ImprContratosB('terminados');" title="Contratos terminados.">Encerrados</button></div></td>
+                            <td><div style="margin: 5px; padding: 5px; border: 2px solid #C6E2FF; border-radius: 10px;"><button class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="ImprContratosB('rescindidos');" title="Contratos rescindidos.">Rescindidos</button></div></td>
+                        </tr>
+                    </table>
+
+                </div>
+                <div style="padding-bottom: 20px;"></div>
+           </div>
+           <br><br>
         </div> <!-- Fim Modal-->
 
     </body>

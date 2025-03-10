@@ -91,6 +91,9 @@ if(!isset($_SESSION["usuarioID"])){
                     if(parseInt(document.getElementById("InsLeituraEletric").value) === 0){
                         document.getElementById("botInserir").style.visibility = "hidden"; 
                     }
+                    if(parseInt(document.getElementById("UsuAdm").value) > 6){
+                        document.getElementById("imgEletricconfig").style.visibility = "visible";
+                    }
                 };
 
                 $("#configCpfEletric").mask("999.999.999-99");
@@ -516,7 +519,7 @@ if(!isset($_SESSION["usuarioID"])){
         <?php
             $Hoje = date('d/m/Y');
             $Erro = 0;
-            $rs = pg_query($Conec, "SELECT column_name, data_type, character_maximum_length FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'leitura_eletric'");
+            $rs = pg_query($Conec, "SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_schema = 'cesb' And table_name = 'leitura_eletric'");
             $row = pg_num_rows($rs);
             if($row == 0){
                 $Erro = 1;

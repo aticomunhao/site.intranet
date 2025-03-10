@@ -3,6 +3,7 @@
 */
 
 function openhref(Num){
+    document.getElementsByTagName("body")[0].style.background = "#FFFAFA"
     if(parseInt(Num) === 98){
         location.replace("modulos/cansei.php"); // location.replace(-> abre na mesma aba
     }
@@ -115,7 +116,6 @@ function openhref(Num){
         $('#container3').load('modulos/contratos/contratosB.php'); // Empr contratantes
     }
 
-
     if(parseInt(Num) === 30){
         $('#container3').load('modulos/trafego/PagArq.php');
     }
@@ -147,7 +147,10 @@ function openhref(Num){
         $('#container3').load('modulos/extintores/pagExtint.php');
     }
     if(parseInt(Num) === 92){
-        $('#container3').load('modulos/config/logsusu.php');
+        $('#container3').load('modulos/viaturas/pagViaturas.php');
+    }
+    if(parseInt(Num) === 93){
+        $('#container3').load('modulos/leituras/pag_eletric5.php');
     }
 
 }

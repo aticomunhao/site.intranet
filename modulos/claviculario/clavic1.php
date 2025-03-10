@@ -1121,6 +1121,12 @@ if(!isset($_SESSION["usuarioID"])){
             echo "Sem contato com o PostGresql";
             return false;
         }
+        $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog'");
+        $rowSis = pg_num_rows($rsSis);
+        if($rowSis == 0){
+            echo "Sem contato com os arquivos do sistema. Informe à ATI.";
+            return false;
+        }
         date_default_timezone_set('America/Sao_Paulo'); //Um dia = 86.400 seg
         $Hoje = date('d/m/Y');
 

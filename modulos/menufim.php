@@ -211,13 +211,9 @@
 //							echo "<a href='#' onclick='openhref(76);'>Contratos</a>";
 							echo "<a href='#'>Contratos</a>";
 							echo "<ul>";
-							echo "<li title='Empresas Contratadas'>";
-								echo "<a href='#' onclick='openhref(76);'>Contratadas</a>";
-							echo "</li>";
-							echo "<li title='Empresas Contratantes'>";
-							echo "<a href='#' onclick='openhref(81);'>Contratantes</a>";
-						echo "</li>";
-						echo "</ul>";
+							echo "<li title='Empresas Contratadas'><a href='#' onclick='openhref(76);'>Contratadas</a></li>";
+							echo "<li title='Empresas Contratantes'><a href='#' onclick='openhref(81);'>Contratantes</a></li>";
+							echo "</ul>";
 						echo "</li>";
 					}
 
@@ -243,6 +239,10 @@
 								$Menu3 = escMenu($Conec, $xProj, 3);
 								echo "<a href='#' onclick='openhref(68);'>$Menu3</a>";
 								echo "</li>";
+
+								if($_SESSION["usuarioID"] == 3){
+									echo "<li><a href='#' onclick='openhref(93);'>Viaturas</a></li>"; // eletricidade 5 - viaturas
+								}
 							?>
 						</ul>
 					</li>
@@ -256,7 +256,12 @@
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(91);'>Extintores</a>";
 							echo "</li>";
-						}		
+						}
+						$Viatura = parEsc("viatura", $Conec, $xProj, $_SESSION["usuarioID"]);// combustíveis
+						$FiscViat = parEsc("fisc_viat", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal
+						if($Viatura == 1 || $FiscViat == 1 || $_SESSION["AdmUsu"] > 6){
+							echo "<li><a href='#' onclick='openhref(92);'>Viaturas</a></li>";
+						}
 					?>
 				</ul>
 			</li>

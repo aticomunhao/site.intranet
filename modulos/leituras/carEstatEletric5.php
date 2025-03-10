@@ -13,10 +13,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         </script>
     </head>
     <body>
-        <?php
-            $Menu3 = escMenu($Conec, $xProj, 3);
-        ?>
-        <div style="text-align: center;"><label class="titRelat">Controle do Consumo de Eletricidade<?php echo " - ".$Menu3; ?><label></div>
+        <div style="text-align: center;"><label class="titRelat">Controle do Consumo de Eletricidade - Viaturas<label></div>
         <?php
         $mes_extenso = array(
             '01' => 'Janeiro',
@@ -40,24 +37,24 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         }
         $ValorKwh = parAdm("valorkwh", $Conec, $xProj); // é o mesmo para pag_eletric2 e 3
 
-        $rs = pg_query($Conec, "SELECT valorinieletric3, TO_CHAR(datainieletric3, 'YYYY/MM/DD') FROM ".$xProj.".paramsis WHERE idpar = 1 ");
+        $rs = pg_query($Conec, "SELECT valorinieletric5, TO_CHAR(datainieletric5, 'YYYY/MM/DD') FROM ".$xProj.".paramsis WHERE idpar = 1 ");
         $row = pg_num_rows($rs);
         if($row > 0){
             $tbl = pg_fetch_row($rs);
             $ValorIni = $tbl[0];
             $DataIni = $tbl[1];
         }
-        if($ValorIni == 0 || is_null($DataIni)){
+//        if($ValorIni == 0 || is_null($DataIni)){
+        if(is_null($ValorIni)){
             echo "<div style='text-align: center;'>É necessário inserir os valores iniciais da medição nos parâmetros do sistema.</div>";
             echo "<div style='text-align: center;'>Informe à ATI.</div>";
             return false;
         }
 
-        $rs1 = pg_query($Conec, "SELECT DATE_PART('MONTH', dataleitura3), COUNT(id), SUM(leitura3), DATE_PART('YEAR', dataleitura3)  
+        $rs1 = pg_query($Conec, "SELECT DATE_PART('MONTH', dataleitura5), COUNT(id), SUM(leitura5), DATE_PART('YEAR', dataleitura5)  
         FROM ".$xProj.".leitura_eletric 
-        WHERE colec = 3 And dataleitura3 IS NOT NULL And leitura3 != 0 And ativo = 1 
-        GROUP BY DATE_PART('MONTH', dataleitura3), DATE_PART('YEAR', dataleitura3) ORDER BY DATE_PART('YEAR', dataleitura3) DESC, DATE_PART('MONTH', dataleitura3) DESC ");
-
+        WHERE colec = 5 And dataleitura5 IS NOT NULL And leitura5 != 0 And ativo = 1 
+        GROUP BY DATE_PART('MONTH', dataleitura5), DATE_PART('YEAR', dataleitura5) ORDER BY DATE_PART('YEAR', dataleitura5) DESC, DATE_PART('MONTH', dataleitura5) DESC ");
         $row1 = pg_num_rows($rs1);
         if($row1 > 0){
             while($tbl1 = pg_fetch_row($rs1) ){
@@ -72,18 +69,18 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 $SomaLeit1 = 0;
                 $SomaLeitAnt = 0;
 
-                $rsCusto = pg_query($Conec, "SELECT valorkwh FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura3) = $Mes And DATE_PART('YEAR', dataleitura3) = '$Ano' And colec = 3 And ativo = 1 And leitura3 != 0 ");
+                $rsCusto = pg_query($Conec, "SELECT valorkwh FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura5) = $Mes And DATE_PART('YEAR', dataleitura5) = '$Ano' And colec = 5 And ativo = 1 And leitura5 != 0 ");
                 $rowCusto = pg_num_rows($rsCusto); // dá a quantidade de dias no mês
 
-                $rsSoma = pg_query($Conec, "SELECT SUM(valorkwh) FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura3) = $Mes And DATE_PART('YEAR', dataleitura3) = '$Ano' And colec = 3 And ativo = 1 And leitura3 != 0 ");
+                $rsSoma = pg_query($Conec, "SELECT SUM(valorkwh) FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura5) = $Mes And DATE_PART('YEAR', dataleitura5) = '$Ano' And colec = 1 And ativo = 1 And leitura5 != 0 ");
                 $tblSoma = pg_fetch_row($rsSoma);
                 $CalcValorKwh = ($tblSoma[0]/$rowCusto);
 
-                $rs2 = pg_query($Conec, "SELECT dataleitura3, leitura3 FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura3) = $Mes And colec = 3 And ativo = 1 And leitura3 != 0 ");
+                $rs2 = pg_query($Conec, "SELECT dataleitura5, leitura5 FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura5) = $Mes And colec = 5 And ativo = 1 And leitura5 != 0 ");
                 $row2 = pg_num_rows($rs2);
                 if($row2 > 0){
                     while($tbl2 = pg_fetch_row($rs2) ){
-                        $DataLinha = $tbl2[0]; // dataleitura3
+                        $DataLinha = $tbl2[0]; // dataleitura5
                         $SomaLeit1 = $SomaLeit1+$tbl2[1];
 
                         if(strtotime($DataLinha) == strtotime($DataIni)){ // datainieletric em cesb.paramsis
@@ -91,7 +88,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         }
 
                         if($DataLinha != $DataIni){
-                            $rs3 = pg_query($Conec, "SELECT leitura3 FROM ".$xProj.".leitura_eletric WHERE dataleitura3 = (date '$DataLinha' - 1) And colec = 3 And ativo = 1 And leitura3 != 0");
+                            $rs3 = pg_query($Conec, "SELECT leitura5 FROM ".$xProj.".leitura_eletric WHERE dataleitura5 = (date '$DataLinha' - 1) And colec = 5 And ativo = 1 And leitura5 != 0");
                             $tbl3 = pg_fetch_row($rs3);
                             $row3 = pg_num_rows($rs3);
                             if($row3 > 0){
@@ -103,7 +100,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     }
                 }
                 //Consumo mensal calculado com a soma do consumo diário 
-                $rs4 = pg_query($Conec, "SELECT SUM(consdiario3) FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura3) = $Mes And DATE_PART('YEAR', dataleitura3) = '$Ano' And colec = 3 And ativo = 1 And leitura3 != 0");
+                $rs4 = pg_query($Conec, "SELECT SUM(consdiario5) FROM ".$xProj.".leitura_eletric WHERE DATE_PART('MONTH', dataleitura5) = $Mes And DATE_PART('YEAR', dataleitura5) = '$Ano' And colec = 5 And ativo = 1 And leitura5 != 0");
                 $tbl4 = pg_fetch_row($rs4);
                 $ConsMensal = $tbl4[0];
 
@@ -113,7 +110,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 }
 
                 $rsA = pg_query($Conec, "SELECT leitura3 FROM ".$xProj.".leitura_eletric 
-                WHERE DATE_PART('YEAR', dataleitura3) = '$Ano' And  TO_CHAR(dataleitura3, 'MM') = '$MesAnt' And TO_CHAR(dataleitura3, 'DD') = '$DiaMedia' And ativo = 1 ");
+                WHERE DATE_PART('YEAR', dataleitura3) = '$Ano' And  TO_CHAR(dataleitura5, 'MM') = '$MesAnt' And TO_CHAR(dataleitura5, 'DD') = '$DiaMedia' And ativo = 1 ");
                 $rowA = pg_num_rows($rsA);
                 if($rowA > 0){
                     $tblA = pg_fetch_row($rsA);
@@ -122,7 +119,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     $LeitMesAnt = 0;
                 }
                 $rsB = pg_query($Conec, "SELECT leitura3 FROM ".$xProj.".leitura_eletric 
-                WHERE DATE_PART('YEAR', dataleitura3) = '$Ano' And  TO_CHAR(dataleitura3, 'MM') = '$Mes' And TO_CHAR(dataleitura3, 'DD') = '$DiaMedia' And ativo = 1 ");
+                WHERE DATE_PART('YEAR', dataleitura3) = '$Ano' And  TO_CHAR(dataleitura5, 'MM') = '$Mes' And TO_CHAR(dataleitura5, 'DD') = '$DiaMedia' And ativo = 1 ");
                 $rowB = pg_num_rows($rsB);
                 if($rowB > 0){
                     $tblB = pg_fetch_row($rsB);

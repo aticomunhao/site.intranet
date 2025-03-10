@@ -452,7 +452,6 @@
                     if(ajax){
                         ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaGrupo&codigo="+document.getElementById("guardacodgrupo").value
                         +"&siglagrupo="+document.getElementById("siglagrupo").value
-//                        +"&selecTurnos="+document.getElementById("selecTurnos").value
                         +"&nomegrupo="+document.getElementById("nomegrupo").value
                         +"&descgrupo="+document.getElementById("descgrupo").value
                         , true);
@@ -773,6 +772,12 @@
     <body>
         <?php
             require_once("abrealas.php");
+            $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog'");
+            $rowSis = pg_num_rows($rsSis);
+            if($rowSis == 0){
+                echo "Sem contato com os arquivos do sistema. Informe à ATI.";
+                return false;
+            }
             $Menu1 = escMenu($Conec, $xProj, 1); //abre alas
             $Menu2 = escMenu($Conec, $xProj, 2); //abre alas
             $Menu3 = escMenu($Conec, $xProj, 3); //abre alas

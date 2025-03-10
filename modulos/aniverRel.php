@@ -56,6 +56,12 @@
     </head>
     <body>
         <?php
+        $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog'");
+        $rowSis = pg_num_rows($rsSis);
+        if($rowSis == 0){
+            echo "Sem contato com os arquivos do sistema. Informe à ATI.";
+			return false;
+        }
         require_once("config/abrealas.php");
         require_once("config/gUtils.php");
 //        $rs0 = pg_query($ConecPes, "SELECT id, nome_completo, TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM'), nome_resumido FROM ".$xPes.".pessoas WHERE nome_completo != '' ORDER BY nome_completo ");

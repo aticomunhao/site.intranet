@@ -161,7 +161,36 @@ if(isset($_REQUEST["acao"])){
         }
 
 //Contratantes
-        $pdf->ln(10);
+        $pdf->AddPage("L", "A4");
+        $pdf->SetLeftMargin(30);
+        $pdf->SetTitle('Relação de Contratos', $isUTF8=TRUE);
+        $pdf->SetFont('Arial', '' , 12); 
+        $pdf->SetTitle('Contratos', $isUTF8=TRUE);
+        if($Dom != "" && $Dom != "NULL"){
+            if(file_exists('../../imagens/'.$Dom)){
+                if(getimagesize('../../imagens/'.$Dom)!=0){
+                    $pdf->Image('../../imagens/'.$Dom,12,8,16,20);
+                }
+            }
+        }
+        $pdf->SetFont('Arial','' , 14); 
+        $pdf->Cell(0, 5, $Cabec1, 0, 2, 'C');
+        $pdf->SetFont('Arial','' , 12); 
+//    $pdf->Cell(0, 5, $Cabec2, 0, 2, 'C');
+        $pdf->Cell(0, 5, 'Diretoria Administrativa e Financeira', 0, 2, 'C');
+        $pdf->SetFont('Arial','' , 10); 
+        $pdf->Cell(0, 5, $Cabec3, 0, 2, 'C');
+        $pdf->SetFont('Arial', '' , 10);
+        $pdf->SetTextColor(25, 25, 112);
+        $pdf->MultiCell(0, 3, "Contratos", 0, 'C', false);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->SetFont('Arial', '', 6);
+        $pdf->ln();
+        $lin = $pdf->GetY();
+        $pdf->Line(10, $lin, 290, $lin);
+        $pdf->SetDrawColor(200); // cinza claro  
+
+        $pdf->ln(5);
         $pdf->SetFont('Arial', '', 11);
         $pdf->MultiCell(0, 5, "Empresas Contratantes", 0, 'C', false);
         $rs0 = pg_query($Conec, "SELECT id, numcontrato, TO_CHAR(dataassinat, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), codsetor, codempresa, vigencia, notific, objetocontr,
@@ -238,12 +267,33 @@ if(isset($_REQUEST["acao"])){
 
     if($Acao == "listaContratadas"){
 //Contratadas
+        $Selec = $_REQUEST["selec"];
+        $Condic = "ativo = 1";
+        if($Selec == "todos"){
+            $Condic = "ativo = 1";
+            $Info = "Todos os Contratos";
+        }
+        if($Selec == "vigor"){
+            $Condic = "ativo = 1 And emvigor = 1";
+            $Info = "Contratos em Vigor";
+        }
+        if($Selec == "terminados"){
+            $Condic = "ativo = 1 And emvigor = 2";
+            $Info = "Contratos Encerrados";
+        }
+        if($Selec == "rescindidos"){
+            $Condic = "ativo = 1 And emvigor = 3";
+            $Info = "Contratos Rescindidos";
+        }
+
         $pdf->ln(5);
         $pdf->SetFont('Arial', '', 11);
         $pdf->MultiCell(0, 5, "Empresas Contratadas pela Comunhão", 0, 'C', false);
+        $pdf->MultiCell(0, 5, $Info, 0, 'C', false);
+
         $rs0 = pg_query($Conec, "SELECT id, numcontrato, TO_CHAR(dataassinat, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), codsetor, codempresa, vigencia, notific, objetocontr,
         CASE WHEN dataaviso <= CURRENT_DATE THEN true And datavencim >= CURRENT_DATE ELSE false END 
-        FROM ".$xProj.".contratos1 WHERE ativo = 1 ORDER BY dataassinat DESC");
+        FROM ".$xProj.".contratos1 WHERE $Condic ORDER BY dataassinat DESC");
         $row0 = pg_num_rows($rs0);
         $pdf->ln(5);
         if($row0 > 0){
@@ -309,19 +359,37 @@ if(isset($_REQUEST["acao"])){
        
         }else{
             $pdf->SetFont('Arial', 'I', 11);
-            $pdf->SetX(50);
-            $pdf->Cell(40, 5, 'Nenhum contrato encontrado.', 0, 1, 'L');
+            $pdf->MultiCell(0, 5, "Nenhum contrato encontrado", 0, 'C', false);
         }
     }
 
     if($Acao == "listaContratantes"){
         //Contratantes
+        $Selec = $_REQUEST["selec"];
+        $Condic = "ativo = 1";
+        if($Selec == "todos"){
+            $Condic = "ativo = 1";
+            $Info = "Todos os Contratos";
+        }
+        if($Selec == "vigor"){
+            $Condic = "ativo = 1 And emvigor = 1";
+            $Info = "Contratos em Vigor";
+        }
+        if($Selec == "terminados"){
+            $Condic = "ativo = 1 And emvigor = 2";
+            $Info = "Contratos Encerrados";
+        }
+        if($Selec == "rescindidos"){
+            $Condic = "ativo = 1 And emvigor = 3";
+            $Info = "Contratos Rescindidos";
+        }
         $pdf->ln(10);
         $pdf->SetFont('Arial', '', 11);
         $pdf->MultiCell(0, 5, "Empresas Contratantes", 0, 'C', false);
+        $pdf->MultiCell(0, 5, $Info, 0, 'C', false);
         $rs0 = pg_query($Conec, "SELECT id, numcontrato, TO_CHAR(dataassinat, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), codsetor, codempresa, vigencia, notific, objetocontr,
         CASE WHEN dataaviso <= CURRENT_DATE THEN true And datavencim >= CURRENT_DATE ELSE false END 
-        FROM ".$xProj.".contratos2 WHERE ativo = 1 ORDER BY dataassinat DESC");
+        FROM ".$xProj.".contratos2 WHERE $Condic ORDER BY dataassinat DESC");
         $row0 = pg_num_rows($rs0);
         $pdf->ln(5);
         if($row0 > 0){
@@ -387,8 +455,7 @@ if(isset($_REQUEST["acao"])){
        
         }else{
             $pdf->SetFont('Arial', 'I', 11);
-            $pdf->SetX(50);
-            $pdf->Cell(40, 5, 'Nenhum contrato encontrado.', 0, 1, 'L');
+            $pdf->MultiCell(0, 5, "Nenhum contrato encontrado", 0, 'C', false);
         }
     }
 

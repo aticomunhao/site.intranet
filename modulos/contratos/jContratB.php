@@ -69,7 +69,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
          <!-- Empresas contrantes da comunhão -->
         <?php
         $rs0 = pg_query($Conec, "SELECT id, numcontrato, TO_CHAR(dataassinat, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), codsetor, codempresa, vigencia, notific, objetocontr, 
-        CASE WHEN dataaviso <= CURRENT_DATE AND datavencim >= CURRENT_DATE THEN 'aviso' END 
+        CASE WHEN dataaviso <= CURRENT_DATE AND datavencim >= CURRENT_DATE THEN 'aviso' END, emvigor 
         FROM ".$xProj.".contratos2 WHERE ativo = 1 ORDER BY dataassinat DESC");
         $row0 = pg_num_rows($rs0);
         ?>
@@ -87,6 +87,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <th class="etiq aCentro">Setor</th>
                         <th class="etiq aCentro" title="Vigência do contrato">Vigência</th>
                         <th class="etiq aCentro" title="Notificação sobre a não prorrogação do contrato?">Notif</th>
+                        <th class="etiq aCentro">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -148,6 +149,19 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     echo "<img src='imagens/likeNo.png' height='18px;' title='Não é necessário aviso de interrupção/não prorrogação de contrato.'>";
                                 }else{
                                     echo "<img src='imagens/likeYes.png' height='18px;' title='É preciso avisar sobre a não prorrogação de contrato.'>";
+                                }
+                            ?>
+                        </td>
+                        <td>
+                            <?php
+                                if($tbl[11] == 1){
+                                    echo "<img src='imagens/ok.png' height='18px;' title='Contrato em vigor.'>";
+                                }
+                                if($tbl[11] == 2){
+                                    echo "<img src='imagens/okDev.png' height='18px;' title='Contrato terminado.'>";
+                                }
+                                if($tbl[11] == 3){
+                                    echo "<img src='imagens/oknao.png' height='18px;' title='Contrato rescindido.'>";
                                 }
                             ?>
                         </td>
