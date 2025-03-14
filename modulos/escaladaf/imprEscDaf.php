@@ -269,14 +269,15 @@ if(!isset($_SESSION['AdmUsu'])){
                     $pdf->Cell(27, 5, $Cargo, "B", 0, 'L', true);
                     $pdf->Cell(1, 5, " ", 0, 0, 'L');
                     $pdf->Cell(31, 5, $Nome, "B", 0, 'L', true);
-                    
+
                      //Quadrinho dias 01, 02, 03, ...
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains 
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id 
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '01' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(70); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
 
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
@@ -285,6 +286,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($rowFer > 0){ // dataescala = dataescalafer
                             $diaFer = 1;
                         }
+
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo
                             $pdf->SetFillColor(232, 232, 232); // fundo cinza
                         }else{
@@ -304,7 +306,19 @@ if(!isset($_SESSION['AdmUsu'])){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
                         }
 
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
+                        }                        
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '01' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo");
@@ -326,12 +340,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
                     
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '02' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(77); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -357,7 +372,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
                         }
-                        $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra  
+
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
+                        }
+
+                        $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra 
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '02' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -378,12 +406,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '03' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(84); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -409,7 +438,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
                         }
+
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
+                        }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '03' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -430,12 +472,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '04' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(91); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -461,7 +504,19 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
                         }
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
+                        }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '04' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -482,12 +537,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '05' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(98); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -512,8 +568,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
+                        }                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
                         }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '05' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -534,12 +602,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '06' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(105); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -565,7 +634,19 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
                         }
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
+                        }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '06' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -586,12 +667,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '07' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(112); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -616,8 +698,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
+                        }                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
                         }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '07' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -638,12 +732,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '08' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(119); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -668,8 +763,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
+                        }                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
                         }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '08' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -690,12 +797,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '09' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(126); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -720,8 +828,21 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
+                        }                        
+                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
                         }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '09' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -742,12 +863,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '10' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(133); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -772,8 +894,21 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
+                        }                        
+                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
                         }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '10' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -794,12 +929,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '11' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(140); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -824,8 +960,21 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
+                        }                        
+                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
                         }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '11' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -846,12 +995,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '12' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(147); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -876,8 +1026,21 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
+                        }                        
+                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
                         }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '12' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -898,12 +1061,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains 
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id 
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '13' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(154); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -928,8 +1092,21 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
+                        }                        
+                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
                         }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '13' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -950,12 +1127,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
    
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains 
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id 
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '14' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(161); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -980,8 +1158,21 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
+                        }                        
+                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
                         }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '14' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -1002,12 +1193,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
    
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '15' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(168); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -1032,8 +1224,21 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
+                        }                        
+                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
                         }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '15' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -1054,12 +1259,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '16' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(175); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -1085,7 +1291,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
                         }
+
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
+                        }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '16' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -1106,12 +1325,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '17' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(182); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -1137,7 +1357,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
                         }
+                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
+                        }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '17' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -1158,12 +1391,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '18' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(189); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -1189,7 +1423,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
                         }
+                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
+                        }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '18' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -1210,12 +1457,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '19' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(196); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -1241,7 +1489,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
                         }
+                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
+                        }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '19' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -1262,12 +1523,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '20' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(203); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -1293,7 +1555,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
                         }
+                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
+                        }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '20' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -1314,12 +1589,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '21' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(210); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -1345,7 +1621,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
                         }
+
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
+                        }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '21' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -1366,12 +1655,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '22' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(217); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -1397,7 +1687,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
                         }
+
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
+                        }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '22' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -1418,12 +1721,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '23' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(224); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -1449,7 +1753,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
                         }
+
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
+                        }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '23' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -1470,12 +1787,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque , dataescalains 
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque , dataescalains, escaladaf_id 
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '24' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(231); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -1501,7 +1819,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
                         }
+                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
+                        }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '24' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -1522,12 +1853,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '25' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(238); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -1553,7 +1885,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
                         }
+                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
+                        }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '25' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -1574,12 +1919,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '26' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(245); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -1605,7 +1951,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
                         }
+                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
+                        }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '26' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -1626,12 +1985,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '27' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(252); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -1657,7 +2017,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
                         }
+                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
+                        }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '27' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -1678,12 +2051,13 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
                     }
 
-                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                    $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                     FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '28' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                     $row2 = pg_num_rows($rs2);
                     $pdf->SetX(259); 
                     if($row2 > 0){
                         $tbl2 = pg_fetch_row($rs2);
+                        $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                         $ProcFer = $tbl2[3]; // dataescalains
                         $diaFer = 0;
                         $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -1709,7 +2083,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         if($tbl2[2] == 3){
                             $pdf->SetFillColor(0, 255, 127); // fundo verde
                         }
+                        
+                        //Procura troca de letra em escaladaf_trocas
+                        $ProcTroca = $tbl2[0];
+                        $Troca = 0;
+                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                        $rowTroc = pg_num_rows($rsTroc);
+                        if($rowTroc > 0){
+                            $pdf->SetDrawColor(0, 0, 0);
+                        }
+
                         $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                        $pdf->SetDrawColor(200);
                     }else{
                         $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                         FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '28' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -1731,12 +2118,13 @@ if(!isset($_SESSION['AdmUsu'])){
                     }
 
                     if(buscaDia($Conec, $xProj, $Mes, $Ano, 29) == 1){ //Ver se o dia existe neste mes
-                        $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                        $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                         FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '29' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                         $row2 = pg_num_rows($rs2);
                         $pdf->SetX(266); 
                         if($row2 > 0){
                             $tbl2 = pg_fetch_row($rs2);
+                            $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                             $ProcFer = $tbl2[3]; // dataescalains
                             $diaFer = 0;
                             $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -1762,7 +2150,20 @@ if(!isset($_SESSION['AdmUsu'])){
                             if($tbl2[2] == 3){
                                 $pdf->SetFillColor(0, 255, 127); // fundo verde
                             }
+                            
+                            //Procura troca de letra em escaladaf_trocas
+                            $ProcTroca = $tbl2[0];
+                            $Troca = 0;
+                            $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                            FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                            WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                            $rowTroc = pg_num_rows($rsTroc);
+                            if($rowTroc > 0){
+                                $pdf->SetDrawColor(0, 0, 0);
+                            }
+
                             $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                            $pdf->SetDrawColor(200);
                         }else{
                             $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                             FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '29' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -1785,12 +2186,13 @@ if(!isset($_SESSION['AdmUsu'])){
                     }
 
                     if(buscaDia($Conec, $xProj, $Mes, $Ano, 30) == 1){ //Ver se o dia existe neste mes
-                        $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                        $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                         FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '30' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                         $row2 = pg_num_rows($rs2);
                         $pdf->SetX(273); 
                         if($row2 > 0){
                             $tbl2 = pg_fetch_row($rs2);
+                            $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                             $ProcFer = $tbl2[3]; // dataescalains
                             $diaFer = 0;
                             $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -1816,7 +2218,20 @@ if(!isset($_SESSION['AdmUsu'])){
                             if($tbl2[2] == 3){
                                 $pdf->SetFillColor(0, 255, 127); // fundo verde
                             }
+                            
+                            //Procura troca de letra em escaladaf_trocas
+                            $ProcTroca = $tbl2[0];
+                            $Troca = 0;
+                            $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                            FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                            WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                            $rowTroc = pg_num_rows($rsTroc);
+                            if($rowTroc > 0){
+                                $pdf->SetDrawColor(0, 0, 0);
+                            }
+
                             $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                            $pdf->SetDrawColor(200);
                         }else{
                             $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                             FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '30' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -1839,12 +2254,13 @@ if(!isset($_SESSION['AdmUsu'])){
                     }
 
                     if(buscaDia($Conec, $xProj, $Mes, $Ano, 31) == 1){ //Ver se o dia existe neste mes
-                        $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains  
+                        $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                         FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '31' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
                         $row2 = pg_num_rows($rs2);
                         $pdf->SetX(280); 
                         if($row2 > 0){
                             $tbl2 = pg_fetch_row($rs2);
+                            $CodEsc = $tbl2[4]; // código escaladaf - escaladaf_id em escaladaf_ins
                             $ProcFer = $tbl2[3]; // dataescalains
                             $diaFer = 0;
                             $rsFer = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE dataescalafer = '$ProcFer' And ativo = 1");
@@ -1870,7 +2286,20 @@ if(!isset($_SESSION['AdmUsu'])){
                             if($tbl2[2] == 3){
                                 $pdf->SetFillColor(0, 255, 127); // fundo verde
                             }
+                            
+                            //Procura troca de letra em escaladaf_trocas
+                            $ProcTroca = $tbl2[0];
+                            $Troca = 0;
+                            $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                            FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                            WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                            $rowTroc = pg_num_rows($rsTroc);
+                            if($rowTroc > 0){
+                                $pdf->SetDrawColor(0, 0, 0);
+                            }
+
                             $pdf->Cell(7, 5, $tbl2[0], 1, 0, 'C', true); // letra
+                            $pdf->SetDrawColor(200);
                         }else{
                             $rs3 = pg_query($Conec, "SELECT id, date_part('dow', dataescala), dataescala 
                             FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '31' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ");
@@ -1911,10 +2340,12 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->ln(3);
             $lin = $pdf->GetY();
             $pdf->Line(10, $lin, 290, $lin);
-            $pdf->ln(5);
+            if($rowEft < 15){
+                $pdf->ln(5);
+            }
             $pdf->SetFont('Arial', '' , 10);
             $pdf->SetX(15); 
-            $pdf->Cell(20, 7, "Horários de Trabalho:", 0, 1, 'L');
+            $pdf->Cell(20, 7, "Horários de Trabalho: ".$rowEft, 0, 1, 'L');
 
 //Primeira linha
             $rs1 = pg_query($Conec, "SELECT letra, horaturno FROM ".$xProj.".escaladaf_turnos WHERE ordemletra = 1 And ativo = 1 And grupo_turnos = $NumGrupo");

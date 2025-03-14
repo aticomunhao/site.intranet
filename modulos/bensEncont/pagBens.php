@@ -1289,8 +1289,8 @@ if(!isset($_SESSION["usuarioID"])){
         <div style="margin: 0 auto; text-align: center;">
             <div style="position: relative; float: left; text-align: center; width: 25%; padding-left: 20px;">
                 <div class="col quadro" style="text-align: left;">
+                <img src="imagens/settings.png" height="20px;" id="imgBensconfig" style="cursor: pointer; padding-right: 30px;" onclick="abreBensConfig();" title="Configurar o acesso ao processamento de Achados e Perdidos">
                     <button class="botpadrGr fundoAmarelo" id="botInsReg" onclick="abreRegistro();" >Novo Registro</button>
-                    <img src="imagens/settings.png" height="20px;" id="imgBensconfig" style="cursor: pointer; padding-left: 30px;" onclick="abreBensConfig();" title="Configurar o acesso ao processamento de Achados e Perdidos">
                 </div>
             </div>
             <div style="position: relative; float: left; text-align: center; width: 48%;">

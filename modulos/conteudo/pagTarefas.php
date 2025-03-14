@@ -1013,9 +1013,9 @@ if(!isset($_SESSION["usuarioID"])){
         <div class="container" style="margin: 0 auto; padding-top: 10px;">
             <div class="row">
                 <div class="col" style="margin: 0 auto;"> 
-                    <input type="button" class="botpadrblue" id="botinserir" value="Inserir Tarefa" onclick="abreModal();">
-                    <img src="imagens/settings.png" height="20px;" id="imgTarefasconfig" style="cursor: pointer; padding-left: 20px;" onclick="abreTarefasConfig();" title="Configurar grupos de Tarefas">
+                    <img src="imagens/settings.png" height="20px;" id="imgTarefasconfig" style="cursor: pointer;" onclick="abreTarefasConfig();" title="Configurar grupos de Tarefas">
                     <img src="imagens/settings.png" height="20px;" id="imgOrgTarefasConfig" style="cursor: pointer; padding-left: 20px;" onclick="abreOrgTarefasConfig();" title="Configurar Níveis de Usuários pelo Organograma">
+                    <input type="button" class="botpadrblue" id="botinserir" value="Inserir Tarefa" onclick="abreModal();">
                 </div>
 
                 <div class="col" style="text-align: center;">

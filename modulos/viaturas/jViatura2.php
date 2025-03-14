@@ -14,7 +14,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         </script>
     </head>
     <body>
-        <div style="text-align: center;"><label class="titRelat">Controle de Viaturas<label></div>
+        <div style="text-align: center;"><label class="titRelat">Resumo<label></div>
         <?php
         $mes_extenso = array(
             '1' => 'Janeiro',
@@ -95,7 +95,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     <td style="font-size: 80%;">Totais: </td>
                                     <td style="font-size: 80%; text-align: right;" title="Volume gasto em combustível no mês."><?php echo number_format(($VolumeMes/100), 2, ",",".")." litros"; ?></td>
                                     <td colspan="3" style="font-size: 80%; text-align: right;" title="Valor gasto em combustível no mês."><?php echo "R$ ".number_format(($CustoMesAbast/100), 2, ",","."); ?></td>
-                                    <td style="font-size: 80%; text-align: center;" title="Distância percorrida no mês."><?php echo number_format(($MaxOdometro-$MinOdometro), 0, ",",".")." Km"; ?></td>
+                                    <td style="font-size: 80%; text-align: center;" title="Distância percorrida no mês - Diferença entre o maior e o menor registro do odômetro no mês."><?php echo number_format(($MaxOdometro-$MinOdometro), 0, ",",".")." Km"; ?></td>
                                     <td colspan="2" style="font-size: 80%; text-align: center;" title="Despesa com manutenção no mês."><?php echo "Manut: ".number_format(($CustoMesManut/100), 2, ",","."); ?></td>
                                 </tr>
                                 <?php

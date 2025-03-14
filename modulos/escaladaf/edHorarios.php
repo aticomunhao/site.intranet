@@ -10,78 +10,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <title></title>
         <script>
             $(document).ready(function(){
-                $("#insletra").change(function(){
-                    ajaxIni();
-                    if(ajax){
-                        ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=buscaLetra&numgrupo="+document.getElementById("guardanumgrupo").value+"&letra="+document.getElementById("insletra").value, true);
-                        ajax.onreadystatechange = function(){
-                            if(ajax.readyState === 4 ){
-                                if(ajax.responseText){
-//alert(ajax.responseText);
-                                    Resp = eval("(" + ajax.responseText + ")");
-                                if(parseInt(Resp.coderro) === 1){
-                                    document.getElementById("insletra").value = "";
-                                }else{
-                                    if(parseInt(Resp.jatem) > 0){
-                                        document.getElementById("insletra").value = "";
-                                        $.confirm({
-                                            title: 'Ação Suspensa!',
-                                            content: 'Letra já existe',
-                                            draggable: true,
-                                            buttons: {
-                                                OK: function(){}
-                                            }
-                                        });
-                                        return false;
-                                    }
-                                }
-                            }
-                        }
-                    };
-                    ajax.send(null);
-                }
-                });
             });
-
-            function insereLetra(){
-                ajaxIni();
-                if(ajax){
-                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=buscaOrdem&numgrupo="+document.getElementById("guardanumgrupo").value, true);
-                    ajax.onreadystatechange = function(){
-                        if(ajax.readyState === 4 ){
-                            if(ajax.responseText){
-//alert(ajax.responseText);
-                                Resp = eval("(" + ajax.responseText + ")");
-                                if(parseInt(Resp.coderro) === 1){
-                                    document.getElementById("insordem").value = 0;
-                                }else{
-                                    if(parseInt(Resp.quantTurno) > 25){
-                                        $.confirm({
-                                            title: 'Ação Suspensa!',
-                                            content: 'Número máximo de turnos (25) atingido',
-                                            draggable: true,
-                                            buttons: {
-                                                OK: function(){}
-                                            }
-                                        });
-                                        return false;
-                                    }else{
-                                        document.getElementById("insordem").value = Resp.ordem;
-                                        document.getElementById("inserirletra").style.display = "block";
-                                        document.getElementById("abreinsletra").style.visibility = "hidden";
-                                    }
-                                }
-                            }
-                        }
-                    };
-                    ajax.send(null);
-                }
-            }
-
-            function fechaInsLetra(){
-                document.getElementById("inserirletra").style.display = "none";
-                document.getElementById("abreinsletra").style.visibility = "visible";
-            }
 
         </script>
     </head>

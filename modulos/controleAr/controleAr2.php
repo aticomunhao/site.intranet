@@ -730,8 +730,8 @@ if(!isset($_SESSION["usuarioID"])){
         ?>
         <div style="margin: 20px; border: 2px solid #003333; border-radius: 15px; padding: 20px; min-height: 200px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
+            <img src="imagens/settings.png" height="20px;" style="cursor: pointer; padding-right: 30px;" onclick="carregaConfig();" title="Configurar empresas de manutenção">
                 <input type="button" id="botinserir" class="resetbot fundoAmareloCl" style="font-size: 80%;" value="Inserir Novo Aparelho" onclick="insAparelho();">
-                <img src="imagens/settings.png" height="20px;" style="cursor: pointer; padding-left: 30px;" onclick="carregaConfig();" title="Configurar empresas de manutenção">
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <h5>Controle da Manutenção dos Condicionadores de Ar</h5>

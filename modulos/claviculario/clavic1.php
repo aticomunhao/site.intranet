@@ -1215,8 +1215,8 @@ if(!isset($_SESSION["usuarioID"])){
         ?>
         <div style="margin: 20px; padding: 10px; border: 2px solid; border-radius: 10px; min-height: 52px; background: #FFFFF0;">
             <div class="box" style="position: relative; float: left; width: 17%;">
+            <img src="imagens/settings.png" height="20px;" id="imgChavesconfig" style="cursor: pointer; padding-right: 30px;" onclick="abreChavesConfig();" title="Configurar o acesso às chaves no claviculário da Portaria">
                 <input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Inserir Nova Chave" onclick="insChave();">
-                <img src="imagens/settings.png" height="20px;" id="imgChavesconfig" style="cursor: pointer; padding-left: 30px;" onclick="abreChavesConfig();" title="Configurar o acesso às chaves no claviculário da Portaria">
             </div>
             <div class="box" style="position: relative; float: left; width: 55%; text-align: center;">
                 <h5><img src="imagens/Chave.png" height="40px;" style="padding-right: 20px; padding-bottom: 10px;" title="Controle de Chaves na Portaria">Controle de Chaves Portaria<img src="imagens/Chave.png" height="40px;" style="padding-left: 20px; padding-bottom: 10px;" title="Controle de Chaves na Portaria"></h5>

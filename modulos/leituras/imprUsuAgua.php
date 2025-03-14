@@ -29,11 +29,6 @@ if(isset($_REQUEST["acao"])){
     $Cabec2 = $tblCabec[1];
     $Cabec3 = $tblCabec[2];
 
-    $Menu1 = escMenu($Conec, $xProj, 1);
-    $Menu2 = escMenu($Conec, $xProj, 2);
-    $Menu3 = escMenu($Conec, $xProj, 3);
-
-
      class PDF extends FPDF{
         function Footer(){
            // Vai para 1.5 cm da parte inferior
@@ -50,7 +45,7 @@ if(isset($_REQUEST["acao"])){
     $pdf->AliasNbPages(); // pega o número total de páginas
     $pdf->AddPage();
     $pdf->SetLeftMargin(30);
-    $pdf->SetTitle('Eletricidade', $isUTF8=TRUE);
+    $pdf->SetTitle('Água', $isUTF8=TRUE);
     //Monta o arquivo pdf        
     $pdf->SetFont('Arial', '' , 12); 
     if($Dom != "" && $Dom != "NULL"){
@@ -71,7 +66,7 @@ if(isset($_REQUEST["acao"])){
     $pdf->SetFont('Arial', '' , 10);
     $pdf->SetTextColor(25, 25, 112);
     if($Acao == "listaUsuarios"){
-        $pdf->MultiCell(0, 3, "Gerenciamento dos Medidores de Eletricidade", 0, 'C', false);
+        $pdf->MultiCell(0, 3, "Gerenciamento das Leituras do Hidrômetro", 0, 'C', false);
     }
 
     $pdf->SetTextColor(0, 0, 0);
@@ -82,11 +77,11 @@ if(isset($_REQUEST["acao"])){
     $pdf->SetDrawColor(200); // cinza claro  
 
     if($Acao == "listaUsuarios"){
-        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eletric = 1 And ativo = 1 ORDER BY nomecompl");
+        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE agua = 1 And ativo = 1 ORDER BY nomecompl");
         $row0 = pg_num_rows($rs0);
         $pdf->ln(5);
         $pdf->SetFont('Arial', 'I', 11);
-        $pdf->MultiCell(0, 3, "Usuários autorizados a registrar leituras: ".$Menu1, 0, 'L', false);
+        $pdf->MultiCell(0, 3, "Usuários autorizados a registrar leituras: ", 0, 'L', false);
         $pdf->ln(3);
         if($row0 > 0){
             $pdf->SetFont('Arial', 'I', 8);
@@ -124,12 +119,11 @@ if(isset($_REQUEST["acao"])){
             $pdf->ln(10);
         }
 
-
-        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eletric2 = 1 And ativo = 1 ORDER BY nomecompl");
+        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE fisc_agua = 1 And ativo = 1 ORDER BY nomecompl");
         $row0 = pg_num_rows($rs0);
         $pdf->ln(3);
         $pdf->SetFont('Arial', 'I', 11);
-        $pdf->MultiCell(0, 3, "Usuários autorizados a registrar leituras: ".$Menu2, 0, 'L', false);
+        $pdf->MultiCell(0, 3, "Usuários autorizados a acompanhar e fiscalizar: ", 0, 'L', false);
         $pdf->ln(5);
         if($row0 > 0){
             $pdf->SetFont('Arial', 'I', 8);
@@ -165,91 +159,6 @@ if(isset($_REQUEST["acao"])){
             $pdf->Line(20, $lin, 200, $lin);
             $pdf->ln(10);
         }
-
-
-        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eletric3 = 1 And ativo = 1 ORDER BY nomecompl");
-        $row0 = pg_num_rows($rs0);
-        $pdf->ln(3);
-        $pdf->SetFont('Arial', 'I', 11);
-        $pdf->MultiCell(0, 3, "Usuários autorizados a registrar leituras: ".$Menu3, 0, 'L', false);
-        $pdf->ln(5);
-        if($row0 > 0){
-            $pdf->SetFont('Arial', 'I', 8);
-            $pdf->SetX(50);
-            $pdf->Cell(40, 3, "Nome", 0, 0, 'L');
-            $pdf->Cell(150, 3, "Nome Completo", 0, 0, 'L');
-            $pdf->ln(4);
-            $lin = $pdf->GetY();
-            $pdf->Line(50, $lin, 200, $lin);
-            $pdf->SetFont('Arial', '', 10);
-
-            while($tbl0 = pg_fetch_row($rs0)){
-                $Cod = $tbl0[0];
-                $pdf->SetX(50); 
-                $pdf->Cell(40, 5, $tbl0[2], 0, 0, 'L');
-                $pdf->Cell(150, 5, $tbl0[1], 0, 1, 'L');
-                $lin = $pdf->GetY();
-                $pdf->Line(50, $lin, 200, $lin);
-            }
-            $pdf->SetX(50);
-            $pdf->SetFont('Arial', 'I', 8);
-            $pdf->Cell(150, 5, "Total: ".$row0, 0, 1, 'L');
-            $pdf->SetFont('Arial', '', 10);
-            $lin = $pdf->GetY();               
-            $pdf->Line(20, $lin, 200, $lin);
-            $pdf->ln(10);
-       
-        }else{
-            $pdf->SetFont('Arial', 'I', 10);
-            $pdf->SetX(50);
-            $pdf->Cell(40, 5, 'Nenhum usuário encontrado.', 0, 1, 'L');
-            $lin = $pdf->GetY();               
-            $pdf->Line(20, $lin, 200, $lin);
-            $pdf->ln(10);
-        }
-
-
-        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE fisc_eletric = 1 And ativo = 1 ORDER BY nomecompl");
-        $row0 = pg_num_rows($rs0);
-        $pdf->ln(3);
-        $pdf->SetFont('Arial', 'I', 11);
-        $pdf->MultiCell(0, 3, "Usuários autorizados a acompanhar e fiscalizar as leituras: ", 0, 'L', false);
-        $pdf->ln(5);
-        if($row0 > 0){
-            $pdf->SetFont('Arial', 'I', 8);
-            $pdf->SetX(50);
-            $pdf->Cell(40, 3, "Nome", 0, 0, 'L');
-            $pdf->Cell(150, 3, "Nome Completo", 0, 0, 'L');
-            $pdf->ln(4);
-            $lin = $pdf->GetY();
-            $pdf->Line(50, $lin, 200, $lin);
-            $pdf->SetFont('Arial', '', 10);
-
-            while($tbl0 = pg_fetch_row($rs0)){
-                $Cod = $tbl0[0];
-                $pdf->SetX(50); 
-                $pdf->Cell(40, 5, $tbl0[2], 0, 0, 'L');
-                $pdf->Cell(150, 5, $tbl0[1], 0, 1, 'L');
-                $lin = $pdf->GetY();
-                $pdf->Line(50, $lin, 200, $lin);
-            }
-            $pdf->SetX(50);
-            $pdf->SetFont('Arial', 'I', 8);
-            $pdf->Cell(150, 5, "Total: ".$row0, 0, 1, 'L');
-            $pdf->SetFont('Arial', '', 10);
-            $lin = $pdf->GetY();               
-            $pdf->Line(20, $lin, 200, $lin);
-            $pdf->ln(10);
-       
-        }else{
-            $pdf->SetFont('Arial', 'I', 10);
-            $pdf->SetX(50);
-            $pdf->Cell(40, 5, 'Nenhum usuário encontrado.', 0, 1, 'L');
-            $lin = $pdf->GetY();               
-            $pdf->Line(20, $lin, 200, $lin);
-            $pdf->ln(10);
-        }
-
     }
  }
  $pdf->Output();

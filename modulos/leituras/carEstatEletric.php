@@ -59,9 +59,33 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             return false;
         }
 
+        $Condic = "colec = 1 And dataleitura1 IS NOT NULL And leitura1 != 0 And ativo = 1";
+        if(isset($_REQUEST["mesano"])){
+            $MesAno = addslashes(filter_input(INPUT_GET, 'mesano')); 
+            if($MesAno != ""){
+                $Proc = explode("/", $MesAno);
+                $Mes = $Proc[0];
+                if(strLen($Mes) < 2){
+                    $Mes = "0".$Mes;
+                }
+                $Ano = $Proc[1];
+                $Condic = "colec = 1 And dataleitura1 IS NOT NULL And leitura1 != 0 And ativo = 1 And DATE_PART('MONTH', dataleitura1) = '$Mes' And DATE_PART('YEAR', dataleitura1) = '$Ano'";
+            }else{
+                $Condic = "colec = 1 And dataleitura1 IS NOT NULL And leitura1 != 0 And ativo = 1";
+            }
+        }
+        if(isset($_REQUEST["ano"])){
+            $Ano = addslashes(filter_input(INPUT_GET, 'ano')); 
+            if($Ano != ""){
+                $Condic = "colec = 1 And dataleitura1 IS NOT NULL And leitura1 != 0 And ativo = 1 And DATE_PART('YEAR', dataleitura1) = '$Ano'";
+            }else{
+                $Condic = "colec = 1 And dataleitura1 IS NOT NULL And leitura1 != 0 And ativo = 1";
+            }
+        }
+
         $rs1 = pg_query($Conec, "SELECT DATE_PART('MONTH', dataleitura1), COUNT(id), SUM(leitura1), DATE_PART('YEAR', dataleitura1) 
         FROM ".$xProj.".leitura_eletric 
-        WHERE colec = 1 And dataleitura1 IS NOT NULL And leitura1 != 0 And ativo = 1 
+        WHERE $Condic 
         GROUP BY DATE_PART('MONTH', dataleitura1), DATE_PART('YEAR', dataleitura1) ORDER BY DATE_PART('YEAR', dataleitura1) DESC, DATE_PART('MONTH', dataleitura1) DESC ");
 
         $row1 = pg_num_rows($rs1);

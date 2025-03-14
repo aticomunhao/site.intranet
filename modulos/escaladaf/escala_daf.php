@@ -208,7 +208,7 @@ if(!isset($_SESSION["usuarioID"])){
             $(document).ready(function(){
                 //Não vai liberar para os escalados - só o pdf impresso
                 document.getElementById("evliberames").style.visibility = "hidden"; 
-                document.getElementById("etiqevliberames").style.visibility = "hidden"; 
+                document.getElementById("etiqevliberames").style.visibility = "hidden";  // liberar para todos no site
                 document.getElementById("selecGrupo").style.visibility = "hidden"; 
                 document.getElementById("etiqGrupo").style.visibility = "hidden"; 
                 document.getElementById("imgEscalaConfig").style.visibility = "hidden";
@@ -866,6 +866,41 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
+            function insereLetra(){
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=buscaOrdem&numgrupo="+document.getElementById("guardanumgrupo").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    document.getElementById("insordem").value = 0;
+                                }else{
+                                    if(parseInt(Resp.quantTurno) > 25){
+                                        $.confirm({
+                                            title: 'Ação Suspensa!',
+                                            content: 'Número máximo de turnos (25) atingido',
+                                            draggable: true,
+                                            buttons: {
+                                                OK: function(){}
+                                            }
+                                        });
+                                        return false;
+                                    }else{
+                                        document.getElementById("insordem").value = Resp.ordem;
+                                        document.getElementById("inserirletra").style.display = "block";
+                                        document.getElementById("insletra").focus();
+                                        document.getElementById("abreinsletra").style.visibility = "hidden";
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
             function salvaLetra(){
                 if(document.getElementById("insordem").value == ""){
                     return false;
@@ -875,7 +910,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=insereletra&ordem="+document.getElementById("insordem").value
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvainsLetra&ordem="+document.getElementById("insordem").value
                     +"&insletra="+encodeURIComponent(document.getElementById("insletra").value)
                     +"&numgrupo="+document.getElementById("guardanumgrupo").value, true);
                     ajax.onreadystatechange = function(){
@@ -885,6 +920,18 @@ if(!isset($_SESSION["usuarioID"])){
                                 Resp = eval("(" + ajax.responseText + ")");
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
+                                }else if(parseInt(Resp.coderro) === 2){
+                                        document.getElementById("insletra").value = "";
+                                        document.getElementById("insletra").focus();
+                                        $.confirm({
+                                            title: 'Ação Suspensa!',
+                                            content: 'Letra já existe',
+                                            draggable: true,
+                                            buttons: {
+                                                OK: function(){}
+                                            }
+                                        });
+                                        return false;
                                 }else{
                                     $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                     $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
@@ -930,6 +977,11 @@ if(!isset($_SESSION["usuarioID"])){
                         }
                     }
                 });
+            }
+
+            function fechaInsLetra(){
+                document.getElementById("inserirletra").style.display = "none";
+                document.getElementById("abreinsletra").style.visibility = "visible";
             }
 
 //Sem uso no momento
@@ -1378,6 +1430,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function mudaTurno(CodPartic, CodTurno){
+//                document.getElementById("guardaCodUsuTrocaTurno").value = CodPartic; // para caso de trocar letra escala em andamento
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaTurnoParticip&codpartic="+CodPartic+"&codturno="+CodTurno, true);
@@ -1536,6 +1589,33 @@ if(!isset($_SESSION["usuarioID"])){
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=liberaMes&valor="+Valor+"&mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value), true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                               }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function editaEscala(obj){
+                if(obj.checked === true){
+                    Valor = 1;
+                    document.getElementById("etiqeditaEscala").style.color = "red";
+                }else{
+                    Valor = 0;
+                    document.getElementById("etiqeditaEscala").style.color = "#036";
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=editaEscala&valor="+Valor+"&codescala="+document.getElementById("guardanumgrupo").value, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -1884,8 +1964,36 @@ alert(ajax.responseText);
             }
 
 //-------------
+//echo dirname(dirname(__FILE__));
 
-//Provisório
+//   pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_trocas");
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_trocas (
+      id SERIAL PRIMARY KEY, 
+      poslog_id integer NOT NULL DEFAULT 0, 
+      escaladaf_id integer NOT NULL DEFAULT 0, 
+
+      dataescala_orig date DEFAULT '3000-12-31',
+      letra_orig character varying(3),
+      turno_orig character varying(30),
+      codturno_orig integer NOT NULL DEFAULT 0,
+      horafolga_orig character varying(30),  
+      grupo_id integer NOT NULL DEFAULT 0,
+
+      marca smallint DEFAULT 0 NOT NULL, 
+      ativo smallint DEFAULT 1 NOT NULL, 
+      usuins integer DEFAULT 0 NOT NULL,
+      datains timestamp without time zone DEFAULT '3000-12-31',
+      usuedit integer DEFAULT 0 NOT NULL,
+      dataedit timestamp without time zone DEFAULT '3000-12-31' 
+      ) 
+  ");
+
+//  dataescala_troca date DEFAULT '3000-12-31',
+//  letra_troca character varying(3),
+//  turno_troca character varying(30),
+
+
+  //Provisório
 if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
     $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE ativo = 1 And ordem_daf = 0 ");
     $row1 = pg_num_rows($rs1);
@@ -1965,6 +2073,20 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
         pg_query($Conec, "UPDATE ".$xProj.".poslog SET mes_escdaf = '$MesSalvo' WHERE pessoas_id = ". $_SESSION["usuarioID"]."" );
     }
 
+    $Proc = explode("/", $MesSalvo);
+    $MesEscala = $Proc[0];
+    if(strLen($MesEscala) < 2){
+        $MesEscala = "0".$Mes;
+    }
+    $AnoEscala = $Proc[1];
+
+    $MesAtual = date('m');
+    $AnoAtual = date('Y');
+
+    if($MesEscala == $MesAtual && $AnoEscala == $AnoAtual){
+        pg_query($Conec, "UPDATE ".$xProj.".escalas_gr SET editaesc = 1 WHERE id = $NumGrupo ");    
+    }
+
     $Busca = addslashes($MesSalvo); 
     $Proc = explode("/", $Busca);
     $Mes = $Proc[0];
@@ -2002,7 +2124,6 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                 pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_fer (id, dataescalafer, descr, ativo) 
                 VALUES($CodigoNovo, '$Feriado', '$Descr', 1) ");
             }
-
             $Feriado = ($Ano+2)."/".$MesFer."/".$DiaFer;
             $rsProc = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_fer WHERE ativo = 1 And dataescalafer = '$Feriado'");
             $rowProc = pg_num_rows($rsProc);
@@ -2034,11 +2155,13 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
         <input type="hidden" id="quantGruposEsc" value="<?php echo $rowGr; ?>" />
         <input type="hidden" id="guardaAno" value="<?php echo $Ano; ?>" />
         <input type="hidden" id="guardaCorListas" value="<?php echo $CorListas; ?>" />
+        <input type="hidden" id="guardaEscalaId" value = "0" />
+<!--        <input type="hidden" id="guardaCodUsuTrocaTurno" value = "0" />  -->
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->
                 <div class="col" style="margin: 0 auto; text-align: left;">
-                    <img src="imagens/settings.png" height="20px;" id="imgEscalaConfig" style="cursor: pointer; padding-left: 30px;" onclick="abreEscalaConfig();" title="Configurar o acesso e inserir participantes da escala">
+                    <img src="imagens/settings.png" height="20px;" id="imgEscalaConfig" style="cursor: pointer; padding-left: 20px;" onclick="abreEscalaConfig();" title="Configurar o acesso e inserir participantes da escala">
                     <label style="padding-left: 20px; font-size: .8rem;">Escala mês: </label>
                     <select id="selecMesAnoEsc" style="font-size: 1rem; width: 90px;" title="Selecione o mês/ano.">
                         <option value=""></option>
@@ -2052,7 +2175,7 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                             ?>
                     </select>
 
-                    <label id="etiqGrupo" style="font-size: .8rem;">Ver Grupo: </label>
+                    <label id="etiqGrupo" style="font-size: .8rem; padding-left: 5px;">Ver Grupo: </label>
                     <select id="selecGrupo" style="font-size: .8rem; width: 90px;" title="Selecione o grupo.">
                         <option value="0"></option>
                             <?php 

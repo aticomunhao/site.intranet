@@ -1177,8 +1177,8 @@ if(!isset($_SESSION["usuarioID"])){
 
         <div id="tricoluna0" class="corClara" style="margin: 5px; padding: 10px; border: 1px solid; border-radius: 10px; min-height: 82px;">
             <div id="tricoluna1" class="box corClara" style="position: relative; float: left; width: 33%;">
+            <img src="imagens/settings.png" height="20px;" id="imgCombustConfig" style="cursor: pointer; padding-right: 20px;" onclick="carregaConfig();" title="Configurar o acesso ao controle de viaturas">
                 <input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Inserir" onclick="insereCompra();" title="Registrar abasteimento ou manutenção nas viaturas.">
-                <img src="imagens/settings.png" height="20px;" id="imgCombustConfig" style="cursor: pointer; padding-left: 20px;" onclick="carregaConfig();" title="Configurar o acesso ao controle de viaturas">
             </div>
             <div id="tricoluna2" class="box corClara" style="position: relative; float: left; width: 33%; text-align: center;">
                 <h5>Controle de Viaturas</h5>

@@ -70,7 +70,33 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     echo "<div style='text-align: center;'>Informe à ATI.</div>";
                     return false;
                 }
-                $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(dataleitura, 'DD/MM/YYYY'), date_part('dow', dataleitura), leitura1, leitura2, leitura3, dataleitura FROM ".$xProj.".leitura_agua WHERE ativo = 1 ORDER BY dataleitura DESC ");
+
+                $Condic = "ativo = 1";
+                if(isset($_REQUEST["mesano"])){
+                    $MesAno = addslashes(filter_input(INPUT_GET, 'mesano')); 
+                    if($MesAno != ""){
+                        $Proc = explode("/", $MesAno);
+                        $Mes = $Proc[0];
+                        if(strLen($Mes) < 2){
+                            $Mes = "0".$Mes;
+                        }
+                        $Ano = $Proc[1];
+                        $Condic = "ativo = 1 And DATE_PART('MONTH', dataleitura) = '$Mes' And DATE_PART('YEAR', dataleitura) = '$Ano'";
+                    }else{
+                        $Condic = "ativo = 1";
+                    }
+                }
+
+                if(isset($_REQUEST["ano"])){
+                    $Ano = filter_input(INPUT_GET, 'ano'); 
+                    if($Ano != ""){
+                        $Condic = "ativo = 1 And DATE_PART('YEAR', dataleitura) = '$Ano'";
+                    }else{
+                        $Condic = "ativo = 1";
+                    }
+                }
+
+                $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(dataleitura, 'DD/MM/YYYY'), date_part('dow', dataleitura), leitura1, leitura2, leitura3, dataleitura FROM ".$xProj.".leitura_agua WHERE $Condic ORDER BY dataleitura DESC ");
                 $row0 = pg_num_rows($rs0);
                 $Cont = 0;
                 $Leit24Ant = 0;

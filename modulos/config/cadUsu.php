@@ -1102,7 +1102,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td class="etiq80" style="border-bottom: 1px solid;" title="Ver os registros de leituras do consumo de água - Só fiscaliza. Não pode registrar.">Hidrômetro:</td>
                         <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
                             <input type="checkbox" id="fisc_Agua" title="Visualizar os registros de leitura do hidrômetro - Só fiscaliza. Não pode registrar." onchange="modif();" >
-                            <label for="fisc_Agua" title="Visualizar os registros de leitura do hidrômetro">Visualizar as leituras do hidrômetro</label>
+                            <label for="fisc_Agua" title="Visualizar os registros de leitura do hidrômetro">acompanhar e fiscalizar as leituras do hidrômetro</label>
                         </td>
                         <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(16);" title="Guia rápido"></td>
                     </tr>
@@ -1137,7 +1137,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td class="etiq80" style="border-bottom: 1px solid;" title="Ver os registros de leituras do consumo de eletricidade - Só fiscaliza. Não pode registrar.">Eletricidade:</td>
                         <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
                             <input type="checkbox" id="fisc_Eletric" title="Visualizar os registros dos medidores do consumo de eletricidade - Só fiscaliza. Não pode registrar." onchange="modif();" >
-                            <label for="fisc_Eletric" title="Visualizar os registros dos medidores do consumo de eletricidade">fiscalizar o consumo de eletricidade</label>
+                            <label for="fisc_Eletric" title="Visualizar os registros dos medidores do consumo de eletricidade">acompanhar e fiscalizar as leituras dos Medidores de Energia Elétrica</label>
                         </td>
                         <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(17);" title="Guia rápido"></td>
                     </tr>

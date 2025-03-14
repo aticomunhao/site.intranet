@@ -14,7 +14,8 @@ if($Acao=="buscaReg"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Erro = 0;
     $DiasDecorridos = 0;
-    $rs = pg_query($Conec, "SELECT to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), ".$xProj.".poslog.nomecompl, usuant, turno, numrelato, enviado, relato, codusu, ocor, (CURRENT_DATE - ".$xProj.".livroreg.dataocor), relsubstit, usuprox 
+    $rs = pg_query($Conec, "SELECT to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), ".$xProj.".poslog.nomecompl, usuant, turno, numrelato, enviado, relato, codusu, ocor, (CURRENT_DATE - ".$xProj.".livroreg.dataocor), relsubstit, 
+    usuprox, relatofisc, lidofisc 
     FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id 
     WHERE ".$xProj.".livroreg.id = $Cod");
     if(!$rs){
@@ -63,7 +64,6 @@ if($Acao=="buscaReg"){
                 $NomeProx = "";
             }
 
-
             $rs2 = pg_query($Conec, "SELECT descturno FROM ".$xProj.".livroturnos WHERE codturno = $tbl[3]");
             $row2 = pg_num_rows($rs2);
             if($row2 > 0){
@@ -91,7 +91,7 @@ if($Acao=="buscaReg"){
                 $FiscLro = 0;
             }
 
-            $var = array("coderro"=>$Erro, "data"=>$Data, "codusuins"=>$tbl[7], "nomeusuins"=>$NomeIns, "usuant"=>$tbl[2], "nomeusuant"=>$NomeAnt, "usuprox"=>$CodUsuProx, "nomeusuprox"=>$NomeProx, "turno"=>$tbl[3], "descturno"=>$DescTurno, "numrelato"=>$tbl[4], "enviado"=>$tbl[5], "relato"=>$tbl[6], "ocor"=>$tbl[8], "substit"=>$tbl[10], "acessoLro"=>$Lro, "fiscalizaLro"=>$FiscLro, "diasdecorridos"=>$DiasDecorridos);
+            $var = array("coderro"=>$Erro, "data"=>$Data, "codusuins"=>$tbl[7], "nomeusuins"=>$NomeIns, "usuant"=>$tbl[2], "nomeusuant"=>$NomeAnt, "usuprox"=>$CodUsuProx, "nomeusuprox"=>$NomeProx, "turno"=>$tbl[3], "descturno"=>$DescTurno, "numrelato"=>$tbl[4], "enviado"=>$tbl[5], "relato"=>$tbl[6], "ocor"=>$tbl[8], "substit"=>$tbl[10], "acessoLro"=>$Lro, "fiscalizaLro"=>$FiscLro, "diasdecorridos"=>$DiasDecorridos, "relatofisc"=>$tbl[12], "lidofisc"=>$tbl[13]);
         }else{
             $var = array("coderro"=>$Erro);
         }
@@ -249,6 +249,39 @@ if($Acao=="salvaRegEnv"){
     }else{
         $rs = pg_query($Conec, "UPDATE ".$xProj.".livroreg SET enviado = $Envia, usumodif = ".$_SESSION['usuarioID'].", datamodif = NOW() WHERE id = $Codigo");
     }
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao=="salvaRegFiscal"){
+    $Codigo = (int) filter_input(INPUT_GET, 'codigo');
+    $RelatFisc = trim(addslashes($_REQUEST['relatofisc']));
+    $Erro = 0;
+
+    $rs0 = pg_query($Conec, "SELECT usufiscalins FROM ".$xProj.".livroreg WHERE id = $Codigo");
+    $tbl0 = pg_fetch_row($rs0);
+    if($tbl0[0] == 0){
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".livroreg SET relatofisc = '$RelatFisc', lidofisc = 1, usufiscalins = ".$_SESSION['usuarioID'].", datafiscalins = NOW() WHERE id = $Codigo");
+    }else{
+        pg_query($Conec, "UPDATE ".$xProj.".livroreg SET relatofiscant = relatofisc WHERE id = $Codigo");
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".livroreg SET relatofisc = '$RelatFisc', lidofisc = 1, usufiscaledit = ".$_SESSION['usuarioID'].", datafiscaledit = NOW() WHERE id = $Codigo");
+    }
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao=="marcaLidoFiscal"){
+    $Codigo = (int) filter_input(INPUT_GET, 'codigo');
+    $Erro = 0;
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".livroreg SET lidofisc = 1, usufiscalins = ".$_SESSION['usuarioID'].", datafiscalins = NOW() WHERE id = $Codigo");
     if(!$rs){
         $Erro = 1;
     }

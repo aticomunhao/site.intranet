@@ -965,8 +965,8 @@ if(!isset($_SESSION["usuarioID"])){
                 <?php
                 if($Contr == 1){
                 ?>
+                    <img src="imagens/settings.png" height="20px;" style="cursor: pointer; padding-right: 30px;" onclick="abreContratosConfig();" title="Configurar o acesso aos contratos">
                     <button class="botpadrblue" id="botInsEmpr" onclick="Empresas();" title="Editar/Adicionar empresas">Empresas</button>
-                    <img src="imagens/settings.png" height="20px;" style="cursor: pointer; padding-left: 30px;" onclick="abreContratosConfig();" title="Configurar o acesso aos contratos">
                 <?php
                 }else{
                     echo "&nbsp;";

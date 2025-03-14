@@ -74,9 +74,19 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("botInserir").style.visibility = "hidden"; 
                     document.getElementById("botImprimir").style.visibility = "hidden"; 
                     document.getElementById("imgEletricConfig").style.visibility = "hidden"; 
+                    document.getElementById("etiqselecVisuMesAnoEletric").style.visibility = "hidden";
+                    document.getElementById("selecVisuMesAnoEletric").style.visibility = "hidden";
+                    document.getElementById("etiqselecVisuAnoEletric").style.visibility = "hidden";
+                    document.getElementById("selecVisuAnoEletric").style.visibility = "hidden";
+
                     if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 || parseInt(document.getElementById("FiscEletric").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // // se estiver marcado em cadusu para fazer a leitura
                         if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
                             document.getElementById("botInserir").style.visibility = "visible"; 
+                            document.getElementById("etiqselecVisuMesAnoEletric").style.visibility = "visible";
+                            document.getElementById("selecVisuMesAnoEletric").style.visibility = "visible";
+                            document.getElementById("etiqselecVisuAnoEletric").style.visibility = "visible";
+                            document.getElementById("selecVisuAnoEletric").style.visibility = "visible";
+
                             $("#container5").load("modulos/leituras/carEletric2.php");
                             $("#container6").load("modulos/leituras/carEstatEletric2.php");
                             //para inserir tem que estar marcado no cadastro de usuários e ter o nível adm estabelecido nos parâmetros do sistema
@@ -221,6 +231,16 @@ if(!isset($_SESSION["usuarioID"])){
                         ajax.send(null);
                     }
                 });
+
+                $("#selecVisuMesAnoEletric").change(function(){
+                    $("#container5").load("modulos/leituras/carEletric2.php?mesano="+encodeURIComponent(document.getElementById("selecVisuMesAnoEletric").value));
+                    $("#container6").load("modulos/leituras/carEstatEletric2.php?mesano="+encodeURIComponent(document.getElementById("selecVisuMesAnoEletric").value));
+                });
+                $("#selecVisuAnoEletric").change(function(){
+                    $("#container5").load("modulos/leituras/carEletric2.php?ano="+encodeURIComponent(document.getElementById("selecVisuAnoEletric").value));
+                    $("#container6").load("modulos/leituras/carEstatEletric2.php?ano="+encodeURIComponent(document.getElementById("selecVisuAnoEletric").value));
+                });
+
 
             }); // fim do ready
 
@@ -483,7 +503,6 @@ if(!isset($_SESSION["usuarioID"])){
                 });
             }
             
-
             function abreEletric2Config(){
                 document.getElementById("leituraEletric").checked = false;
                 document.getElementById("leituraEletric2").checked = false;
@@ -581,6 +600,11 @@ if(!isset($_SESSION["usuarioID"])){
             FROM ".$xProj.".leitura_eletric WHERE colec = 2 GROUP BY 1 ORDER BY 1 DESC ");
 
             $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
+            $OpcoesVisuMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataleitura2, 'MM'), '/', TO_CHAR(dataleitura2, 'YYYY')) 
+            FROM ".$xProj.".leitura_eletric WHERE colec = 2 GROUP BY TO_CHAR(dataleitura2, 'MM'), TO_CHAR(dataleitura2, 'YYYY') ORDER BY TO_CHAR(dataleitura2, 'YYYY') DESC, TO_CHAR(dataleitura2, 'MM') DESC ");
+            $OpcoesVisuAno = pg_query($Conec, "SELECT TO_CHAR(dataleitura2, 'YYYY') 
+            FROM ".$xProj.".leitura_eletric WHERE colec = 2 GROUP BY TO_CHAR(dataleitura2, 'YYYY') ORDER BY TO_CHAR(dataleitura2, 'YYYY') DESC");
+
         ?>
         <input type="hidden" id="guardahoje" value = "<?php echo $Hoje; ?>" />
         <input type="hidden" id="guardaerro" value = "<?php echo $Erro; ?>" />
@@ -594,13 +618,41 @@ if(!isset($_SESSION["usuarioID"])){
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div class="row"> <!-- botões Inserir e Imprimir-->
-                <div class="col" style="margin: 0 auto; text-align: left;" title="Inserir leitura do medidor de energia elétrica">
+                <div class="col" style="margin: 0 auto; text-align: left;">
                     <img src="imagens/settings.png" height="20px;" id="imgEletricConfig" style="cursor: pointer; padding-left: 30px;" onclick="abreEletric2Config();" title="Configurar o acesso ao processamento">
                     <label style="padding-right: 40px;"></label>
-                    <button id="botInserir" class="botpadrblue" onclick="insereModal();">Inserir</button>    
+                    <button id="botInserir" class="botpadrblue" onclick="insereModal();" title="Inserir leitura do medidor de energia elétrica">Inserir</button>    
+
+                    <label id="etiqselecVisuMesAnoEletric" style="padding-left: 20px; font-size: .8rem;">Visualisar Mês: </label>
+                    <select id="selecVisuMesAnoEletric" style="font-size: .8rem; width: 90px;" title="Selecione o mês/ano a visualisar.">
+                        <option value=""></option>
+                        <?php 
+                        if($OpcoesVisuMes){
+                            while ($Opcoes = pg_fetch_row($OpcoesVisuMes)){ ?>
+                                <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                            <?php 
+                            }
+                        }
+                        ?>
+                    </select>
+
                 </div> <!-- quadro -->
                 <div class="col" style="text-align: center;">Controle do Consumo de Energia Elétrica<?php echo " - ".$Menu2; ?></div> <!-- espaçamento entre colunas  -->
                 <div class="col" style="margin: 0 auto; text-align: center;">
+                    <label id="etiqselecVisuAnoEletric" style="padding-left: 20px; font-size: .8rem;">Visualisar Ano: </label>
+                    <select id="selecVisuAnoEletric" style="font-size: .8rem; width: 90px;" title="Selecione o ano a visualisar.">
+                        <option value=""></option>
+                        <?php 
+                        if($OpcoesVisuAno){
+                            while ($Opcoes = pg_fetch_row($OpcoesVisuAno)){ ?>
+                                <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                            <?php 
+                            }
+                        }
+                        ?>
+                    </select>
+                    <label style="padding-right: 30px;"></label>
+
                     <img src="imagens/iconGraf.png" height="46px;" id="botgrafico" style="cursor: pointer;" onclick="abreGrafico();" title="Gráfico de consumo anual">
                     <label styke="padding-right: 30px;"></label>
                     <button id="botImprimir" class="botpadrred" onclick="abreImprLeitura();">PDF</button>
@@ -666,7 +718,6 @@ if(!isset($_SESSION["usuarioID"])){
            </div>
            <br><br>
         </div> <!-- Fim Modal-->
-
 
          <!-- Modal configuração-->
          <div id="modalEletric2Config" class="relacmodal">
@@ -743,6 +794,7 @@ if(!isset($_SESSION["usuarioID"])){
                 </table>
             </div>
         </div> <!-- Fim Modal-->
+
         <!-- div modal para mostrar gráfico anual -->
         <div id="relacgrafico" class="relacmodal">
             <div class="modal-content-grafico">

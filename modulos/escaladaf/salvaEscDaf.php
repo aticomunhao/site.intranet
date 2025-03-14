@@ -401,7 +401,15 @@ if($Acao =="salvamesano"){
     $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf WHERE grupo_id = $NumGrupo And DATE_PART('MONTH', dataescala) = '$Mes' And DATE_PART('YEAR', dataescala) = '$Ano' ");
     $row1 = pg_num_rows($rs1);
 
-    $var = array("coderro"=>$Erro, "mesliberado"=>$MesLiberado, "temMes"=>$row1, "anoselec"=>$Ano);
+    $MesAtual = date('m');
+    $AnoAtual = date('Y');
+    $TanoMes = 0;
+    if($Mes <= $MesAtual && $Ano <= $AnoAtual){
+        $TanoMes = 1;
+    }
+    pg_query($Conec, "UPDATE ".$xProj.".escalas_gr SET editaesc = $TanoMes WHERE id = $NumGrupo ");
+
+    $var = array("coderro"=>$Erro, "mesliberado"=>$MesLiberado, "temMes"=>$row1, "anoselec"=>$Ano, "TaNoMes"=>$TanoMes);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -414,17 +422,46 @@ if($Acao =="insParticipante"){
     }else{
         $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);   
     }
-    //Apaga o dia
-    pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf_ins WHERE escaladaf_id = $CodDia;");
 
-    $rs0 = pg_query($Conec, "SELECT dataescala FROM ".$xProj.".escaladaf WHERE id = $CodDia And grupo_id = $NumGrupo");
+    $rs0 = pg_query($Conec, "SELECT dataescala, TO_CHAR(dataescala, 'MM'), TO_CHAR(dataescala, 'YYYY') FROM ".$xProj.".escaladaf WHERE id = $CodDia And grupo_id = $NumGrupo");
     $row0 = pg_num_rows($rs0);
     if($row0 > 0){
         $tbl0 = pg_fetch_row($rs0);
         $DataEscala = $tbl0[0];
+        $MesEscala = $tbl0[1];
+        $AnoEscala = $tbl0[2];
     }else{
         $DataEscala = "";
+        $MesEscala = "";
+        $AnoEscala = "";
     }
+
+    $rs = pg_query($Conec, "SELECT editaesc FROM ".$xProj.".escalas_gr WHERE id = $NumGrupo;");
+    $row = pg_num_rows($rs);
+    if($row > 0){
+        $tbl = pg_fetch_row($rs);
+        $EscalaFechada = $tbl[0];
+    }else{
+        $EscalaFechada = 0;
+    }
+
+    $MesAtual = date('m');
+    $AnoAtual = date('Y');
+    // guarda os turnos originais desse dia: $CodDia (id de escaladaf)
+//    if($MesEscala == $MesAtual && $AnoEscala == $AnoAtual){ // troca durante o mês vigente - Salvar antes de apagar
+    if($EscalaFechada == 1){ // 1 -> considerar como troca
+        pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf_trocas WHERE escaladaf_id = $CodDia And marca = 0");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_trocas (escaladaf_id, dataescala_orig, poslog_id, letra_orig, turno_orig, codturno_orig, horafolga_orig, grupo_id) 
+        SELECT escaladaf_id, dataescalains, poslog_id, letraturno, turnoturno, turnos_id, horafolga, grupo_ins 
+        FROM ".$xProj.".escaladaf_ins
+        WHERE escaladaf_id = $CodDia ;");
+    }else{
+        pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf_trocas WHERE escaladaf_id = $CodDia And grupo_id = $NumGrupo"); 
+    }
+
+    //Apaga o dia
+    pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf_ins WHERE escaladaf_id = $CodDia;");
+
     $rs = pg_query($Conec, "SELECT pessoas_id, ".$xProj.".poslog.daf_turno, ".$xProj.".escaladaf_turnos.letra, ".$xProj.".escaladaf_turnos.horaturno, ".$xProj.".escaladaf_turnos.destaq, ".$xProj.".escaladaf_turnos.cargacont, ".$xProj.".escaladaf_turnos.id, ".$xProj.".escaladaf_turnos.valeref 
     FROM ".$xProj.".poslog LEFT JOIN ".$xProj.".escaladaf_turnos ON ".$xProj.".poslog.daf_turno = ".$xProj.".escaladaf_turnos.id
     WHERE ".$xProj.".poslog.ativo = 1 And ".$xProj.".poslog.eft_daf = 1 And ".$xProj.".poslog.daf_marca = 1 And ".$xProj.".escaladaf_turnos.grupo_turnos = $NumGrupo");
@@ -460,7 +497,7 @@ if($Acao =="insParticipante"){
     if(!$rs){
         $Erro = 1;
     }
-    $var = array("coderro"=>$Erro, "row"=>$row);
+    $var = array("coderro"=>$Erro, "row"=>$row, "dataescala"=>$DataEscala);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -490,7 +527,6 @@ if($Acao =="salvaletra"){
     $responseText = json_encode($var);
     echo $responseText;
 }
-
 
 function limpar_texto($str){ 
 //    return preg_replace("/[^0-9]/", "", $str); 
@@ -622,10 +658,10 @@ if($Acao =="salvanota"){
     echo $responseText;
 }
 
-if($Acao =="insereletra"){
+if($Acao =="salvainsLetra"){
     $Erro = 0;
     $Ordem = (int) filter_input(INPUT_GET, 'ordem');
-    $Letra = filter_input(INPUT_GET, 'insletra');
+    $Letra = strtoupper(filter_input(INPUT_GET, 'insletra'));
 
     if(isset($_REQUEST["numgrupo"])){ //grupo escolhido
         $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal que pode editar escala
@@ -636,30 +672,26 @@ if($Acao =="insereletra"){
         $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
     }
 
-    $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_turnos");
-    $tblCod = pg_fetch_row($rsCod);
-    $Codigo = $tblCod[0];
-    $CodigoNovo = ($Codigo+1);
-
-    $rs = pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, ordemletra, letra, horaturno, usuins, datains) 
-    VALUES($CodigoNovo, $NumGrupo, $Ordem, UPPER('$Letra'), '00:00 / 00:00', $UsuIns, NOW() )");
-    if(!$rs){
-        $Erro = 1;
+    $row1 = 0;
+    $rs1 = pg_query($Conec, "SELECT letra, infotexto FROM ".$xProj.".escaladaf_turnos WHERE letra = '$Letra' And grupo_turnos = $NumGrupo and ativo = 1");
+    $row1 = pg_num_rows($rs1);
+    if($row1 > 0){
+        $Erro = 2;
     }
-        //Calcular carga horaria
-//        $Proc = explode("/", $Turno);
-//        $HoraI = $Proc[0];
-//        $HoraF = $Proc[1];
-//        $TurnoIni = $Hoje." ".$HoraI;
-//        $TurnoFim = $Hoje." ".$HoraF;
-//        pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET calcdataini = '$TurnoIni', calcdatafim = '$TurnoFim' WHERE id = $CodigoNovo");
-//        pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargahora = (calcdatafim - calcdataini) WHERE id = $CodigoNovo");
-//
-//        pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '01:00'), interv = '01:00' WHERE cargahora >= '08:00' And id = $CodigoNovo ");
-//        pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = (cargahora - time '00:15'), interv = '00:15' WHERE cargahora >= '06:00' And cargahora < '08:00' And id = $CodigoNovo ");
-//        pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET cargacont = cargahora, interv = '00:00' WHERE cargahora <= '06:00' And id = $CodigoNovo ");
 
-    $var = array("coderro"=>$Erro, "codigonovo"=>$CodigoNovo);
+    if($row1 == 0){
+        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_turnos");
+        $tblCod = pg_fetch_row($rsCod);
+        $Codigo = $tblCod[0];
+        $CodigoNovo = ($Codigo+1);
+
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_turnos (id, grupo_turnos, ordemletra, letra, horaturno, usuins, datains) 
+        VALUES($CodigoNovo, $NumGrupo, $Ordem, UPPER('$Letra'), '00:00 / 00:00', $UsuIns, NOW() )");
+        if(!$rs){
+            $Erro = 1;
+        }
+    }
+    $var = array("coderro"=>$Erro);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -690,6 +722,19 @@ if($Acao =="liberaMes"){
 
     $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf SET liberames = $Valor WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");    
 
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="editaEscala"){
+    $Erro = 0;
+    $Valor = (int) filter_input(INPUT_GET, 'valor');
+    $CodEscala = addslashes(filter_input(INPUT_GET, 'codescala')); 
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".escalas_gr SET editaesc = $Valor WHERE id = $CodEscala ");
     if(!$rs){
         $Erro = 1;
     }
@@ -859,6 +904,15 @@ if($Acao =="transfmesano"){
         $Erro = 1;
     }
 
+
+    $MesAtual = date('m');
+    $AnoAtual = date('Y');
+    $TanoMes = 0;
+    if($Mes <= $MesAtual && $Ano <= $AnoAtual){
+        $TanoMes = 1;
+    }
+    pg_query($Conec, "UPDATE ".$xProj.".escalas_gr SET editaesc = $TanoMes WHERE id = $NumGrupo ");
+
     $var = array("coderro"=>$Erro, "novadata"=>$NovaData, "NumDia"=>$DiaSemDia);
     $responseText = json_encode($var);
     echo $responseText;
@@ -1007,8 +1061,8 @@ if($Acao =="trocagrupo"){
             $SiglaGrupo = "";
         }
 //    }
+
     //Procura mes de consulta salvo pelo usuário
-//    $MesSalvo = parEsc("mes_escdaf", $Conec, $xProj, $_SESSION["usuarioID"]);
     if(isset($_REQUEST["selecmes"])){
         $MesSalvo = $_REQUEST["selecmes"]; // quando vem do fiscal
     }else{
@@ -1023,6 +1077,22 @@ if($Acao =="trocagrupo"){
         $MesSalvo = date("m")."/".date("Y");
         pg_query($Conec, "UPDATE ".$xProj.".poslog SET mes_escdaf = '$MesSalvo' WHERE pessoas_id = ". $_SESSION["usuarioID"]."" );
     }
+
+
+    $Proc = explode("/", $MesSalvo);
+    $Mes = $Proc[0];
+    if(strLen($Mes) < 2){
+        $Mes = "0".$Mes;
+    }
+    $Ano = $Proc[1];
+    
+    $MesAtual = date('m');
+    $AnoAtual = date('Y');
+    $TanoMes = 0;
+    if($Mes <= $MesAtual && $Ano <= $AnoAtual){
+        $TanoMes = 1;
+    }
+    pg_query($Conec, "UPDATE ".$xProj.".escalas_gr SET editaesc = $TanoMes WHERE id = $NumGrupo ");
 
     $var = array("coderro"=>$Erro, "siglagrupo"=>$SiglaGrupo, "mesSalvo"=>$MesSalvo, "temMes"=>$rowMes);
     $responseText = json_encode($var);
@@ -1133,6 +1203,7 @@ if($Acao =="buscaOrdem"){
     if($NumGrupo == 0 || $NumGrupo == ""){
         $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
     }
+
     $Erro = 0;
     $rs0 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_turnos WHERE grupo_turnos = $NumGrupo And ativo = 1");
     $row0 = pg_num_rows($rs0);
@@ -1340,30 +1411,6 @@ if($Acao == "carregames"){ // sem uso
     }
 
     $var = array("coderro"=>$Erro, "Num1"=>$Num1);
-    $responseText = json_encode($var);
-    echo $responseText;
-}
-
-if($Acao =="buscaLetra"){
-    $Erro = 0;
-    $Letra = filter_input(INPUT_GET, 'letra');
-    if(isset($_REQUEST["numgrupo"])){ //grupo escolhido
-        $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal que pode editar escala
-    }else{
-        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
-    }
-    if($NumGrupo == 0 || $NumGrupo == ""){
-        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
-    }
-
-    $row1 = 0;
-    $rs1 = pg_query($Conec, "SELECT letra, infotexto FROM ".$xProj.".escaladaf_turnos WHERE letra = UPPER('$Letra') And grupo_turnos = $NumGrupo");
-    if(!$rs1){
-        $Erro = 1;
-    }else{
-        $row1 = pg_num_rows($rs1);
-    }
-    $var = array("coderro"=>$Erro, "jatem"=>$row1, "grupo"=>$NumGrupo, "letra"=>"SELECT letra, infotexto FROM ".$xProj.".escaladaf_turnos WHERE UPPER(letra) = '$Letra' And grupo_turnos = $NumGrupo");
     $responseText = json_encode($var);
     echo $responseText;
 }

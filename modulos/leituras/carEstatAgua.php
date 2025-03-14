@@ -49,10 +49,34 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         $tblY = pg_fetch_row($rsY);
         $MaxY = number_format($tblY[0], 0, ",",".");
         
+        $Condic = "dataleitura IS NOT NULL And leitura1 != 0 And ativo = 1";
+        if(isset($_REQUEST["mesano"])){
+            $MesAno = addslashes(filter_input(INPUT_GET, 'mesano')); 
+            if($MesAno != ""){
+                $Proc = explode("/", $MesAno);
+                $Mes = $Proc[0];
+                if(strLen($Mes) < 2){
+                    $Mes = "0".$Mes;
+                }
+                $Ano = $Proc[1];
+                $Condic = "dataleitura IS NOT NULL And leitura1 != 0 And ativo = 1 And DATE_PART('MONTH', dataleitura) = '$Mes' And DATE_PART('YEAR', dataleitura) = '$Ano'";
+            }else{
+                $Condic = "dataleitura IS NOT NULL And leitura1 != 0 And ativo = 1";
+            }
+        }
+
+        if(isset($_REQUEST["ano"])){
+            $Ano = filter_input(INPUT_GET, 'ano'); 
+            if($Ano != ""){
+                $Condic = "dataleitura IS NOT NULL And leitura1 != 0 And ativo = 1 And DATE_PART('YEAR', dataleitura) = '$Ano'";
+            }else{
+                $Condic = "dataleitura IS NOT NULL And leitura1 != 0 And ativo = 1";
+            }
+        }
 
         $rs1 = pg_query($Conec, "SELECT DATE_PART('YEAR', dataleitura), DATE_PART('MONTH', dataleitura), COUNT(id), SUM(leitura1), SUM(leitura2), SUM(leitura3) 
         FROM ".$xProj.".leitura_agua 
-        WHERE dataleitura IS NOT NULL And leitura1 != 0 And ativo = 1 
+        WHERE $Condic 
         GROUP BY DATE_PART('YEAR', dataleitura), DATE_PART('MONTH', dataleitura) ORDER BY DATE_PART('YEAR', dataleitura) DESC, DATE_PART('MONTH', dataleitura) DESC ");
 
         $row1 = pg_num_rows($rs1);

@@ -84,7 +84,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
          <!-- Apresenta os usuários do setor com o nível administrativo -->
         <div style="padding: 10px;">
             <?php
-            $rs0 = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), turno, descturno, numrelato, nomeusual, usuant, enviado, codusu, ocor, date_part('dow', dataocor) 
+            $rs0 = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), turno, descturno, numrelato, nomeusual, usuant, enviado, codusu, ocor, date_part('dow', dataocor), 
+            lidofisc, relatofisc 
             FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id
             WHERE ".$xProj.".livroreg.ativo = 1 And AGE(".$xProj.".livroreg.dataocor, CURRENT_DATE) <= '1 YEAR' 
             ORDER BY ".$xProj.".livroreg.dataocor DESC, ".$xProj.".livroreg.turno DESC, ".$xProj.".livroreg.numrelato DESC");
@@ -105,6 +106,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <th style="display: none;"></th>
                         <th style="display: none;"></th>
                         <th style="text-align: center;" title="Houve ocorrências?">Ocor</th>
+                        <th style="text-align: center;" title="Visto da Administração">Adm</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -112,7 +114,13 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     while ($tbl0 = pg_fetch_row($rs0)){
                         $Cod = $tbl0[0]; // id
                         $Data = $tbl0[1]; 
-                        $Turno = $tbl0[2]; 
+                        $Turno = $tbl0[2];
+                        $Visto = $tbl0[11]; 
+                        if(is_null($tbl0[12]) || $tbl0[12] == ""){ // relato do fiscal 
+                            $RelFiscal = 0;
+                        }else{
+                            $RelFiscal = 1;
+                        }
                         $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".livroreg WHERE to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY') = '$Data' And turno = $Turno And id != $Cod");
                         $row1 = pg_num_rows($rs1);
                     ?>
@@ -127,6 +135,17 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td style="display: none;"><?php echo $tbl0[7]; ?></td> <!-- relato já enviado -->
                             <td style="display: none;"><?php echo $tbl0[8]; ?></td> <!-- codusu - quem inseriu o relato -->
                             <td style="font-size: 80%; text-align: center; <?php if($tbl0[9] == 1){echo "color: red; font-weight: bold;";}else{echo "color: black; font-weight: normal;";} ?>" title="Houve Ocorrência?"><?php if($tbl0[9] == 1){echo "Sim";}else{echo "Não";} ?></td>
+
+                            <td style="font-size: 80%; text-align: center;" title="Visto da Administração"> 
+                                <?php 
+                                if($Visto == 1){
+                                    echo "<img src='imagens/ok.png' height='14px;' title='Visto'>"; 
+                                }
+                                if($RelFiscal == 1){
+                                    echo "<img src='imagens/icons8-pencil-26.png' height='10px;' title='Anotação da administração'>";
+                                }
+                                ?> 
+                            </td>
                         </tr>
                     <?php
                     }

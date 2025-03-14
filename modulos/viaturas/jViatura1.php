@@ -57,7 +57,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             WHERE ".$xProj.".viaturas.ativo = 1 ORDER BY datacompra DESC ");
 
             ?>
-            <div  style="text-align: center;"><label class="titRelat">Aquisições<label></div>
+            <div  style="text-align: center;"><label class="titRelat">Registros<label></div>
                 <table id="idTabela" class="display" style="margin: 0 auto; width: 95%;">
                     <thead>
                         <tr>

@@ -263,12 +263,33 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("guardaenviado").value = Resp.enviado; // encerrou o relato - não edita mais
                                         if(parseInt(Resp.enviado) === 1){
                                             document.getElementById("mostramensagem").innerHTML = "Registro Enviado.";
+                                            document.getElementById("mostrarelatofiscal").value = Resp.relatofisc;
 //Botão inserir complemento - Aguardando determinar tempo 
                                             if(parseInt(Resp.codusuins) === parseInt(document.getElementById("guardaUsuId").value)){ // turno de outro funcionário
                                                 if(parseInt(Resp.diasdecorridos) < 1){ //    diasdecorridos < 1 -> no mesmo dia
                                                     document.getElementById("botRedigirCompl").style.visibility = "visible";
                                                 }
                                             }
+                                            document.getElementById('etiqmostrarelatofiscal').style.visibility = "visible";
+                                            document.getElementById('mostrarelatofiscal').style.visibility = "visible";
+                                            document.getElementById('botsalvaRelFisc').style.visibility = "hidden";
+                                            document.getElementById('botmarcaLido').style.visibility = "hidden";
+                                            document.getElementById('imgmarcaLido').style.visibility = "hidden";
+                                            if(parseInt(document.getElementById("fiscalLRO").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
+                                                if(parseInt(Resp.lidofisc) === 0){
+                                                    document.getElementById('botmarcaLido').style.visibility = "visible";
+                                                }else{
+                                                    document.getElementById('imgmarcaLido').style.visibility = "visible";
+                                                }
+                                                document.getElementById('mostrarelatofiscal').disabled = false;
+                                            }
+                                        }else{
+                                            document.getElementById('mostrarelatofiscal').disabled = true;
+                                            document.getElementById('etiqmostrarelatofiscal').style.visibility = "hidden";
+                                            document.getElementById('mostrarelatofiscal').style.visibility = "hidden";
+                                            document.getElementById('botsalvaRelFisc').style.visibility = "hidden";
+                                            document.getElementById('botmarcaLido').style.visibility = "hidden";
+                                            document.getElementById('imgmarcaLido').style.visibility = "hidden";
                                         }
                                         document.getElementById("mostrarelatosubstit").value = Resp.substit;
                                         document.getElementById("relacMostramodalReg").style.display = "block";
@@ -473,7 +494,7 @@ if(!isset($_SESSION["usuarioID"])){
                         return false;
                     }
                 }
-                 if(!validaData(document.getElementById("dataocor").value)){
+                if(!validaData(document.getElementById("dataocor").value)){
                     let element = document.getElementById('dataocor');
                     element.classList.add('destacaBorda');
                     $.confirm({
@@ -718,6 +739,63 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 }
             }
+
+            function mostraBotSalvar(){
+                document.getElementById('botsalvaRelFisc').style.visibility = "visible";
+            }
+            function salvaRelFisc(){
+                if(document.getElementById("mostrarelatofiscal").value == ""){
+                    $('#mostramensagemfisc').fadeIn("slow");
+                    document.getElementById("mostramensagemfisc").innerHTML = "Escreva o relato";
+                    $('#mostramensagemfisc').fadeOut(3000);
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/lro/salvaReg.php?acao=salvaRegFiscal&codigo="+document.getElementById("guardacod").value
+                    +"&relatofisc="+encodeURIComponent(document.getElementById("mostrarelatofiscal").value), true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.")
+                                }else{
+                                    document.getElementById("mudou").value = "0";
+                                    document.getElementById("relacMostramodalReg").style.display = "none";
+                                    $("#carregaReg").load("modulos/lro/relReg.php");
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function marcaLidoFisc(){
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/lro/salvaReg.php?acao=marcaLidoFiscal&codigo="+document.getElementById("guardacod").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.")
+                                }else{
+                                    document.getElementById("mudou").value = "0";
+                                    document.getElementById("relacMostramodalReg").style.display = "none";
+                                    $("#carregaReg").load("modulos/lro/relReg.php");
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
             function insSubstit(){
                 if(document.getElementById("selectsubstit").value != ""){
                     if(document.getElementById("relatosubstit").value == ""){
@@ -859,6 +937,7 @@ if(!isset($_SESSION["usuarioID"])){
                     window.open("modulos/lro/imprReg.php?acao=impr&codigo="+document.getElementById("guardacod").value, document.getElementById("guardacod").value);
                 }
             }
+
             function abreimprLRO(){
                 document.getElementById("relacimprLRO").style.display = "block";
             }
@@ -945,7 +1024,8 @@ if(!isset($_SESSION["usuarioID"])){
             return false;
         }
 
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".livroreg SET enviado = 1 WHERE datains < (NOW() - interval '13 hour') "); // marca enviado após 13 horas de inserido - o turno 3 tem 12 horas
+        //Marca enviado após 13 horas de inserido
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".livroreg SET enviado = 1 WHERE datains < (NOW() - interval '13 hour') And enviado = 0"); // marca enviado após 13 horas de inserido - o turno 3 tem 12 horas
 
         $admIns = parAdm("insocor", $Conec, $xProj);   // nível para inserir 
         $admEdit = parAdm("editocor", $Conec, $xProj); // nível para editar
@@ -1164,9 +1244,21 @@ if(!isset($_SESSION["usuarioID"])){
                         <textarea class="form-control" disabled id="mostrarelatosubstit" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="4" cols="80" ></textarea>
                     </div>
                     <div id="mostramensagem" style="color: red; font-weight: bold;"></div>
-                    <div style="text-align: center; padding-bottom: 10px;">
+                    <div style="text-align: center; padding-top: 10px;">
                         <button id="botedit" class="botpadrblue" onclick="carregaModal();">Editar</button>
                     </div>
+
+                    <div id="etiqmostrarelatofiscal" class="aEsq">
+                        <label class="etiqAzul" style="padding-right: 20px;"> - Considerações da Administração: </label>
+                        <img id="imgmarcaLido" src="imagens/ok.png" height="15px;" title="Visto OK">
+                        <button id="botsalvaRelFisc" class="botpadrblue" style="font-size: 70%; padding: 2px;" onclick="salvaRelFisc();" title="Salva e marca como lido.">Salvar</button>
+                        <label class="etiqAzul" style="padding-left: 20px;">
+                        <button id="botmarcaLido" class="botpadrblue" style="font-size: 70%; padding: 2px;" onclick="marcaLidoFisc();" title="Só marca como lido.">Marcar Lido</button>
+                    </div>
+                    <div class="col-xs-6 style="text-align: center; padding-bottom: 10px;">
+                        <textarea class="form-control" disabled id="mostrarelatofiscal" onkeydown="mostraBotSalvar();" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="2" cols="60" ></textarea>
+                    </div>
+                    <div id="mostramensagemfisc" style="color: red; font-weight: bold;"></div>
                 </div>
            </div>
         </div> <!-- Fim Modal-->

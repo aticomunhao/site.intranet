@@ -861,8 +861,8 @@ if(!isset($_SESSION["usuarioID"])){
 
         <div style="margin: 20px; border: 2px solid blue; border-radius: 15px; padding: 20px; min-height: 200px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
+            <img src="imagens/settings.png" height="20px;" id="imagconfig" style="cursor: pointer; padding-right: 30px;" onclick="carregaConfig();" title="Configurar tipos de extintor e empresas de manutenção">
                 <input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Inserir Novo Extintor" onclick="insExtintor();">
-                <img src="imagens/settings.png" height="20px;" id="imagconfig" style="cursor: pointer; padding-left: 30px;" onclick="carregaConfig();" title="Configurar tipos de extintor e empresas de manutenção">
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <h5>Controle de Extintores</h5>

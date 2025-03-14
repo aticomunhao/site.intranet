@@ -728,8 +728,8 @@ if(!isset($_SESSION["usuarioID"])){
         ?>
         <div style="margin: 20px; border: 2px solid #009900; border-radius: 15px; padding: 20px; min-height: 200px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
+            <img src="imagens/settings.png" height="20px;" style="cursor: pointer; padding-right: 30px;" onclick="carregaConfig();" title="Configurar empresas de manutenção de Elevadores">
                 <input type="button" id="botinserir" class="resetbot fundoVerde" style="font-size: 80%;" value="Inserir Novo Elevador" onclick="insElev();">
-                <img src="imagens/settings.png" height="20px;" style="cursor: pointer; padding-left: 30px;" onclick="carregaConfig();" title="Configurar empresas de manutenção de Elevadores">
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center; border: 2px solid #C0C0C0; border-radius: 10px;">
                 <label style="font-size: 1.3em; padding-left: 5px;">Controle da Manutenção dos</label><label style="font-size: 1.3em; font-weight: bold; color: #000066; padding-right: 5px;">&nbsp;Elevadores</label>

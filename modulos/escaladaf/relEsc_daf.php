@@ -51,8 +51,8 @@
     $PrimCargo = parAdm("primcargo_daf", $Conec, $xProj); // visualisar primeiro o cargo no quadro
     $CorListas = parEsc("corlistas_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
 
-    echo "Mês: ".$MesSalvo;
-    echo "<br><br>";
+ //   echo "Mês: ".$MesSalvo;
+ //   echo "<br><br>";
 
     if(isset($_REQUEST["numgrupo"])){
         $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal
@@ -104,6 +104,23 @@
 
     $rs2 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual, cargo_daf FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl ");
     $row2 = pg_num_rows($rs2);
+
+    $rs = pg_query($Conec, "SELECT editaesc FROM ".$xProj.".escalas_gr WHERE id = $NumGrupo;");
+    $row = pg_num_rows($rs);
+    if($row > 0){
+        $tbl = pg_fetch_row($rs);
+        $EscalaFechada = $tbl[0];
+    }else{
+        $EscalaFechada = 0;
+    }
+    ?>
+        <div class="col" style="position: relative; float: left; width: 33%;">&nbsp;</div>
+        <div class="col" style="position: relative; float: left; width: 33%; padding-bottom: 10px;"><?php echo "Mês: ".$MesSalvo; ?></div>
+        <div class="col" style="position: relative; float: right; width: 33%;">
+            <label id="etiqeditaEscala" for="editaEscala" class="etiqAzul" style="padding-left: 20px; <?php if($EscalaFechada == 0){echo "color: #036;";}else{echo "color: red; ";} ?>" title="Considera/desconsidera as mudanças como Troca de Serviço">Escala Fechada</label>
+            <input type="checkbox" id="editaEscala" <?php if($EscalaFechada == 1){echo "CHECKED";}; ?> title="Considera/desconsidera as mudanças como Troca de Serviço" onchange="editaEscala(this);" >
+        </div>
+    <?php
 
     if($row2 > 0){
         echo "<table style='margin: 0 auto; width: 99%;'>";
@@ -239,18 +256,57 @@
                                             $diaFer = 1;
                                         }
 
+                                        //Procura troca de letra em escaladaf_trocas
+                                        $ProcTroca = $tbl4[0];
+                                        $Troca = 0;
+                                        $rsTroc = pg_query($Conec, "SELECT letra_orig, ".$xProj.".escaladaf_trocas.id 
+                                        FROM ".$xProj.".escaladaf_trocas INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_trocas.poslog_id = ".$xProj.".poslog.pessoas_id 
+                                        WHERE escaladaf_id = $CodEsc And poslog_id = $Cod And ".$xProj.".poslog.ativo = 1 And letra_orig != '$ProcTroca'");
+                                        $rowTroc = pg_num_rows($rsTroc);
+    
+                                        if($rowTroc > 0){
+                                            $LetraOrig = ""; // para o title da letra
+                                            while($tblTroc = pg_fetch_row($rsTroc)){
+                                                $idTroc = $tblTroc[1];
+                                                $LetraOrig = $LetraOrig." ".$tblTroc[0];
+                                                pg_query($Conec, "UPDATE ".$xProj.".escaladaf_trocas SET marca = 1 WHERE id = $idTroc");
+                                            }
+                                            if($rowTroc == 1){
+                                                $LetraOrig = "Letra original: ".$LetraOrig;
+                                            }
+                                            if($rowTroc > 1){
+                                                $LetraOrig = "Letras anteriores: ".$LetraOrig;
+                                            }
+                                            $Troca = 1;
+                                        }else{
+                                            $LetraOrig = "";
+                                        }
+
                                         if($tbl4[2] == 0){ // sem destaque
                                             if($Sem == 0 || $diaFer == 1){ // domingo ou feriado
                                                 if($ValeRef == 0){ // sem Vale refeição
-                                                    echo "<div class='quadrodiaCinza' style='border-width: 2px; border-color: red;' title='Sem vale refeição'> $tbl4[0] </div>";
+                                                    echo "<div class='quadrodiaCinza' style='border-width: 2px; border-color: red; ";
+                                                    if($Troca == 1){echo "border: 2px solid red; border-radius: 10px; ";};
+                                                    echo "' title='Sem vale refeição. $LetraOrig'> $tbl4[0]";
+                                                    echo "</div>";
                                                 }else{
-                                                    echo "<div class='quadrodiaCinza'> $tbl4[0] </div>";
+                                                    if($Troca == 1){
+                                                        echo "<div class='quadrodiaCinza' style='border: 2px solid; border-radius: 10px;' title='$LetraOrig'> $tbl4[0] </div>";
+                                                    }else{
+                                                        echo "<div class='quadrodiaCinza' title='$LetraOrig'> $tbl4[0] </div>";
+                                                    }
                                                 }
                                             }else{
                                                 if($ValeRef == 0){ // sem Vale refeição
-                                                    echo "<div class='quadrodia' style='border-width: 2px; border-color: red; background-color: $CorFundo;' title='Sem vale refeição'> $tbl4[0] </div>";
+                                                    echo "<div class='quadrodia' style='border-width: 2px; border-color: red; background-color: $CorFundo; "; 
+                                                    if($Troca == 1){echo "border: 2px solid red; border-radius: 10px;";}
+                                                    echo "' title='Sem vale refeição. $LetraOrig'> $tbl4[0] ";
+                                                    echo "</div>";
                                                 }else{
-                                                    echo "<div class='quadrodia' style='background-color: $CorFundo;'> $tbl4[0] </div>";
+                                                    echo "<div class='quadrodia' style='background-color: $CorFundo; "; 
+                                                    if($Troca == 1){echo "border: 2px solid; border-radius: 10px;";}
+                                                    echo "' title='$LetraOrig'> $tbl4[0] ";
+                                                    echo "</div>";
                                                 }
                                             }
                                         }else{ // com destaque
@@ -267,9 +323,15 @@
 
                                             if($tbl4[0] != ""){
                                                 if($tbl4[5] == 0){ // sem vale refeição
-                                                    echo "<div class='quadrodia' style='background-color: $Cor; border-width: 2px; border-color: red;' title='Sem vale refeição'> $tbl4[0] </div>";
+                                                    echo "<div class='quadrodia' style='background-color: $Cor; border-width: 2px; border-color: red; ";
+                                                    if($Troca == 1){echo "border: 2px solid red; border-radius: 10px; ";};
+                                                    echo "' title='Sem vale refeição. $LetraOrig'> $tbl4[0] ";
+                                                    echo "</div>";
                                                 }else{
-                                                    echo "<div class='quadrodia' style='background-color: $Cor;'> $tbl4[0] </div>";
+                                                    echo "<div class='quadrodia' style='background-color: $Cor; ";
+                                                    if($Troca == 1){echo "border: 2px solid; border-radius: 10px; "; }; 
+                                                    echo "' title='$LetraOrig'> $tbl4[0] ";
+                                                    echo "</div>";
                                                 }
                                             }else{
                                                 echo "<div class='quadrodia' style='background-color: $Cor;'> &nbsp; </div>";
@@ -301,7 +363,7 @@
             echo "</tr>";
         echo "</table>";
     }else{
-         echo "Nenhum usuário participa desta escala. Use as configurações ";
+         echo "<br><br>Nenhum usuário participa desta escala. Use as configurações ";
 //          echo "<img src='imagens/settings.png' height='15px;' style='cursor: pointer;' onclick='abreEscalaConfig();'>";
         echo "<img src='imagens/settings.png' height='15px;'>";
         echo " para definir os participantes.";
