@@ -32,8 +32,8 @@
         </script>
     </head>
     <body>
-        <div class="container">
-            <img src='imagens/OrganogramaComunhao_2021.png' alt='Organograma Comunhão'>
+        <div class="container" style="text-align: center;">
+            <img src='imagens/OrganogramaImg.png' alt='Organograma'>
         </div>
     </body>
 </html>

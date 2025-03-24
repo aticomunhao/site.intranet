@@ -31,7 +31,7 @@
             <?php
                 if($row > 0){
                     while($tbl = pg_fetch_row($rs)){
-                        $Cod = $tbl[0]; // id de quadrohor
+                        $Cod = $tbl[0];
                         ?>
                         <tr>
                             <td style="display: none;"><?php echo $Cod; ?></td>

@@ -59,23 +59,12 @@ if(!isset($_SESSION["usuarioID"])){
                 width: 55%;
                 max-width: 900px;
             }
-            .corEscura{
-                color: #FFFFFF;
-                background-color: #101418;
-            }
-            .corClara{
-                color: #000000;
-                background-color: #FFFAFA;
-            }
            .quadro{
                 position: relative; float: left; margin: 5px; width: 95%; border: 1px solid; border-radius: 10px; padding: 2px; padding-top: 5px;
             }
-            tr td {
-                border: 0px solid;
-            }
+
         </style>
         <script>
-            mudaTema(document.getElementById("guardaTema").value);
             function ajaxIni(){
                 try{
                 ajax = new ActiveXObject("Microsoft.XMLHTTP");}
@@ -93,6 +82,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
             $(document).ready(function(){
+                $('#carregaTema').load('modulos/config/carTema.php?carpag=viaturas');
                 document.getElementById("botinserir").disabled = true; // botão de inserir compra   || parseInt(document.getElementById("fiscal").value) === 1
                 document.getElementById("botimpr").disabled = true;
                 document.getElementById("imgCombustConfig").style.visibility = "hidden";
@@ -221,91 +211,7 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#valormanut").mask("99999999,99");
                 $("#volumecompra").mask("9999999,99");
 
-                
-
-
-
             }); // Fim ready
-
-            function mudaTema(Valor){
-                if(parseInt(Valor) === 0){
-                    document.getElementsByTagName("body")[0].style.background = "#FFFAFA";
-                    var element = document.getElementById("container3");
-                    element.classList.remove("corEscura");
-                    element.classList.add("corClara");
-                    var element = document.getElementById("tricoluna0");
-                    element.classList.remove("corEscura");
-                    element.classList.add("corClara");
-                    var element = document.getElementById("etiqcorFundo");
-                    element.classList.remove("corEscura");
-                    element.classList.add("corClara");
-                    var element = document.getElementById("tricoluna1");
-                    element.classList.remove("corEscura");
-                    element.classList.add("corClara");
-                    var element = document.getElementById("tricoluna2");
-                    element.classList.remove("corEscura");
-                    element.classList.add("corClara");
-                    var element = document.getElementById("tricoluna3");
-                    element.classList.remove("corEscura");
-                    element.classList.add("corClara");
-                    var element = document.getElementById("container5");
-                    element.classList.remove("corEscura");
-                    element.classList.add("corClara");
-                    var element = document.getElementById("intercolunas");
-                    element.classList.remove("corEscura");
-                    element.classList.add("corClara");
-                    var element = document.getElementById("container6");
-                    element.classList.remove("corEscura");
-                    element.classList.add("corClara");
-                }else{
-                    document.getElementsByTagName("body")[0].style.background = "#101418";
-                    var element = document.getElementById("container3");
-                    element.classList.remove("corClara");
-                    element.classList.add("corEscura");
-                    var element = document.getElementById("tricoluna0");
-                    element.classList.remove("corClara");
-                    element.classList.add("corEscura");
-                    var element = document.getElementById("etiqcorFundo");
-                    element.classList.remove("corClara");
-                    element.classList.add("corEscura");
-                    var element = document.getElementById("tricoluna1");
-                    element.classList.remove("corClara");
-                    element.classList.add("corEscura");
-                    var element = document.getElementById("tricoluna2");
-                    element.classList.remove("corClara");
-                    element.classList.add("corEscura");
-                    var element = document.getElementById("tricoluna3");
-                    element.classList.remove("corClara");
-                    element.classList.add("corEscura");
-                    var element = document.getElementById("intercolunas");
-                    element.classList.remove("corClara");
-                    element.classList.add("corEscura");
-                    var element = document.getElementById("container5");
-                    element.classList.remove("corClara");
-                    element.classList.add("corEscura");
-                    var element = document.getElementById("container6");
-                    element.classList.remove("corClara");
-                    element.classList.add("corEscura");
-                }
-                ajaxIni(); // guarda o valor individual
-                if(ajax){
-                    ajax.open("POST", "modulos/viaturas/salvaViatura.php?acao=salvaTema&valor="+Valor, true);
-                    ajax.onreadystatechange = function(){
-                        if(ajax.readyState === 4 ){
-                            if(ajax.responseText){
-//alert(ajax.responseText);
-                                Resp = eval("(" + ajax.responseText + ")");
-                                if(parseInt(Resp.coderro) === 1){
-                                    alert("Houve um erro ao salvar.")
-                                }else{
-
-                                }
-                            }
-                        }
-                    };
-                    ajax.send(null);
-                }
-            }
 
             function carregaModal(Cod){
                 document.getElementById("guardacod").value = Cod;
@@ -1170,7 +1076,6 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardaUsuId" value="<?php echo $_SESSION["usuarioID"]; ?>" />
         <input type="hidden" id="editor" value="<?php echo $Viat; ?>" />
         <input type="hidden" id="fiscal" value="<?php echo $FiscViat; ?>" />
-        <input type="hidden" id="guardaTema" value="<?php echo $Tema; ?>" />
         <input type="hidden" id="guardaCodTipo" value="0" />
         <input type="hidden" id="guardaCodEmpr" value="0" />
         <input type="hidden" id="guardaManut" value="1" />
@@ -1193,12 +1098,15 @@ if(!isset($_SESSION["usuarioID"])){
             <div id="faixaMensagem" style="display: none; position: relative; margin: 70px; padding: 20px; text-align: center;">
                 <br><br><br>Usuário não cadastrado.
             </div>
-            <div class="row corClara" style="margin: 0 auto; width: 99%;">
-                    <div id="container5" class="col quadro corClara" style="margin: 0 auto; width: 100%;"></div> <!-- quadro -->
-                    <div id="intercolunas" class="col-1 corClara" style="width: 1%;"></div> <!-- espaçamento entre colunas  -->
-                    <div id="container6" class="col quadro corClara" style="margin: 0 auto; width: 100%;"></div> <!-- quadro -->
+            <div class="row" style="margin: 0 auto; width: 99%;">
+                <div id="container5" class="col quadro" style="margin: 0 auto; width: 100%;"></div> <!-- quadro -->
+                <div id="intercolunas" class="col-1" style="width: 1%;"></div> <!-- espaçamento entre colunas  -->
+                <div id="container6" class="col quadro" style="margin: 0 auto; width: 100%;"></div> <!-- quadro -->
             </div> <!-- row  -->
         </div>
+
+        <div id="carregaTema"><
+    </div> <!-- carrega a pág modulos/config/carTema.php - onde está a função mudaTema() -->
 
         <!-- div para edição/inserção compra  -->
         <div id="relacmodalInsere" class="relacmodal">
@@ -1410,8 +1318,6 @@ if(!isset($_SESSION["usuarioID"])){
                             </div>
                         </td>
                     </tr>
-
-
                     <tr>
                         <td style="vertical-align: top;"></td>
                         <td></td>
@@ -1425,9 +1331,6 @@ if(!isset($_SESSION["usuarioID"])){
                             </div>
                         </td>
                     </tr>
-
-
-
                 </table>
             </div>
         </div> <!-- Fim Modal-->

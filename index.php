@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <title>CEsB</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="shortcut icon" href="imagens/LogoComunhao.png" type="image/x-icon" />
+        <link rel="shortcut icon" href="imagens/Logo1.png" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" media="screen" href="class/bootstrap/css/bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="class/superfish/css/superfish.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/indlog.css" /> <!-- depois do css do superfish porque a mudança de cores está aqui  -->

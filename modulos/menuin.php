@@ -3,6 +3,9 @@
     <head>
         <meta charset="utf-8">
         <title></title>
+		<style>
+            body{ font: 16px sans-serif; }
+        </style>
         <script>
             $(document).ready(function(){
                 jQuery(function(){jQuery('ul.sf-menu').superfish();});
@@ -22,19 +25,15 @@
 				$diaSemana = 1;
 			}
 			//Provisório
-			if(strtotime('2025/03/30') > strtotime(date('Y/m/d'))){
+			if(strtotime('2025/04/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//0094
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escalas_gr ADD COLUMN IF NOT EXISTS editaesc smallint NOT NULL DEFAULT 0 ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".livroreg ADD COLUMN IF NOT EXISTS lidofisc smallint NOT NULL DEFAULT 0 ;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".livroreg ADD COLUMN IF NOT EXISTS relatofisc text;");
+				//0095
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS numacessosip int NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS usuip VARCHAR(100) ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS colecip text ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS extsen smallint NOT NULL DEFAULT 0 ");
 
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".livroreg ADD COLUMN IF NOT EXISTS usufiscalins bigint DEFAULT 0; ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".livroreg ADD COLUMN IF NOT EXISTS datafiscalins timestamp without time zone DEFAULT '3000-12-31 00:00:00'; ");
-
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".livroreg ADD COLUMN IF NOT EXISTS usufiscaledit bigint DEFAULT 0; ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".livroreg ADD COLUMN IF NOT EXISTS datafiscaledit timestamp without time zone DEFAULT '3000-12-31 00:00:00'; ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".livroreg ADD COLUMN IF NOT EXISTS relatofiscant text;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".livroreg DROP COLUMN IF EXISTS relato_orig ");
 
 			} // fim data limite
         ?>

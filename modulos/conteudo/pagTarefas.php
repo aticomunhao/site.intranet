@@ -35,6 +35,7 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 2px;
                 padding-right: 4px;
                 overflow: auto;
+                color: black;
             }
             .etiqLat{
                 font-size: .55rem; 
@@ -52,13 +53,19 @@ if(!isset($_SESSION["usuarioID"])){
             .etiqAtiva{
                 background-color: yellow;
             }
-            .etiqInat{
-                background-color: #F5F5F5;
-            }
             .etiqInativa{
                 border: 3px solid blue;
                 background-color: #C6E2FF;
             }
+
+            .etiqInat{
+                background-color: #F5F5F5;
+            }            
+            .etiqInatEsc{
+                border: 3px solid #F5F5F5;
+                background-color:rgb(31, 38, 45);
+            }
+
             .divbot{ /* botão */
                 border: 1px solid blue;
                 background-color: blue;
@@ -115,6 +122,7 @@ if(!isset($_SESSION["usuarioID"])){
                 border-radius: 15px;
                 width: 60%;
             }
+
             /* Botão fechar */
             .close{
                 color: #aaa;
@@ -144,6 +152,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         </style>
         <script type="text/javascript">
+            LargTela = $(window).width(); // largura da tela ao abrir o módulo
             $(document).ready(function(){
                 document.getElementById("imgTarefasconfig").style.visibility = "hidden"; // configurar grupos para tarefas
                 document.getElementById("imgOrgTarefasConfig").style.visibility = "hidden"; // configurar níveis para tarefas baseado no organograma
@@ -167,13 +176,9 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("verTipo"+document.getElementById("guardaSelecSit").value).checked = true;
                 document.getElementById("verSetor"+document.getElementById("guardaSelecSetor").value).checked = true;
                 document.getElementById("verSetorImpr"+document.getElementById("guardaSelecSetor").value).checked = true;
-                
-//                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value+"&numtarefa="+document.getElementById("selecTarefa").value);
-
-                //$('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
-                $("#faixaTarefa").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value+"&numtarefa="+document.getElementById("selecTarefa").value);
-                ContaTarefa();
-
+//                $("#faixaCentral").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value+"&numtarefa="+document.getElementById("selecTarefa").value+"&largTela="+LargTela);
+//Carregamento inicial #faixaCentral colocado em carTema.php;
+                $('#carregaTema').load('modulos/config/carTema.php?carpag=tarefas');
                 //Fecha caixa ao clicar na página
                 modalMsg = document.getElementById('relacmodalMsg'); //span[0]
                 spanMsg = document.getElementsByClassName("close")[0];
@@ -335,8 +340,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                 draggable: true,
                                                 buttons: {
                                                     Sim: function () {
-                                                        //$('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
-                                                        $("#faixaTarefa").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value);
+                                                        $("#faixaCentral").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                                                         if(parseInt(document.getElementById("guardaGrupoTar").value) === 3){ // em grupo
                                                             document.getElementById("etiqGrupoTar").innerHTML = "Tarefas Grupo "+Resp.siglasetor;
                                                         }
@@ -398,8 +402,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         $('#mensagemConfigOrg').fadeOut(2000);
                                         //Se for atualizar o próprio nível, reinicializar
                                         if(parseInt(document.getElementById("configselecUsuOrg").value) === parseInt(document.getElementById("usu_Logado_id").value)){
-                                            //$('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
-                                            $("#faixaTarefa").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value); 
+                                            $("#faixaCentral").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela); 
                                         }
                                     }else{
                                         alert("Houve um erro no servidor.")
@@ -414,6 +417,8 @@ if(!isset($_SESSION["usuarioID"])){
 
             }); // fim do ready
 
+            ContaTarefa();
+
             function escMultImprTarefas(){
                 if(document.getElementById("selecMultExecutante").value == ""){
                     return false;
@@ -427,7 +432,6 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("selecMultSit").value == ""){
                     return false;
                 }
-//                window.open("modulos/conteudo/imprTarIndiv.php?acao=imprIndiv&codigo="+document.getElementById("selecMultExecutante").value+"&mes="+encodeURIComponent(document.getElementById("selecMultMes").value)+"&ano="+document.getElementById("selecMultAno").value+"&sit="+encodeURIComponent(document.getElementById("selecMultSit").value), document.getElementById("selecMultExecutante").value);
                 window.open("modulos/conteudo/imprTarIndiv.php?acao=imprIndiv&codigo="+document.getElementById("selecMultExecutante").value+"&ano="+document.getElementById("selecMultAno").value+"&sit="+encodeURIComponent(document.getElementById("selecMultSit").value), document.getElementById("selecMultExecutante").value);
             }
 
@@ -496,8 +500,8 @@ if(!isset($_SESSION["usuarioID"])){
                                     if(parseInt(Resp.coderro) === 1){
                                         alert("Houve um erro no servidor.")
                                     }else{
-                                        //$('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
-                                        $("#faixaTarefa").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value);
+                                        $("#faixaCentral").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
+
                                         ev.preventDefault();
                                         var data = ev.dataTransfer.getData("text");
                                         ev.target.appendChild(document.getElementById(data));
@@ -599,7 +603,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     if(parseInt(Resp.coderro) === 0){
                                         document.getElementById("mudou").value = "0";
                                         document.getElementById("relacmodalTarefa").style.display = "none";
-                                        $("#faixaTarefa").load("modulos/conteudo/relTarefas.php?selec=6&area="+document.getElementById("guardaSelecSetor").value);
+                                        $("#faixaCentral").load("modulos/conteudo/relTarefas.php?selec=6&area="+document.getElementById("guardaSelecSetor").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                                         ContaTarefa();
                                         document.getElementById("verTipo6").checked = true;
                                     }else if(parseInt(Resp.coderro) === 2){
@@ -662,8 +666,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             }else{
                                                 document.getElementById("mudou").value = "0";
                                                 document.getElementById("relacmodalTarefa").style.display = "none";
-                                                //$('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
-                                                $("#faixaTarefa").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value);
+                                                $("#faixaCentral").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                                                 ContaTarefa();
                                             }
                                         }
@@ -688,7 +691,7 @@ if(!isset($_SESSION["usuarioID"])){
 //alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 document.getElementById("titTarefa").innerHTML = Resp.TitTarefa;
-                                $("#faixacentral").load("modulos/conteudo/jTarefa.php?numtarefa="+Cod+"&usulogadoid="+document.getElementById('usu_Logado_id').value+"&usulogadonome="+encodeURIComponent(document.getElementById('nome_Logado').value));
+                                $("#faixacentralMsg").load("modulos/conteudo/jTarefa.php?numtarefa="+Cod+"&usulogadoid="+document.getElementById('usu_Logado_id').value+"&usulogadonome="+encodeURIComponent(document.getElementById('nome_Logado').value));
                                 document.getElementById("relacmodalMsg").style.display = "block";
                                 document.getElementById("novamensagem").focus();
                             }
@@ -710,8 +713,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor ao fechar as mensagens. Informe à ATI.")
                                 }
-                                //$('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value); // para parar de piscar a ícone de tem mensagem
-                                $("#faixaTarefa").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value); // para parar de piscar a ícone de tem mensagem
+                                $("#faixaCentral").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela); // para parar de piscar a ícone de tem mensagem
                             }
                         }
                     };
@@ -767,18 +769,17 @@ if(!isset($_SESSION["usuarioID"])){
                                             Sim: function () {
                                                 ajaxIni();
                                                 if(ajax){
-                                                        ajax.open("POST", "modulos/conteudo/salvaTarefa.php?acao=transferemarcas&codigo="+document.getElementById("TransfUsuSelect").value, true);
-                                                        ajax.onreadystatechange = function(){
-                                                            if(ajax.readyState === 4 ){
-                                                                if(ajax.responseText){
+                                                    ajax.open("POST", "modulos/conteudo/salvaTarefa.php?acao=transferemarcas&codigo="+document.getElementById("TransfUsuSelect").value, true);
+                                                    ajax.onreadystatechange = function(){
+                                                        if(ajax.readyState === 4 ){
+                                                            if(ajax.responseText){
 //alert(ajax.responseText);
-                                                                    document.getElementById("relacmodalTransf").style.display = "none";
-                                                                    //$('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value);
-                                                                    $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value);
-                                                                }
+                                                                document.getElementById("relacmodalTransf").style.display = "none";
+                                                                $('#faixaCentral').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value+"&largTela="+LargTela);
                                                             }
-                                                            };
-                                                            ajax.send(null);
+                                                        }
+                                                    };
+                                                    ajax.send(null);
                                                 }
                                             },
                                             Não: function () {}
@@ -806,7 +807,10 @@ if(!isset($_SESSION["usuarioID"])){
 
             function carregaTipo(Valor){
                 document.getElementById("guardaSelecSit").value = Valor;
-                $("#faixaTarefa").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value);
+                if(parseInt(Valor) === 1){
+                    document.getElementById("verSetor0").checked = true;
+                }
+                $("#faixaCentral").load("modulos/conteudo/relTarefas.php?selec="+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
             }
 
             function carregaSetor(Valor){
@@ -829,7 +833,7 @@ if(!isset($_SESSION["usuarioID"])){
                     };
                     ajax.send(null);
                 }
-                $('#faixaTarefa').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value);
+                $('#faixaCentral').load('modulos/conteudo/relTarefas.php?selec='+document.getElementById("guardaSelecSit").value+"&area="+document.getElementById("guardaSelecSetor").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
             }
 
             function carregaSetorImpr(Valor){
@@ -901,7 +905,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
         </script>
     </head>
-    <body>
+    <body class="corClara" onbeforeunload="return mudaTema(0)"> <!--ao sair retorna os background claros -->
         <?php
         require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog'");
@@ -935,6 +939,7 @@ if(!isset($_SESSION["usuarioID"])){
         $admIns = parAdm("instarefa", $Conec, $xProj);   // nível para inserir
         $admEdit = parAdm("edittarefa", $Conec, $xProj); // nível para editar
         $VerTarefas = parAdm("vertarefa", $Conec, $xProj); // ver tarefas   1: todos - 2: só mandante e executante - 3: visualização por setor - 4: por Organograma
+        $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
 
         $AreaUsu = parEsc("areatar", $Conec, $xProj, $_SESSION["usuarioID"]); // Área a visualizar Manutenção ou administrativa 
 
@@ -999,41 +1004,49 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir tarefas -->
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" /> <!-- nível mínimo para editar tarefas -->
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
-        <input type="hidden" id="guardaAtiv" value="1" /> <!-- Guarda se a tarefa foi finalizada-->
+        <input type="hidden" id="guardaAtiv" value = "1" /> <!-- Guarda se a tarefa foi finalizada-->
         <input type="hidden" id="guardaUsuExec" value="0" />
         <input type="hidden" id="grupotarefa" value="1" />
         <input type="hidden" id="guardaUsuCpf" value="<?php echo $_SESSION["usuarioCPF"]; ?>" />
         <input type="hidden" id="guardaGrupoTar" value="<?php echo $VerTarefas; ?>" /> 
         <input type="hidden" id="guardaSelecSit" value="<?php echo $Sit; ?>" />
-        <input type="hidden" id="selecTarefa" value="<?php echo $NumTarefa; ?>" />
         <input type="hidden" id="guardaSelecSetor" value="<?php echo $AreaUsu; ?>" />
+        <input type="hidden" id="selecTarefa" value="<?php echo $NumTarefa; ?>" />
         <input type="hidden" id="guardaSelecSetorImpr" value="<?php echo $AreaUsu; ?>" />
 
         <!-- div três colunas -->
-        <div class="container" style="margin: 0 auto; padding-top: 10px;">
-            <div class="row">
+        <div id="tricoluna0" class="flex-container" style="margin: 0 auto; padding-top: 10px;">
+            <div id="tricoluna1" class="row">
                 <div class="col" style="margin: 0 auto;"> 
+                    <label style="padding-left: 10px;"></label>
                     <img src="imagens/settings.png" height="20px;" id="imgTarefasconfig" style="cursor: pointer;" onclick="abreTarefasConfig();" title="Configurar grupos de Tarefas">
                     <img src="imagens/settings.png" height="20px;" id="imgOrgTarefasConfig" style="cursor: pointer; padding-left: 20px;" onclick="abreOrgTarefasConfig();" title="Configurar Níveis de Usuários pelo Organograma">
+                    <label style="padding-left: 10px;"></label>
                     <input type="button" class="botpadrblue" id="botinserir" value="Inserir Tarefa" onclick="abreModal();">
                 </div>
 
-                <div class="col" style="text-align: center;">
+                <div id="tricoluna2" class="col" style="text-align: center;">
                     <h4 id="etiqGrupoTar" style="padding-bottom: 1px;">Tarefas <?php if($VerTarefas == 3){ echo "Grupo ".$SiglaSetor; } ?> </h4>
                     <?php 
                     if($VerTarefas == 3){ // se for por grupos
                         if($CodSetorUsu == 0){
-                            echo "<label class='etiqAzul' style='text-align: center;'>Usuário sem grupo. Só pode inserir tarefas para si mesmo. <br>A atribuição de grupo é feita pela DAF ou ATI.</label>";
+                            echo "<label class='etiqRoxa' style='text-align: center;'>Usuário sem grupo. Só pode inserir tarefas para si mesmo. <br>A atribuição de grupo é feita pela DAF ou ATI.</label>";
                         }
                     }
                     ?>
                 </div> <!-- Central - espaçamento entre colunas  -->
-                <div class="col" style="margin: 0 auto; text-align: right;">
+                <div id="tricoluna3" class="col" style="margin: 0 auto; text-align: right;">
+                    <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%; padding-left: 5px;">Tema: </label>
+                    <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" class="etiq" style="cursor: pointer;">&nbsp;Claro</label>
+                    <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" class="etiq" style="cursor: pointer;">&nbsp;Escuro</label>
+                    <label style="padding-right: 10px;"></label>
+
                     <button class="botpadrred" style="font-size: 80%;" id="botimprTarefas" onclick="escImprTarefas();">Gerar PDF</button>
-                    <label style="padding-left: 20px;"></label>
+                    <label style="padding-left: 10px;"></label>
                     <button class="botpadr" id="botTransfIns" onclick="carregaTransf();" title="Transferir tarefas designadas para acompanhamento por outro usuário">Transferir</button>
-                    <label style="padding-left: 20px;"></label>
+                    <label style="padding-left: 10x;"></label>
                     <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpTarefas();" title="Guia rápido">
+                    <label style="padding-right: 15px;"></label>
                 </div> 
             </div>
         </div>
@@ -1052,22 +1065,30 @@ if(!isset($_SESSION["usuarioID"])){
             </tr>
         </table>
 
-        <div class="container" style="margin: 0 auto; padding-top: 2px; text-align: center;">
-            <label class="etiqAzul" style="padding-right: 10px;">Visualizar Tarefas 
-                <?php if($VerTarefas == 3){echo "(Grupos)";};
-                      if($VerTarefas == 4){echo "(Organograma)";}; ?>
-            </label>
-            <input type="radio" name="verTipo" id="verTipo0" value="0" CHECKED onclick="carregaTipo(value);"><label for="verTipo0" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Todas</label>
-            <input type="radio" name="verTipo" id="verTipo1" value="1" onclick="carregaTipo(value);"><label for="verTipo1" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Designadas</label>
-            <input type="radio" name="verTipo" id="verTipo2" value="2" onclick="carregaTipo(value);"><label for="verTipo2" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Aceitas</label>
-            <input type="radio" name="verTipo" id="verTipo3" value="3" onclick="carregaTipo(value);"><label for="verTipo3" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> em Andamento</label>
-            <input type="radio" name="verTipo" id="verTipo4" value="4" onclick="carregaTipo(value);"><label for="verTipo4" style="font-size: 12px; padding-left: 3px; padding-right: 25px;"> Terminadas</label>
-            <input type="radio" name="verTipo" id="verTipo5" value="5" onclick="carregaTipo(value);"><label for="verTipo5" style="font-size: 12px; padding-left: 3px; color: #FF6600; font-weight: bold;"> Minhas Tarefas</label> <label id="quantMinhas" style="padding-right: 25px; font-size: 65%; color: #036; font-style: italic; vertical-align: super;" title="Minhas tarefas ainda não terminadas"></label>
-            <input type="radio" name="verTipo" id="verTipo6" value="6" onclick="carregaTipo(value);"><label for="verTipo6" style="font-size: 12px; padding-left: 3px; color: #0000CD; font-weight: bold;"> Meus Pedidos</label> <label id="quantPagas" style="padding-right: 25px; font-size: 65%; color: #036; font-style: italic; vertical-align: super;" title="Meus pedidos ainda não terminados"></label>
-            <input type="radio" name="verTipo" id="verTipo7" value="7" onclick="carregaTipo(value);" title="Tarefas com mensagens não lidas"><label for="verTipo7" style="font-size: 12px; padding-left: 3px;" title="Tarefas com mensagens não lidas"> com Mensagem</label>
-        </div>
+        <table style="margin: 0 auto;">
+            <tr>
+                <td>
+                    <div id="menuTop1" style="margin-top: 2px; text-align: center; width: 100%; border: 1px solid #7D26CD; border-radius: 10px; padding: 2px 20px 2px 20px;">
+                        <label class="etiq" style="color: #6C7AB3; padding-right: 10px;">Visualizar Tarefas 
+                            <?php if($VerTarefas == 3){echo "(Grupos)";};
+                                  if($VerTarefas == 4){echo "(Organograma)";}; 
+                            ?>
+                        </label>
+                        <input type="radio" name="verTipo" id="verTipo0" value="0" CHECKED onclick="carregaTipo(value);"><label for="verTipo0" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Todas</label>
+                        <input type="radio" name="verTipo" id="verTipo1" value="1" onclick="carregaTipo(value);"><label for="verTipo1" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Designadas</label>
+                        <input type="radio" name="verTipo" id="verTipo2" value="2" onclick="carregaTipo(value);"><label for="verTipo2" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Aceitas</label>
+                        <input type="radio" name="verTipo" id="verTipo3" value="3" onclick="carregaTipo(value);"><label for="verTipo3" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> em Andamento</label>
+                        <input type="radio" name="verTipo" id="verTipo4" value="4" onclick="carregaTipo(value);"><label for="verTipo4" style="font-size: 12px; padding-left: 3px; padding-right: 25px;"> Terminadas</label>
+                        <input type="radio" name="verTipo" id="verTipo5" value="5" onclick="carregaTipo(value);"><label for="verTipo5" style="font-size: 12px; padding-left: 3px; color: #FF6600; font-weight: bold;"> Minhas Tarefas</label> <label id="quantMinhas" style="padding-right: 25px; font-size: 65%; color: #6C7AB3; font-style: italic; vertical-align: super;" title="Minhas tarefas ainda não terminadas"></label>
+                        <input type="radio" name="verTipo" id="verTipo6" value="6" onclick="carregaTipo(value);"><label for="verTipo6" style="font-size: 12px; padding-left: 3px; color: #6C7AB3; font-weight: bold;"> Meus Pedidos</label> <label id="quantPagas" style="padding-right: 25px; font-size: 65%; color: #6C7AB3; font-style: italic; vertical-align: super;" title="Meus pedidos ainda não terminados"></label>
+                        <input type="radio" name="verTipo" id="verTipo7" value="7" onclick="carregaTipo(value);" title="Tarefas com mensagens não lidas"><label for="verTipo7" style="font-size: 12px; padding-left: 3px;" title="Tarefas com mensagens não lidas"> com Mensagem</label>
+                    </div>
+                </td>
+            </tr>
+        </table>
 
-        <div id="faixaTarefa"></div>
+        <div id="faixaCentral"></div>
+        <div id="carregaTema"></div> <!-- carrega a pág modulos/config/carTema.php - onde está a função mudaTema() -->
 
         <!-- div modal para edição e inserção de tarefa -->
         <div id="relacmodalTarefa" class="relacmodal">  <!-- ("close")[0] -->
@@ -1191,7 +1212,7 @@ if(!isset($_SESSION["usuarioID"])){
             <div class="modalMsg-content">
                 <span class="close" onclick="fechaModalMsg();">&times;</span>
                 <h3 id="titulomodalMsg" style="text-align: center; color: #666;">Mensagens</h3>
-                <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
+                <div style="color: black; border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
                     <table>
                         <tr>
                             <td class="etiq">Tarefa: </td>
@@ -1199,18 +1220,18 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                     </table>
                 </div>
-                <div id="faixacentral" style='border: 1px solid; border-radius: 10px;'></div> <!-- aqui entra jTarefa.php -->
+                <div id="faixacentralMsg" style='color: black; border: 1px solid; border-radius: 10px;'></div> <!-- aqui entra jTarefa.php -->
             </div>
         </div>  <!-- Fim Modal Mensagens-->
 
 
-        <!-- div modal para transferência das tarefas que designei para outro usário acompanhar -->
-        <div id="relacmodalTransf" class="relacmodal">  <!-- ("close")[0] -->
+        <!-- div modal para transferência das tarefas que designei para outro usário acompanhar definir color: blck; por causa dos Temas -->
+        <div id="relacmodalTransf" class="relacmodal">
             <div class="modalTransf-content">
                 <span class="close" onclick="fechaModalTransf();">&times;</span>
                 <h3 id="tituloMsgTransf" style="text-align: center; color: #666;">Transferir Acompanhamento</h3>
-                <div style="text-align: center;"><label class="etiqAqul">Transferir o acompanhamento dos Meus Pedidos de Tarefa para outro usuário</label></div>
-                <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px; text-align: center;">
+                <div style="text-align: center;"><label class="etiqAzul">Transferir o acompanhamento dos Meus Pedidos de Tarefa para outro usuário</label></div>
+                <div style="color: black; border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px; text-align: center;">
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>
                             <td class="etiq">Transferir para: </td>
@@ -1231,7 +1252,7 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                     </table>
                 </div>
-                <div id="faixacentralTransf" style='border: 1px solid; border-radius: 10px;'></div> <!-- aqui entra jTarefa.php -->
+                <div id="faixacentralTransf" style='color: black; border: 1px solid; border-radius: 10px;'></div> <!-- aqui entra jTarefa.php -->
             </div>
         </div>  <!-- Fim Modal Mensagens-->
 
@@ -1345,7 +1366,6 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="2"><hr></td>
                         </tr>
                     </table>
-
 
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>
@@ -1498,7 +1518,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td colspan="4" style="text-align: center;"></td>
                     </tr>
                     <tr>
-                        <td colspan="4" style="text-align: center;">Busca Nome ou CPF do Usuário</td>
+                        <td colspan="4" class="etiqAzul" style="text-align: center;">Busca Nome ou CPF do Usuário</td>
                     </tr>
                     <tr>
                         <td class="etiqAzul">Procura nome: </td>
@@ -1528,7 +1548,7 @@ if(!isset($_SESSION["usuarioID"])){
 
                 <table style="margin: 0 auto; width: 85%;">
                     <tr>
-                        <td class="etiq" title="Selecione um setor para agrupar usuários de tarefas.">Participa do Grupo de Tarefas:</td>
+                        <td class="etiqAzul" title="Selecione um setor para agrupar usuários de tarefas.">Participa do Grupo de Tarefas:</td>
                         <td colspan="4">
                             <select id="configSelecSetor" style="max-width: 430px;" onchange="modif();" title="Selecione um setor para agrupar usuários de tarefas.">
                                 <?php 
@@ -1548,7 +1568,7 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
         </div> <!-- Fim Modal-->
 
-        <!-- Modal configuração-->
+        <!-- Modal configuração para o funcionamento por Organograma-->
          <div id="modalTarefasConfigOrg" class="relacmodal">
             <div class="modalTarefas-content">
                 <span class="close" onclick="fechaOrgModalConfig();">&times;</span>
@@ -1568,8 +1588,8 @@ if(!isset($_SESSION["usuarioID"])){
                         <td colspan="4" style="text-align: center;"></td>
                     </tr>
                     <tr>
-                        <td colspan="3" style="text-align: center;">Busca Nome do Usuário</td>
-                        <td style="text-align: center;">Organograma</td>
+                        <td colspan="3" class="etiqAzul" style="text-align: center;">Busca Nome do Usuário</td>
+                        <td class="etiqAzul" style="text-align: center;">Organograma</td>
                     </tr>
                     <tr>
                         <td class="etiqAzul">Procura nome: </td>
@@ -1620,7 +1640,7 @@ if(!isset($_SESSION["usuarioID"])){
                         if($VerTarefas == 4){echo " Organograma";}; 
                     ?>
                 </h4>
-                <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
+                <div class="etiqNorm" style="text-align: left; border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
                     Regras inseridas:
                     <ul>
                         <?php

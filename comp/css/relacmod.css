@@ -1,32 +1,36 @@
 /* Ludinir Set 2023 
 */
-.etiq{
+ .etiq{
     text-align: right; color: #9C9C9C; font-size: 70%; font-weight: bold; padding-right: 2px; padding-bottom: 1px;
- }
- .etiqNorm{
+  }
+  .etiqNorm{
     text-align: right; color: #000000; font-size: 1em; padding-right: 2px; padding-bottom: 1px;
- }
- .etiq80{
+  }
+  .etiq80{
     text-align: right; color: #9C9C9C; font-size: 80%; padding-right: 1px; padding-bottom: 1px;
- }
- .etiq60{
+  }
+  .etiq60{
     text-align: right; color: #9C9C9C; font-size: 60%; font-weight: bold;
- }
- .etiqAzul{
+  }
+  .etiqAzul{
     text-align: right; color: #036; font-style: italic; font-size: 80%; padding-right: 1px; padding-bottom: 1px;
- }
- .etiqRoxa{
-    text-align: right; color: #7D26CD; font-style: italic; font-size: 85%; padding-right: 1px; padding-bottom: 1px;
- }
- .aDir{
+  }
+  .etiqRoxa{
+    text-align: right; color: #6C7AB3; font-style: italic; font-size: 85%; padding-right: 1px; padding-bottom: 1px;
+  }
+  .aDir{
     text-align: right;
- }
- .aEsq{
+  }
+  .aEsq{
     text-align: left;
- }
- .aCentro{
+  }
+  .aCentro{
     text-align: center;
- }
+  }
+  .eItalic{
+    font-style: italic;
+  }
+
  .relacmodal{
      display: none; /* oculto default */
      position: fixed;
@@ -515,9 +519,15 @@
 .corBranca{
     color: #fcfdfe;
 }
+.corPreta{
+    color: #101418;
+}
+.corCinza{
+    color:gray;
+}
 .destacaBorda{
     border: 2px solid red;
-    border-radius: 2px;
+    border-radius: 3px;
 }
 .divaniv{
     border: 2px solid blue;

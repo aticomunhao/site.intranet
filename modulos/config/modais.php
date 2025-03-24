@@ -59,7 +59,7 @@
             <div class="modal-content-Msg">
                 <span class="close" onclick="fechaMensagem(1);">&times;</span>
                 <br />
-                <h2><img src="imagens/LogoComunhao.png" height="40px;"><label id="textoTit" style="padding-left: 5px;">Sucesso</label></h2>
+                <h2><img src="imagens/Logo1.png" height="40px;"><label id="textoTit" style="padding-left: 5px;">Sucesso</label></h2>
                 <div id="textoMsg" style="text-align: center; font-weight: bold; padding: 10px;"></div>
             </div>
         </div>
@@ -67,7 +67,7 @@
             <div class="modal-content-Msg">
                 <span class="close" onclick="fechaMensagem(2);">&times;</span>
                 <br />
-                <h5><img src="imagens/LogoComunhao.png" height="30px;"><label id="textoTitulo" style="padding-left: 5px;">Informação</label></h5>
+                <h5><img src="imagens/Logo1.png" height="30px;"><label id="textoTitulo" style="padding-left: 5px;">Informação</label></h5>
                 <div id="textoInfo" style="text-align: center; font-weight: bold; padding: 10px;"></div>
             </div>
         </div>
@@ -75,7 +75,7 @@
             <div class="modal-content-Msg">
                 <span class="close" onclick="fechaMensagem(3);">&times;</span>
                 <br>
-                <h5><img src="imagens/LogoComunhao.png" height="30px;"><label id="textoTitTempo" style="padding-left: 5px;">Site Ocioso</label></h5>
+                <h5><img src="imagens/Logo1.png" height="30px;"><label id="textoTitTempo" style="padding-left: 5px;">Site Ocioso</label></h5>
                 <div id="textoTempo" style="text-align: center; font-size: 110%; font-weight: bold; padding: 10px;">Tempo de inatividade será atingido em 10 segundos.</div>
             </div>
         </div>

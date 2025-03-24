@@ -10,7 +10,7 @@ if(!isset($_SESSION['AdmUsu'])){
     $Acao = $_REQUEST["acao"];
     require_once('../../class/fpdf/fpdf.php'); // adaptado ao PHP 7.2 - 8.2
     define('FPDF_FONTPATH', '../../class/fpdf/font/');  
-    $Dom = "logo_comunhao_completa_cor_pos_150px.png";
+    $Dom = "Logo2.png"; // logo com nome embaixo do emblema
 
     if(isset($_REQUEST["numgrupo"])){
         $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal
@@ -71,7 +71,7 @@ if(!isset($_SESSION['AdmUsu'])){
     };
 
     function buscaDia($Conec, $xProj, $Mes, $Ano, $Dia){
-        $rsSis = pg_query($Conec, "SELECT id FROM ".$xProj.".quadrohor WHERE TO_CHAR(dataescala, 'DD') = '$Dia' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
+        $rsSis = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'DD') = '$Dia' And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' ");
         $row = pg_num_rows($rsSis);
         if($row > 0){
            $escSis = 1; 
@@ -243,10 +243,10 @@ if(!isset($_SESSION['AdmUsu'])){
                 while($tbl1 = pg_fetch_row($rs1)){
                     $Cod = $tbl1[0];
                     $pdf->SetX(10); 
-                    if(is_null($tbl1[2]) || $tbl1[2] == ""){
-                        $Nome = substr($tbl1[1], 0, 17); //nome completo
+                    if(!is_null($tbl1[2]) || $tbl1[2] != ""){
+                        $Nome = substr($tbl1[2], 0, 13); // nomeusual
                     }else{
-                        $Nome = substr($tbl1[2], 0, 20); //nome usual
+                        $Nome = substr($tbl1[1], 0, 13); // nomecompl
                     }
                     if(!is_null($tbl1[3])){
                         $Cargo = substr($tbl1[3], 0, 20);
@@ -2184,7 +2184,6 @@ if(!isset($_SESSION['AdmUsu'])){
                             }
                         }
                     }
-
                     if(buscaDia($Conec, $xProj, $Mes, $Ano, 30) == 1){ //Ver se o dia existe neste mes
                         $rs2 = pg_query($Conec, "SELECT letraturno, date_part('dow', dataescalains), destaque, dataescalains, escaladaf_id  
                         FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'DD') = '30' And TO_CHAR(dataescalains, 'MM') = '$Mes' And TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo ");
@@ -2688,9 +2687,10 @@ if(!isset($_SESSION['AdmUsu'])){
                 $ContLinha = 1;
                 while($tbl4 = pg_fetch_row($rs4)){
                     $Cod = $tbl4[0];
-                    $Nome = substr($tbl4[2], 0, 13);
-                    if(is_null($tbl4[2]) || $tbl4[2] == ""){
-                        $Nome = substr($tbl4[1], 0, 13);
+                    if(!is_null($tbl4[2]) || $tbl4[2] != ""){
+                        $Nome = substr($tbl4[2], 0, 13); // nomeusual
+                    }else{
+                        $Nome = substr($tbl4[1], 0, 13); // nomecompl
                     }
                     $CargaMes = 0;
                     $rs5 = pg_query($Conec, "SELECT TO_CHAR(SUM(cargatime), 'HH24:MI') 

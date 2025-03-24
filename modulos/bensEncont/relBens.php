@@ -142,7 +142,14 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             }
             $row0 = pg_num_rows($rs0);
             ?>
-            <div style="text-align: center;"><label class="etiqAzul">Seleção: &nbsp;</label><label class="etiqAzul" id="ordemIndex"> <?php echo $Acao."  (".$row0." registros)"; ?></label></div>
+            <div style="text-align: center;"><label class="etiqAzul">Seleção: &nbsp;</label><label class="etiqAzul" id="ordemIndex"> 
+                <?php 
+                if($Marca == 0 && $SoInsBens == 1){ // só para registrar (portaria nos fins de semana) - Só mostra os do dia
+                    echo "Apenas registros do dia"; 
+                }else{
+                    echo $Acao."  (".$row0." registros)"; 
+                }
+                ?></label></div>
             <table id="idTabela" class="display" style="width:85%;">
                 <caption style="text-align: center;"><?php echo $row0." registros"; ?></caption>
                 <thead>

@@ -82,7 +82,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             );
         ?>
          <!-- Apresenta os usuários do setor com o nível administrativo -->
-        <div style="padding: 10px;">
+        <div style="margin-top: 34px; padding: 10px; border-top: 1px solid gray; border-radius: 20px;">
             <?php
             $rs0 = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), turno, descturno, numrelato, nomeusual, usuant, enviado, codusu, ocor, date_part('dow', dataocor), 
             lidofisc, relatofisc 
@@ -90,7 +90,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             WHERE ".$xProj.".livroreg.ativo = 1 And AGE(".$xProj.".livroreg.dataocor, CURRENT_DATE) <= '1 YEAR' 
             ORDER BY ".$xProj.".livroreg.dataocor DESC, ".$xProj.".livroreg.turno DESC, ".$xProj.".livroreg.numrelato DESC");
             $row0 = pg_num_rows($rs0);
-
             ?>
             <table id="idTabela" class="display" style="width:85%;">
                 <caption><?php echo "Total ".$row0." registros"; ?></caption>
@@ -98,15 +97,15 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     <tr>
                         <th style="display: none;"></th>
                         <th style="display: none;"></th>
-                        <th>Data</th>
-                        <th>Sem</th>
-                        <th>Turno</th>
-                        <th style="text-align: center;">Número</th>
-                        <th style="text-align: center;">Registrado por:</th>
-                        <th style="display: none;"></th>
-                        <th style="display: none;"></th>
-                        <th style="text-align: center;" title="Houve ocorrências?">Ocor</th>
-                        <th style="text-align: center;" title="Visto da Administração">Adm</th>
+                        <th class="etiq">Data</th>
+                        <th class="etiq">Sem</th>
+                        <th class="etiq">Turno</th>
+                        <th class="etiq" style="text-align: center;">Número</th>
+                        <th class="etiq" style="text-align: center;">Registrado</th>
+                        <th class="etiq" style="display: none;"></th>
+                        <th class="etiq" style="display: none;"></th>
+                        <th class="etiq" style="text-align: center;" title="Houve ocorrências?">Ocor</th>
+                        <th class="etiq" style="text-align: center;" title="Visto da Administração">Adm</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -129,12 +128,12 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td style="display: none;"><?php echo $Cod; ?></td>
                             <td title="Data do Registro"><?php echo $tbl0[1]; ?></td> <!-- data -->
                             <td style="font-size: 80%;" title="Dia da Semana"><?php echo $Semana_Extract[$tbl0[10]]; ?></td> <!-- dia semana data -->
-                            <td style="<?php if($row1 > 0){echo 'color: red;'; } ?>" title="Turno" ><?php echo $tbl0[2]." - ".$tbl0[3]; ?></td> <!-- turno -->
+                            <td style="<?php if($row1 > 0){echo 'color: red;'; } ?>" title="Turno" ><?php echo $tbl0[3]."<label style='color: gray; font-size: 70%; padding-left: 3px;'> (".$tbl0[2]."º)</label>"; ?></td> <!-- turno -->
                             <td style="text-align: center;" title="Número do Registro"><?php echo $tbl0[4]; ?></td> <!-- numocor -->
                             <td style="text-align: center;" title="Nome Funcionário"><?php echo $tbl0[5]; ?></td> <!-- ususvc -->
                             <td style="display: none;"><?php echo $tbl0[7]; ?></td> <!-- relato já enviado -->
                             <td style="display: none;"><?php echo $tbl0[8]; ?></td> <!-- codusu - quem inseriu o relato -->
-                            <td style="font-size: 80%; text-align: center; <?php if($tbl0[9] == 1){echo "color: red; font-weight: bold;";}else{echo "color: black; font-weight: normal;";} ?>" title="Houve Ocorrência?"><?php if($tbl0[9] == 1){echo "Sim";}else{echo "Não";} ?></td>
+                            <td style="font-size: 80%; text-align: center; <?php if($tbl0[9] == 1){echo "color: red; font-weight: bold;";}else{echo "font-weight: normal;";} ?>" title="Houve Ocorrência?"><?php if($tbl0[9] == 1){echo "Sim";}else{echo "Não";} ?></td>
 
                             <td style="font-size: 80%; text-align: center;" title="Visto da Administração"> 
                                 <?php 
@@ -142,7 +141,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     echo "<img src='imagens/ok.png' height='14px;' title='Visto'>"; 
                                 }
                                 if($RelFiscal == 1){
-                                    echo "<img src='imagens/icons8-pencil-26.png' height='10px;' title='Anotação da administração'>";
+                                    echo "<img src='imagens/lapisBranco.png' height='10px;' title='Anotação da administração'>";
                                 }
                                 ?> 
                             </td>

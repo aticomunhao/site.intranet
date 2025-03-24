@@ -11,7 +11,7 @@
         <meta charset="UTF-8">
         <title>CEsB</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="shortcut icon" href="imagens/LogoComunhao.png" type="image/x-icon" />
+        <link rel="shortcut icon" href="imagens/Logo1.png" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" media="screen" href="class/bootstrap/css/bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="class/superfish/css/superfish.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/relacmod.css" />
@@ -108,7 +108,7 @@
             }
             $(document).ready(function(){
                 $('#CorouselPagIni').load('modulos/carousel.php');
-                if(parseInt(document.getElementById("guardaAdm").value) === 0 || document.getElementById("guardaAdm").value === null){// perdeu as variáveis
+                if(parseInt(document.getElementById("guardaAdm").value) === 0 || document.getElementById("guardaAdm").value === null){// se perdeu as variáveis
                     location.replace('modulos/cansei.php');
                 }
                 document.getElementById("temTarefa").style.display = "none";
@@ -117,7 +117,7 @@
                 document.getElementById("temBensPrazo").style.display = "none";
                 document.getElementById("temContrato").style.display = "none";
                 document.getElementById("temExtintor").style.display = "none";
-                
+
                 $('#container1').load('modulos/cabec.php');
                 $('#container2').load('modulos/menufim.php?diasemana='+document.getElementById('guardadiasemana').value);
                 $('#container4').load('modulos/rodape.php');
@@ -196,6 +196,7 @@
                 toolbar2: 'bold italic underline forecolor backcolor | alignleft aligncenter alignright alignjustify |',
                 content_style: 'body { font-family:Arial,Helvetica,sans-serif; font-size:14px }'
             });
+
             function image_upload_handler (blobInfo, success, failure, progress){
                 var xhr, formData;
                 xhr = new XMLHttpRequest();
@@ -230,10 +231,11 @@
             };
 
             function carregaPag(){ // atalho no aviso da página inicial
-                $('#container3').load('modulos/conteudo/pagTarefas.php?selec=5');
+                $('#container3').load('modulos/conteudo/pagTarefas.php?selec=1');
             }
             function carregaMsgTar(){ // carrega tarefa com mensagem não lida
-                $('#container3').load('modulos/conteudo/pagTarefas.php?selec='+document.getElementById('selecionar').value+'&numtarefa='+document.getElementById("numTarefa").value);
+//                $('#container3').load('modulos/conteudo/pagTarefas.php?selec='+document.getElementById('selecionar').value+'&numtarefa='+document.getElementById("numTarefa").value);
+                $('#container3').load('modulos/conteudo/pagTarefas.php?selec=7&numtarefa='+document.getElementById("numTarefa").value);
             }
             function carregaBens(Valor){
                 $('#container3').load('modulos/bensEncont/pagBens.php?acao='+Valor);

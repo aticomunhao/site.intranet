@@ -15,10 +15,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         </script>
     </head>
     <body> 
-        <div style="margin-top: 15px; text-align: center; font-weight: bold;">Horários de Trabalho<br>
+        <div class="etiqNorm eItalic" style="margin-top: 15px; text-align: center; font-weight: bold;">Horários de Trabalho<br>
             <label style="font-size: 90%; font-weight: normal;">Modificações aqui <b>NÃO</b> são passadas para a escala já inserida afim de preservar o passado.</label>
         </div>
-        <div style="margin: 10px; padding: 10px; text-align: center; border: 2px solid green; border-radius: 15px;">
+        <div style="color: black; margin: 10px; padding: 10px; text-align: center; border: 2px solid green; border-radius: 15px;">
             <?php
             if(isset($_REQUEST["numgrupo"])){
                 $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal

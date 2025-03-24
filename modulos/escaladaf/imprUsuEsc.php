@@ -20,7 +20,7 @@ if(isset($_REQUEST["acao"])){
     $Acao = $_REQUEST["acao"];
     require_once('../../class/fpdf/fpdf.php'); // adaptado ao PHP 7.2 - 8.2
     define('FPDF_FONTPATH', '../../class/fpdf/font/');  
-    $Dom = "logo_comunhao_completa_cor_pos_150px.png";
+    $Dom = "Logo2.png";
     
     if(isset($_REQUEST["numgrupo"])){
         $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal

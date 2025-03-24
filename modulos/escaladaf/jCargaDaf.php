@@ -80,10 +80,12 @@
                         if($row > 0){
                             while($tbl = pg_fetch_row($rs)){
                                 $Cod = $tbl[0];
-                                $Nome = substr($tbl[2], 0, 13);
-                                if(is_null($tbl[2]) || $tbl[2] == ""){
-                                    $Nome = substr($tbl[1], 0, 13);
+                                if(!is_null($tbl[2]) || $tbl[2] != ""){
+                                    $Nome = substr($tbl[2], 0, 13); // nomeusual
+                                }else{
+                                    $Nome = substr($tbl[1], 0, 13); // nomecompl
                                 }
+
                                 $CargaMes = 0;
                                 $rs1 = pg_query($Conec, "SELECT TO_CHAR(SUM(cargatime), 'HH24:MI') 
                                 FROM ".$xProj.".escaladaf_ins 
@@ -146,9 +148,11 @@
                                     if($row0 > 0){
                                         while($tbl0 = pg_fetch_row($rs0)){
                                             $Cod1 = $tbl0[0];
-                                            $Nome = substr($tbl0[2], 0, 13);
-                                            if(is_null($tbl0[2]) || $tbl0[2] == ""){
-                                                $Nome = substr($tbl0[1], 0, 13);
+
+                                            if(!is_null($tbl0[2]) || $tbl0[2] != ""){
+                                                $Nome = substr($tbl0[2], 0, 13); // nomeusual
+                                            }else{
+                                                $Nome = substr($tbl0[1], 0, 13); // nomecompl
                                             }
 
                                             $CargaHoraCor =  0;
@@ -185,9 +189,11 @@
                                 if($row0 > 0){
                                     while($tbl0 = pg_fetch_row($rs0)){
                                         $Cod1 = $tbl0[0];
-                                        $Nome = substr($tbl0[2], 0, 13);
-                                        if(is_null($tbl0[2]) || $tbl0[2] == ""){
-                                            $Nome = substr($tbl0[1], 0, 13);
+
+                                        if(!is_null($tbl0[2]) || $tbl0[2] != ""){
+                                            $Nome = substr($tbl0[2], 0, 13); // nomeusual
+                                        }else{
+                                            $Nome = substr($tbl0[1], 0, 13); // nomecompl
                                         }
 
                                         $CargaHoraCor =  0;

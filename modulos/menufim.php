@@ -20,9 +20,9 @@
 					speed:       'fast', 
 					autoArrows:  false   
 				});
-				document.getElementById("etiqtela").innerHTML = $(window).width();
-//var versaoJquery = $.fn.jquery; 
-//alert(versaoJquery);
+//				document.getElementById("etiqtela").innerHTML = $(window).width();
+//				var versaoJquery = $.fn.jquery; 
+//				alert(versaoJquery);
             });
         </script>
     </head>
@@ -37,10 +37,11 @@
 				$UsuAdm = 0;
 			}
 			if(isset($_SESSION["NomeUsual"])){
-				$Nome = $_SESSION["NomeUsual"];
+				$Nome = substr($_SESSION["NomeUsual"], 0, 20);
 			}else{
 				$Nome = "";
 			}
+
 			if(isset($_SESSION["AdmUsu"])){
 				$Adm = $_SESSION["AdmUsu"];
 			}else{
@@ -48,13 +49,14 @@
 			}
 			if(isset($_SESSION["SiglaSetor"])){
 				if($_SESSION["SiglaSetor"] != ""){
-					$Setor = "(".$_SESSION["SiglaSetor"].")";
+					$Setor = "(".substr($_SESSION["SiglaSetor"], 0, 5).")";
 				}else{
-					$Setor = "";	
+					$Setor = "";
 				}
 			}else{
 				$Setor = "";
 			}
+
 			date_default_timezone_set('America/Sao_Paulo');
             $rs = pg_query($Conec, "SELECT column_name, data_type, character_maximum_length FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'setores'");
             $row = pg_num_rows($rs);
@@ -366,7 +368,9 @@
 				?>
 			</li>
 			<li>
-				<a href="#" onclick="openhref(98);"><sup>Sair - Encerrar Sessão <label id="etiqtela"></label> <div id="nomeLogado" style="padding-top: 2px;"> <?php echo $Nome; ?></sup> <?php echo $Setor; ?></div></a> <!-- vai para o  -->
+<!--				<a href="#" onclick="openhref(98);"><sup>Sair - Encerrar Sessão <label id="etiqtela"></label> <div id="nomeLogado" style="padding-top: 2px;"> <?php echo $Nome; ?></sup> <?php echo $Setor; ?></div></a> 
+				<a href="#" onclick="openhref(98);"><sup>Sair - Encerrar Sessão - <?php echo $Nome; ?> <?php echo $Setor; ?></sup></a> -->
+				<a href="#" onclick="openhref(98);"><sup>Sair - Encerrar Sessão <div id="nomeLogado" style="padding-top: 2px;"> <?php echo $Nome; ?></sup> <?php echo $Setor; ?></div></a>
 			</li>
         </ul>
     </body>

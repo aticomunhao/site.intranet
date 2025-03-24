@@ -156,9 +156,9 @@ if($Acao=="salvaReg"){
         $Codigo = $tblCod[0];
         $CodigoNovo = $Codigo+1; 
 
-        $Sql = pg_query($Conec, "INSERT INTO ".$xProj.".livroreg (id, codusu, usuant, usuprox, turno, descturno, dataocor, datains, ativo, numrelato, relato, enviado, ocor, relsubstit) 
-        VALUES($CodigoNovo, $UsuIns, $UsuAnt, $UsuProx, $Turno, '$DescTurno', '$RevData', NOW(), 1, '$NumRelat', '$Relato', $Envia, $Ocor, '$Subst')");
-        if(!$Sql){
+        $Sql = pg_query($Conec, "INSERT INTO ".$xProj.".livroreg (id, codusu, usuant, usuprox, turno, descturno, dataocor, datains, ativo, numrelato, relato, enviado, ocor, relsubstit, relatoini) 
+        VALUES($CodigoNovo, $UsuIns, $UsuAnt, $UsuProx, $Turno, '$DescTurno', '$RevData', NOW(), 1, '$NumRelat', '$Relato', $Envia, $Ocor, '$Subst', '$Relato')");
+        if(!$Sql){ // relatoini só é salvo na primeira vez, pode estar em branco - início da gravação em 24-03-2025
             $Erro = 1;
         }else{
             $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".livroreg");

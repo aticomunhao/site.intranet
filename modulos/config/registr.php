@@ -108,9 +108,9 @@ if($Acao =="loglog"){
                     $_SESSION["SiglaSetor"] = "n/d";
                     $_SESSION["CodSubSetorUsu"] = 1; // não tem mais subdiretorias - deixar 1
                     $_SESSION["AdmUsu"] = 2;
-
-                    // Aumenta número de acessos e grava data hora do login  - logfim = now() para mostrar on line
-                    pg_query($Conec, "UPDATE ".$xProj.".poslog SET numacessos = (numacessos + 1), logini = NOW(), logfim = NOW() WHERE pessoas_id = $id "); 
+                    $TamSen = strlen($Sen);
+                    // Aumenta número de acessos e grava data hora do login  - logfim = now() para mostrar on line  - extsen tamanho da senha para o login sem enter
+                    pg_query($Conec, "UPDATE ".$xProj.".poslog SET numacessos = (numacessos + 1), logini = NOW(), logfim = NOW(), extsen = $TamSen WHERE pessoas_id = $id "); 
 
                     $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".usulog"); // guarda login e logout
                     $tblCod = pg_fetch_row($rsCod);
@@ -234,10 +234,30 @@ if($Acao =="loglog"){
                             pg_query($Conec, "UPDATE ".$xProj.".paramsis SET dataelim = NOW() WHERE idpar = 1 ");
                         }
                     }
-
                     if($Sen == $Login){
                         $Erro = 5; // primeiro login - inserir nova senha
                     }
+
+                    $usuIP = get_client_ip();
+                    $rsIP = pg_query($Conec, "SELECT usuip, colecip FROM ".$xProj.".poslog WHERE cpf = '$Login'");
+                    $rowIP = pg_num_rows($rsIP);
+                    if($rowIP > 0){
+                        $tblIP = pg_fetch_row($rsIP);
+                        if(is_null($tblIP[0]) || $tblIP[0] == ""){ // se usuip estiver em branco
+                            pg_query($Conec, "UPDATE ".$xProj.".poslog SET usuip = '$usuIP' WHERE cpf = '$Login'");
+                        }else{
+                            if(strcmp($usuIP, $tblIP[0]) != 0){
+                                if(is_null($tblIP[1]) || $tblIP[1] == ""){
+                                    pg_query($Conec, "UPDATE ".$xProj.".poslog SET colecip = '$usuIP', usuip = '$usuIP' WHERE cpf = '$Login'");
+                                }else{
+                                    pg_query($Conec, "UPDATE ".$xProj.".poslog SET colecip = '$tblIP[0]' || '\n' || '$tblIP[1]', usuip = '$usuIP' WHERE cpf = '$Login'");
+                                }
+                            }else{
+                                pg_query($Conec, "UPDATE ".$xProj.".poslog SET numacessosip = (numacessosip + 1) WHERE cpf = '$Login'");
+                            }
+                        }
+                    }
+
                     $var = array("coderro"=>$Erro, "msg"=>$Erro_Msg, "usuarioid"=>$id, "usuarioNome"=>$NomeCompl, "usuarioAdm"=>$_SESSION["AdmUsu"], "usuario"=>$NomeUsual); 
                     $responseText = json_encode($var);
                     echo $responseText;
@@ -296,12 +316,12 @@ if($Acao =="buscaacesso"){
         $msg = "Este é seu acesso nº $NumAcessos";
         if($NumAcessos < 500){ // abaixo de 500
             if($NumAcessos % 100 === 0){ // a cada 100 acessos vai aparecer a caixa comemorativa
-                pg_query($Conec, "UPDATE ".$xProj.".poslog SET NumAcessos = (NumAcessos + 1) WHERE cpf = '$Cpf'"); // soma 1 para evitar continuar a comemoração no mesmo login
+                pg_query($Conec, "UPDATE ".$xProj.".poslog SET numacessos = (numacessos + 1) WHERE cpf = '$Cpf'"); // soma 1 para evitar continuar a comemoração no mesmo login
                 $Marca = 1;
             }
         }else{ //se for acima de 500
             if($NumAcessos % 500 === 0){
-                pg_query($Conec, "UPDATE ".$xProj.".poslog SET NumAcessos = (NumAcessos + 1) WHERE cpf = '$Cpf'"); // soma 1 para evitar continuar a comemoração no mesmo login
+                pg_query($Conec, "UPDATE ".$xProj.".poslog SET numacessos = (numacessos + 1) WHERE cpf = '$Cpf'"); // soma 1 para evitar continuar a comemoração no mesmo login
                 $Marca = 1;
             }
         }
@@ -1181,6 +1201,40 @@ if($Acao == "fechalog"){
     echo $responseText;
 }
 
+if($Acao =="logbuscaTamsen"){ // pega o tamanho da senha para entrar ao acabar de digitá-la
+    $Cpf = filter_input(INPUT_GET, 'usuario'); 
+    $Cpf1 = addslashes($Cpf);
+    $Cpf2 = str_replace(".", "", $Cpf1);
+    $Usu = str_replace("-", "", $Cpf2);
+    $Erro = 0;
+    $Tam = 0;
+    $rs = pg_query($Conec, "SELECT extsen FROM ".$xProj.".poslog WHERE cpf = '$Usu' And ativo = 1");
+    $row = pg_num_rows($rs);
+    if($row > 0){
+        $tbl = pg_fetch_row($rs);
+        $Tam = $tbl[0];
+    }
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro, "tamanho"=>$Tam);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="salvaTema"){
+    $Valor = (int) filter_input(INPUT_GET, 'valor');
+    $Erro = 0;
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET tema = $Valor WHERE pessoas_id = ".$_SESSION["usuarioID"]." And ativo = 1");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro, "valor"=>$Valor);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+
 function removeInj($VemDePost){  // função para remover injeções SQL
     $VemDePost = addslashes($VemDePost);
     $VemDePost = htmlspecialchars($VemDePost);
@@ -1223,4 +1277,28 @@ function removeInj($VemDePost){  // função para remover injeções SQL
         $navegador = $_SERVER['HTTP_USER_AGENT']; 
     }
     return $navegador;
+}
+
+function get_client_ip__(){
+    $ipaddress = '';
+    if (getenv('HTTP_CLIENT_IP'))
+        $ipaddress = getenv('HTTP_CLIENT_IP');
+    else if(getenv('HTTP_X_FORWARDED_FOR'))
+        $ipaddress = getenv('HTTP_X_FORWARDED_FOR');
+    else if(getenv('HTTP_X_FORWARDED'))
+        $ipaddress = getenv('HTTP_X_FORWARDED');
+    else if(getenv('HTTP_FORWARDED_FOR'))
+        $ipaddress = getenv('HTTP_FORWARDED_FOR');
+    else if(getenv('HTTP_FORWARDED'))
+       $ipaddress = getenv('HTTP_FORWARDED');
+    else if(getenv('REMOTE_ADDR'))
+        $ipaddress = getenv('REMOTE_ADDR');
+    else
+        $ipaddress = 'UNKNOWN';
+    return $ipaddress;
+}
+function get_client_ip() {
+    $ipaddress = '';
+    $ipaddress = $_SERVER['SERVER_ADDR'];
+    return $ipaddress;
 }

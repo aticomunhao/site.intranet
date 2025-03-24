@@ -51,15 +51,19 @@
     $PrimCargo = parAdm("primcargo_daf", $Conec, $xProj); // visualisar primeiro o cargo no quadro
     $CorListas = parEsc("corlistas_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
 
- //   echo "Mês: ".$MesSalvo;
- //   echo "<br><br>";
-
     if(isset($_REQUEST["numgrupo"])){
         $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal
     }else{
         $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);   
     }
     $MeuGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
+
+    if(isset($_REQUEST["guardatema"])){ // vem da pág carTema ao mudar o tema
+        $Tema = $_REQUEST["guardatema"];
+    }else{
+        $Tema = 0;
+    }
+//    echo "Tema: ".$Tema;
 
     if(isset($_REQUEST["largTela"])){
         $LargTela = $_REQUEST["largTela"]; // largura da tela
@@ -74,13 +78,13 @@
     }
 
     if($LargTela > 1280){
-        $Quant = 20; // Quantidade de caracteres no nome ou cargo
+        $Quant = 15; // Quantidade de caracteres no nome ou cargo
         $Campo = "115px"; // larg campo nome ou cargo 
     }else{
         $Quant = 15;
         $Campo = "105px";
     }
-    if($LargTela < 1270){ // chrome
+    if($LargTela < 1270){ // chrome - laptop 14pol
         $Quant = 10;
         $Campo = "90px";
     }
@@ -117,7 +121,7 @@
         <div class="col" style="position: relative; float: left; width: 33%;">&nbsp;</div>
         <div class="col" style="position: relative; float: left; width: 33%; padding-bottom: 10px;"><?php echo "Mês: ".$MesSalvo; ?></div>
         <div class="col" style="position: relative; float: right; width: 33%;">
-            <label id="etiqeditaEscala" for="editaEscala" class="etiqAzul" style="padding-left: 20px; <?php if($EscalaFechada == 0){echo "color: #036;";}else{echo "color: red; ";} ?>" title="Considera/desconsidera as mudanças como Troca de Serviço">Escala Fechada</label>
+            <label id="etiqeditaEscala" for="editaEscala" class="etiq eItalic" style="padding-left: 20px; <?php if($EscalaFechada == 1){echo "color: red; ";} ?>" title="Considera/desconsidera as mudanças como Troca de Serviço">Escala Fechada</label>
             <input type="checkbox" id="editaEscala" <?php if($EscalaFechada == 1){echo "CHECKED";}; ?> title="Considera/desconsidera as mudanças como Troca de Serviço" onchange="editaEscala(this);" >
         </div>
     <?php
@@ -130,14 +134,14 @@
 
                     if($visuCargo == 1){ // Visualizar o cargo junto ao nome
                         if($PrimCargo == 1){ 
-                            echo "<input disabled type='text' style='width: $Campo; font-size: 80%; border: 0px solid; text-align: center;' value='Cargo/FG' />";
-                            echo "<input disabled type='text' style='width: $Campo; font-size: 80%; border: 0px solid; text-align: center;' value='Nome' />";
+                            echo "<input disabled type='text' class='etiq' style='width: $Campo; font-size: 80%; border: 0px solid; text-align: center; background: transparent;' value='Cargo/FG' />";
+                            echo "<input disabled type='text' class='etiq' style='width: $Campo; font-size: 80%; border: 0px solid; text-align: center; background: transparent;' value='Nome' />";
                         }else{
-                            echo "<input disabled type='text' style='width: $Campo; font-size: 80%; border: 0px solid; text-align: center;' value='Nome' />";
-                            echo "<input disabled type='text' style='width: $Campo; font-size: 80%; border: 0px solid; text-align: center;' value='Cargo/FG' />";
+                            echo "<input disabled type='text' class='etiq' style='width: $Campo; font-size: 80%; border: 0px solid; text-align: center; background: transparent;' value='Nome' />";
+                            echo "<input disabled type='text' class='etiq' style='width: $Campo; font-size: 80%; border: 0px solid; text-align: center; background: transparent;' value='Cargo/FG' />";
                         }
                     }else{
-                        echo "<input disabled type='text' style='width: $Campo; font-size: 80%; border: 0px solid; text-align: center;' value='Nome' />";
+                        echo "<input disabled type='text' style='width: $Campo; font-size: 80%; border: 0px solid; text-align: center; background: transparent;' value='Nome' />";
                     }
                     $rs = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala), TO_CHAR(dataescala, 'DD/MM/YYYY'), feriado, dataescala FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY dataescala");
                     $row = pg_num_rows($rs);
@@ -174,23 +178,50 @@
                 $Cont = 1;
                 while($tbl2 = pg_fetch_row($rs2)){
                     $Cod = $tbl2[0]; //pessoas_id de poslog
-                    if($Cont % 2 == 0){ // linhas pares
-                        $CorFundo = "#FFFAFA"; // Branco - corFundo em indlog.css
+                    if($Cont % 2 == 0){ // linhas pares - 2ª inha
+
+                        if($Tema == 1){ //escuro
+                            //$CorFundo = "#FFFAFA"; // Branco - corFundo em indlog.css
+                            $CorFundo = "transparent; opacity: 1; color: white;"; 
+                        }else{
+                            $CorFundo = "transparent; opacity: 1;"; 
+                            //$CorFundo = "#FFFAFA; opacity: 1;"; // Branco - corFundo em indlog.css
+                        }
                     }else{
                         if($CorListas == 0){
-                            $CorFundo = "#FFFAFA"; //Branco
+                            if($Tema == 1){ //escuro
+                                $CorFundo = "white; opacity: 0.5; color: black;";
+                            }else{
+                                $CorFundo = "#FFFAFA; opacity: 1; color: black;"; //Branco
+                            }
                         }
                         if($CorListas == 1){
-                            $CorFundo = "#FFF8DC"; //Cornsilk1
+                            if($Tema == 1){ //escuro
+                                $CorFundo = "white; opacity: 0.5; color: black;";
+                            }else{
+                                $CorFundo = "#FFF8DC; opacity: 1; color: black;"; //Cornsilk1 
+                            }
                         }
                         if($CorListas == 2){
-                            $CorFundo = "#F0FFFF"; //Azure
+                            if($Tema == 1){ //escuro
+                                $CorFundo = "white; opacity: 0.5; color: black;";
+                            }else{
+                                $CorFundo = "#F0FFFF; opacity: 1; color: black;"; //Azure
+                            }
                         }
                         if($CorListas == 3){
-                            $CorFundo = "#E6E6FA"; //Lavanda
+                            if($Tema == 1){ //escuro
+                                $CorFundo = "white; opacity: 0.5; color: black;";
+                            }else{
+                                $CorFundo = "#E6E6FA; opacity: 1; color: black;"; //Lavanda
+                            }
                         }
                         if($CorListas == 4){
-                            $CorFundo = "#EEEEE0"; //Marfim
+                            if($Tema == 1){ //escuro
+                                $CorFundo = "white; opacity: 0.5; color: black;";
+                            }else{
+                                $CorFundo = "#EEEEE0; opacity: 1; color: black;"; //Marfim
+                            }
                         }
                     }
                     if(is_null($tbl2[2]) || $tbl2[2] == ""){
@@ -209,18 +240,20 @@
                     echo "<tr>";
                         echo "<td style='text-align: right;'>";
                             if($LargTela > 1380){
-                                echo "<input disabled type='text' style='font-size: 80%; width: 30px; border: 0px solid; text-align: center;' value=$Cont />";
+                                echo "<input disabled type='text' style='background: transparent; font-size: 80%; width: 30px; border: 0px solid; text-align: center;' value=$Cont />";
                             }
                             if($visuCargo == 1){ // Visualizar o cargo junto ao nome
                                 if($PrimCargo == 1){ // Primeiro o cargo depois o nome
-                                    echo "<input disabled type='text' style='width: $Campo; background-color: $CorFundo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Cargo' />";
-                                    echo "<input disabled type='text' style='width: $Campo; background-color: $CorFundo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
+//                                    echo "<input disabled type='text' style='width: $Campo; background: $CorFundo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Cargo' />";
+//                                    echo "<input disabled type='text' style='width: $Campo; background: $CorFundo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
+                                    echo "<label class='aEsq' style='width: $Campo; background: $CorFundo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;'>$Cargo</label>";
+                                    echo "<label class='aEsq' style='width: $Campo; background: $CorFundo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;'>$Nome</label>";
                                 }else{
-                                    echo "<input disabled type='text' style='width: $Campo; background-color: $CorFundo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
-                                    echo "<input disabled type='text' style='width: $Campo; background-color: $CorFundo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Cargo' />";
+                                    echo "<input disabled type='text' style='width: $Campo; background: $CorFundo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
+                                    echo "<input disabled type='text' style='width: $Campo; background: $CorFundo; font-size: 90%; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Cargo' />";
                                 }
                             }else{
-                                echo "<input disabled type='text' style='width: 170px; font-size: 90%; background-color: $CorFundo; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
+                                echo "<input disabled type='text' style='width: 170px; font-size: 90%; background: $CorFundo; border: 1px solid; border-radius: 5px; padding-left: 3px;' value='$Nome' />";
                             }
                             $rs3 = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala), feriado, dataescala FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY dataescala");
                             $row3 = pg_num_rows($rs3);
@@ -291,20 +324,20 @@
                                                     echo "</div>";
                                                 }else{
                                                     if($Troca == 1){
-                                                        echo "<div class='quadrodiaCinza' style='border: 2px solid; border-radius: 10px;' title='$LetraOrig'> $tbl4[0] </div>";
+                                                        echo "<div class='quadrodiaCinza' style='border: 2px solid #FFD700; border-radius: 10px;' title='$LetraOrig'> $tbl4[0] </div>";
                                                     }else{
                                                         echo "<div class='quadrodiaCinza' title='$LetraOrig'> $tbl4[0] </div>";
                                                     }
                                                 }
                                             }else{
                                                 if($ValeRef == 0){ // sem Vale refeição
-                                                    echo "<div class='quadrodia' style='border-width: 2px; border-color: red; background-color: $CorFundo; "; 
+                                                    echo "<div class='quadrodia' style='border-width: 2px; border-color: red; background: $CorFundo; "; 
                                                     if($Troca == 1){echo "border: 2px solid red; border-radius: 10px;";}
                                                     echo "' title='Sem vale refeição. $LetraOrig'> $tbl4[0] ";
                                                     echo "</div>";
                                                 }else{
-                                                    echo "<div class='quadrodia' style='background-color: $CorFundo; "; 
-                                                    if($Troca == 1){echo "border: 2px solid; border-radius: 10px;";}
+                                                    echo "<div class='quadrodia' style='background: $CorFundo; "; 
+                                                    if($Troca == 1){echo "border: 2px solid #FFD700; border-radius: 10px;";}
                                                     echo "' title='$LetraOrig'> $tbl4[0] ";
                                                     echo "</div>";
                                                 }
@@ -312,29 +345,29 @@
                                         }else{ // com destaque
                                             $Destaq = $tbl4[2];
                                             if($Destaq == 1){
-                                                $Cor = "yellow";
+                                                $Cor = "yellow; color: black;";
                                             }
                                             if($Destaq == 2){ // Azul
-                                                $Cor = "#00BFFF";
+                                                $Cor = "#00BFFF; color: black;";
                                             }
                                             if($Destaq == 3){ // Verde
-                                                $Cor = "#00FF7F";
+                                                $Cor = "#00FF7F; color: black;";
                                             }
 
                                             if($tbl4[0] != ""){
                                                 if($tbl4[5] == 0){ // sem vale refeição
-                                                    echo "<div class='quadrodia' style='background-color: $Cor; border-width: 2px; border-color: red; ";
+                                                    echo "<div class='quadrodia' style='background: $Cor; border-width: 2px; border-color: red; ";
                                                     if($Troca == 1){echo "border: 2px solid red; border-radius: 10px; ";};
                                                     echo "' title='Sem vale refeição. $LetraOrig'> $tbl4[0] ";
                                                     echo "</div>";
                                                 }else{
-                                                    echo "<div class='quadrodia' style='background-color: $Cor; ";
-                                                    if($Troca == 1){echo "border: 2px solid; border-radius: 10px; "; }; 
+                                                    echo "<div class='quadrodia' style='background: $Cor; ";
+                                                    if($Troca == 1){echo "border: 2px solid #FFD700; border-radius: 10px; "; }; 
                                                     echo "' title='$LetraOrig'> $tbl4[0] ";
                                                     echo "</div>";
                                                 }
                                             }else{
-                                                echo "<div class='quadrodia' style='background-color: $Cor;'> &nbsp; </div>";
+                                                echo "<div class='quadrodia' style='background: $Cor;'> &nbsp; </div>";
                                             }
                                         }
                                     }else{
@@ -346,7 +379,7 @@
                                     }
                                     echo "</td>";
                                 }
-                            echo "<td style='font-size: 80%; cursor: default;' title='Número de serviços no mês'>";
+                            echo "<td class='etiq eItalic aCentro' style='cursor: default;' title='Número de serviços no mês'>";
                                     //Conta número de serviços na escala
                                     $rs5 = pg_query($Conec, "SELECT COUNT(poslog_id) 
                                     FROM ".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".escaladaf_turnos ON ".$xProj.".escaladaf_ins.turnos_id = ".$xProj.".escaladaf_turnos.id 

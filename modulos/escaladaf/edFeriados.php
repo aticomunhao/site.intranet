@@ -29,8 +29,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         }
         $rs3 = pg_query($Conec, "SELECT id, TO_CHAR(dataescalafer, 'DD/MM'), descr FROM ".$xProj.".escaladaf_fer WHERE ativo = 1 And TO_CHAR(dataescalafer, 'YYYY') = '$Ano' ORDER BY dataescalafer");
         ?>
-        <div style="margin-top: 15px; text-align: center; font-weight: bold;">Feriados <?php echo $Ano; ?></div>
-        <div style="margin: 10px; padding: 10px; text-align: center; border: 2px solid green; border-radius: 15px;">
+        <div style="color: black; margin-top: 15px; text-align: center; font-weight: bold;">Feriados <?php echo $Ano; ?></div>
+        <div style="color: black; margin: 10px; padding: 10px; text-align: center; border: 2px solid green; border-radius: 15px;">
             <div style="position: relative; float: right; color: red; font-weight: bold;"></div>
             <table style="margin: 0 auto; width: 85%;">
                 <tr>

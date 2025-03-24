@@ -54,6 +54,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
             $(document).ready(function(){
+                
                 var nHora = new Date();   //   function mostraRelogio()  //em relacao.js da SCer
                 var hora = nHora.getHours();
                 var minuto = nHora.getMinutes();
@@ -99,7 +100,8 @@ if(!isset($_SESSION["usuarioID"])){
                                             }
                                         });
                                     }else{
-                                        $("#carregaReg").load("modulos/lro/relReg.php");
+                                        $('#carregaTema').load('modulos/config/carTema.php?carpag=livroReg');
+                                        $("#faixaCentral").load("modulos/lro/relReg.php");
                                     }
                                 }
                             }
@@ -107,6 +109,7 @@ if(!isset($_SESSION["usuarioID"])){
                     };
                     ajax.send(null);
                 }
+                
                 document.getElementById("botRedigirCompl").style.visibility = "hidden"; // para redigir um complemento
                 document.getElementById("botimprLRO").style.visibility = "hidden"; // botão de imprimir todo o LRO
                 if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) && parseInt(Resp.fiscalizaLro) === 1){
@@ -276,6 +279,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById('botmarcaLido').style.visibility = "hidden";
                                             document.getElementById('imgmarcaLido').style.visibility = "hidden";
                                             if(parseInt(document.getElementById("fiscalLRO").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
+                                                document.getElementById('NumRegistro').innerHTML = "Registro nº "+Resp.numrelato;
                                                 if(parseInt(Resp.lidofisc) === 0){
                                                     document.getElementById('botmarcaLido').style.visibility = "visible";
                                                 }else{
@@ -623,7 +627,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("guardacod").value = Resp.codigonovo;
                                     document.getElementById("mudou").value = "0";
                                     document.getElementById("relacmodalReg").style.display = "none";
-                                    $("#carregaReg").load("modulos/lro/relReg.php");
+                                    $("#faixaCentral").load("modulos/lro/relReg.php");
                                 }
                             }
                         }
@@ -662,7 +666,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("guardacod").value = Resp.codigonovo;
                                     document.getElementById("mudou").value = "0";
                                     document.getElementById("relacmodalCompl").style.display = "none";
-                                    $("#carregaReg").load("modulos/lro/relReg.php");
+                                    $("#faixaCentral").load("modulos/lro/relReg.php");
                                 }
                             }
                         }
@@ -742,14 +746,20 @@ if(!isset($_SESSION["usuarioID"])){
 
             function mostraBotSalvar(){
                 document.getElementById('botsalvaRelFisc').style.visibility = "visible";
+                document.getElementById('botmarcaLido').style.visibility = "hidden";
+//                if(document.getElementById("mostrarelatofiscal").value == ""){ // se apagar tudo
+//                    document.getElementById('botsalvaRelFisc').style.visibility = "hidden";
+//                    document.getElementById('botmarcaLido').style.visibility = "visible";
+//                }
             }
+
             function salvaRelFisc(){
-                if(document.getElementById("mostrarelatofiscal").value == ""){
-                    $('#mostramensagemfisc').fadeIn("slow");
-                    document.getElementById("mostramensagemfisc").innerHTML = "Escreva o relato";
-                    $('#mostramensagemfisc').fadeOut(3000);
-                    return false;
-                }
+//                if(document.getElementById("mostrarelatofiscal").value == ""){
+//                    $('#mostramensagemfisc').fadeIn("slow");
+//                    document.getElementById("mostramensagemfisc").innerHTML = "Escreva o relato";
+//                    $('#mostramensagemfisc').fadeOut(3000);
+//                    return false;
+//                }
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/lro/salvaReg.php?acao=salvaRegFiscal&codigo="+document.getElementById("guardacod").value
@@ -764,7 +774,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 }else{
                                     document.getElementById("mudou").value = "0";
                                     document.getElementById("relacMostramodalReg").style.display = "none";
-                                    $("#carregaReg").load("modulos/lro/relReg.php");
+                                    $("#faixaCentral").load("modulos/lro/relReg.php");
                                 }
                             }
                         }
@@ -787,7 +797,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 }else{
                                     document.getElementById("mudou").value = "0";
                                     document.getElementById("relacMostramodalReg").style.display = "none";
-                                    $("#carregaReg").load("modulos/lro/relReg.php");
+                                    $("#faixaCentral").load("modulos/lro/relReg.php");
                                 }
                             }
                         }
@@ -1008,7 +1018,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         </script>
     </head>
-    <body>
+    <body class="corClara" onbeforeunload="return mudaTema(0)"> <!-- ao sair retorna os background claros -->
         <?php
         date_default_timezone_set('America/Sao_Paulo');
         $Hoje = date('d/m/Y');
@@ -1024,6 +1034,14 @@ if(!isset($_SESSION["usuarioID"])){
             return false;
         }
 
+        //Provisório
+        if(strtotime('2025/04/30') > strtotime(date('Y/m/d'))){
+            $rs = pg_query($Conec, "SELECT table_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'livroreg' AND COLUMN_NAME = 'relatoini'");
+            $row = pg_num_rows($rs);
+            if($row == 0){
+                pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".livroreg ADD COLUMN IF NOT EXISTS relatoini text ");
+            }
+        }
         //Marca enviado após 13 horas de inserido
         $rs = pg_query($Conec, "UPDATE ".$xProj.".livroreg SET enviado = 1 WHERE datains < (NOW() - interval '13 hour') And enviado = 0"); // marca enviado após 13 horas de inserido - o turno 3 tem 12 horas
 
@@ -1032,6 +1050,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         $Lro = parEsc("lro", $Conec, $xProj, $_SESSION["usuarioID"]);
         $FiscLro = parEsc("fisclro", $Conec, $xProj, $_SESSION["usuarioID"]);
+        $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
 
         $OpUsuAnt = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE lro = 1 And ativo = 1 And pessoas_id != ".$_SESSION["usuarioID"]." ORDER BY nomeusual, nomecompl"); // And codsetor = 
         $OpUsuAnt2 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE lro = 1 And ativo = 1 And pessoas_id != ".$_SESSION["usuarioID"]." ORDER BY nomeusual, nomecompl"); 
@@ -1062,25 +1081,29 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="acessoLRO" value="<?php echo $Lro; ?>" />
         <input type="hidden" id="fiscalLRO" value="<?php echo $FiscLro; ?>" />
 
-        <div style="margin: 20px; border: 2px solid green; border-radius: 15px; padding: 20px; min-height: 70px;">
-            <div class="box" style="position: relative; float: left; width: 33%;">
+        <div id="tricoluna0" style="margin: 10px; border: 2px solid green; border-radius: 15px; padding: 20px; min-height: 70px;">
+            <div id="tricoluna1" class="box" style="position: relative; float: left; width: 35%;">
                 <input type="button" id="botinserir" class="botpadr" value="Inserir Registro" onclick="InsRegistro();">
             </div>
-            <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
-                <h5>Livro de Registro de Ocorrências</h5>
-                
+            <div id="tricoluna2" class="box" style="position: relative; float: left; width: 28%; text-align: center;">
+                <h6>Livro de Registro de Ocorrências</h6>
             </div>
-            <div class="box" style="position: relative; float: left; width: 33%; text-align: right;">
+            <div id="tricoluna3" class="box" style="position: relative; float: left; width: 35%; text-align: right;">
+
+                <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%; padding-left: 5px;">Tema: </label>
+                <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" class="etiq" style="cursor: pointer;">&nbsp;Claro</label>
+                <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" class="etiq" style="cursor: pointer;">&nbsp;Escuro</label>
+                <label style="padding-left: 20px;"></label>
+
                 <img src="imagens/checkVerde.png" height="20px;" style="cursor: pointer;" onclick="abreCheckList();" title="Lista de Verificação (checklist)">
                 <label style="padding-left: 20px;"></label>
                 <button class="botpadrred" style="font-size: 80%;" id="botimprLRO" onclick="abreimprLRO();">Gerar PDF</button>
                 <label style="padding-left: 20px;"></label>
                 <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpLRO();" title="Guia rápido">
             </div>
-
-            <div id="carregaReg"></div>
+            <div id="faixaCentral"></div>
         </div>
-
+        <div id="carregaTema"></div> <!-- carrega a pág modulos/config/carTema.php - onde está a função mudaTema() -->
 
         <!-- div modal para registrar ocorrência  -->
         <div id="relacmodalReg" class="relacmodal">
@@ -1114,7 +1137,7 @@ if(!isset($_SESSION["usuarioID"])){
                             ?>
                         </select>
                         <br>
-                        <label class="etiqAzul">Titular em serviço: </label><label id="nomeusuario" style="font-size: 1.2rem; padding: 5px;"><?php echo $_SESSION["NomeCompl"]; ?></label>
+                        <label class="etiqAzul">Titular em serviço: </label><label id="nomeusuario" style="color: black; font-size: 1.2rem; padding: 5px;"><?php echo $_SESSION["NomeCompl"]; ?></label>
                         <br>
                         <div style="text-align: center;">
                             <label class="etiqAzul"> - Recebi o serviço de: </label>
@@ -1216,7 +1239,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <label class="etiqAzul"> - Turno: </label><label id="turnosvc" style="font-size: 1.2rem; padding-left: 3px;"></label>
                         <input disabled type="text" id="mostraselecturno" value="" style="font-size: .9em; width: 100px; text-align: center;">
                         <br>
-                        <label class="etiqAzul">Registrado por: </label><label id="mostranomeusuario" style="font-size: 1.2rem; padding-left: 3px;"></label>
+                        <label class="etiqAzul">Registrado por: </label><label id="mostranomeusuario" style="color: black; font-size: 1.2rem; padding-left: 3px;"></label>
                         <br>
                         <div style="text-align: center;">
                             <label class="etiqAzul"> - Recebi o serviço de: </label>
@@ -1240,7 +1263,7 @@ if(!isset($_SESSION["usuarioID"])){
                     </div>
                     <hr>
                     <div class="aEsq"><label class="etiqAzul"> - Substituições temporárias: </label></div>
-                    <div class="col-xs-6 style="text-align: center; padding-bottom: 10px;">
+                    <div class="col-xs-6" style="text-align: center; padding-bottom: 10px;">
                         <textarea class="form-control" disabled id="mostrarelatosubstit" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="4" cols="80" ></textarea>
                     </div>
                     <div id="mostramensagem" style="color: red; font-weight: bold;"></div>
@@ -1249,13 +1272,15 @@ if(!isset($_SESSION["usuarioID"])){
                     </div>
 
                     <div id="etiqmostrarelatofiscal" class="aEsq">
+                        <label id="NumRegistro" class="etiqAzul"></label>
                         <label class="etiqAzul" style="padding-right: 20px;"> - Considerações da Administração: </label>
+                        
                         <img id="imgmarcaLido" src="imagens/ok.png" height="15px;" title="Visto OK">
                         <button id="botsalvaRelFisc" class="botpadrblue" style="font-size: 70%; padding: 2px;" onclick="salvaRelFisc();" title="Salva e marca como lido.">Salvar</button>
                         <label class="etiqAzul" style="padding-left: 20px;">
                         <button id="botmarcaLido" class="botpadrblue" style="font-size: 70%; padding: 2px;" onclick="marcaLidoFisc();" title="Só marca como lido.">Marcar Lido</button>
                     </div>
-                    <div class="col-xs-6 style="text-align: center; padding-bottom: 10px;">
+                    <div class="col-xs-6" style="text-align: center; padding-bottom: 10px;">
                         <textarea class="form-control" disabled id="mostrarelatofiscal" onkeydown="mostraBotSalvar();" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="2" cols="60" ></textarea>
                     </div>
                     <div id="mostramensagemfisc" style="color: red; font-weight: bold;"></div>
@@ -1298,7 +1323,7 @@ if(!isset($_SESSION["usuarioID"])){
                             ?>
                         </select>
                         <br>
-                        <label class="etiqAzul">Titular em serviço: </label><label id="complnomeusuario" style="font-size: 1.2rem; padding: 5px;"><?php echo $_SESSION["NomeCompl"]; ?></label>
+                        <label class="etiqAzul">Titular em serviço: </label><label id="complnomeusuario" style="color: black; font-size: 1.2rem; padding: 5px;"><?php echo $_SESSION["NomeCompl"]; ?></label>
                         <br>
                         <div style="text-align: center;">
                             <label class="etiqAzul"> - Recebi o serviço de: </label>
@@ -1364,7 +1389,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <span class="close" onclick="fechaCheckList();">&times;</span>
                 <h4 style="text-align: center; color: #666;">Lista de Verificação</h4>
                 <h5 style="text-align: center; color: #666;">Passagem de Serviço</h5>
-                <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
+                <div style="color: #000000; border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
                     <div id="listaCheckList"></div>  <!-- checkListLRO.php -->
                 </div>
             </div>
@@ -1376,7 +1401,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <span class="close" onclick="fechaCheckListReg();">&times;</span>
                 <h4 style="text-align: center; color: #666;">Lista de Verificação</h4>
                 <div style="text-align: center; color: #666;">Auxiliar na composição do relato</div>
-                <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
+                <div style="color: #000000; border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
                     <div id="listaCheckReg"></div>  <!-- checkListLRO.php -->
                 </div>
             </div>
@@ -1389,7 +1414,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <span class="close" onclick="fechaImprLRO();">&times;</span>
                 <h5 id="titulomodal" style="text-align: center;color: #666;">Livro de Registro de Ocorrências</h5>
                 <h6 id="titulomodal" style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
-                <div style="border: 2px solid #C6E2FF; border-radius: 10px;">
+                <div style="color: #000000; border: 2px solid #C6E2FF; border-radius: 10px;">
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>
                             <td style="text-align: right;"><label style="font-size: 80%;">Mensal - Selecione o Mês/Ano: </label></td>
@@ -1436,7 +1461,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <span class="close" onclick="fechaHelpLRO();">&times;</span>
                 <h4 style="text-align: center; color: #666;">Informações</h4>
                 <h5 style="text-align: center; color: #666;">Livro de Registro de Ocorrências</h5>
-                <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
+                <div style="color: #000000; border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
                     Regras inseridas:
                     <ul>
                         <li>1 - O Livro de Registro de Ocorrências (LRO) destina-se a registrar os acontecimentos dignos de registro durante os turnos de serviço na portaria.</li>

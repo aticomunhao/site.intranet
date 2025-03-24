@@ -10,7 +10,7 @@ if(!isset($_SESSION['AdmUsu'])){
     $Acao = $_REQUEST["acao"];
     require_once('../../class/fpdf/fpdf.php'); // adaptado ao PHP 7.2 - 8.2
     define('FPDF_FONTPATH', '../../class/fpdf/font/');  
-    $Dom = "logo_comunhao_completa_cor_pos_150px.png";
+    $Dom = "Logo2.png";
     date_default_timezone_set('America/Sao_Paulo'); 
     $rsCabec = pg_query($Conec, "SELECT cabec1, cabec2, cabec3 FROM ".$xProj.".setores WHERE codset = ".$_SESSION["CodSetorUsu"]." ");
     $rowCabec = pg_num_rows($rsCabec);
@@ -131,7 +131,6 @@ if(!isset($_SESSION['AdmUsu'])){
                 $pdf->SetFont('Arial', 'B' , 10); 
                 $pdf->Cell(10, 4, number_format($tblP3[0], 0, ",","."), 0, 0, 'R');
 
-
                 $rsPR = pg_query($Conec, "SELECT (dataarquivou - datareceb) FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And usudestino != 0");
                 $rowPR = pg_num_rows($rsPR);
                 $Dias = 0;
@@ -144,7 +143,6 @@ if(!isset($_SESSION['AdmUsu'])){
                     $pdf->Cell(25, 4, "Tempo médio: ".number_format(($Dias/$rowPR), 1, ",",".")." dias", 0, 0, 'L');
                 }
                 $pdf->Cell(25, 4, "", 0, 1, 'L');
-
 
                 $rsDest = pg_query($Conec, "SELECT numdest, descdest FROM ".$xProj.".bensdestinos WHERE numdest > 0 And descdest != '' ORDER BY descdest");
                 while($tblDest = pg_fetch_row($rsDest)){

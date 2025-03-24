@@ -32,7 +32,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                 alert("Esta operação requer nível administrativo superior.", "Permissão");
                             }
                             $("#relacaoParticip").load("modulos/escaladaf/equipe.php?diaid="+document.getElementById("guardaDiaId").value+"&numgrupo="+document.getElementById("guardagrupo").value);
-                            $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardagrupo").value+"&largTela="+LargTela);
+                            $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardagrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                          },
                          error: function(){
                             alert("Houve erro do AJAX");
@@ -71,7 +71,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 }
                 $Modificavel = 1;
 
-                $rs3 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual, daf_turno, daf_marca, letra, horaturno, ordem_daf 
+                $rs3 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual, daf_turno, daf_marca, letra, horaturno, ordem_daf, destaq, valeref 
                 FROM ".$xProj.".poslog LEFT JOIN ".$xProj.".escaladaf_turnos ON ".$xProj.".poslog.daf_turno = ".$xProj.".escaladaf_turnos.id
                 WHERE eft_daf = 1 And ".$xProj.".poslog.ativo = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl ");
             ?>
@@ -87,22 +87,30 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     <?php 
                     while($tbl3 = pg_fetch_row($rs3)){
                         $Cod = $tbl3[0];
+                        $Destaq = $tbl3[8];
+                        $ValeRef = $tbl3[9];
                         ?>
                         <tr id="posicao_<?php echo $Cod; ?>"> <!-- vai criar um array posicao  -->
                             <td style="min-width: 20px;"><div style="font-size: 80%; color: gray; text-align: center; padding-left: 2px; padding-right: 2px; border: 1px solid; border-radius: 3px;"><?php echo $tbl3[7]; ?><div></td>
                             <td></td>
                             <td><input type="checkbox" value="ev" id="ev" title="marca para transferir." onClick="MarcaPartic(<?php echo $Cod ?>);" <?php if($tbl3[4] == 1) {echo "checked";} ?> ></td>
                             <td style="display: none;"><?php echo $tbl3[0]; ?></td>
-                            <td><div class="quadrgrupo" style="cursor: pointer;"><?php if(is_null($tbl3[2]) || $tbl3[2] == ""){echo "&nbsp;";}else{echo $tbl3[2];} ?></div></td>
-                            <td><div class="quadrgrupo" style="cursor: pointer;"><?php echo $tbl3[1]; ?></div></td>
+                            <td><div style="color: black; cursor: pointer;"><?php if(is_null($tbl3[2]) || $tbl3[2] == ""){echo "&nbsp;";}else{echo $tbl3[2];} ?></div></td>
+                            <td><div style="color: black; cursor: pointer;"><?php echo $tbl3[1]; ?></div></td>
                             <td>
                                 <select id="buscaturno" onchange="mudaTurno(<?php echo $Cod; ?>, value);" style="font-family: Lucida Sans Typewriter; font-size: .9rem; font-weight: bold; width: 200px;" title="Selecione um turno.">
                                     <option value="<?php echo $tbl3[3]; ?>"><?php echo $tbl3[5]." - ".$tbl3[6]; ?></option>
                                     <?php 
-                                    $OpTurnos = pg_query($Conec, "SELECT id, letra, horaturno FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And grupo_turnos = $NumGrupo ORDER BY letra");
+                                    $OpTurnos = pg_query($Conec, "SELECT id, letra, horaturno, destaq, valeref FROM ".$xProj.".escaladaf_turnos WHERE ativo = 1 And grupo_turnos = $NumGrupo ORDER BY letra");
                                     if($OpTurnos){
                                         while ($Opcoes = pg_fetch_row($OpTurnos)){ ?>
-                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]." - ".$Opcoes[2]; ?></option>
+                                            <option <?php 
+                                            if($Opcoes[3] == 1){echo "class='quadroletraYellow'";} 
+                                            if($Opcoes[3] == 2){echo "class='quadroletraBlue'";} 
+                                            if($Opcoes[3] == 3){echo "class='quadroletraGreen'";} 
+                                            if($Opcoes[4] == 0){echo "class='destacaBorda'";} 
+                                            ?> 
+                                            value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]." - ".$Opcoes[2]; ?></option>
                                         <?php 
                                         }
                                     }

@@ -3,8 +3,8 @@
     <head>
         <meta charset="UTF-8">
         <title></title>
-        <style type="text/css">
-        </style>
+        <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
+        <script src="comp/js/jquery-confirm.min.js"></script> 
         <script>
             function enviaMsg(idTar, idUsu){
                 if(document.getElementById("novamensagem").value === ""){
@@ -22,7 +22,7 @@
 //alert(ajax.responseText); 
                                 Resp = eval("(" + ajax.responseText + ")");
                                 if(parseInt(Resp.coderro) === 0){
-                                    $("#faixacentral").load("modulos/conteudo/jTarefa.php?numtarefa="+idTar+"&usulogadoid="+idUsu);
+                                    $("#faixacentralMsg").load("modulos/conteudo/jTarefa.php?numtarefa="+idTar+"&usulogadoid="+idUsu);
                                 }else{
                                     alert("Houve um erro no servidor.");
                                     document.getElementById("relacmodalMsg").style.display = "none";
@@ -49,7 +49,7 @@
 //alert(ajax.responseText); 
                                             Resp = eval("(" + ajax.responseText + ")");
                                             if(parseInt(Resp.coderro) === 0){
-                                                $("#faixacentral").load("modulos/conteudo/jTarefa.php?numtarefa="+idTar+"&usulogadoid="+idUsu);
+                                                $("#faixacentralMsg").load("modulos/conteudo/jTarefa.php?numtarefa="+idTar+"&usulogadoid="+idUsu);
                                             }else{
                                                 alert("Houve um erro no servidor.");
                                                 document.getElementById("relacmodalMsg").style.display = "none";
@@ -92,6 +92,7 @@
                 While ($tbl = pg_fetch_row($rs)){
                     $Cod = $tbl[0];  // idMsg
                     $MsgUser = $tbl[1]; // id de quem inseriu a mensagem
+
                     $Nome = $tbl[6];
                     if(is_null($tbl[6]) || $tbl[6] == ""){
                         $Nome = $tbl[2];
@@ -100,17 +101,13 @@
                     $Msg = nl2br($tbl[4]); // textoMsg
 
                     echo "<tr>";
-                    
-                    if($MsgUser == $UsuLogadoId){ // quem escreveu
+                    if($MsgUser == $UsuLogadoId){ // quem escreveu a msg pode apagar
                         echo "<td style='font-size: .7rem; text-align: center; color: #828282'>$DataMsg <br>  $Nome</td>";
                         echo "<td><div style='border: 1px outset; border-radius: 5px; padding: 4px; color: #828282'>$Msg</div></td>";
+                        echo "<td style='text-align: center;'><div style='cursor: pointer;' onclick='apagaMsg($Cod, $IdTarefa, $UsuLogadoId);' title='Apagar mensagem'> &#128465; </div></td>"; // Wastebasket &#128465;
                     }else{
                         echo "<td style='font-size: .7rem; text-align: center;'>$DataMsg <br>  $Nome</td>";
                         echo "<td><div style='border: 1px outset; border-radius: 5px; padding: 4px;'>$Msg</div></td>";
-                    }
-                    if($MsgUser == $UsuLogadoId){ // quem escreveu a msg pode apagar
-                        echo "<td style='text-align: center;'><div style='cursor: pointer;' onclick='apagaMsg($Cod, $IdTarefa, $UsuLogadoId);' title='Apagar mensagem'> &#128465; </div></td>"; // Wastebasket &#128465;
-                    }else{
                         echo "<td></td>";
                     }
                     echo "</tr>";

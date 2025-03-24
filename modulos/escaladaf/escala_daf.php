@@ -118,11 +118,12 @@ if(!isset($_SESSION["usuarioID"])){
                 border-radius: 15px;
                 width: 40%;
             }
-             .quadrodia {
+            .quadrodia {
                 font-size: 90%;
                 min-width: 30px;
                 border: 1px solid;
                 border-radius: 3px;
+                background-color: transparent;
             }
             .quadrodiaCinza {
                 font-size: 90%;
@@ -130,6 +131,7 @@ if(!isset($_SESSION["usuarioID"])){
                 border: 1px solid;
                 border-radius: 3px;
                 background-color: #E8E8E8;
+                color: black;
             }
             .quadrodiaClick {
                 font-size: 90%;
@@ -137,6 +139,7 @@ if(!isset($_SESSION["usuarioID"])){
                 border: 1px solid;
                 border-radius: 3px;
                 cursor: pointer;
+                background-color: transparent;
             }
             .quadrodiaClickCinza {
                 font-size: 90%;
@@ -145,6 +148,7 @@ if(!isset($_SESSION["usuarioID"])){
                 border-radius: 3px;
                 cursor: pointer;
                 background-color: #E8E8E8;
+                color: black;
             }
             .quadroletra {
                 text-align: center;
@@ -160,6 +164,7 @@ if(!isset($_SESSION["usuarioID"])){
                 border: 1px solid;
                 border-radius: 3px;
                 background-color: yellow;
+                color: black;
             }
             .quadroletraBlue {
                 text-align: center;
@@ -168,6 +173,7 @@ if(!isset($_SESSION["usuarioID"])){
                 border: 1px solid;
                 border-radius: 3px;
                 background-color: #00BFFF;
+                color: black;
             }
             .quadroletraGreen {
                 text-align: center;
@@ -176,6 +182,7 @@ if(!isset($_SESSION["usuarioID"])){
                 border: 1px solid;
                 border-radius: 3px;
                 background-color: #00FF7F;
+                color: black;
             }
             .quadroCinza {
                 font-size: 80%;
@@ -204,8 +211,9 @@ if(!isset($_SESSION["usuarioID"])){
             }
         </style>
         <script>
-            LargTela = $(window).width();
+            LargTela = $(window).width(); // largura da tela ao abrir o módulo
             $(document).ready(function(){
+                $('#carregaTema').load('modulos/config/carTema.php?carpag=escala_daf');
                 //Não vai liberar para os escalados - só o pdf impresso
                 document.getElementById("evliberames").style.visibility = "hidden"; 
                 document.getElementById("etiqevliberames").style.visibility = "hidden";  // liberar para todos no site
@@ -253,7 +261,8 @@ if(!isset($_SESSION["usuarioID"])){
                      document.getElementById("botImprimir").style.visibility = "hidden";
                      document.getElementById("transfMesAnoEsc").style.visibility = "hidden";
                 }else{
-                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
+//                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
+                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                     $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                     $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                     $("#faixanotas").load("modulos/escaladaf/notasdaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
@@ -287,7 +296,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                 document.getElementById("botImprimir").style.visibility = "hidden";
                                             }else{
                                                 if(parseInt(Resp.temMes) > 27){
-                                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
+                                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                                                     $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                                     $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                                     $("#faixanotas").load("modulos/escaladaf/notasdaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
@@ -405,7 +414,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                             $("#faixaferiados").load("modulos/escaladaf/infoAgd2.php");
                                                             document.getElementById("botImprimir").style.visibility = "hidden";
                                                         }else{
-                                                            $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
+                                                            $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                                                             $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                                             $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                                             $("#faixanotas").load("modulos/escaladaf/notasdaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
@@ -541,7 +550,7 @@ if(!isset($_SESSION["usuarioID"])){
 //alert(ajax.responseText);
                                     Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                     if(parseInt(Resp.coderro) === 0){
-                                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
+                                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                                     }else{
                                         alert("Houve um erro no servidor.")
                                     }
@@ -608,9 +617,9 @@ if(!isset($_SESSION["usuarioID"])){
                                         alert("Houve um erro no servidor.");
                                     }else{
                                         document.getElementById("guardanumgrupo").value = document.getElementById("selecGrupo").value;
-                                        document.getElementById("etiqSiglaGrupo").innerHTML = "Escala "+Resp.siglagrupo;
+                                        document.getElementById("tricoluna2").innerHTML = "Escala "+Resp.siglagrupo;
                                         if(parseInt(Resp.temMes) > 27){ // encontrados lançamentos do mês e ano
-                                            $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela+"&selecmes="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                                            $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela+"&selecmes="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                                             $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                         }else{
                                             $("#faixacentral").load("modulos/escaladaf/infoAgd2.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
@@ -1231,7 +1240,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             if(parseInt(Resp.coderro) > 0){
                                                 alert("Houve um erro no servidor.");
                                             }else{
-                                                $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
+                                                $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                                                 $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php?ano="+document.getElementById("guardaAno").value);
                                                 $("#faixaferiados").load("modulos/escaladaf/relFeriados.php?ano="+document.getElementById("guardaAno").value);
                                             }
@@ -1262,7 +1271,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
                                 }else{
-                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
+                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                                     $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php?ano="+document.getElementById("selecAnoFer").value);
                                     $("#faixaferiados").load("modulos/escaladaf/relFeriados.php?ano="+document.getElementById("guardaAno").value);
                                 }
@@ -1288,7 +1297,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
                                 }else{
-                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
+                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                                     $("#relacaoFeriados").load("modulos/escaladaf/edFeriados.php?ano="+document.getElementById("selecAnoFer").value);
                                     $("#faixaferiados").load("modulos/escaladaf/relFeriados.php?ano="+document.getElementById("guardaAno").value);
                                 }
@@ -1318,7 +1327,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 if(parseInt(document.getElementById("UsuAdm").value) < 7){
                     $.confirm({
-                        title: '<img src="imagens/LogoComunhao.png" height="20px;">',
+                        title: '<img src="imagens/Logo1.png" height="20px;">',
                         content: 'Requer nível administrativo mais alto.',
                         draggable: true,
                         buttons: {
@@ -1357,7 +1366,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         });
                                         return false;
                                     }else{
-                                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
+                                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                                         $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                         $('#mensagemConfig').fadeIn("slow");
                                         document.getElementById("mensagemConfig").innerHTML = "Valor salvo.";
@@ -1405,7 +1414,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     if(parseInt(Resp.jaesta) === 1){
                                         obj.checked = false;
                                         $.confirm({
-                                            title: '<img src="imagens/LogoComunhao.png" height="20px;">',
+                                            title: '<img src="imagens/Logo1.png" height="20px;">',
                                             content: 'Usuário participa de outra escala:<br>'+Resp.outrogrupo+".<br>Solicite à ATI modificar o grupo para fins de escala, se for o caso.",
                                             autoClose: 'OK|15000',
                                             draggable: true,
@@ -1415,7 +1424,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         });
                                         return false;
                                     }else{
-                                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
+                                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                                         $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                         $('#mensagemConfig').fadeIn("slow");
                                         document.getElementById("mensagemConfig").innerHTML = "Valor salvo.";
@@ -1485,11 +1494,11 @@ if(!isset($_SESSION["usuarioID"])){
                                             OK: function(){}
                                         }
                                     });
-                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
+                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                                     $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                     document.getElementById("relacParticip").style.display = "none";
                                 }else{
-                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
+                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                                     $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                     document.getElementById("relacParticip").style.display = "none";
                                 }
@@ -1611,7 +1620,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("etiqeditaEscala").style.color = "red";
                 }else{
                     Valor = 0;
-                    document.getElementById("etiqeditaEscala").style.color = "#036";
+                    document.getElementById("etiqeditaEscala").style.color = "#9C9C9C";
                 }
                 ajaxIni();
                 if(ajax){
@@ -1744,7 +1753,7 @@ alert(ajax.responseText);
                                             document.getElementById("imgEspera").style.visibility = "hidden"; 
                                             if(parseInt(Resp.coderro) === 1){
                                                 alert("Houve um erro no servidor.");
-                                            }else if(parseInt(Resp.criaobjphp) ===0){
+                                            }else if(parseInt(Resp.criaobjphp) === 0){
                                                 alert("Plugin do Office não encontrado.");
                                             }else if(parseInt(Resp.arquivo) === 0){
                                                 alert("O arquivo Excel não pode ser criado.");
@@ -1780,7 +1789,7 @@ alert(ajax.responseText);
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
                                 }else{
-                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
+                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                                 }
                             }
                         }
@@ -1806,7 +1815,7 @@ alert(ajax.responseText);
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
                                 }else{
-                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
+                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                                 }
                             }
                         }
@@ -1895,7 +1904,7 @@ alert(ajax.responseText);
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
                                 }else{
-                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
+                                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                                 }                                
                             }
                         }
@@ -1924,7 +1933,7 @@ alert(ajax.responseText);
 
         </script>
     </head>
-    <body>
+    <body class="corClara" onbeforeunload="return mudaTema(0)"> <!-- ao sair retorna os background claros -->
         <?php
             require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog'");
@@ -2062,6 +2071,7 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
     $Fiscal = parEsc("esc_fisc", $Conec, $xProj, $_SESSION["usuarioID"]);
     $MesSalvo = parEsc("mes_escdaf", $Conec, $xProj, $_SESSION["usuarioID"]);
     $CorListas = parEsc("corlistas_daf", $Conec, $xProj, $_SESSION["usuarioID"]);
+    $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
 
     //Ver se o que está guardado em poslog corresponde a algum mes salvo em escaladaf
     $rsMes = pg_query($Conec, "SELECT id 
@@ -2156,13 +2166,14 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
         <input type="hidden" id="guardaAno" value="<?php echo $Ano; ?>" />
         <input type="hidden" id="guardaCorListas" value="<?php echo $CorListas; ?>" />
         <input type="hidden" id="guardaEscalaId" value = "0" />
-<!--        <input type="hidden" id="guardaCodUsuTrocaTurno" value = "0" />  -->
+        <input type="hidden" id="guardaTema" value = <?php echo $Tema; ?> />
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
-            <div class="row"> <!-- botões Inserir e Imprimir-->
-                <div class="col" style="margin: 0 auto; text-align: left;">
+            <div id="tricoluna0" class="row" style="margin: 0 auto;"> <!-- botões Inserir e Imprimir-->
+
+                <div id="tricoluna1" class="col" style="margin: 0 auto; text-align: left;">
                     <img src="imagens/settings.png" height="20px;" id="imgEscalaConfig" style="cursor: pointer; padding-left: 20px;" onclick="abreEscalaConfig();" title="Configurar o acesso e inserir participantes da escala">
-                    <label style="padding-left: 20px; font-size: .8rem;">Escala mês: </label>
+                    <label class="etiq eItalic" style="padding-left: 20px;">Escala mês: </label>
                     <select id="selecMesAnoEsc" style="font-size: 1rem; width: 90px;" title="Selecione o mês/ano.">
                         <option value=""></option>
                             <?php 
@@ -2174,8 +2185,7 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                                 }
                             ?>
                     </select>
-
-                    <label id="etiqGrupo" style="font-size: .8rem; padding-left: 5px;">Ver Grupo: </label>
+                    <label id="etiqGrupo" class="etiq eItalic" style="padding-left: 5px;">Ver Grupo: </label>
                     <select id="selecGrupo" style="font-size: .8rem; width: 90px;" title="Selecione o grupo.">
                         <option value="0"></option>
                             <?php 
@@ -2197,11 +2207,12 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                         <?php
                     }
                     ?>
-                </div> <!-- quadro -->
+                </div>
 
-                <div class="col" id="etiqSiglaGrupo" style="text-align: center;">Escala <?php echo $SiglaGrupo; ?> </div> <!-- espaçamento entre colunas  -->
-                <div class="col" style="margin: 0 auto; text-align: center;">
-                    <label id="etiqtransfMesAnoEsc" style="padding-left: 40px; font-size: .8rem;">Transferir para o mês: </label>
+                <div id="tricoluna2" class="col corCinza" style="text-align: center;">Escala <?php echo $SiglaGrupo; ?> </div> <!-- espaçamento entre colunas  -->
+
+                <div id="tricoluna3" class="col" style="margin: 0 auto; text-align: center;">
+                    <label id="etiqtransfMesAnoEsc" class="etiq eItalic" style="padding-left: 40px;">Transferir para o mês: </label>
                     <select id="transfMesAnoEsc" style="font-size: .8rem; width: 90px;" title="Transferir esta escala para o mês/ano escolhido">
                         <option value=""></option>
                             <?php 
@@ -2213,10 +2224,15 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                                 }
                             ?>
                     </select>
-                    <label style="padding-left: 20px;"></label>
+                    <label style="padding-left: 10px;"></label>
                     <button id="botImprimir" class="botpadrred" onclick="imprPlanilha();">PDF</button>
-                    <div style="text-align: left;">
+                    <div style="position: relative; float: right;">
+                    <label style="padding-left: 5px;"></label>
                         <img src="imagens/gears-512.gif" height="20px;" id="imgEspera">
+                        <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%; padding-left: 65px;">Tema: </label>
+                        <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" class="etiq" style="cursor: pointer;">&nbsp;Claro</label>
+                        <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" class="etiq" style="cursor: pointer;">&nbsp;Escuro</label>
+                        <label style="padding-right: 10px;"></label>
                     </div>
                 </div> <!-- quadro -->
             </div>
@@ -2241,6 +2257,7 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
             <div id="faixaquadro"></div>
             <div id="faixacarga"></div>
             <div id="faixanotas"></div>
+            
 
             <div class="row">
                 <div class="col"></div>
@@ -2250,6 +2267,8 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                 <div class="col" style="position: relative; float: rigth; text-align: right;"></div> 
             </div>
         </div>
+
+        <div id="carregaTema"></div> <!-- carrega a pág modulos/config/carTema.php - onde está a função mudaTema() -->
 
         <!-- div modal relacionar escalado -->
         <div id="relacParticip" class="relacmodalMovel">
@@ -2366,7 +2385,7 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                         <td colspan="4" style="text-align: center;"></td>
                     </tr>
                     <tr>
-                        <td colspan="4" style="text-align: center;">Busca Nome ou CPF do Usuário</td>
+                        <td colspan="4" class="etiqNorm eItalic" style="text-align: center;">Busca Nome ou CPF do Usuário</td>
                     </tr>
                     <tr>
                         <td class="etiqAzul">Procura nome: </td>
@@ -2398,27 +2417,27 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
 
                 <table style="margin: 0 auto; width: 85%;">
                     <tr>
-                        <td class="etiq80">Escala DAF:</td>
+                        <td class="etiqAzul eItalic">Escala DAF:</td>
                         <td colspan="2">
                             <input type="checkbox" id="checkefetivo" onchange="marcaConfigEscalaEft(this);" >
-                            <label for="checkefetivo">efetivo da escala</label>
+                            <label for="checkefetivo" class="etiqNorm eItalic">efetivo da escala</label>
                         </td>
                         <td colspan="2">
                         <label id="mensagemConfig" style="color: red; font-weight: bold;"></label>
                         </td>
                     </tr>
                     <tr>
-                        <td class="etiq80">Escala DAF:</td>
+                        <td class="etiqAzul eItalic">Escala DAF:</td>
                         <td colspan="4">
                             <input type="checkbox" id="checkescalante" onchange="marcaConfigEscalaEsc(this);" >
-                            <label for="checkescalante">escalante</label>
+                            <label for="checkescalante" class="etiqNorm eItalic">escalante</label>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="5"><hr style="margin: 0; padding: 2px;"></td>
                     </tr>
                     <tr>
-                        <td class="etiq80">Encarregado ADM:</td>
+                        <td class="etiqAzul eItalic">Encarregado ADM:</td>
                         <td colspan="4">
                             <select id="configSelecEncarreg" style="max-width: 300px;" onchange="modif();" title="Selecione um usuário.">
                                 <option value=""></option>
@@ -2435,7 +2454,7 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                         </td>
                     </tr>
                     <tr>
-                        <td class="etiq80">Chefe DIV ADM:</td>
+                        <td class="etiqAzul eItalic">Chefe DIV ADM:</td>
                         <td colspan="4">
                             <select id="configSelecChefeDiv" style="max-width: 300px;" onchange="modif();" title="Selecione um usuário.">
                                 <option value=""></option>
@@ -2459,12 +2478,12 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                     </tr>
                     <tr>
                         <td colspan="5" style="text-align: center;">
-                            <label class="etiqAzul" title="Cor das listas na tela e no PDF">Cor das Listas: </label>
-                            <input type="radio" name="corlistas" id="corlista0" value="0" <?php if($CorListas == 0){echo "CHECKED";} ?> title="Branco" onclick="salvaCor(0);"><label for="corlista0"><div style="width: 60px; height: 15px; border-radius: 5px; background: #FFFFFF; font-size: 70%;">Branco</div></label>
-                            <input type="radio" name="corlistas" id="corlista1" value="1" <?php if($CorListas == 1){echo "CHECKED";} ?> title="Cornsilk" onclick="salvaCor(1);"><label for="corlista1"><div style="width: 60px; height: 15px; border-radius: 5px; background: #FFF8DC; font-size: 70%;">Cornsilk</div></label>
-                            <input type="radio" name="corlistas" id="corlista2" value="1" <?php if($CorListas == 2){echo "CHECKED";} ?> title="Azure" onclick="salvaCor(2);"><label for="corlista2"><div style="width: 60px; height: 15px; border-radius: 5px; background: #F0FFFF; font-size: 70%;">Azure</div></label>
-                            <input type="radio" name="corlistas" id="corlista3" value="1" <?php if($CorListas == 3){echo "CHECKED";} ?> title="Lavanda" onclick="salvaCor(3);"><label for="corlista3"><div style="width: 60px; height: 15px; border-radius: 5px; background: #E6E6FA; font-size: 70%;">Lavanda</div></label>
-                            <input type="radio" name="corlistas" id="corlista4" value="1" <?php if($CorListas == 4){echo "CHECKED";} ?> title="Marfim" onclick="salvaCor(4);"><label for="corlista4"><div style="width: 60px; height: 15px; border-radius: 5px; background: #EEEEE0; font-size: 70%;">Marfim</div></label>
+                            <label class="etiqAzul" title="Cor das listas na tela e na impressão do PDF">Cor das Listas (Tema: Claro): </label>
+                            <input type="radio" name="corlistas" id="corlista0" value="0" <?php if($CorListas == 0){echo "CHECKED";} ?> title="Branco" onclick="salvaCor(0);"><label for="corlista0"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #FFFFFF; font-size: 70%;">Branco</div></label>
+                            <input type="radio" name="corlistas" id="corlista1" value="1" <?php if($CorListas == 1){echo "CHECKED";} ?> title="Cornsilk" onclick="salvaCor(1);"><label for="corlista1"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #FFF8DC; font-size: 70%;">Cornsilk</div></label>
+                            <input type="radio" name="corlistas" id="corlista2" value="1" <?php if($CorListas == 2){echo "CHECKED";} ?> title="Azure" onclick="salvaCor(2);"><label for="corlista2"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #F0FFFF; font-size: 70%;">Azure</div></label>
+                            <input type="radio" name="corlistas" id="corlista3" value="1" <?php if($CorListas == 3){echo "CHECKED";} ?> title="Lavanda" onclick="salvaCor(3);"><label for="corlista3"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #E6E6FA; font-size: 70%;">Lavanda</div></label>
+                            <input type="radio" name="corlistas" id="corlista4" value="1" <?php if($CorListas == 4){echo "CHECKED";} ?> title="Marfim" onclick="salvaCor(4);"><label for="corlista4"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #EEEEE0; font-size: 70%;">Marfim</div></label>
                         </td>
                     </tr>
                     <tr>

@@ -56,10 +56,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 '12' => 'Dezembro'
             );
         ?>
-        <div style="margin-top: 15px; text-align: center; font-weight: bold;">Horários de Descanso</div>
+        <div class="corPreta" style="margin-top: 15px; text-align: center; font-weight: bold;">Horários de Descanso</div>
         <div class="row">
             <div class="col" style="width: 30%;"></div>
-            <div class="col" style="width: 33%; text-align: center;"><?php echo $Mes_Extract[$Mes]."/".$Ano; ?></div>
+            <div class="col corPreta" style="width: 33%; text-align: center;"><?php echo $Mes_Extract[$Mes]."/".$Ano; ?></div>
             <div class="col" style="text-align: right; width: 30%;"><button id="botImprimir" class="botpadrred" onclick="imprDescanso();">PDF</button></div>
         </div>
 
@@ -80,7 +80,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     <td class="etiqAzul aCentro">Dia</td>
                     <td></td>
                     <td class="etiqAzul aEsq">Nome</td>
-                    <td class="etiqAzul aCentro">Letra-Turno-Carga</td>
+                    <td class="etiqAzul aEsq" style="padding-left: 7px;">Letra-Turno-Carga</td>
                     <td class="etiqAzul aCentro">Interv</td>
                     <td class="etiqAzul aCentro">Descanso</td>
                 </tr>
@@ -138,9 +138,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <td class="etiqAzul90 aCentro" title="<?php echo "Dia ".$tbl0[1]."/".$Mes."/".$Ano; ?>" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?>> <?php if($ContDia == 1){echo "<div style='border: 1px solid; border-radius: 3px;'>".$tbl0[1]."</div>";} ?></td> <!-- Dia -->
                         <td class="etiqAzul aCentro" title="Dia da semana" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?>><?php if($ContDia == 1){echo $Semana_Extract[$tbl0[8]];} ?></td>
                         <td class="etiqAzul90 aEsq" style="padding-left: 5px; <?php if($ContDia == 1){echo "border-top: 1px solid;";}; ?> "><?php echo "<div style='border: 1px solid; border-radius: 3px; padding-left: 3px;'>".$Nome."</div>"; ?></td> <!-- Nome -->
-                        <td class="etiqAzul aCentro" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?> ><?php echo $Letra." - ".$Turno.$CargaHora; ?></td> <!-- Turno escalado -->
+                        <td class="etiqAzul aEsq" style="padding-left: 7px; <?php if($ContDia == 1){echo 'border-top: 1px solid;';}; ?> "><?php echo $Letra." - ".$Turno.$CargaHora; ?></td> <!-- Turno escalado -->
                         <td class="etiqAzul aCentro" <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; ?>><?php echo $Interv; ?></td> <!-- Intervalo de Turno - vem de escaladaf_turnos -->
-                        <td <?php if($ContDia == 1){echo "style='border-top: 1px solid;'";}; if($InfoTexto == 1){echo "font-size: 80%;";} ?>><input <?php if($InfoTexto == 1){echo "disabled";} ?> type="text" value="<?php if($InfoTexto == 0){echo $HoraFolga;}else{echo $tbl0[4];} ?>" style="width: 120px; text-align: center; border: 1px solid; border-radius: 3px;" onchange="editaFolga(<?php echo $Cod; ?>, value);" title="Período de descanso no formato 00:00/00:00"/></td>
+                        <td style="<?php if($ContDia == 1){echo 'border-top: 1px solid black; ';} if($InfoTexto == 1){echo 'font-size: 80%;';} ?>"> 
+                        <input <?php if($InfoTexto == 1){echo "disabled";} ?> type="text" value="<?php if($InfoTexto == 0){echo $HoraFolga;}else{echo $tbl0[4];} ?>" style="width: 120px; text-align: center; border: 1px solid; border-radius: 3px;" onchange="editaFolga(<?php echo $Cod; ?>, value);" title="Período de descanso no formato 00:00/00:00"/></td>
                     </tr>
 
                     <?php

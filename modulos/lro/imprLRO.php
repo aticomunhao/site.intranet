@@ -27,7 +27,7 @@ if(!isset($_SESSION['AdmUsu'])){
     $Acao = $_REQUEST["acao"];
     require_once('../../class/fpdf/fpdf.php'); // adaptado ao PHP 7.2 - 8.2
     define('FPDF_FONTPATH', '../../class/fpdf/font/');  
-    $Dom = "logo_comunhao_completa_cor_pos_150px.png";
+    $Dom = "Logo2.png";
 
     $rsCabec = pg_query($Conec, "SELECT cabec1, cabec2, cabec3 FROM ".$xProj.".setores WHERE codset = ".$_SESSION["CodSetorUsu"]." ");
     $rowCabec = pg_num_rows($rsCabec);
@@ -95,7 +95,6 @@ if(!isset($_SESSION['AdmUsu'])){
         $rs = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, numrelato, to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), turno, descturno, nomecompl, usuant, relato, ocor, nomeusual, relsubstit 
         FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id
         WHERE ".$xProj.".livroreg.ativo = 1 And DATE_PART('MONTH', dataocor) = '$Mes' And DATE_PART('YEAR', dataocor) = '$Ano' ORDER BY ".$xProj.".livroreg.dataocor DESC, ".$xProj.".livroreg.turno DESC, ".$xProj.".livroreg.dataocor DESC ");
-
     }
 
     if($Acao == "listaanoLRO"){
@@ -150,15 +149,6 @@ if(!isset($_SESSION['AdmUsu'])){
                 $NomeAnt = "";
             }
             $DescTurno = $tbl[4];
-//            $rs1 = pg_query($Conec, "SELECT descturno FROM ".$xProj.".livroturnos WHERE codturno = $CodTurno ");
-//            $tbl1 = pg_fetch_row($rs1);
-//            $row1 = pg_num_rows($rs1);
-//            if($row1 > 0){
-//                $DescTurno = $tbl1[0];
-//            }else{
-//                $DescTurno = "";
-//            }
-
             $pdf->SetX(15);
             if(strlen($NumRelat) > 9){
                 $pdf->SetTextColor(255, 0, 0); // vermelho
@@ -191,8 +181,6 @@ if(!isset($_SESSION['AdmUsu'])){
                     $pdf->MultiCell(0, 4, "Observações: ".$RelSubst, 0, 'J', false); //relato
                     $pdf->SetFont('Arial', '', 9);
                 }
-
-
                 $pdf->SetFont('Arial', '', 9);
             }
             $lin = $pdf->GetY();

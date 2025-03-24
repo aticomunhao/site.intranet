@@ -37,7 +37,7 @@ $Semana_Extract = array(
     $Acao = $_REQUEST["acao"];
     require_once('../../class/fpdf/fpdf.php'); // adaptado ao PHP 7.2 - 8.2
     define('FPDF_FONTPATH', '../../class/fpdf/font/');  
-    $Dom = "logo_comunhao_completa_cor_pos_150px.png";
+    $Dom = "Logo2.png";
     
     if(isset($_REQUEST["numgrupo"])){
         $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal
@@ -128,8 +128,6 @@ $Semana_Extract = array(
         $Cont = 1;
         $Tam = 30;
         if($Efet > 0){ // número de escalados
-
-            
             if($Efet > 5){
                 $pdf->SetFont('Arial', '' , 8);
             }else{
@@ -217,9 +215,10 @@ $Semana_Extract = array(
             $pdf->SetX($Marg); 
             while($tbl = pg_fetch_row($rs)){
                 $PessoasId = $tbl[0];
-                $Nome = substr($tbl[2], 0, $Corte);
-                if(is_null($Nome) || $Nome == ""){
-                    $Nome = substr($tbl[1], 0, $Corte);
+                if(!is_null($tbl[2]) || $tbl[2] != ""){
+                    $Nome = substr($tbl[2], 0, $Corte); // nomeusual
+                }else{
+                    $Nome = substr($tbl[1], 0, $Corte); // nomecompl
                 }
                 $pdf->Cell($Tam, 5, $Nome, 1, 0, 'C', true);
             }

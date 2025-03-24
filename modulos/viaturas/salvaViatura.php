@@ -21,17 +21,6 @@ $Semana_Extract = array(
     'xª'=> ''
 );
 
-if($Acao =="salvaTema"){
-    $Valor = (int) filter_input(INPUT_GET, 'valor');
-    $Erro = 0;
-    $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET tema = $Valor WHERE pessoas_id = ".$_SESSION["usuarioID"]." And ativo = 1");
-    if(!$rs){
-        $Erro = 1;
-    }
-    $var = array("coderro"=>$Erro);
-    $responseText = json_encode($var);
-    echo $responseText;
-}
 if($Acao =="buscaDataCombust"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo'); 
     $Erro = 0;

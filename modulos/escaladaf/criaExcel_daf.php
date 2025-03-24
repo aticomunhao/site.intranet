@@ -45,6 +45,15 @@
 
     if($Acao == "listaturnos"){
         $objPHPExcel = new Spreadsheet();
+
+        if(!isset($objPHPExcel)){
+            $ObjPHP = 0;
+            $var = array("coderro"=>0, "criaobjphp"=>$ObjPHP);
+            $responseText = json_encode($var);
+            echo $responseText;
+            return false;
+        }
+
         $objPHPExcel->setActiveSheetIndex(0);
         $activeWorksheet = $objPHPExcel->getActiveSheet();
 
@@ -119,14 +128,21 @@
         $objPHPExcel->getActiveSheet()->getStyle('A:F')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
         $objPHPExcel->getActiveSheet()->getStyle('C')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
 
+//        $writer = new PhpOffice\PhpSpreadsheet\Writer\Xlsx($objPHPExcel);
         $writer = new Xlsx($objPHPExcel);
         $writer->save(dirname(dirname(__FILE__)).'/conteudo/arquivos/ListaTurnos.xlsx');
+
+        if(!isset($writer)){
+            $ArqSalvo = 0;
+        }else{
+            $ArqSalvo = 1;
+        }
     }
 
-    if($objPHPExcel){
-        $ObjPHP = 1;
-    }else{
+    if(!isset($objPHPExcel)){
         $ObjPHP = 0;
+    }else{
+        $ObjPHP = 1;
     }
 
     if(file_exists(dirname(dirname(__FILE__))."/conteudo/arquivos/ListaTurnos.xlsx")){
@@ -135,10 +151,6 @@
         $Arquivo = 0;
     }
 
-    if($writer){
-        $var = array("coderro"=>0, "criaobjphp"=>$ObjPHP, "arquivo"=>$Arquivo);
-    }else{
-        $var = array("coderro"=>1, "criaobjphp"=>$ObjPHP);
-    }
+    $var = array("coderro"=>0, "criaobjphp"=>$ObjPHP, "arquivo"=>$Arquivo, "salvo"=>$ArqSalvo);
     $responseText = json_encode($var);
     echo $responseText;

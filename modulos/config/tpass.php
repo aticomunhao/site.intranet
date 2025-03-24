@@ -188,7 +188,7 @@ if(!isset($_SESSION["usuarioID"])){
             <div class="modal-content-mudaSenha">
                 <span class="close" style="padding-right: 10px;" onclick="fechamudaSenha();">&times;</span>
                 <div class="caixalog">
-                    <h2><img src="imagens/LogoComunhao.png" height="40px;">Nova Senha</h2>
+                    <h2><img src="imagens/Logo1.png" height="40px;">Nova Senha</h2>
                     <p>Mudança da senha de acesso: <?php echo $_SESSION["NomeCompl"]; ?></p>
                     <div>
                         <label style="padding-right: 3px;">Senha atual:</label><img id="olhoSecaoSenha1" style="cursor: pointer;" title="Mantenha clicado para visualizar a senha inserida." src="imagens/olhosenha.png" alt="" width="25" height="15" draggable="false">

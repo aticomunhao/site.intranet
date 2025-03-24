@@ -20,7 +20,7 @@ if(isset($_REQUEST["acao"])){
     $Acao = $_REQUEST["acao"];
     require_once('../../class/fpdf/fpdf.php'); // adaptado ao PHP 7.2 - 8.2
     define('FPDF_FONTPATH', '../../class/fpdf/font/');  
-    $Dom = "logo_comunhao_completa_cor_pos_150px.png";
+    $Dom = "Logo2.png";
     date_default_timezone_set('America/Sao_Paulo'); 
     $rsCabec = pg_query($Conec, "SELECT cabec1, cabec2, cabec3 FROM ".$xProj.".setores WHERE codset = ".$_SESSION["CodSetorUsu"]." ");
     $rowCabec = pg_num_rows($rsCabec);
@@ -109,7 +109,6 @@ if(isset($_REQUEST["acao"])){
             $lin = $pdf->GetY();               
             $pdf->Line(20, $lin, 200, $lin);
             $pdf->ln(10);
-       
         }else{
             $pdf->SetFont('Arial', 'I', 10);
             $pdf->SetX(50);
