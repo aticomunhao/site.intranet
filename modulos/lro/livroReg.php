@@ -278,8 +278,9 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById('botsalvaRelFisc').style.visibility = "hidden";
                                             document.getElementById('botmarcaLido').style.visibility = "hidden";
                                             document.getElementById('imgmarcaLido').style.visibility = "hidden";
-                                            if(parseInt(document.getElementById("fiscalLRO").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
-                                                document.getElementById('NumRegistro').innerHTML = "Registro nº "+Resp.numrelato;
+                                            document.getElementById('NumRegistro').innerHTML = "Registro nº "+Resp.numrelato;
+//                                            if(parseInt(document.getElementById("fiscalLRO").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
+                                            if(parseInt(document.getElementById("revisorLRO").value) === 1){ // revisor (lro_rev) 
                                                 if(parseInt(Resp.lidofisc) === 0){
                                                     document.getElementById('botmarcaLido').style.visibility = "visible";
                                                 }else{
@@ -1034,14 +1035,6 @@ if(!isset($_SESSION["usuarioID"])){
             return false;
         }
 
-        //Provisório
-        if(strtotime('2025/04/30') > strtotime(date('Y/m/d'))){
-            $rs = pg_query($Conec, "SELECT table_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'livroreg' AND COLUMN_NAME = 'relatoini'");
-            $row = pg_num_rows($rs);
-            if($row == 0){
-                pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".livroreg ADD COLUMN IF NOT EXISTS relatoini text ");
-            }
-        }
         //Marca enviado após 13 horas de inserido
         $rs = pg_query($Conec, "UPDATE ".$xProj.".livroreg SET enviado = 1 WHERE datains < (NOW() - interval '13 hour') And enviado = 0"); // marca enviado após 13 horas de inserido - o turno 3 tem 12 horas
 
@@ -1050,6 +1043,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         $Lro = parEsc("lro", $Conec, $xProj, $_SESSION["usuarioID"]);
         $FiscLro = parEsc("fisclro", $Conec, $xProj, $_SESSION["usuarioID"]);
+        $RevLro = parEsc("lro_rev", $Conec, $xProj, $_SESSION["usuarioID"]); // revisor do LRO
         $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
 
         $OpUsuAnt = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE lro = 1 And ativo = 1 And pessoas_id != ".$_SESSION["usuarioID"]." ORDER BY nomeusual, nomecompl"); // And codsetor = 
@@ -1080,6 +1074,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardausuins" value = "0" />
         <input type="hidden" id="acessoLRO" value="<?php echo $Lro; ?>" />
         <input type="hidden" id="fiscalLRO" value="<?php echo $FiscLro; ?>" />
+        <input type="hidden" id="revisorLRO" value="<?php echo $RevLro; ?>" /><!-- João -> dá o visto e anota as providências tomadas nas ocorrências -->
 
         <div id="tricoluna0" style="margin: 10px; border: 2px solid green; border-radius: 15px; padding: 20px; min-height: 70px;">
             <div id="tricoluna1" class="box" style="position: relative; float: left; width: 35%;">
@@ -1281,7 +1276,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <button id="botmarcaLido" class="botpadrblue" style="font-size: 70%; padding: 2px;" onclick="marcaLidoFisc();" title="Só marca como lido.">Marcar Lido</button>
                     </div>
                     <div class="col-xs-6" style="text-align: center; padding-bottom: 10px;">
-                        <textarea class="form-control" disabled id="mostrarelatofiscal" onkeydown="mostraBotSalvar();" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="2" cols="60" ></textarea>
+                        <textarea id="mostrarelatofiscal" class="form-control" disabled onkeydown="mostraBotSalvar();" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px;" rows="4" cols="60" ></textarea>
                     </div>
                     <div id="mostramensagemfisc" style="color: red; font-weight: bold;"></div>
                 </div>

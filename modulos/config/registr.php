@@ -238,26 +238,6 @@ if($Acao =="loglog"){
                         $Erro = 5; // primeiro login - inserir nova senha
                     }
 
-                    $usuIP = get_client_ip();
-                    $rsIP = pg_query($Conec, "SELECT usuip, colecip FROM ".$xProj.".poslog WHERE cpf = '$Login'");
-                    $rowIP = pg_num_rows($rsIP);
-                    if($rowIP > 0){
-                        $tblIP = pg_fetch_row($rsIP);
-                        if(is_null($tblIP[0]) || $tblIP[0] == ""){ // se usuip estiver em branco
-                            pg_query($Conec, "UPDATE ".$xProj.".poslog SET usuip = '$usuIP' WHERE cpf = '$Login'");
-                        }else{
-                            if(strcmp($usuIP, $tblIP[0]) != 0){
-                                if(is_null($tblIP[1]) || $tblIP[1] == ""){
-                                    pg_query($Conec, "UPDATE ".$xProj.".poslog SET colecip = '$usuIP', usuip = '$usuIP' WHERE cpf = '$Login'");
-                                }else{
-                                    pg_query($Conec, "UPDATE ".$xProj.".poslog SET colecip = '$tblIP[0]' || '\n' || '$tblIP[1]', usuip = '$usuIP' WHERE cpf = '$Login'");
-                                }
-                            }else{
-                                pg_query($Conec, "UPDATE ".$xProj.".poslog SET numacessosip = (numacessosip + 1) WHERE cpf = '$Login'");
-                            }
-                        }
-                    }
-
                     $var = array("coderro"=>$Erro, "msg"=>$Erro_Msg, "usuarioid"=>$id, "usuarioNome"=>$NomeCompl, "usuarioAdm"=>$_SESSION["AdmUsu"], "usuario"=>$NomeUsual); 
                     $responseText = json_encode($var);
                     echo $responseText;
@@ -1277,28 +1257,4 @@ function removeInj($VemDePost){  // função para remover injeções SQL
         $navegador = $_SERVER['HTTP_USER_AGENT']; 
     }
     return $navegador;
-}
-
-function get_client_ip__(){
-    $ipaddress = '';
-    if (getenv('HTTP_CLIENT_IP'))
-        $ipaddress = getenv('HTTP_CLIENT_IP');
-    else if(getenv('HTTP_X_FORWARDED_FOR'))
-        $ipaddress = getenv('HTTP_X_FORWARDED_FOR');
-    else if(getenv('HTTP_X_FORWARDED'))
-        $ipaddress = getenv('HTTP_X_FORWARDED');
-    else if(getenv('HTTP_FORWARDED_FOR'))
-        $ipaddress = getenv('HTTP_FORWARDED_FOR');
-    else if(getenv('HTTP_FORWARDED'))
-       $ipaddress = getenv('HTTP_FORWARDED');
-    else if(getenv('REMOTE_ADDR'))
-        $ipaddress = getenv('REMOTE_ADDR');
-    else
-        $ipaddress = 'UNKNOWN';
-    return $ipaddress;
-}
-function get_client_ip() {
-    $ipaddress = '';
-    $ipaddress = $_SERVER['SERVER_ADDR'];
-    return $ipaddress;
 }

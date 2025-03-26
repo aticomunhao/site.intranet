@@ -47,11 +47,11 @@ if(!isset($_SESSION['AdmUsu'])){
 //Função para Extract no postgres
     $Semana_Extract = array(
         '0' => 'D',
-        '1' => '2ª',
-        '2' => '3ª',
-        '3' => '4ª',
-        '4' => '5ª',
-        '5' => '6ª',
+        '1' => 'S',
+        '2' => 'T',
+        '3' => 'Q',
+        '4' => 'Q',
+        '5' => 'S',
         '6' => 'S',
         'xª'=> ''
     );

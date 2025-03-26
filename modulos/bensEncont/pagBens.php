@@ -86,6 +86,7 @@ if(!isset($_SESSION["usuarioID"])){
                   return cnpjCpf.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g, "\$1.\$2.\$3/\$4-\$5");
             }
             $(document).ready(function(){
+                $('#carregaTema').load('modulos/config/carTema.php?carpag=livroReg');
                 $("#carregaBens").load("modulos/bensEncont/relBens.php?acao="+document.getElementById("guardaIndex").value);
 
                 //Impedir a mudança de data do registro de bem encontrado -> liberado a pedido em 16/08/2024
@@ -1241,7 +1242,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
         </script>
     </head>
-    <body>
+    <body class="corClara" onbeforeunload="return mudaTema(0)"> <!-- ao sair retorna os background claros -->
         <?php
             if(!$Conec){
                 echo "Sem contato com o Servidor";
@@ -1275,6 +1276,7 @@ if(!isset($_SESSION["usuarioID"])){
         $escEdit = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // está marcado no cadastro de usuários
         $SoInsBens = parEsc("soinsbens", $Conec, $xProj, $_SESSION["usuarioID"]); // está marcado no cadastro de usuários
         $EncBens = parEsc("encbens", $Conec, $xProj, $_SESSION["usuarioID"]);
+        $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
 
         $OpDestBens = pg_query($Conec, "SELECT numdest, descdest FROM ".$xProj.".bensdestinos ORDER BY descdest");
         $OpProcesso = pg_query($Conec, "SELECT id, processo FROM ".$xProj.".bensprocessos ORDER BY processo");
@@ -1286,14 +1288,14 @@ if(!isset($_SESSION["usuarioID"])){
 
         ?>
         <!-- div três colunas -->
-        <div style="margin: 0 auto; text-align: center;">
-            <div style="position: relative; float: left; text-align: center; width: 25%; padding-left: 20px;">
+        <div id="tricoluna0" style="margin: 0 auto; text-align: center;">
+            <div id="tricoluna1" style="position: relative; float: left; text-align: center; width: 25%; padding-left: 20px;">
                 <div class="col quadro" style="text-align: left;">
                 <img src="imagens/settings.png" height="20px;" id="imgBensconfig" style="cursor: pointer; padding-right: 30px;" onclick="abreBensConfig();" title="Configurar o acesso ao processamento de Achados e Perdidos">
                     <button class="botpadrGr fundoAmarelo" id="botInsReg" onclick="abreRegistro();" >Novo Registro</button>
                 </div>
             </div>
-            <div style="position: relative; float: left; text-align: center; width: 48%;">
+            <div id="tricoluna2" style="position: relative; float: left; text-align: center; width: 48%;">
                 <h5>Registro de Achados e Perdidos</h5>
                 <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Todos');">Todos</button>
                 <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Restituídos');" title="Bem já restituído">Restituídos</button>
@@ -1302,7 +1304,13 @@ if(!isset($_SESSION["usuarioID"])){
                 <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Arquivar');" title="Processos que aguardam encerramento. Nível Revisor." >Arquivar</button>
                 <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Arquivados');" title="Processos encerrados." >Arquivados</button>
             </div>
-            <div style="position: relative; float: left; text-align: center; width: 25%;">
+            <div id="tricoluna3" style="position: relative; float: left; text-align: center; width: 25%;">
+
+                <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%; padding-left: 5px;">Tema: </label>
+                <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" class="etiq" style="cursor: pointer;">&nbsp;Claro</label>
+                <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" class="etiq" style="cursor: pointer;">&nbsp;Escuro</label>
+                <label style="padding-left: 20px;"></label>
+
                 <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="abreImprBens();">PDF</button>
                 <label style="padding-left: 20px;"></label>
                 <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpBens();" title="Guia rápido">
@@ -1329,6 +1337,8 @@ if(!isset($_SESSION["usuarioID"])){
         <div style="margin: 80px; border: 2px solid blue; border-radius: 15px; padding: 10px; padding-top: 2px;">
             <div id="carregaBens"></div>
         </div>
+
+        <div id="carregaTema"></div> <!-- carrega a pág modulos/config/carTema.php - onde está a função mudaTema() -->
 
         <!-- div modal para registrar ocorrência do bem encontrado  -->
         <div id="relacmodalRegistro" class="relacmodal">
@@ -1465,7 +1475,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <div class="col quadro" style="margin: 0 auto; text-align: center;"><!-- <button class="botpadrred" onclick="enviaModalReg(1);">Enviar</button> --> </div> 
                     </div>
                 </div>
-                <div style="border: 2px solid blue; border-radius: 10px; padding: 10px;">
+                <div style="color: black; border: 2px solid blue; border-radius: 10px; padding: 10px;">
                     <table style="margin: 0 auto; width:85%;">
                         <tr>
                             <td class="etiqAzul">Processo: </td>
@@ -1532,7 +1542,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <div class="col quadro" style="margin: 0 auto; text-align: center;"><!-- <button class="botpadrred" onclick="enviaModalReg(1);">Enviar</button> --> </div> 
                     </div>
                 </div>
-                <div style="border: 2px solid blue; border-radius: 10px; padding: 10px;">
+                <div style="color: black; border: 2px solid blue; border-radius: 10px; padding: 10px;">
                     <table style="margin: 0 auto; width:85%;">
                         <tr>
                             <td class="etiqAzul">Processo: </td>
@@ -1591,7 +1601,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <div class="col quadro" style="margin: 0 auto; text-align: center;"><!-- <button class="botpadrred" onclick="enviaModalReg(1);">Enviar</button> --> </div> 
                     </div>
                 </div>
-                <div style="border: 2px solid blue; border-radius: 10px; padding: 10px;">
+                <div style="color: black; border: 2px solid blue; border-radius: 10px; padding: 10px;">
                     <table style="margin: 0 auto; width:85%;">
                         <tr>
                             <td class="etiqAzul">Processo: </td>
@@ -1669,7 +1679,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <div class="col quadro" style="margin: 0 auto; text-align: center;"><!-- <button class="botpadrred" onclick="enviaModalReg(1);">Enviar</button> --> </div> 
                     </div>
                 </div>
-                <div style="border: 2px solid blue; border-radius: 10px; padding: 10px;">
+                <div style="color: black; border: 2px solid blue; border-radius: 10px; padding: 10px;">
                     <table style="margin: 0 auto; width:85%;">
                         <tr>
                             <td class="etiqAzul">Processo: </td>
@@ -1755,7 +1765,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <div class="col quadro" style="margin: 0 auto; text-align: center;"><!-- <button class="botpadrred" onclick="enviaModalReg(1);">Enviar</button> --> </div> 
                     </div>
                 </div>
-                <div style="border: 2px solid blue; border-radius: 10px; padding: 10px;">
+                <div style="color: black; border: 2px solid blue; border-radius: 10px; padding: 10px;">
                     <table style="margin: 0 auto; width:85%;">
                         <tr>
                             <td class="etiqAzul">Processo: </td>
@@ -1814,10 +1824,9 @@ if(!isset($_SESSION["usuarioID"])){
         </div> <!-- Fim Modal-->
 
 
-
          <!-- Modal configuração-->
          <div id="modalBensConfig" class="relacmodal">
-            <div class="modal-content-BensControle">
+            <div class="modal-content-BensControle corPreta">
                 <span class="close" onclick="fechaBensConfig();">&times;</span>
                 <!-- div três colunas -->
                 <div class="container" style="margin: 0 auto;">
@@ -1903,7 +1912,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <div style="border: 2px solid #C6E2FF; border-radius: 10px;">
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>
-                            <td style="text-align: right;"><label style="font-size: 80%;">Mensal - Selecione o Mês/Ano: </label></td>
+                            <td style="text-align: right;"><label style="color: black; font-size: 80%;">Mensal - Selecione o Mês/Ano: </label></td>
                             <td>
                                 <select id="selecMesAno" style="font-size: 1rem; width: 90px;" title="Selecione o período.">
                                     <option value=""></option>
@@ -1919,7 +1928,7 @@ if(!isset($_SESSION["usuarioID"])){
                             </td>
                         </tr>
                         <tr>
-                            <td style="text-align: right;"><label style="font-size: 80%;">Anual - Selecione o Ano: </label></td>
+                            <td style="text-align: right;"><label style="color: black; font-size: 80%;">Anual - Selecione o Ano: </label></td>
                             <td>
                                 <select id="selecAno" style="font-size: 1rem; width: 90px;" title="Selecione o Ano.">
                                     <option value=""></option>
@@ -1951,7 +1960,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <span class="close" onclick="fechaModalHelp();">&times;</span>
                 <h4 style="text-align: center; color: #666;">Informações</h4>
                 <h5 style="text-align: center; color: #666;">Achados e Perdidos</h5>
-                <div style="border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
+                <div style="color: black; border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
                     Regras inseridas:
                     <ul>
                         <li>1 - Achados e Perdidos no recinto devem ser encaminhados para guarda da Diretoria Administrativa e Financeira (DAF).</li>

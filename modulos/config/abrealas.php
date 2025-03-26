@@ -26,17 +26,6 @@ if($Conec != "sConec" && $Conec != "sFunc"){
    die("<br>Não foi possível conectar-se ao banco de dados Cesb.");
 }
 
-function parAdm__($Campo, $Conec, $xProj){
-    $rsSis = pg_query($Conec, "SELECT $Campo FROM ".$xProj.".paramsis WHERE idpar = 1");
-    $row = pg_num_rows($rsSis);
-    if($row > 0){
-      $ProcSis = pg_fetch_row($rsSis);  
-      $admSis = $ProcSis[0]; // nível para inserir 
-    }else{
-      $admSis = 0;
-    }
-    return $admSis;
-}
 function parAdm($Campo, $Conec, $xProj){
    $rs = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'paramsis' AND COLUMN_NAME = '$Campo' ");
 //   $rs = pg_query($Conec, "SELECT t.column_name FROM information_schema.columns AS t WHERE t.table_schema = 'cesb' And t.table_name = '$Campo' ");
@@ -51,10 +40,11 @@ function parAdm($Campo, $Conec, $xProj){
    return $admSis;
 }
 
- function parEsc($Campo, $Conec, $xProj, $Cod){
-   $rsSis = pg_query($Conec, "SELECT $Campo FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
-   $row = pg_num_rows($rsSis);
+function parEsc($Campo, $Conec, $xProj, $Cod){
+   $rs = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog' AND COLUMN_NAME = '$Campo' ");
+   $row = pg_num_rows($rs);
    if($row > 0){
+      $rsSis = pg_query($Conec, "SELECT $Campo FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
       $ProcSis = pg_fetch_row($rsSis);
       $escSis = $ProcSis[0]; // nível para inserir 
    }else{
@@ -62,6 +52,7 @@ function parAdm($Campo, $Conec, $xProj){
    }
    return $escSis;
 }
+
 function escMenu($Conec, $xProj, $Cod){
    $rsSis = pg_query($Conec, "SELECT descr FROM ".$xProj.".cesbmenu WHERE id = $Cod");
    $row = pg_num_rows($rsSis);

@@ -10,13 +10,23 @@
     date_default_timezone_set('America/Sao_Paulo'); 
     //numeração do dia da semana da função extract() (DOW) é diferente da função to_char() (D)
     //Função para Extract no postgres
-    $Semana_Extract = array(
+    $Semana_Extract2 = array(
         '0' => 'D',
         '1' => '2ª',
         '2' => '3ª',
         '3' => '4ª',
         '4' => '5ª',
         '5' => '6ª',
+        '6' => 'S',
+        'xª'=> ''
+    );
+    $Semana_Extract = array(
+        '0' => 'D',
+        '1' => 'S',
+        '2' => 'T',
+        '3' => 'Q',
+        '4' => 'Q',
+        '5' => 'S',
         '6' => 'S',
         'xª'=> ''
     );
@@ -41,7 +51,7 @@
     }
     if(is_null($Proc[1])){
         $Ano = date("Y");
-        }else{
+    }else{
         $Ano = $Proc[1];
     }
 
