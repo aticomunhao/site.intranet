@@ -525,6 +525,9 @@
 .corCinza{
     color:gray;
 }
+.corVerm{
+    color: red;
+}
 .destacaBorda{
     border: 2px solid red;
     border-radius: 3px;

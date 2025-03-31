@@ -213,10 +213,11 @@ if(!isset($_SESSION["usuarioID"])){
         <script>
             LargTela = $(window).width(); // largura da tela ao abrir o módulo
             $(document).ready(function(){
-                $('#carregaTema').load('modulos/config/carTema.php?carpag=escala_daf');
+
+//                $('#carregaTema').load('modulos/config/carTema.php?carpag=escala_daf');
                 //Não vai liberar para os escalados - só o pdf impresso
                 document.getElementById("evliberames").style.visibility = "hidden"; 
-                document.getElementById("etiqevliberames").style.visibility = "hidden";  // liberar para todos no site
+                document.getElementById("etiqevliberames").style.visibility = "hidden";  // liberar para todos no site - suspenso
                 document.getElementById("selecGrupo").style.visibility = "hidden"; 
                 document.getElementById("etiqGrupo").style.visibility = "hidden"; 
                 document.getElementById("imgEscalaConfig").style.visibility = "hidden";
@@ -224,6 +225,14 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("imgEspera").style.visibility = "hidden"; 
                 document.getElementById("etiqtransfMesAnoEsc").style.visibility = "hidden";
                 document.getElementById("transfMesAnoEsc").style.visibility = "hidden";
+                document.getElementById("escolhaTema").style.visibility = "hidden";
+
+                if(parseInt(document.getElementById("escalante").value) === 0 && parseInt(document.getElementById("fiscal").value) === 0){
+                    $("#faixacentral").load("modulos/escaladaf/infoAgd1.php");
+                }else{
+                    $('#carregaTema').load('modulos/config/carTema.php?carpag=escala_daf');
+                    document.getElementById("escolhaTema").style.visibility = "visible";
+                }
 
                 if(parseInt(document.getElementById("UsuAdm").value) > 6){ // Superusuário
                     document.getElementById("imprGrupos").style.visibility = "visible"; 
@@ -256,12 +265,11 @@ if(!isset($_SESSION["usuarioID"])){
                     $("#faixacentral").load("modulos/escaladaf/infoAgd1.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                     $("#faixaquadro").load("modulos/escaladaf/infoAgd2.php");
                     $("#faixacarga").load("modulos/escaladaf/infoAgd2.php");
-                    $("#faixanotas").load("modulos/escaladaf/infoAgd3.php");
+                    $("#faixanotas").load("modulos/escaladaf/infoAgd2.php");
                     $("#faixaferiados").load("modulos/escaladaf/infoAgd2.php");
                      document.getElementById("botImprimir").style.visibility = "hidden";
                      document.getElementById("transfMesAnoEsc").style.visibility = "hidden";
                 }else{
-//                    $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&largTela="+LargTela);
                     $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                     $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                     $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
@@ -291,7 +299,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             if(parseInt(Resp.mesliberado) === 0 && parseInt(document.getElementById("escalante").value) === 0 && parseInt(document.getElementById("fiscal").value) === 0){
                                                 $("#faixacentral").load("modulos/escaladaf/infoAgd1.php?mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
                                                 $("#faixaquadro").load("modulos/escaladaf/infoAgd2.php");
-                                                $("#faixanotas").load("modulos/escaladaf/infoAgd3.php");
+                                                $("#faixanotas").load("modulos/escaladaf/infoAgd2.php");
                                                 $("#faixaferiados").load("modulos/escaladaf/infoAgd2.php");
                                                 document.getElementById("botImprimir").style.visibility = "hidden";
                                             }else{
@@ -410,7 +418,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                         if(parseInt(Resp.mesliberado) === 0 && parseInt(document.getElementById("escalante").value) === 0){
                                                             $("#faixacentral").load("modulos/escaladaf/infoAgd1.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                                             $("#faixaquadro").load("modulos/escaladaf/infoAgd2.php");
-                                                            $("#faixanotas").load("modulos/escaladaf/infoAgd3.php");
+                                                            $("#faixanotas").load("modulos/escaladaf/infoAgd2.php");
                                                             $("#faixaferiados").load("modulos/escaladaf/infoAgd2.php");
                                                             document.getElementById("botImprimir").style.visibility = "hidden";
                                                         }else{
@@ -451,6 +459,7 @@ if(!isset($_SESSION["usuarioID"])){
                         document.getElementById("configCargoEscala").value = "";
                         document.getElementById("checkefetivo").checked = false;
                         document.getElementById("checkescalante").checked = false;
+                        document.getElementById("checkfiscal").checked = false;
                         return false;
                     }
                     ajaxIni();
@@ -474,6 +483,11 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById("checkescalante").checked = true;
                                         }else{
                                             document.getElementById("checkescalante").checked = false;
+                                        }
+                                        if(parseInt(Resp.escfiscal) === 1){
+                                            document.getElementById("checkfiscal").checked = true;
+                                        }else{
+                                            document.getElementById("checkfiscalescalante").checked = false;
                                         }
                                         
                                     }else{
@@ -1438,6 +1452,64 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
+            function marcaConfigEscalaFisc(obj){
+                if(obj.checked === true){
+                    Valor = 1;
+                }else{
+                    Valor = 0;
+                }
+                if(document.getElementById("configSelecEscala").value == ""){
+                    if(obj.checked === true){
+                        obj.checked = false;
+                    }else{
+                        obj.checked = true;
+                    }
+                    $('#mensagemConfig').fadeIn("slow");
+                    document.getElementById("mensagemConfig").innerHTML = "Selecione um usuário.";
+                    $('#mensagemConfig').fadeOut(2000);
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=configMarcaEscalaFisc&codigo="+document.getElementById("configSelecEscala").value
+                    +"&valor="+Valor
+                    , true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    if(parseInt(Resp.jaesta) === 1){
+                                        obj.checked = false;
+                                        $.confirm({
+                                            title: '<img src="imagens/Logo1.png" height="20px;">',
+                                            content: 'Usuário participa de outra escala:<br>'+Resp.outrogrupo+".<br>Solicite à ATI modificar o grupo para fins de escala, se for o caso.",
+                                            autoClose: 'OK|15000',
+                                            draggable: true,
+                                            buttons: {
+                                                OK: function(){}
+                                            }
+                                        });
+                                        return false;
+                                    }else{
+                                        $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
+                                        $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
+                                        $('#mensagemConfig').fadeIn("slow");
+                                        document.getElementById("mensagemConfig").innerHTML = "Valor salvo.";
+                                        $('#mensagemConfig').fadeOut(1000);
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+
             function mudaTurno(CodPartic, CodTurno){
 //                document.getElementById("guardaCodUsuTrocaTurno").value = CodPartic; // para caso de trocar letra escala em andamento
                 ajaxIni();
@@ -1523,6 +1595,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 }else{
                                     document.getElementById("checkefetivo").checked = false;
                                     document.getElementById("checkescalante").checked = false;
+                                    document.getElementById("checkfiscal").checked = false;
                                     document.getElementById("configSelecChefeDiv").value = Resp.chefe;
                                     document.getElementById("configSelecEncarreg").value = Resp.encarreg;
                                     document.getElementById("etiqNomeGrupo").innerHTML = Resp.siglagrupo; // fiscal editando 
@@ -1543,6 +1616,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("checksemanaIniFim").checked = false;
                                     }
+
                                     document.getElementById("modalEscalaConfig").style.display = "block";
                                }
                             }
@@ -2197,16 +2271,10 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                                 }
                             ?>
                     </select>
-
-                    <?php
-                    if($Escalante == 1 || $Fiscal == 1){ // suspenso
-                        ?>
+                    <!-- Suspenso -->
                         <label style="padding-left: 10px;"></label>
                         <input type="checkbox" id="evliberames" title="Liberar acesso aos participantes da escala" onClick="liberaMes(this);" <?php if($MesLiberado == 1) {echo "checked";} ?> >
                         <label id="etiqevliberames" for="evliberames" title="Acesso aos participantes da escala">liberado</label>
-                        <?php
-                    }
-                    ?>
                 </div>
 
                 <div id="tricoluna2" class="col corCinza" style="text-align: center;">Escala <?php echo $SiglaGrupo; ?> </div> <!-- espaçamento entre colunas  -->
@@ -2226,9 +2294,9 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                     </select>
                     <label style="padding-left: 10px;"></label>
                     <button id="botImprimir" class="botpadrred" onclick="imprPlanilha();">PDF</button>
-                    <div style="position: relative; float: right;">
-                    <label style="padding-left: 5px;"></label>
-                        <img src="imagens/gears-512.gif" height="20px;" id="imgEspera">
+                    <div id="escolhaTema" style="position: relative; float: right;">
+                        <label style="padding-left: 5px;"></label>
+                        <img id="imgEspera" src="imagens/gears-512.gif" height="20px;">
                         <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%; padding-left: 65px;">Tema: </label>
                         <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" class="etiq" style="cursor: pointer;">&nbsp;Claro</label>
                         <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" class="etiq" style="cursor: pointer;">&nbsp;Escuro</label>
@@ -2423,7 +2491,7 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                             <label for="checkefetivo" class="etiqNorm eItalic">efetivo da escala</label>
                         </td>
                         <td colspan="2">
-                        <label id="mensagemConfig" style="color: red; font-weight: bold;"></label>
+                            <label id="mensagemConfig" style="color: red; font-weight: bold;"></label>
                         </td>
                     </tr>
                     <tr>
@@ -2431,6 +2499,13 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                         <td colspan="4">
                             <input type="checkbox" id="checkescalante" onchange="marcaConfigEscalaEsc(this);" >
                             <label for="checkescalante" class="etiqNorm eItalic">escalante</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="etiqAzul eItalic">Escala DAF:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="checkfiscal" onchange="marcaConfigEscalaFisc(this);" >
+                            <label for="checkfiscal" class="etiqNorm eItalic">fiscal</label>
                         </td>
                     </tr>
                     <tr>

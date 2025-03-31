@@ -21,7 +21,7 @@ if($Acao == "buscausuario"){
         $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);
     }
 
-    $rs1 = pg_query($Conec, "SELECT eft_daf, cpf, enc_escdaf, chefe_escdaf, esc_grupo, cargo_daf FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
+    $rs1 = pg_query($Conec, "SELECT eft_daf, cpf, enc_escdaf, chefe_escdaf, esc_grupo, cargo_daf, esc_fisc FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
     $row1 = pg_num_rows($rs1);
     if($row1 > 0){
         $tbl1 = pg_fetch_row($rs1);
@@ -48,7 +48,7 @@ if($Acao == "buscausuario"){
             $Esc = 0;
         }
 
-        $var = array("coderro"=>$Erro, "eft"=>$Eft, "esc"=>$Esc, "cpf"=>$tbl1[1], "encarreg"=>$tbl1[2], "chefeadm"=>$tbl1[3], "cargo"=>$tbl1[5], "grupo"=>$Grupo, "cod"=>$Cod, "row2"=>$row2);
+        $var = array("coderro"=>$Erro, "eft"=>$Eft, "esc"=>$Esc, "cpf"=>$tbl1[1], "encarreg"=>$tbl1[2], "chefeadm"=>$tbl1[3], "cargo"=>$tbl1[5], "escfiscal"=>$tbl1[6], "grupo"=>$Grupo, "cod"=>$Cod, "row2"=>$row2);
     }else{
         $Erro = 1;
         $var = array("coderro"=>$Erro);
@@ -289,6 +289,19 @@ if($Acao == "configMarcaEscalaEsc"){
     }
 
     $var = array("coderro"=>$Erro, "numgrupo"=>$NumGrupo);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao == "configMarcaEscalaFisc"){
+    $Erro = 0;
+    $Cod = (int) filter_input(INPUT_GET, 'codigo'); // pessoas_id de poslog
+    $Valor = (int) filter_input(INPUT_GET, 'valor');
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET esc_fisc = $Valor, datamodif = NOW(), usumodif = $UsuIns WHERE pessoas_id = $Cod");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
     $responseText = json_encode($var);
     echo $responseText;
 }

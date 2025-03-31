@@ -21,11 +21,12 @@ if(!isset($_SESSION["usuarioID"])){
         <script type="text/javascript">
             $(document).ready(function(){
                 $("#mostraSlides").load("modulos/slides/carSlides.php");
-                if(parseInt(document.getElementById("geremsg").value) === 1){
-                    document.getElementById("slidecarregado").src = "modulos/slides/imagens/"+document.getElementById("arqslide").value;
+                if(parseInt(document.getElementById("guardamsg").value) === 1){
+//                    document.getElementById("slidecarregado").src = "modulos/slides/imagens/"+document.getElementById("arqslide").value;
+                    document.getElementById("slidecarregado").src = "modulos/conteudo/arquivos/"+document.getElementById("arqslide").value;
                     document.getElementById("modalEditaSlide").style.display = "block";
                 }
-                if(parseInt(document.getElementById("geremsg").value) === 2){
+                if(parseInt(document.getElementById("guardamsg").value) === 2){
                     document.getElementById("msg").style.color = "red";
                     document.getElementById("buscaArquivo").style.display = "block";    
                 }
@@ -70,7 +71,7 @@ if(!isset($_SESSION["usuarioID"])){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
 //alert(ajax.responseText);
-                                document.getElementById("geremsg").value = 0;
+                                document.getElementById("guardamsg").value = 0;
                                 document.getElementById("modalEditaSlide").style.display = "none";
                             }
                         }
@@ -81,7 +82,7 @@ if(!isset($_SESSION["usuarioID"])){
             function salvaSlide(Valor){
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/slides/salvaSlide.php?acao=acertaslide&valor="+Valor+"&arquivo="+encodeURI(document.getElementById("arqslide").value+"&numslide="+document.getElementById("gerenum").value), true);
+                    ajax.open("POST", "modulos/slides/salvaSlide.php?acao=acertaslide&valor="+Valor+"&arquivo="+encodeURI(document.getElementById("arqslide").value+"&numslide="+document.getElementById("guardanum").value), true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -90,7 +91,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) > 0){
                                     alert("Houve um erro na substituição.")
                                 }else{
-                                    document.getElementById("geremsg").value = 0;
+                                    document.getElementById("guardamsg").value = 0;
                                     $("#mostraSlides").load("modulos/slides/carSlides.php");
                                     document.getElementById("modalEditaSlide").style.display = "none";
                                 }
@@ -103,10 +104,16 @@ if(!isset($_SESSION["usuarioID"])){
         </script>
     </head>
     <body>
-        <input type="hidden" id="geremsg" value="<?php if(isset($_SESSION['geremsg'])){ echo $_SESSION['geremsg'];}else{echo "0";} ?>" /> 
+        <input type="hidden" id="guardamsg" value="<?php if(isset($_SESSION['geremsg'])){ echo $_SESSION['geremsg'];}else{echo "0";} ?>" /> 
         <input type="hidden" id="arqslide" value="<?php if(isset($_SESSION['arquivo'])){ echo $_SESSION['arquivo'];}else{echo "";} ?>" />
-        <input type="hidden" id="gerenum" value="<?php if(isset($_SESSION['gerenum'])){ echo $_SESSION['gerenum'];}else{echo "0";} ?>" /> 
-    
+        <input type="hidden" id="guardanum" value="<?php if(isset($_SESSION['gerenum'])){ echo $_SESSION['gerenum'];}else{echo "0";} ?>" /> 
+
+<?php
+if($_SESSION["usuarioID"] == 3){
+    echo "Arquivo: ".$_SESSION['arquivo'];
+}
+?>
+
         <div id="mostraSlides" style="margin: 20px auto; text-align: center; padding: 40px;"></div>
 
         <div id="buscaArquivo" style="position: relative; float: left; width: 99%; display: none; margin: 0 auto; text-align: center; padding: 30px;">
@@ -141,9 +148,9 @@ if(!isset($_SESSION["usuarioID"])){
             $('#arquivo').change(function(){
                 document.getElementById("bottsubmit").disabled = false;
             });
-            $('#bottsubmit').click(function(){
+//            $('#bottsubmit').click(function(){
 //                document.getElementById("bottsubmit").disabled = true;  //para evitar segundo click
-            });
+//            });
             $(document).on('submit', 'form', function(e){
                 e.preventDefault();
                 if(document.getElementById('arquivo').value !== ""){
@@ -162,10 +169,10 @@ if(!isset($_SESSION["usuarioID"])){
                         $form.find('.progress-bar').addClass('progress-bar-success').html('upload completo...');
                         //Atualizar a página após o upload completo
 //                      setTimeout("window.open(self.location, '_self');", 1000);
-                        setTimeout("$('#container3').load('modulos/slides/gereSlide.php')", 2000);
+                        setTimeout("$('#container3').load('modulos/slides/gereslide.php')", 2000);
                     });
                     //Arquivo responsável em fazer o upload do arquivo
-                    request.open("post", "modulos/slides/slideUpLoad.php?numslide="+document.getElementById("gerenum").value);
+                    request.open("post", "modulos/slides/slideUpLoad.php?numslide="+document.getElementById("guardanum").value);
                     request.send(formdata);
                 }
             });

@@ -11,8 +11,6 @@ function Mask($mask,$str){
     for($i=0;$i<strlen($str);$i++){
         $mask[strpos($mask,"#")] = $str[$i];
     }
-    //Chamada Mask("###.###.###-##",$Var) cpf
-    //Chamada Mask("##.###.###/####-##",$Var) cnpj
     return $mask;
 }
 
@@ -20,25 +18,8 @@ if(isset($_REQUEST["acao"])){
     $Acao = $_REQUEST["acao"];
     require_once('../../class/fpdf/fpdf.php'); // adaptado ao PHP 7.2 - 8.2
     define('FPDF_FONTPATH', '../../class/fpdf/font/');  
-    $Dom = "Logo2.png";
-    
-    if(isset($_REQUEST["numgrupo"])){
-        $NumGrupo = $_REQUEST["numgrupo"]; // quando vem do fiscal
-    }else{
-        $NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]);   
-    }
-
-    $rsSig = pg_query($Conec, "SELECT siglagrupo, chefe_escdaf, enc_escdaf FROM ".$xProj.".escalas_gr WHERE id = $NumGrupo;");
-    $rowSig = pg_num_rows($rsSig);
-    if($rowSig > 0){
-        $tblSig = pg_fetch_row($rsSig);
-        $SiglaGrupo = $tblSig[0];
-        $ChefeDiv = $tblSig[1];
-        $Encarreg = $tblSig[2];
-    }else{
-        $SiglaGrupo = "";
-    }
-
+    $Dom = "logo_comunhao_completa_cor_pos_150px.png";
+    date_default_timezone_set('America/Sao_Paulo'); 
     $rsCabec = pg_query($Conec, "SELECT cabec1, cabec2, cabec3 FROM ".$xProj.".setores WHERE codset = ".$_SESSION["CodSetorUsu"]." ");
     $rowCabec = pg_num_rows($rsCabec);
     $tblCabec = pg_fetch_row($rsCabec);
@@ -46,14 +27,15 @@ if(isset($_REQUEST["acao"])){
     $Cabec2 = $tblCabec[1];
     $Cabec3 = $tblCabec[2];
 
-    class PDF extends FPDF{
+     class PDF extends FPDF{
         function Footer(){
            // Vai para 1.5 cm da parte inferior
            $this->SetY(-15);
            // Seleciona a fonte Arial itálico 8
            $this->SetFont('Arial','I',8);
            // Imprime o número da página corrente e o total de páginas
-           $this->Cell(0,10,'Pag '.$this->PageNo().'/{nb}',0,0,'R');
+//           $this->Cell(0,10,'Pag '.$this->PageNo().'/{nb}',0,0,'R');
+           $this->Cell(0, 10, 'Impresso: '.date("d/m/Y H:i").'      Pag '.$this->PageNo().'/{nb}', 0, 0, 'R');
          }
     }
 
@@ -61,7 +43,7 @@ if(isset($_REQUEST["acao"])){
     $pdf->AliasNbPages(); // pega o número total de páginas
     $pdf->AddPage();
     $pdf->SetLeftMargin(30);
-    $pdf->SetTitle('Escala DAF', $isUTF8=TRUE);
+    $pdf->SetTitle('LRO', $isUTF8=TRUE);
     //Monta o arquivo pdf        
     $pdf->SetFont('Arial', '' , 12); 
     if($Dom != "" && $Dom != "NULL"){
@@ -82,7 +64,7 @@ if(isset($_REQUEST["acao"])){
     $pdf->SetFont('Arial', '' , 10);
     $pdf->SetTextColor(25, 25, 112);
     if($Acao == "listaUsuarios"){
-        $pdf->MultiCell(0, 3, "Escala de Serviço ".$SiglaGrupo, 0, 'C', false);
+        $pdf->MultiCell(0, 3, "Gerenciamento do Livro de Registro de Ocorrências", 0, 'C', false);
     }
 
     $pdf->SetTextColor(0, 0, 0);
@@ -91,134 +73,15 @@ if(isset($_REQUEST["acao"])){
     $lin = $pdf->GetY();
     $pdf->Line(10, $lin, 200, $lin);
     $pdf->SetDrawColor(200); // cinza claro  
+    $RevLro = parEsc("lro_rev", $Conec, $xProj, $_SESSION["usuarioID"]); // revisor do LRO
 
     if($Acao == "listaUsuarios"){
-        $rs0 = pg_query($Conec, "SELECT nomecompl, nomeusual FROM ".$xProj.".poslog WHERE pessoas_id = $ChefeDiv");
-        $row0 = pg_num_rows($rs0);
-       
-        $pdf->ln(5);
-        $pdf->SetFont('Arial', 'I', 11);
-        $pdf->MultiCell(0, 3, "Chefe da Divisão Administrativa:", 0, 'L', false);
-        $pdf->ln(3);
-        if($row0 > 0){
-            $tbl0 = pg_fetch_row($rs0);
-            $pdf->SetFont('Arial', 'I', 8);
-            $pdf->SetX(50);
-            $pdf->Cell(40, 3, "Nome", 0, 0, 'L');
-            $pdf->Cell(150, 3, "Nome Completo", 0, 0, 'L');
-            $pdf->ln(4);
-            $lin = $pdf->GetY();
-            $pdf->Line(50, $lin, 200, $lin);
-            $pdf->SetFont('Arial', '', 10);
-
-            $pdf->SetX(50); 
-            $pdf->Cell(40, 5, $tbl0[1], 0, 0, 'L');
-            $pdf->Cell(150, 5, $tbl0[0], 0, 1, 'L');
-            $lin = $pdf->GetY();
-            $pdf->Line(50, $lin, 200, $lin);
-            $pdf->ln(10);
-        }else{
-            $pdf->SetFont('Arial', 'I', 10);
-            $pdf->SetX(50);
-            $pdf->Cell(40, 5, 'Nenhum usuário encontrado.', 0, 1, 'L');
-            $lin = $pdf->GetY();               
-            $pdf->Line(20, $lin, 200, $lin);
-            $pdf->ln(10);
-        }
-
-
-        $rs0 = pg_query($Conec, "SELECT nomecompl, nomeusual FROM ".$xProj.".poslog WHERE pessoas_id = $Encarreg");
+        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE lro = 1 And ativo = 1 ORDER BY nomecompl");
         $row0 = pg_num_rows($rs0);
         $pdf->ln(5);
         $pdf->SetFont('Arial', 'I', 11);
-        $pdf->MultiCell(0, 3, "Chefe Imediato:", 0, 'L', false);
+        $pdf->MultiCell(0, 3, "Usuários autorizados a preencher o LRO: ", 0, 'L', false);
         $pdf->ln(3);
-        if($row0 > 0){
-            $tbl0 = pg_fetch_row($rs0);
-            $pdf->SetFont('Arial', 'I', 8);
-            $pdf->SetX(50);
-            $pdf->Cell(40, 3, "Nome", 0, 0, 'L');
-            $pdf->Cell(150, 3, "Nome Completo", 0, 0, 'L');
-            $pdf->ln(4);
-            $lin = $pdf->GetY();
-            $pdf->Line(50, $lin, 200, $lin);
-            $pdf->SetFont('Arial', '', 10);
-
-            $pdf->SetX(50); 
-            $pdf->Cell(40, 5, $tbl0[1], 0, 0, 'L');
-            $pdf->Cell(150, 5, $tbl0[0], 0, 1, 'L');
-            $lin = $pdf->GetY();
-            $pdf->Line(50, $lin, 200, $lin);
-            $pdf->ln(10);
-        }else{
-            $pdf->SetFont('Arial', 'I', 10);
-            $pdf->SetX(50);
-            $pdf->Cell(40, 5, 'Nenhum usuário encontrado.', 0, 1, 'L');
-            $lin = $pdf->GetY();               
-            $pdf->Line(20, $lin, 200, $lin);
-            $pdf->ln(10);
-        }
-
-
-//        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE esc_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo  ORDER BY nomecompl");
-
-        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual 
-        FROM ".$xProj.".poslog INNER JOIN ".$xProj.".escaladaf_esc ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escaladaf_esc.usu_id 
-        WHERE ".$xProj.".poslog.ativo = 1 And ".$xProj.".escaladaf_esc.ativo = 1 And grupo_id = $NumGrupo  ORDER BY nomecompl");
-        
-        $row0 = pg_num_rows($rs0);
-        $pdf->ln(5);
-        $pdf->SetFont('Arial', 'I', 11);
-        $pdf->MultiCell(0, 3, "Escalantes:", 0, 'L', false);
-        $pdf->ln(3);
-        if($row0 > 0){
-            $pdf->SetFont('Arial', 'I', 8);
-            $pdf->SetX(50);
-            $pdf->Cell(40, 3, "Nome", 0, 0, 'L');
-            $pdf->Cell(150, 3, "Nome Completo", 0, 0, 'L');
-            $pdf->ln(4);
-            $lin = $pdf->GetY();
-            $pdf->Line(50, $lin, 200, $lin);
-            $pdf->SetFont('Arial', '', 10);
-
-            while($tbl0 = pg_fetch_row($rs0)){
-                $Cod = $tbl0[0];
-                $pdf->SetX(50); 
-                if(is_null($tbl0[2]) || $tbl0[2] == ""){
-                    $Nome = substr($tbl0[1], 0, 15); //nome completo
-                }else{
-                    $Nome = substr($tbl0[2], 0, 20); //nome usual
-                }
-//                $pdf->Cell(40, 5, $tbl0[2], 0, 0, 'L');
-                $pdf->Cell(40, 5, $Nome, 0, 0, 'L');
-                $pdf->Cell(150, 5, $tbl0[1], 0, 1, 'L');
-                $lin = $pdf->GetY();
-                $pdf->Line(50, $lin, 200, $lin);
-            }
-            $pdf->SetX(50);
-            $pdf->SetFont('Arial', 'I', 8);
-            $pdf->Cell(150, 5, "Total: ".$row0, 0, 1, 'L');
-            $pdf->SetFont('Arial', '', 10);
-            $lin = $pdf->GetY();               
-            $pdf->Line(20, $lin, 200, $lin);
-            $pdf->ln(10);
-       
-        }else{
-            $pdf->SetFont('Arial', 'I', 10);
-            $pdf->SetX(50);
-            $pdf->Cell(40, 5, 'Nenhum usuário encontrado.', 0, 1, 'L');
-            $lin = $pdf->GetY();               
-            $pdf->Line(20, $lin, 200, $lin);
-            $pdf->ln(10);
-        }
-
-
-        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY nomecompl");
-        $row0 = pg_num_rows($rs0);
-        $pdf->ln(3);
-        $pdf->SetFont('Arial', 'I', 11);
-        $pdf->MultiCell(0, 3, "Efetivo da escala: ".$SiglaGrupo, 0, 'L', false);
-        $pdf->ln(5);
         if($row0 > 0){
             $pdf->SetFont('Arial', 'I', 8);
             $pdf->SetX(50);
@@ -252,6 +115,88 @@ if(isset($_REQUEST["acao"])){
             $lin = $pdf->GetY();               
             $pdf->Line(20, $lin, 200, $lin);
             $pdf->ln(10);
+        }
+
+        $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE fisclro = 1 And ativo = 1 ORDER BY nomecompl");
+        $row0 = pg_num_rows($rs0);
+        $pdf->ln(3);
+        $pdf->SetFont('Arial', 'I', 11);
+        $pdf->MultiCell(0, 3, "Usuários autorizados a acompanhar e fiscalizar: ", 0, 'L', false);
+        $pdf->ln(5);
+        if($row0 > 0){
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->SetX(50);
+            $pdf->Cell(40, 3, "Nome", 0, 0, 'L');
+            $pdf->Cell(150, 3, "Nome Completo", 0, 0, 'L');
+            $pdf->ln(4);
+            $lin = $pdf->GetY();
+            $pdf->Line(50, $lin, 200, $lin);
+            $pdf->SetFont('Arial', '', 10);
+
+            while($tbl0 = pg_fetch_row($rs0)){
+                $Cod = $tbl0[0];
+                $pdf->SetX(50); 
+                $pdf->Cell(40, 5, $tbl0[2], 0, 0, 'L');
+                $pdf->Cell(150, 5, $tbl0[1], 0, 1, 'L');
+                $lin = $pdf->GetY();
+                $pdf->Line(50, $lin, 200, $lin);
+            }
+            $pdf->SetX(50);
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->Cell(150, 5, "Total: ".$row0, 0, 1, 'L');
+            $pdf->SetFont('Arial', '', 10);
+            $lin = $pdf->GetY();               
+            $pdf->Line(20, $lin, 200, $lin);
+            $pdf->ln(10);
+        }else{
+            $pdf->SetFont('Arial', 'I', 10);
+            $pdf->SetX(50);
+            $pdf->Cell(40, 5, 'Nenhum usuário encontrado.', 0, 1, 'L');
+            $lin = $pdf->GetY();               
+            $pdf->Line(20, $lin, 200, $lin);
+            $pdf->ln(10);
+        }
+        
+        if($RevLro == 1){ // se é o revisor que está imprimindo
+            $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE lro_rev = 1 And ativo = 1 ORDER BY nomecompl");
+            $row0 = pg_num_rows($rs0);
+            $pdf->ln(3);
+            $pdf->SetFont('Arial', 'I', 11);
+            $pdf->MultiCell(0, 3, "Usuários encarregados de rubricar o LRO: ", 0, 'L', false);
+            $pdf->ln(5);
+            if($row0 > 0){
+                $pdf->SetFont('Arial', 'I', 8);
+                $pdf->SetX(50);
+                $pdf->Cell(40, 3, "Nome", 0, 0, 'L');
+                $pdf->Cell(150, 3, "Nome Completo", 0, 0, 'L');
+                $pdf->ln(4);
+                $lin = $pdf->GetY();
+                $pdf->Line(50, $lin, 200, $lin);
+                $pdf->SetFont('Arial', '', 10);
+    
+                while($tbl0 = pg_fetch_row($rs0)){
+                    $Cod = $tbl0[0];
+                    $pdf->SetX(50); 
+                    $pdf->Cell(40, 5, $tbl0[2], 0, 0, 'L');
+                    $pdf->Cell(150, 5, $tbl0[1], 0, 1, 'L');
+                    $lin = $pdf->GetY();
+                    $pdf->Line(50, $lin, 200, $lin);
+                }
+                $pdf->SetX(50);
+                $pdf->SetFont('Arial', 'I', 8);
+                $pdf->Cell(150, 5, "Total: ".$row0, 0, 1, 'L');
+                $pdf->SetFont('Arial', '', 10);
+                $lin = $pdf->GetY();               
+                $pdf->Line(20, $lin, 200, $lin);
+                $pdf->ln(10);
+            }else{
+                $pdf->SetFont('Arial', 'I', 10);
+                $pdf->SetX(50);
+                $pdf->Cell(40, 5, 'Nenhum usuário encontrado.', 0, 1, 'L');
+                $lin = $pdf->GetY();               
+                $pdf->Line(20, $lin, 200, $lin);
+                $pdf->ln(10);
+            }
         }
     }
  }

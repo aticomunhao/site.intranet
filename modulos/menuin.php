@@ -27,11 +27,11 @@
 			//Provisório
 			if(strtotime('2025/04/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//0096
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS lro_rev smallint NOT NULL DEFAULT 0 ");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET lro_rev = 1 WHERE pessoas_id = 3");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET lro_rev = 1 WHERE pessoas_id = 83");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET lro_rev = 1 WHERE pessoas_id = 37");
+				//0097
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog DROP COLUMN IF EXISTS numacessosip ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog DROP COLUMN IF EXISTS colecip ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog DROP COLUMN IF EXISTS usuip ");
+
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

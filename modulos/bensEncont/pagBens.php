@@ -86,8 +86,25 @@ if(!isset($_SESSION["usuarioID"])){
                   return cnpjCpf.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g, "\$1.\$2.\$3/\$4-\$5");
             }
             $(document).ready(function(){
-                $('#carregaTema').load('modulos/config/carTema.php?carpag=livroReg');
-                $("#carregaBens").load("modulos/bensEncont/relBens.php?acao="+document.getElementById("guardaIndex").value);
+                document.getElementById("botimpr").style.visibility = "hidden"; 
+                document.getElementById("botimprReg").style.visibility = "hidden"; 
+                document.getElementById("botInsReg").style.visibility = "hidden"; 
+                document.getElementById("botApagaBem").style.visibility = "hidden";
+                document.getElementById("imgBensconfig").style.visibility = "hidden";
+                document.getElementById("numregistro").disabled = true;
+                document.getElementById("selectTema").style.visibility = "hidden"; 
+                document.getElementById("selectBens").style.visibility = "hidden"; 
+                document.getElementById("imgHelpBens").style.visibility = "hidden"; 
+
+                if(parseInt(document.getElementById("guardaEditBens").value) === 0 && parseInt(document.getElementById("guardaFiscBens").value) === 0 && parseInt(document.getElementById("guardaSoInsBens").value) === 0){
+                    $("#carregaBens").load("modulos/leituras/carMsg.php?msgtipo=1");
+                }else{
+                    $('#carregaTema').load('modulos/config/carTema.php?carpag=pagBens');
+                    $("#carregaBens").load("modulos/bensEncont/relBens.php?acao="+document.getElementById("guardaIndex").value);
+                    document.getElementById("selectTema").style.visibility = "visible"; 
+                    document.getElementById("selectBens").style.visibility = "visible"; 
+                    document.getElementById("imgHelpBens").style.visibility = "visible"; 
+                }
 
                 //Impedir a mudança de data do registro de bem encontrado -> liberado a pedido em 16/08/2024
 //                DataPr = compareDates ("30/06/2024", dataAtualFormatada()); // se o prazo for maior que a data atual
@@ -104,23 +121,19 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#dataregistro").mask("99/99/9999");
                 $("#dataachado").mask("99/99/9999");
 
-                document.getElementById("botimprReg").style.visibility = "hidden"; 
-                document.getElementById("botInsReg").style.visibility = "hidden"; 
-                document.getElementById("botApagaBem").style.visibility = "hidden";
-                document.getElementById("imgBensconfig").style.visibility = "hidden";
-                document.getElementById("numregistro").disabled = true;
-
-                if(parseInt(document.getElementById("guardaescEdit").value) === 1){ // tem que estar autorizado no cadastro de usuários
+                if(parseInt(document.getElementById("guardaEditBens").value) === 1){ // tem que estar autorizado no cadastro de usuários
                     if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
                         document.getElementById("botInsReg").style.visibility = "visible"; 
+                        document.getElementById("botimpr").style.visibility = "visible"; 
                     }
                     if(parseInt(document.getElementById("UsuAdm").value) > 6){
                         document.getElementById("botInsReg").style.visibility = "visible";
                         document.getElementById("botApagaBem").style.visibility = "visible";
                         document.getElementById("imgBensconfig").style.visibility = "visible";
+                        document.getElementById("botimpr").style.visibility = "visible"; 
                     }
                 }
-                if(parseInt(document.getElementById("guardaInsBens").value) === 1){ // Para pessoal da portaria registrar nos fins de semana
+                if(parseInt(document.getElementById("guardaSoInsBens").value) === 1){ // Para pessoal da portaria registrar nos fins de semana
                     document.getElementById("botInsReg").style.visibility = "visible";
                 }
 
@@ -143,6 +156,8 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById("preencheBens").checked = true;
                                         }else{
                                             document.getElementById("preencheBens").checked = false;
+                                            document.getElementById("encaminhaBens").checked = false;
+                                            document.getElementById("encaminhaBens").disabled = true;
                                         }
                                         if(parseInt(Resp.fiscbens) === 1){
                                             document.getElementById("fiscBens").checked = true;
@@ -156,6 +171,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         }
                                         if(parseInt(Resp.encbens) === 1){
                                             document.getElementById("encaminhaBens").checked = true;
+                                            document.getElementById("encaminhaBens").disabled = false;
                                         }else{
                                             document.getElementById("encaminhaBens").checked = false;
                                         }
@@ -1085,6 +1101,15 @@ if(!isset($_SESSION["usuarioID"])){
                     $('#mensagemConfig').fadeOut(2000);
                     return false;
                 }
+                if(Campo == "bens"){
+                    if(parseInt(Valor) === 0){
+                        document.getElementById("encaminhaBens").checked = false;
+                        document.getElementById("encaminhaBens").disabled = true;
+                    }else{
+                        document.getElementById("encaminhaBens").disabled = false;
+                    }
+                }
+
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=configMarcafBem&codigo="+document.getElementById("configSelecBens").value
@@ -1273,10 +1298,15 @@ if(!isset($_SESSION["usuarioID"])){
 
         $admIns = parAdm("insbens", $Conec, $xProj);   // nível para inserir 
         $admEdit = parAdm("editbens", $Conec, $xProj); // nível para editar -> foi para relBens.php
-        $escEdit = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // está marcado no cadastro de usuários
+        $Bens = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // está marcado no cadastro de usuários
+        $FiscBens = parEsc("fiscbens", $Conec, $xProj, $_SESSION["usuarioID"]);
         $SoInsBens = parEsc("soinsbens", $Conec, $xProj, $_SESSION["usuarioID"]); // está marcado no cadastro de usuários
         $EncBens = parEsc("encbens", $Conec, $xProj, $_SESSION["usuarioID"]);
         $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
+
+
+        //bens, fiscbens, soinsbens, encbens
+
 
         $OpDestBens = pg_query($Conec, "SELECT numdest, descdest FROM ".$xProj.".bensdestinos ORDER BY descdest");
         $OpProcesso = pg_query($Conec, "SELECT id, processo FROM ".$xProj.".bensprocessos ORDER BY processo");
@@ -1297,23 +1327,25 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
             <div id="tricoluna2" style="position: relative; float: left; text-align: center; width: 48%;">
                 <h5>Registro de Achados e Perdidos</h5>
+                <div id="selectBens" style="text-align: center;">
                 <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Todos');">Todos</button>
                 <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Restituídos');" title="Bem já restituído">Restituídos</button>
                 <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Destinar');" title="Pronto para dar destino. Prazo de 90 dias transcorrido. Nível Revisor.">Destinar</button>
                 <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Receber');" title="Bem já encaminhado. Receber no destino.">Receber</button>
                 <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Arquivar');" title="Processos que aguardam encerramento. Nível Revisor." >Arquivar</button>
                 <button class="resetbot" style="font-size: .9rem;" onclick="mostraBens('Arquivados');" title="Processos encerrados." >Arquivados</button>
+                </div>
             </div>
             <div id="tricoluna3" style="position: relative; float: left; text-align: center; width: 25%;">
-
-                <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%; padding-left: 5px;">Tema: </label>
-                <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" class="etiq" style="cursor: pointer;">&nbsp;Claro</label>
-                <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" class="etiq" style="cursor: pointer;">&nbsp;Escuro</label>
-                <label style="padding-left: 20px;"></label>
-
+                <div id="selectTema" style="position: relative; float: left;">
+                    <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%; padding-left: 5px;">Tema: </label>
+                    <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" class="etiq" style="cursor: pointer;">&nbsp;Claro</label>
+                    <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" class="etiq" style="cursor: pointer;">&nbsp;Escuro</label>
+                    <label style="padding-left: 20px;"></label>
+                </div>
                 <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="abreImprBens();">PDF</button>
                 <label style="padding-left: 20px;"></label>
-                <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpBens();" title="Guia rápido">
+                <img id="imgHelpBens" src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpBens();" title="Guia rápido">
             </div>
         </div>
 
@@ -1327,8 +1359,10 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="codusudest" value = "0" />
         <input type="hidden" id="codusureceb" value = "0" />
         <input type="hidden" id="guardamodal" value = "0" />
-        <input type="hidden" id="guardaescEdit" value="<?php echo $escEdit; ?>" />
-        <input type="hidden" id="guardaInsBens" value="<?php echo $SoInsBens; ?>" />
+        <input type="hidden" id="guardaEditBens" value="<?php echo $Bens; ?>" />
+        <input type="hidden" id="guardaFiscBens" value="<?php echo $FiscBens; ?>" />
+        <input type="hidden" id="guardaEncBens" value="<?php echo $EncBens; ?>" />
+        <input type="hidden" id="guardaSoInsBens" value="<?php echo $SoInsBens; ?>" />
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>" />
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" /> <!-- nível mínimo para editar -->

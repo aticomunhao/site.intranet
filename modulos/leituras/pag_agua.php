@@ -78,15 +78,43 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("selecVisuMesAnoAgua").style.visibility = "hidden"; 
                     document.getElementById("etiqselecVisuAnoAgua").style.visibility = "hidden"; 
                     document.getElementById("selecVisuAnoAgua").style.visibility = "hidden"; 
-                    
+                    document.getElementById("botgrafico").style.visibility = "hidden"; 
+                    document.getElementById("selectTema").style.visibility = "hidden"; 
+
+                    var nHora = new Date(); 
+                    var hora = nHora.getHours();
+
+                    var Cumpr = "Bom Dia!";
+                    if(hora >= 12){
+                        Cumpr = "Boa Tarde!";
+                    }
+                    if(hora >= 18){
+                        Cumpr = "Boa Noite!";
+                    }
+
+                    if(parseInt(document.getElementById("InsLeitura").value) === 0 && parseInt(document.getElementById("FiscAgua").value) === 0 ){
+                        $.confirm({
+                            title: Cumpr,
+                            content: 'Usuário não cadastrado para este acesso. <br>O acesso é proporcionado pela ATI.',
+                            autoClose: 'OK|7000',
+                            draggable: true,
+                            buttons: {
+                                OK: function(){}
+                            }
+                        });
+                    }else{
+                        $('#carregaTema').load('modulos/config/carTema.php?carpag=pag_agua');
+                    }
+
                     if(parseInt(document.getElementById("InsLeitura").value) === 1 || parseInt(document.getElementById("FiscAgua").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // se estiver marcado em cadusu para fazer a leitura
                         if(parseInt(document.getElementById("InsLeitura").value) === 1 || parseInt(document.getElementById("UsuAdm").value) >= 6){
                             document.getElementById("botInserir").style.visibility = "visible"; 
-                            document.getElementById("imgAguaConfig").style.visibility = "visible"; 
                             document.getElementById("etiqselecVisuMesAnoAgua").style.visibility = "visible"; 
                             document.getElementById("selecVisuMesAnoAgua").style.visibility = "visible";
                             document.getElementById("etiqselecVisuAnoAgua").style.visibility = "visible"; 
                             document.getElementById("selecVisuAnoAgua").style.visibility = "visible"; 
+                            document.getElementById("selectTema").style.visibility = "visible"; 
+                            document.getElementById("botgrafico").style.visibility = "visible"; 
 
                             $("#container5").load("modulos/leituras/carAgua.php");
                             $("#container6").load("modulos/leituras/carEstatAgua.php");
@@ -116,6 +144,7 @@ if(!isset($_SESSION["usuarioID"])){
                         document.getElementById("botInserir").style.visibility = "visible"; 
                         document.getElementById("botImprimir").style.visibility = "visible"; 
                         document.getElementById("imgAguaConfig").style.visibility = "visible"; 
+                        document.getElementById("imgAguaConfig").style.visibility = "visible"; 
                     }
                 };
 
@@ -139,13 +168,13 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#selecVisuMesAnoAgua").change(function(){
                     document.getElementById("selecVisuAnoAgua").value = "";
                     $("#container5").load("modulos/leituras/carAgua.php?mesano="+encodeURIComponent(document.getElementById("selecVisuMesAnoAgua").value));
-                    $("#container6").load("modulos/leituras/carEstatAgua.php?mesano="+encodeURIComponent(document.getElementById("selecVisuMesAnoAgua").value));
+                    $("#container6").load("modulos/leituras/carEstatAgua.php?mesano="+encodeURIComponent(document.getElementById("selecVisuMesAnoAgua").value)+"&corTema="+document.getElementById("guardaCor").value);
                 });
 
                 $("#selecVisuAnoAgua").change(function(){
                     document.getElementById("selecVisuMesAnoAgua").value = "";
                     $("#container5").load("modulos/leituras/carAgua.php?ano="+encodeURIComponent(document.getElementById("selecVisuAnoAgua").value));
-                    $("#container6").load("modulos/leituras/carEstatAgua.php?ano="+encodeURIComponent(document.getElementById("selecVisuAnoAgua").value));
+                    $("#container6").load("modulos/leituras/carEstatAgua.php?ano="+encodeURIComponent(document.getElementById("selecVisuAnoAgua").value)+"&corTema="+document.getElementById("guardaCor").value);
                 });
 
                 $("#configSelecAgua").change(function(){
@@ -283,7 +312,6 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("guardacod").value = 0;
                                     document.getElementById("insdata").disabled = false;
                                     document.getElementById("insdata").value = Resp.proximo;  // document.getElementById("guardahoje").value;
-                                    document.getElementById("insdiasemana").innerHTML = Resp.sem;
                                     document.getElementById("insleitura1").value = "";
                                     document.getElementById("insleitura2").value = "";
                                     document.getElementById("insleitura3").value = "";
@@ -397,7 +425,8 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("mensagemLeitura").innerHTML = "Lançamento salvo.";
                                     $('#mensagemLeitura').fadeOut(1000);
                                     $("#container5").load("modulos/leituras/carAgua.php");
-                                    $("#container6").load("modulos/leituras/carEstatAgua.php");
+//                                    $("#container6").load("modulos/leituras/carEstatAgua.php");
+                                    $("#container6").load("modulos/leituras/carEstatAgua.php?corTema="+document.getElementById("guardaCor").value);
                                     document.getElementById("relacmodalLeitura").style.display = "none";
 
                                 }
@@ -427,7 +456,8 @@ if(!isset($_SESSION["usuarioID"])){
                                             if(parseInt(Resp.coderro) === 0){
                                                 document.getElementById("relacmodalLeitura").style.display = "none";
                                                 $("#container5").load("modulos/leituras/carAgua.php");
-                                                $("#container6").load("modulos/leituras/carEstatAgua.php");
+//                                                $("#container6").load("modulos/leituras/carEstatAgua.php");
+                                                $("#container6").load("modulos/leituras/carEstatAgua.php?corTema="+document.getElementById("guardaCor").value);
                                             }else{
                                                 alert("Houve um erro no servidor.")
                                             }
@@ -588,8 +618,11 @@ if(!isset($_SESSION["usuarioID"])){
 //alert(versaoJquery);
         </script>
     </head>
-    <body>
+    <body class="corClara" onbeforeunload="return mudaTema(0)"> <!-- ao sair retorna os background claros -->
         <?php
+
+$VarCor = "black";
+
             $Hoje = date('d/m/Y');
             $Erro = 0;
             $rs = pg_query($Conec, "SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_schema = 'cesb' And table_name = 'leitura_agua'");
@@ -604,6 +637,7 @@ if(!isset($_SESSION["usuarioID"])){
 
             $InsAgua = parEsc("agua", $Conec, $xProj, $_SESSION["usuarioID"]); // procura agua em poslog 
             $FiscAgua = parEsc("fisc_agua", $Conec, $xProj, $_SESSION["usuarioID"]); // procura fisc_agua em poslog 
+            $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
 
             // Preenche caixa de escolha mes/ano para impressão
             $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataleitura, 'MM'), '/', TO_CHAR(dataleitura, 'YYYY')) 
@@ -629,12 +663,11 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="FiscAgua" value="<?php echo $FiscAgua; ?>" />
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 3px;">
-            <div class="row"> <!-- botões Inserir e Imprimir-->
-                <div class="col" style="margin: 0 auto; text-align: left;">
+            <div id="tricoluna0" class="row" style="margin-left: 5px; margin-right: 5px;"> <!-- botões Inserir e Imprimir-->
+                <div id="tricoluna1" class="corCinza" style="width: 38%; margin: 0 auto; text-align: left;">
                     <img src="imagens/settings.png" height="20px;" id="imgAguaConfig" style="cursor: pointer; padding-left: 30px;" onclick="abreAguaConfig();" title="Acesso às configuraçõe">
                     <label style="padding-left: 40px;"></label>
                     <button id="botInserir" class="botpadrblue" onclick="insereModal();" title="Inserir leitura do hidrômetro">Inserir</button>
-
                     <label id="etiqselecVisuMesAnoAgua" style="padding-left: 20px; font-size: .8rem;">Visualisar Mês: </label>
                     <select id="selecVisuMesAnoAgua" style="font-size: .8rem; width: 90px;" title="Selecione o mês/ano a visualisar.">
                         <option value=""></option>
@@ -647,13 +680,17 @@ if(!isset($_SESSION["usuarioID"])){
                         }
                         ?>
                     </select>
-
                 </div> <!-- quadro -->
-                <div class="col" style="text-align: center;">Controle do Consumo de Água</div> <!-- espaçamento entre colunas  -->
-                <div class="col" style="margin: 0 auto; text-align: right; padding-right: 60px;">
-
-                    <label id="etiqselecVisuAnoAgua" style="padding-left: 20px; font-size: .8rem;">Visualisar Ano: </label>
-                    <select id="selecVisuAnoAgua" style="font-size: .8rem; width: 90px;" title="Selecione o ano a visualisar.">
+                <div id="tricoluna2" class="corCinza" style="width: 20%; text-align: center;">Controle do Consumo de Água</div> <!-- espaçamento entre colunas  -->
+                <div id="tricoluna3" class="corCinza" style="width: 40%; margin: 0 auto; text-align: right; padding-right: 10px;">
+                    <div id="selectTema" style="position: relative; float: left;">
+                        <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%; padding-left: 5px;">Tema: </label>
+                        <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" class="etiq" style="cursor: pointer;">&nbsp;Claro</label>
+                        <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" class="etiq" style="cursor: pointer;">&nbsp;Escuro</label>
+                        <label style="padding-right: 5px;"></label>
+                    </div>
+                    <label id="etiqselecVisuAnoAgua" style="font-size: .8rem;">Visualisar Ano: </label>
+                    <select id="selecVisuAnoAgua" style="font-size: .8rem; width: 70px;" title="Selecione o ano a visualisar.">
                         <option value=""></option>
                         <?php 
                         if($OpcoesVisuAno){
@@ -664,30 +701,28 @@ if(!isset($_SESSION["usuarioID"])){
                         }
                         ?>
                     </select>
-                    <label style="padding-right: 30px;"></label>
-
-                    <img src="imagens/iconGraf.png" height="46px;" id="botgrafico" style="cursor: pointer;" onclick="abreGrafico();" title="Gráfico de consumo anual">
-                    <label styke="padding-right: 50px;"></label>
+                    <label style="padding-right: 15px;"></label>
+                    <img src="imagens/iconGraf.png" height="36px;" id="botgrafico" style="cursor: pointer;" onclick="abreGrafico();" title="Gráfico de consumo anual">
+                    <label style="padding-right: 15px;"></label>
                     <button id="botImprimir" class="botpadrred" onclick="abreImprLeitura();">PDF</button>
                 </div> <!-- quadro -->
             </div>
 
-            <div style="padding: 5px; display: flex; align-items: center; justify-content: center;"> 
 
+            <div style="padding: 5px; display: flex; align-items: center; justify-content: center;"> 
                 <div class="row" style="width: 97%;">
                     <div id="container5" class="col quadro" style="margin: 0 auto; width: 100%;"></div> <!-- quadro -->
 
                     <div class="col-1" style="width: 1%;"></div> <!-- espaçamento entre colunas  -->
 
                     <div id="container6" class="col quadro" style="margin: 0 auto; width: 100%;"></div> <!-- quadro -->
-
                 </div> <!-- row  -->
             </div> <!-- container  -->
         </div>
 
         <!-- div modal para imprimir em pdf  -->
         <div id="relacimprLeitura" class="relacmodal">
-            <div class="modal-content-imprLeitura">
+            <div class="modal-content-imprLeitura corPreta">
                 <span class="close" onclick="fechaModalImpr();">&times;</span>
                 <h5 id="titulomodal" style="text-align: center;color: #666;">Controle do Consumo de Água</h5>
                 <h6 id="titulomodal" style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
@@ -734,7 +769,7 @@ if(!isset($_SESSION["usuarioID"])){
 
          <!-- Modal configuração-->
          <div id="modalAguaConfig" class="relacmodal">
-            <div class="modal-content-AguaControle">
+            <div class="modal-content-AguaControle corPreta">
                 <span class="close" onclick="fechaAguaConfig();">&times;</span>
                 <!-- div três colunas -->
                 <div class="container" style="margin: 0 auto;">
@@ -810,6 +845,8 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
             <br><br>
         </div> <!-- Fim Modal-->
+
+        <div id="carregaTema"></div> <!-- carrega a pág modulos/config/carTema.php - onde está a função mudaTema() -->
 
     </body>
 </html>

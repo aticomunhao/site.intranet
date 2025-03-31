@@ -74,6 +74,14 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             }
         }
 
+        //para o gráfico
+        if(isset($_REQUEST["corTema"])){ // vem de carTema.php
+            $VarCor = filter_input(INPUT_GET, 'corTema');
+            $Cor = "#".$VarCor; 
+        }else{
+            $Cor = "#FFFAFA";
+        }
+        
         $rs1 = pg_query($Conec, "SELECT DATE_PART('YEAR', dataleitura), DATE_PART('MONTH', dataleitura), COUNT(id), SUM(leitura1), SUM(leitura2), SUM(leitura3) 
         FROM ".$xProj.".leitura_agua 
         WHERE $Condic 
@@ -179,7 +187,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 <script>
                     //const xArray = [50,60,70,80,90,100,110,120,130,140,150];
                     //const yArray = [7,8,8,9,9,9,10,11,14,14,15];
-
                     xArray = <?php echo json_encode($datay); ?>;
                     yArray = <?php echo json_encode($datax); ?>;
 
@@ -194,8 +201,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     layout = {
                         xaxis: {range: [1, 31], title: "Dia"},
                         yaxis: {range: [0, <?php echo $MaxY; ?>], title: "m3"},
-                        title: "Consumo Diário - <?php echo $mes_extenso[$Mes]."/".$Ano; ?>"
-                    };
+                        title: "Consumo Diário - <?php echo $mes_extenso[$Mes]."/".$Ano; ?>",
+                        paper_bgcolor: '<?php echo  $Cor; ?>', // ok fundo preto/branco fora do gráfico
+                        plot_bgcolor: "<?php echo  $Cor; ?>"   // ok fundo preto/branco dentro do gráfico
+                      };
 
                     // Display using Plotly
                     Plotly.newPlot("graficoMensal<?php echo $Mes; ?>", data, layout, {displayModeBar: false});

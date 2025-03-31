@@ -35,6 +35,16 @@ if(!isset($_SESSION["usuarioID"])){
                 border-radius: 15px;
                 width: 60%; /* acertar de acordo com a tela */
             }
+            .config-content{
+                background: linear-gradient(180deg, white, #00BFFF);
+                margin: 10% auto;
+                padding: 10px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 75%;
+                max-width: 800px;
+                overflow: auto;
+            }
         </style>
         <script>
              function ajaxIni(){
@@ -54,7 +64,6 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
             $(document).ready(function(){
-                
                 var nHora = new Date();   //   function mostraRelogio()  //em relacao.js da SCer
                 var hora = nHora.getHours();
                 var minuto = nHora.getMinutes();
@@ -109,15 +118,29 @@ if(!isset($_SESSION["usuarioID"])){
                     };
                     ajax.send(null);
                 }
-                
+
                 document.getElementById("botRedigirCompl").style.visibility = "hidden"; // para redigir um complemento
                 document.getElementById("botimprLRO").style.visibility = "hidden"; // botão de imprimir todo o LRO
+                document.getElementById("imgLROConfig").style.visibility = "hidden";
+                document.getElementById("etiqrubrica").style.visibility = "hidden";
+                document.getElementById("etiqcheckrubrica").style.visibility = "hidden";
+                document.getElementById("checkrubrica").style.visibility = "hidden";
                 if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) && parseInt(Resp.fiscalizaLro) === 1){
                     document.getElementById("botimprLRO").style.visibility = "visible";
                 }
 
                 if(parseInt(document.getElementById("fiscalLRO").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
                     document.getElementById("botimprLRO").style.visibility = "visible";
+                }
+
+                if(parseInt(document.getElementById("revisorLRO").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // rubricar LRO ou superusuário
+                    document.getElementById("imgLROConfig").style.visibility = "visible";
+                }
+
+                if(parseInt(document.getElementById("revisorLRO").value) === 1){ // rubricar LRO
+                    document.getElementById("etiqrubrica").style.visibility = "visible";
+                    document.getElementById("etiqcheckrubrica").style.visibility = "visible";
+                    document.getElementById("checkrubrica").style.visibility = "visible";
                 }
 
                 $("#dataocor").mask("99/99/9999");
@@ -155,6 +178,101 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
 
+                $("#configSelecUsu").change(function(){
+                    if(document.getElementById("configSelecUsu").value == ""){
+                        document.getElementById("configCpfUsu").value = "";
+                        document.getElementById("checkefetivo").checked = false;
+                        document.getElementById("checkfiscal").checked = false;
+                        document.getElementById("checkrubrica").checked = false;
+                        return false;
+                    }
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/lro/salvaReg.php?acao=buscaCodUsu&codigo="+document.getElementById("configSelecUsu").value, true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 0){
+                                        document.getElementById("configCpfUsu").value = format_CnpjCpf(Resp.cpf);
+                                        if(parseInt(Resp.lro) === 1){
+                                            document.getElementById("checkefetivo").checked = true;
+                                        }else{
+                                            document.getElementById("checkefetivo").checked = false;
+                                        }
+                                        if(parseInt(Resp.fisclro) === 1){
+                                            document.getElementById("checkfiscal").checked = true;
+                                        }else{
+                                            document.getElementById("checkfiscal").checked = false;
+                                        }
+                                        if(parseInt(Resp.revlro) === 1){
+                                            document.getElementById("checkrubrica").checked = true;
+                                        }else{
+                                            document.getElementById("checkrubrica").checked = false;
+                                        }
+                                    }else{
+                                        alert("Houve um erro no servidor.")
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                });
+
+                $("#configCpfUsu").click(function(){
+                    document.getElementById("configSelecUsu").value = "";
+                    document.getElementById("configCpfUsu").value = "";
+                    document.getElementById("checkefetivo").checked = false;
+                    document.getElementById("checkfiscal").checked = false;
+                    document.getElementById("checkrubrica").checked = false;
+                });
+                $("#configCpfUsu").change(function(){
+                    document.getElementById("configSelecUsu").value = "";
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/lro/salvaReg.php?acao=buscaCpfUsu&cpf="+encodeURIComponent(document.getElementById("configCpfUsu").value), true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                    if(parseInt(Resp.coderro) === 0){
+                                        document.getElementById("configSelecUsu").value = Resp.PosCod;
+                                        if(parseInt(Resp.lro) === 1){
+                                            document.getElementById("checkefetivo").checked = true;
+                                        }else{
+                                            document.getElementById("checkefetivo").checked = false;
+                                        }
+                                        if(parseInt(Resp.fisclro) === 1){
+                                            document.getElementById("checkfiscal").checked = true;
+                                        }else{
+                                            document.getElementById("checkfiscal").checked = false;
+                                        }
+                                        if(parseInt(Resp.revlro) === 1){
+                                            document.getElementById("checkrubrica").checked = true;
+                                        }else{
+                                            document.getElementById("checkrubrica").checked = false;
+                                        }
+                                    }
+                                    if(parseInt(Resp.coderro) === 1){
+                                        alert("Houve um erro no servidor.");
+                                    }
+                                    if(parseInt(Resp.coderro) === 2){
+                                        document.getElementById("checkefetivo").checked = false;
+                                        document.getElementById("checkfiscal").checked = false;
+                                        document.getElementById("checkrubrica").checked = false;
+                                          $('#mensagemConfig').fadeIn("slow");
+                                        document.getElementById("mensagemConfig").innerHTML = "Não encontrado";
+                                        $('#mensagemConfig').fadeOut(2000);
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                });
 
             }); // fim ready
 
@@ -898,6 +1016,76 @@ if(!isset($_SESSION["usuarioID"])){
                 });
             }
 
+            function marcaConfig(obj, Campo){
+                if(obj.checked === true){
+                    Valor = 1;
+                }else{
+                    Valor = 0;
+                }
+                if(document.getElementById("configSelecUsu").value == ""){
+                    if(obj.checked === true){
+                        obj.checked = false;
+                    }else{
+                        obj.checked = true;
+                    }
+                    $('#mensagemConfig').fadeIn("slow");
+                    document.getElementById("mensagemConfig").innerHTML = "Selecione um usuário.";
+                    $('#mensagemConfig').fadeOut(1000);
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/lro/salvaReg.php?acao=MarcaConfig&codigo="+document.getElementById("configSelecUsu").value
+                    +"&campo="+Campo
+                    +"&valor="+Valor
+                    , true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    if(parseInt(Resp.coderro) === 2){
+                                        obj.checked = true;
+                                        $.confirm({
+                                            title: 'Ação Suspensa!',
+                                            content: 'Não restaria outro marcado para gerenciar as permissões.',
+                                            draggable: true,
+                                            buttons: {
+                                                OK: function(){}
+                                            }
+                                        });
+                                        return false;
+                                    }else{
+                                        $('#mensagemConfig').fadeIn("slow");
+                                        document.getElementById("mensagemConfig").innerHTML = "Valor salvo.";
+                                        $('#mensagemConfig').fadeOut(1000);
+                                    }
+                                }
+
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function abreLROconfig(){
+                document.getElementById("checkefetivo").checked = false;
+                document.getElementById("checkfiscal").checked = false;
+                document.getElementById("checkrubrica").checked = false;
+                document.getElementById("configCpfUsu").value = "";
+                document.getElementById("configSelecUsu").value = "";
+                document.getElementById("modalLROconfig").style.display = "block";
+            }
+            function fechaLROconfig(){
+                document.getElementById("modalLROconfig").style.display = "none";
+            }
+            function resumoUsu(){
+                window.open("modulos/lro/imprUsuLro.php?acao=listaUsuarios", "ImpraUsuLro");
+            }
             function modif(){ // assinala se houve qualquer modificação
                 document.getElementById("mudou").value = "1";
             }
@@ -1017,6 +1205,16 @@ if(!isset($_SESSION["usuarioID"])){
                 return true // Passou nas validações
             }
 
+            function format_CnpjCpf(value){
+                //https://gist.github.com/davidalves1/3c98ef866bad4aba3987e7671e404c1e
+                const CPF_LENGTH = 11;
+                const cnpjCpf = value.replace(/\D/g, '');
+                if (cnpjCpf.length === CPF_LENGTH) {
+                    return cnpjCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/g, "\$1.\$2.\$3-\$4");
+                } 
+                  return cnpjCpf.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g, "\$1.\$2.\$3/\$4-\$5");
+            }
+
         </script>
     </head>
     <body class="corClara" onbeforeunload="return mudaTema(0)"> <!-- ao sair retorna os background claros -->
@@ -1057,6 +1255,7 @@ if(!isset($_SESSION["usuarioID"])){
         $OpcoesEscAno = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".livroreg.dataocor)::text 
         FROM ".$xProj.".livroreg GROUP BY 1 ORDER BY 1 DESC ");
         $OpUsuProx = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE lro = 1 And ativo = 1 And pessoas_id != ".$_SESSION["usuarioID"]." ORDER BY nomeusual, nomecompl");
+        $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
 
         ?>
         <input type="hidden" id="UsuAdm" value = "<?php echo $_SESSION["AdmUsu"] ?>" />
@@ -1078,13 +1277,14 @@ if(!isset($_SESSION["usuarioID"])){
 
         <div id="tricoluna0" style="margin: 10px; border: 2px solid green; border-radius: 15px; padding: 20px; min-height: 70px;">
             <div id="tricoluna1" class="box" style="position: relative; float: left; width: 35%;">
+                <img src="imagens/settings.png" height="20px;" id="imgLROConfig" style="cursor: pointer; padding-left: 20px;" onclick="abreLROconfig();" title="Configurar o acesso ao Livro de Registro de Ocorrêcias">
+                <label style="padding-left: 20px;"></label>
                 <input type="button" id="botinserir" class="botpadr" value="Inserir Registro" onclick="InsRegistro();">
             </div>
             <div id="tricoluna2" class="box" style="position: relative; float: left; width: 28%; text-align: center;">
                 <h6>Livro de Registro de Ocorrências</h6>
             </div>
             <div id="tricoluna3" class="box" style="position: relative; float: left; width: 35%; text-align: right;">
-
                 <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%; padding-left: 5px;">Tema: </label>
                 <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" class="etiq" style="cursor: pointer;">&nbsp;Claro</label>
                 <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" class="etiq" style="cursor: pointer;">&nbsp;Escuro</label>
@@ -1402,6 +1602,84 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
         </div>  <!-- Fim Modal checklist-->
 
+
+        <!-- Modal configuração-->
+        <div id="modalLROconfig" class="relacmodal">
+            <div class="config-content">
+                <span class="close" onclick="fechaLROconfig();">&times;</span>
+                <!-- div três colunas -->
+                <div class="container" style="margin: 0 auto;">
+                    <div class="row">
+                        <div style="width: 25%;"></div>
+                        <div style="width: 48%;"><h5 style="text-align: center; color: #666;">Livro de Registro de Ocorrências</h5></div> <!-- Central - espaçamento entre colunas  -->
+                        <div style="width: 25%; text-align: center;"><button class="botpadrred" style="font-size: 70%;" onclick="resumoUsu();" title="Mostra uma relação dos usuários com acesso autorizado">Resumo em PDF</button></div> 
+                    </div>
+                </div>
+                <label class="etiqAzul">Selecione um usuário para ver a configuração:</label>
+                <table style="margin: 0 auto; width: 95%;">
+                    <tr>
+                        <td colspan="4" style="text-align: center;"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" class="etiqNorm eItalic" style="text-align: center;">Busca Nome ou CPF do Usuário</td>
+                    </tr>
+                    <tr>
+                        <td class="etiqAzul">Procura nome: </td>
+                        <td style="width: 100px;">
+                            <select id="configSelecUsu" style="max-width: 270px;" onchange="modif();" title="Selecione um usuário.">
+                                <option value=""></option>
+                                <?php 
+                                if($OpConfig){
+                                    while ($Opcoes = pg_fetch_row($OpConfig)){ ?>
+                                        <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; if($Opcoes[2] != ""){echo " - ".$Opcoes[2];} ?></option>
+                                    <?php 
+                                    }
+                                }
+                                ?>
+                            </select>
+                        </td>
+                        <td class="etiqAzul"><label class="etiqAzul">ou CPF:</label></td>
+                        <td>
+                            <input type="text" id="configCpfUsu" placeholder="CPF" style="width: 130px; text-align: center; border: 1px solid #666; border-radius: 5px;" onkeypress="if(event.keyCode===13){javascript:foco('configSelecUsu');return false;}" title="Procura por CPF. Digite o CPF."/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding-top: 10px;"></td>
+                    </tr>
+                </table>
+
+                <table style="margin: 0 auto; width: 85%;">
+                    <tr>
+                        <td class="etiqAzul eItalic">Preenchar o LRO:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="checkefetivo" onchange="marcaConfig(this, 'lro');" >
+                            <label for="checkefetivo" class="etiqNorm eItalic">preencher o Livro de Registro de Ocorrências</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="etiqAzul eItalic">Administrar o LRO:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="checkfiscal" onchange="marcaConfig(this, 'fisclro');" >
+                            <label for="checkfiscal" class="etiqNorm eItalic"> fiscalizar o Livro de Registro de Ocorrências</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="etiqAzul eItalic"><Label id="etiqrubrica" style="color: #006400;" title="Esta opção só aparece aqui. É restrita aos encarregados de rubricar o LRO.">Rubricar o LRO:</label></td>
+                        <td colspan="4">
+                            <input type="checkbox" id="checkrubrica" onchange="marcaConfig(this, 'lro_rev');" title="Esta opção só aparece aqui. É restrita aos encarregados de rubricar o LRO." >
+                            <label id="etiqcheckrubrica" for="checkrubrica" class="etiqNorm eItalic" style="color: #006400;" title="Esta opção só aparece aqui. É restrita aos encarregados de rubricar o LRO."> rubricar diariamente o Livro de Registro de Ocorrências</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="5"><hr style="margin: 0; padding: 2px;"></td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="5" style="text-align: center;"><label id="mensagemConfig" style="color: red; font-weight: bold;"></label></td>
+                    </tr>
+                </table>
+            </div>
+        </div> <!-- Fim Modal-->
 
         <!-- div modal para imprimir em pdf  -->
         <div id="relacimprLRO" class="relacmodal">

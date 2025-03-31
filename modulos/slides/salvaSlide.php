@@ -36,9 +36,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
       if($Valor == 1){ //substituir
          $NovoArquivo = "imgfundo".uniqid().".jpg"; //mudar o nome da imagem sempre para contornar o cache
          pg_query($Conec, "UPDATE ".$xProj.".carousel SET descarqant = descarq, descarq = '$NovoArquivo' WHERE codcar = $Slide");
-         if(copy("imagens/".$Arq, dirname(dirname(dirname(__FILE__)))."/imagens/slides/".$NovoArquivo)){
-            unlink("imagens/".$Arq) or die ("SemPerm");
-
+//         if(copy("imagens/".$Arq, dirname(dirname(dirname(__FILE__)))."/imagens/slides/".$NovoArquivo)){
+//            unlink("imagens/".$Arq) or die ("SemPerm");
+         if(copy(dirname(dirname(__FILE__))."/conteudo/arquivos/".$Arq, dirname(dirname(dirname(__FILE__)))."/imagens/slides/".$NovoArquivo)){
+            unlink(dirname(dirname(__FILE__))."/conteudo/arquivos/".$Arq) or die ("SemPerm");
             //Apagar a imagem velha
             $rs0 = pg_query($Conec, "SELECT descarqant FROM ".$xProj.".carousel WHERE codcar = $Slide");
             $row0 = pg_num_rows($rs0);

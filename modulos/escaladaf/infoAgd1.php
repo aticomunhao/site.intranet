@@ -11,7 +11,7 @@
                 $Busca = addslashes(filter_input(INPUT_GET, 'mesano'));
                 $Texto = "Trabalhando na escala ".$Busca;
             }else{
-
+                $Texto = "Nada foi encontrado";
             }   
         ?>
         <div style="text-align: center;">

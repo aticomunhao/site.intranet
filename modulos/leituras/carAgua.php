@@ -196,21 +196,21 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <tr>
                             <td style="display: none;"></td>
                             <td style="display: none;"><?php echo $tbl0[0]; ?></td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%; <?php if(strtotime(date($tbl0[6])) != strtotime(date($DiaIni))){echo 'color: red; font-weight: bold;'; $DiaIni = date('Y/m/d', strtotime($DiaIni. '- 1 day'));}else{echo 'color: black; font-weight: normal;';} ?>" title="Data">
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%; <?php if(strtotime(date($tbl0[6])) != strtotime(date($DiaIni))){echo 'color: red; font-weight: bold;'; $DiaIni = date('Y/m/d', strtotime($DiaIni. '- 1 day'));}else{echo 'font-weight: normal;';} ?>" title="Data">
                                 <?php echo $tbl0[1]; ?>
                             </td> <!-- Data -->
                             <td style="border-bottom: 1px solid gray; text-align: center; font-size: 70%;" title="Dia da Semana"><?php echo $Sem; ?></td> <!-- dia da semana --> 
 
-                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%; <?php if($Leit07 <= 0){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>" title="Leitura 1"><?php echo number_format($Leit07, 3, ",","."); ?></td> <!-- Leitura 1 -->
-                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%; <?php if($Cons1 <= 0){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>" title="Consumo"><?php echo number_format($Cons1, 3, ",","."); ?></td>
+                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%; <?php if($Leit07 <= 0){echo 'color: red; font-weight: bold;';}else{echo 'font-weight: normal;';} ?>" title="Leitura 1"><?php echo number_format($Leit07, 3, ",","."); ?></td> <!-- Leitura 1 -->
+                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%; <?php if($Cons1 <= 0){echo 'color: red; font-weight: bold;';}else{echo 'font-weight: normal;';} ?>" title="Consumo"><?php echo number_format($Cons1, 3, ",","."); ?></td>
 
-                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%; <?php if($Leit16 <= 0){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>" title="Leitura 2"><?php echo number_format($Leit16, 3, ",","."); ?></td> <!-- Leitura 2 -->
-                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%; <?php if($Cons2 <= 0){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>" title="Consumo"><?php echo number_format(($Cons2), 3); ?></td>
+                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%; <?php if($Leit16 <= 0){echo 'color: red; font-weight: bold;';}else{echo 'font-weight: normal;';} ?>" title="Leitura 2"><?php echo number_format($Leit16, 3, ",","."); ?></td> <!-- Leitura 2 -->
+                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%; <?php if($Cons2 <= 0){echo 'color: red; font-weight: bold;';}else{echo 'font-weight: normal;';} ?>" title="Consumo"><?php echo number_format(($Cons2), 3); ?></td>
 
-                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%; <?php if($Leit24 <= 0){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>" title="Leitura 3"><?php echo number_format($Leit24, 3, ",","."); ?></td> <!-- Leitura 3 -->
-                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%; <?php if($Cons3 <= 0){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>" title="Consumo"><?php echo number_format(($Cons3), 3, ",","."); ?></td>
+                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%; <?php if($Leit24 <= 0){echo 'color: red; font-weight: bold;';}else{echo 'font-weight: normal;';} ?>" title="Leitura 3"><?php echo number_format($Leit24, 3, ",","."); ?></td> <!-- Leitura 3 -->
+                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 80%; <?php if($Cons3 <= 0){echo 'color: red; font-weight: bold;';}else{echo 'font-weight: normal;';} ?>" title="Consumo"><?php echo number_format(($Cons3), 3, ",","."); ?></td>
 
-                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 90%; <?php if($ConsDia <= 0){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>" title="Consumo do dia"><?php echo number_format(($ConsDia), 3, ",","."); ?></td>
+                            <td style="border-bottom: 1px solid gray; text-align: right; font-size: 90%; <?php if($ConsDia <= 0){echo 'color: red; font-weight: bold;';}else{echo 'font-weight: normal;';} ?>" title="Consumo do dia"><?php echo number_format(($ConsDia), 3, ",","."); ?></td>
                         </tr>
                         <?php
                             $Cont = $Cont + $tbl0[3];
@@ -232,25 +232,25 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 <span class="close" onclick="fechaModal();">&times;</span>
                 <h4 id="titulomodal" style="text-align: center; color: #666;">Registrar Leitura Hidrômetro</h4>
                 <div style="border: 2px solid blue; border-radius: 10px;">
-                <table style="margin: 0 auto; width: 95%;">
-                    <tr>
-                        <td class="etiq" style="width: 100px;">Data</td>
-                        <td class="etiq" style="width: 5ch;">Sem</td>
-                        <td class="etiq" style="width: 120px;">Leitura 1 (07h30)</td>
-                        <td class="etiq" style="width: 120px;">Leitura 2 (16h30)</td>
-                        <td class="etiq" style="width: 120px;">Leitura 3 (24h00)</td>
-                    </tr>
-                    <tr>
-                        <td><input type="text" style="text-align: center; width: 100%;" id="insdata" onchange="checaData();" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('insleitura1');return false;}"/></td>
-                        <td style="text-align: center;"><label id="insdiasemana" style="font-size: 80%;"></label></td>
-                        <td style="width: 120px;"><input type="text" style="text-align: center; width: 100%;" id="insleitura1" onchange="modifIns('insleitura1');" placeholder="Leitura 1" onkeypress="if(event.keyCode===13){javascript:foco('insleitura2');return false;}"/></td>
-                        <td style="width: 120px;"><input type="text" style="text-align: center; width: 100%;" id="insleitura2" placeholder="Leitura 2" onchange="modifIns('insleitura2');" onkeypress="if(event.keyCode===13){javascript:foco('insleitura3');return false;}"/></td>
-                        <td style="width: 120px;"><input type="text" style="text-align: center; width: 100%;" id="insleitura3" placeholder="Leitura 3" onchange="modifIns('insleitura3');" onkeypress="if(event.keyCode===13){javascript:foco('insleitura1');return false;}"/></td>
-                    </tr>
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding-top: 5px;"><div id="mensagemLeitura" style="color: red; font-weight: bold;"></div></td>
-                    </tr>
-                </table>
+                    <table style="margin: 0 auto; width: 95%;">
+                        <tr>
+                            <td class="etiq" style="width: 100px;">Data</td>
+                            <td class="etiq" style="width: 5ch;">Sem</td>
+                            <td class="etiq" style="width: 120px;">Leitura 1 (07h30)</td>
+                            <td class="etiq" style="width: 120px;">Leitura 2 (16h30)</td>
+                            <td class="etiq" style="width: 120px;">Leitura 3 (24h00)</td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" style="text-align: center; width: 100%;" id="insdata" onchange="checaData();" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('insleitura1');return false;}"/></td>
+                            <td style="text-align: center;"><label id="insdiasemana" style="color: black; font-size: 80%;"></label></td>
+                            <td style="width: 120px;"><input type="text" style="text-align: center; width: 100%;" id="insleitura1" onchange="modifIns('insleitura1');" placeholder="Leitura 1" onkeypress="if(event.keyCode===13){javascript:foco('insleitura2');return false;}"/></td>
+                            <td style="width: 120px;"><input type="text" style="text-align: center; width: 100%;" id="insleitura2" placeholder="Leitura 2" onchange="modifIns('insleitura2');" onkeypress="if(event.keyCode===13){javascript:foco('insleitura3');return false;}"/></td>
+                            <td style="width: 120px;"><input type="text" style="text-align: center; width: 100%;" id="insleitura3" placeholder="Leitura 3" onchange="modifIns('insleitura3');" onkeypress="if(event.keyCode===13){javascript:foco('insleitura1');return false;}"/></td>
+                        </tr>
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding-top: 5px;"><div id="mensagemLeitura" style="color: red; font-weight: bold;"></div></td>
+                        </tr>
+                    </table>
 
                     <div style="text-align: center; padding-bottom: 4px;">
                         <button id="apagaRegistro"class="botpadrred" onclick="apagaModalAgua();">Apagar</button>

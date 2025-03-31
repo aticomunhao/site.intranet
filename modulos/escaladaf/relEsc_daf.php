@@ -131,8 +131,14 @@
         <div class="col" style="position: relative; float: left; width: 33%;">&nbsp;</div>
         <div class="col" style="position: relative; float: left; width: 33%; padding-bottom: 10px;"><?php echo "Mês: ".$MesSalvo; ?></div>
         <div class="col" style="position: relative; float: right; width: 33%;">
-            <label id="etiqeditaEscala" for="editaEscala" class="etiq eItalic" style="padding-left: 20px; <?php if($EscalaFechada == 1){echo "color: red; ";} ?>" title="Considera/desconsidera as mudanças como Troca de Serviço">Escala Fechada</label>
-            <input type="checkbox" id="editaEscala" <?php if($EscalaFechada == 1){echo "CHECKED";}; ?> title="Considera/desconsidera as mudanças como Troca de Serviço" onchange="editaEscala(this);" >
+            <?php
+            if($EscalanteDAF == 1){
+            ?>
+                <label id="etiqeditaEscala" for="editaEscala" class="etiq eItalic" style="padding-left: 20px; <?php if($EscalaFechada == 1){echo "color: red; ";} ?>" title="Considera/desconsidera as mudanças como Troca de Serviço">Escala Fechada</label>
+                <input type="checkbox" id="editaEscala" <?php if($EscalaFechada == 1){echo "CHECKED";}; ?> title="Considera/desconsidera as mudanças como Troca de Serviço" onchange="editaEscala(this);" >
+            <?php
+            }
+            ?>
         </div>
     <?php
 
@@ -182,8 +188,11 @@
                         }
                     } 
                 echo "</td>";
-                echo "<td><img src='imagens/Excel-icon.png' height='20px;' style='cursor: pointer; padding-left: 5px;' onclick='abreExcel();' title='Envia para arquivo Excel'></td>";
-
+                if($EscalanteDAF == 1){
+                    echo "<td><img src='imagens/Excel-icon.png' height='20px;' style='cursor: pointer; padding-left: 5px;' onclick='abreExcel();' title='Envia para arquivo Excel'></td>";
+                }else{
+                    echo "<td></td>";
+                }
                 $Dia = 1;
                 $Cont = 1;
                 while($tbl2 = pg_fetch_row($rs2)){
@@ -240,7 +249,7 @@
                             $Nome = substr($tbl2[1], 0, 35); //nome completo
                         }
                     }else{
-                        $Nome = substr($tbl2[2], 0, 35); //nome usual
+                        $Nome = substr($tbl2[2], 0, 12); //nome usual
                     }
                     if(!is_null($tbl2[3])){
                         $Cargo = substr($tbl2[3], 0, $Quant); // cargo

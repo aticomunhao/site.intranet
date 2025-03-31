@@ -39,8 +39,6 @@ if(isset($_REQUEST["acao"])){
         $SiglaGrupo = "";
     }
 
-
-
     $rsCabec = pg_query($Conec, "SELECT cabec1, cabec2, cabec3 FROM ".$xProj.".setores WHERE codset = ".$_SESSION["CodSetorUsu"]." ");
     $rowCabec = pg_num_rows($rsCabec);
     $tblCabec = pg_fetch_row($rsCabec);
@@ -175,6 +173,38 @@ if(isset($_REQUEST["acao"])){
             $lin = $pdf->GetY();
             $pdf->Line(50, $lin, 200, $lin);
             $pdf->ln(10);
+
+
+            $pdf->ln(1);
+            $pdf->SetX(20);
+            $pdf->SetFont('Arial', 'I', 10);
+            $pdf->Cell(10, 3, "Fiscal de Escalas: ", 0, 1, 'L');
+            $rs4 = pg_query($Conec, "SELECT nomecompl, nomeusual FROM ".$xProj.".poslog WHERE esc_fisc = 1 And ativo = 1 ORDER BY nomeusual");
+            $row4 = pg_num_rows($rs4);
+            if($row4 > 0){
+                $pdf->SetFont('Arial', '', 8);
+                while($tbl4 = pg_fetch_row($rs4)){
+                    if(is_null($tbl4[1]) || $tbl4[1] == ""){
+                        $NomeUsual = substr($tbl4[0], 0, 15);
+                    }else{
+                        $NomeUsual = $tbl4[1];
+                    }
+                    $pdf->SetX(52);
+                    $pdf->Cell(25, 3, $NomeUsual, 0, 0, 'L');
+                    $pdf->Cell(150, 3, $tbl4[0], 0, 1, 'L');
+                }
+            }else{
+                $pdf->SetFont('Arial', 'I', 8);
+                $pdf->SetX(50);
+                $pdf->Cell(40, 5, 'Nenhum usuário encontrado.', 0, 1, 'L');
+                $lin = $pdf->GetY();               
+                $pdf->Line(20, $lin, 200, $lin);
+                $pdf->ln(10);
+            }
+            $pdf->ln(4);
+            $lin = $pdf->GetY();
+            $pdf->Line(20, $lin, 200, $lin);
+            $pdf->SetFont('Arial', '', 10);            
         }else{
             $pdf->SetFont('Arial', 'I', 10);
             $pdf->SetX(50);

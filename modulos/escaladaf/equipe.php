@@ -97,7 +97,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td style="display: none;"><?php echo $tbl3[0]; ?></td>
                             <td><div style="color: black; cursor: pointer;"><?php if(is_null($tbl3[2]) || $tbl3[2] == ""){echo "&nbsp;";}else{echo $tbl3[2];} ?></div></td>
                             <td><div style="color: black; cursor: pointer;"><?php echo $tbl3[1]; ?></div></td>
-                            <td>
+                            <td style="">
                                 <select id="buscaturno" onchange="mudaTurno(<?php echo $Cod; ?>, value);" style="font-family: Lucida Sans Typewriter; font-size: .9rem; font-weight: bold; width: 200px;" title="Selecione um turno.">
                                     <option value="<?php echo $tbl3[3]; ?>"><?php echo $tbl3[5]." - ".$tbl3[6]; ?></option>
                                     <?php 
@@ -108,7 +108,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                             if($Opcoes[3] == 1){echo "class='quadroletraYellow'";} 
                                             if($Opcoes[3] == 2){echo "class='quadroletraBlue'";} 
                                             if($Opcoes[3] == 3){echo "class='quadroletraGreen'";} 
-                                            if($Opcoes[4] == 0){echo "class='destacaBorda'";} 
+                                            if($Opcoes[4] == 0){echo "class='corVerm' title='Sem Vale Refeição'";} 
                                             ?> 
                                             value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]." - ".$Opcoes[2]; ?></option>
                                         <?php 

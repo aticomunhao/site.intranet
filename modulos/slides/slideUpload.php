@@ -8,7 +8,8 @@ $Arquivo = basename($_FILES['arquivo']['name']);
 
 if($Arq['type'] == 'image/jpeg'){
     $temp = $_FILES["arquivo"]["tmp_name"];
-    if(move_uploaded_file($temp, "imagens/".$Arquivo)){
+//    if(move_uploaded_file($temp, "imagens/".$Arquivo)){
+    if(move_uploaded_file($temp, dirname(dirname(__FILE__))."/conteudo/arquivos/".$Arquivo)){
         //atualizar o BD - foi para salvaSlide.php
         $_SESSION['geremsg'] = 1;
         $_SESSION["arquivo"] = $Arquivo;
@@ -20,5 +21,5 @@ if($Arq['type'] == 'image/jpeg'){
     }
 }else{
     $_SESSION['geremsg'] = 2;
-    $_SESSION["msg"] = "A extensão do arquivo deve ser <b> .jpg </b> - Updload suspenso.";
+    $_SESSION["msg"] = "A extensão do arquivo deve ser <b> .jpg </b> - Upload suspenso.";
 }

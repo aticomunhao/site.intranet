@@ -1109,7 +1109,7 @@ if($Acao =="checaLogFim"){
     if($row4 > $QuantDia){
         pg_query($Conec, "UPDATE ".$xProj.".paramsis SET pico_dia = $row4, data_pico_dia = NOW() WHERE idpar = 1 ");
     }
-    $var = array("coderro"=>$Erro, "interv"=>$tbl1[0]);
+    $var = array("coderro"=>$Erro);
     $responseText = json_encode($var);
     echo $responseText;
 }

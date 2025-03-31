@@ -2321,7 +2321,7 @@ if(!isset($_SESSION['AdmUsu'])){
                     }
                     //Conta o número de serviços
                     $rs5 = pg_query($Conec, "SELECT COUNT(poslog_id) FROM ".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".escaladaf_turnos ON ".$xProj.".escaladaf_ins.turnos_id = ".$xProj.".escaladaf_turnos.id 
-                    WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'MM') = '$Mes' And grupo_ins = $NumGrupo And infotexto = 0 ");
+                    WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'MM') = '$Mes' And grupo_ins = $NumGrupo And infotexto = 0 And valepag = 1 ");
                     $tbl5 = pg_fetch_row($rs5);
                     $pdf->SetFillColor(255, 255, 255);
                     $pdf->SetTextColor(152, 152, 152);
@@ -2333,7 +2333,6 @@ if(!isset($_SESSION['AdmUsu'])){
                     $Cont++;
                 }
             }
-
 
 //Quadro horário
             $pdf->ln(3);

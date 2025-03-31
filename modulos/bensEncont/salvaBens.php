@@ -271,6 +271,9 @@ if($Acao == "configMarcafBem"){
             $responseText = json_encode($var);
             echo $responseText;
             return false;
+        }else{
+            //retirar a marca de encaminha bens se bens estiver zero
+            pg_query($Conec, "UPDATE ".$xProj.".poslog SET encbens = 0 WHERE pessoas_id = $Cod");
         }
     }
 

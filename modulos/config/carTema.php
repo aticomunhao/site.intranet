@@ -25,6 +25,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             function mudaTema(Valor){
                 document.getElementById("guardaTema").value = Valor;
                 if(parseInt(Valor) === 0){ // corClara
+                    document.getElementById("guardaCor").value = "FFFAFA";
                     document.getElementsByTagName("body")[0].style.background = "#FFFAFA";
                     var element = document.getElementById("containerCabec");
                     element.classList.remove("corEscura");
@@ -65,7 +66,16 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     if(document.getElementById("guardaPagina").value == "escala_daf"){
                         $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                     }
+                    if(document.getElementById("guardaPagina").value == "pag_agua"){
+                        if(parseInt(document.getElementById("InsLeitura").value) === 1 || parseInt(document.getElementById("FiscAgua").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+                            $("#container6").load("modulos/leituras/carEstatAgua.php?corTema=FFFAFA");
+                            $("#container5").load("modulos/leituras/carAgua.php");
+                            document.getElementById("selecVisuMesAnoAgua").value = "";
+                            document.getElementById("selecVisuAnoAgua").value = "";
+                        }
+                    }
                 }else{  // corEscura
+                    document.getElementById("guardaCor").value = "101418";
                     document.getElementsByTagName("body")[0].style.background = "#101418";
                     var element = document.getElementById("containerCabec");
                     element.classList.remove("corClara");
@@ -106,6 +116,14 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     if(document.getElementById("guardaPagina").value == "escala_daf"){
                         $("#faixacentral").load("modulos/escaladaf/relEsc_daf.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&guardatema="+document.getElementById("guardaTema").value+"&largTela="+LargTela);
                     }
+                    if(document.getElementById("guardaPagina").value == "pag_agua"){
+                        if(parseInt(document.getElementById("InsLeitura").value) === 1 || parseInt(document.getElementById("FiscAgua").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+                            $("#container6").load("modulos/leituras/carEstatAgua.php?corTema=101418");
+                            $("#container5").load("modulos/leituras/carAgua.php");
+                            document.getElementById("selecVisuMesAnoAgua").value = "";
+                            document.getElementById("selecVisuAnoAgua").value = "";
+                        }
+                    }
                 }
                 ajaxIni();
                 if(ajax){ // guardar o valor individual
@@ -130,8 +148,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     <body>
         <?php
             $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
-
-            if(isset($_REQUEST["carpag"])){ // vem da indexb.php ao clicar em tem mensagem nas Tarefas
+            if(isset($_REQUEST["carpag"])){ 
                 $Pag = $_REQUEST["carpag"];
             }else{
                 $Pag = "";
@@ -139,5 +156,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         ?>
         <input type="hidden" id="guardaTema" value="<?php echo $Tema; ?>" />
         <input type="hidden" id="guardaPagina" value="<?php echo $Pag; ?>" />
+        <input type="hidden" id="guardaCor" value="" />
     </body>
 </html>
