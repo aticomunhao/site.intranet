@@ -290,7 +290,7 @@ if($Acao=="salvanomeempresa"){
         $tblCod = pg_fetch_row($rsCod);
         $Codigo = $tblCod[0];
         $CodigoNovo = ($Codigo+1);
-        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".empresas_ar (id, empresa) VALUES ($CodigoNovo, '$Nome') ");
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".empresas_ar (id, empresa, valorvisita) VALUES ($CodigoNovo, '$Nome',$ValorVis ) ");
     }
     if(!$rs){
         $Erro = 1;

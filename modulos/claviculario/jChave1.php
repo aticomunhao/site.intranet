@@ -10,20 +10,21 @@
     $Clav = parEsc("clav", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
     $Chave = parEsc("chave", $Conec, $xProj, $_SESSION["usuarioID"]); // pode pegar chaves
 	$FiscClav = parEsc("fisc_clav", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
-?>
+
+    $rs = pg_query($Conec, "SELECT id, chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente, chavecompl 
+    FROM ".$xProj.".chaves WHERE ativo = 1 ORDER BY chavenum, chavenumcompl ");
+    $row = pg_num_rows($rs);
+    ?>
     <div style="text-align: center; margin: 10px;">
+        <div style="position: relative; float: right;"><label style="font-size: 80%;"><?php echo $row." chaves"; ?></label></div>
         <h5>Claviculário da Portaria</h5>
-        <?php 
-        $rs = pg_query($Conec, "SELECT id, chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente 
-        FROM ".$xProj.".chaves WHERE ativo = 1 ORDER BY chavenum, chavenumcompl ");
-        $row = pg_num_rows($rs);
-        ?>
         <table style="margin: 0 auto;">
             <tr>
                 <td style="display: none;"></td>
-                <td class="etiq aCentro">Chave</td>
+                <td class="etiq aCentro" title="Número da chave">Chave</td>
+                <td class="etiq aCentro" title="Complemento ao número da chave">Compl</td>
                 <td class="etiq aCentro">Sala</td>
-                <td class="etiq aCentro">Nome</td>
+                <td class="etiq aCentro">Nome Sala</td>
                 <td class="etiq aCentro">Local</td>
                 <td class="etiq aCentro">Obs</td>
                 <td class="etiq aCentro"></td>
@@ -48,8 +49,9 @@
                                 }
                                 ?>
                             </td>
+                            <td><div class="quadrinho" title="Complemento ao número da chave"> <?php echo $tbl[7]; ?></div></td>
                             <td><div class="quadrinho"> <?php echo $tbl[4]; ?></div></td>
-                            <td><div class="quadrinho"> <?php echo $tbl[2]; ?></div></td>
+                            <td><div class="quadrinho" style="font-size: 80%; text-align: left;"> <?php echo $tbl[2]; ?></div></td>
                             <td><div class="quadrinho" style="font-size: 80%; text-align: left;"> <?php echo $tbl[3]; ?></div></td>
                             <td><div class="quadrinho" style="font-size: 80%; text-align: left;"> <?php echo $tbl[5]; ?></div></td>
                             <td class="etiq aCentro">

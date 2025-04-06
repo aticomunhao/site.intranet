@@ -51,7 +51,7 @@ date_default_timezone_set('America/Sao_Paulo');
             $row0 = pg_num_rows($rs0);
         ?>
         <br><br>
-            <table id="idTabela" style="margin: 0 auto;">
+            <table id="idTabela" style="margin: 0 auto; border-top: 2px solid blue;">
                 <thead>
                     <tr>
                         <th style="display: none;"></th>
@@ -80,7 +80,7 @@ date_default_timezone_set('America/Sao_Paulo');
                         <tr>
                             <td style="display: none;"><?php echo $Cod; ?></td>
                             <td style="text-align: center; font-size: 90%; font-weight: bold;"><?php echo str_pad($tbl0[1], 3, 0, STR_PAD_LEFT); ?><br>
-                                <div style='background-color: #CCFFFF; margin: 6px; cursor: pointer; padding: 0; position: relative; border: 1px solid #D1D8C5; border-radius: 5px; font-size: 70%;' title='Clique aqui para inserir visita técnica preventiva ou corretiva' onclick="insereData(<?php echo $tbl0[0]; ?>, 0);">Visita</div>
+                                <div style='color: black; background-color: #CCFFFF; margin: 6px; cursor: pointer; padding: 0; position: relative; border: 1px solid #D1D8C5; border-radius: 5px; font-size: 70%;' title='Clique aqui para inserir visita técnica preventiva ou corretiva' onclick="insereData(<?php echo $tbl0[0]; ?>, 0);">Visita</div>
                             </td>
                             <td class="etiqCel" style="cursor: pointer;" onclick="editaLocal(<?php echo $tbl0[0]; ?>);" title="Clique aqui para inserir ou editar o local de instalação do condicionador"><?php echo $tbl0[2]; ?></td>
 
@@ -91,11 +91,11 @@ date_default_timezone_set('America/Sao_Paulo');
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){ // $tbl1[0] -> id de visitas_ar
-                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid black; cursor: pointer;";
+                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid; cursor: pointer;";
                                             if($tbl1[2] == 2){
-                                                echo "color: red;' title='Manutenção corretiva - clique para editar'";
-                                            }else{
-                                                echo "color: black;' title='Manutenção preventiva - clique para editar'";
+                                                echo "color: red; border-color: #6C7AB3;' title='Manutenção corretiva - clique para editar'";
+                                            }else{ // Mês 01 e 07 com font color black
+                                                echo "color: black; border-color: #6C7AB3;' title='Manutenção preventiva - clique para editar'";
                                             }
                                             echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
                                         }
@@ -110,15 +110,15 @@ date_default_timezone_set('America/Sao_Paulo');
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
-                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid black; cursor: pointer;";
+                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid; cursor: pointer;";
                                             if($tbl1[2] == 2){
-                                                echo "color: red;' title='Manutenção corretiva - clique para editar'";
+                                                echo "color: red; border-color: #6C7AB3;' title='Manutenção corretiva - clique para editar'";
                                             }else{
-                                                echo "color: black;' title='Manutenção preventiva - clique para editar'";
+                                                echo " border-color: #6C7AB3;' title='Manutenção preventiva - clique para editar'";
                                             }
                                             echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
                                         }
-                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
+                                        echo "<div style='border-bottom: 1px solid;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
@@ -129,15 +129,15 @@ date_default_timezone_set('America/Sao_Paulo');
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
-                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid black; cursor: pointer;";
+                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid; cursor: pointer;";
                                             if($tbl1[2] == 2){
-                                                echo "color: red;' title='Manutenção corretiva - clique para editar'";
+                                                echo "color: red; border-color: #6C7AB3;' title='Manutenção corretiva - clique para editar'";
                                             }else{
-                                                echo "color: black;' title='Manutenção preventiva - clique para editar'";
+                                                echo " border-color: #6C7AB3;' title='Manutenção preventiva - clique para editar'";
                                             }
                                             echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
                                         }
-                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
+                                        echo "<div style='border-bottom: 1px solid;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
@@ -148,15 +148,15 @@ date_default_timezone_set('America/Sao_Paulo');
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
-                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid black; cursor: pointer;";
+                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid; cursor: pointer;";
                                             if($tbl1[2] == 2){
-                                                echo "color: red;' title='Manutenção corretiva - clique para editar'";
+                                                echo "color: red; border-color: #6C7AB3;' title='Manutenção corretiva - clique para editar'";
                                             }else{
-                                                echo "color: black;' title='Manutenção preventiva - clique para editar'";
+                                                echo " border-color: #6C7AB3;' title='Manutenção preventiva - clique para editar'";
                                             }
                                             echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
                                         }
-                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
+                                        echo "<div style='border-bottom: 1px solid;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
@@ -167,15 +167,15 @@ date_default_timezone_set('America/Sao_Paulo');
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
-                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid black; cursor: pointer;";
+                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid; cursor: pointer;";
                                             if($tbl1[2] == 2){
-                                                echo "color: red;' title='Manutenção corretiva - clique para editar'";
+                                                echo "color: red; border-color: #6C7AB3;' title='Manutenção corretiva - clique para editar'";
                                             }else{
-                                                echo "color: black;' title='Manutenção preventiva - clique para editar'";
+                                                echo " border-color: #6C7AB3;' title='Manutenção preventiva - clique para editar'";
                                             }
                                             echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
                                         }
-                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
+                                        echo "<div style='border-bottom: 1px solid;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
@@ -186,15 +186,15 @@ date_default_timezone_set('America/Sao_Paulo');
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
-                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid black; cursor: pointer;";
+                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid; cursor: pointer;";
                                             if($tbl1[2] == 2){
-                                                echo "color: red;' title='Manutenção corretiva - clique para editar'";
+                                                echo "color: red; border-color: #6C7AB3;' title='Manutenção corretiva - clique para editar'";
                                             }else{
-                                                echo "color: black;' title='Manutenção preventiva - clique para editar'";
+                                                echo " border-color: #6C7AB3;' title='Manutenção preventiva - clique para editar'";
                                             }
                                             echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
                                         }
-                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
+                                        echo "<div style='border-bottom: 1px solid;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
@@ -205,11 +205,11 @@ date_default_timezone_set('America/Sao_Paulo');
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
-                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid black; cursor: pointer;";
+                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid; cursor: pointer;";
                                             if($tbl1[2] == 2){
-                                                echo "color: red;' title='Manutenção corretiva - clique para editar'";
+                                                echo "color: red; border-color: #6C7AB3;' title='Manutenção corretiva - clique para editar'";
                                             }else{
-                                                echo "color: black;' title='Manutenção preventiva - clique para editar'";
+                                                echo "color: black; border-color: #6C7AB3;' title='Manutenção preventiva - clique para editar'";
                                             }
                                             echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
                                         }
@@ -224,15 +224,15 @@ date_default_timezone_set('America/Sao_Paulo');
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
-                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid black; cursor: pointer;";
+                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid; cursor: pointer;";
                                             if($tbl1[2] == 2){
-                                                echo "color: red;' title='Manutenção corretiva - clique para editar'";
+                                                echo "color: red; border-color: #6C7AB3;' title='Manutenção corretiva - clique para editar'";
                                             }else{
-                                                echo "color: black;' title='Manutenção preventiva - clique para editar'";
+                                                echo " border-color: #6C7AB3;' title='Manutenção preventiva - clique para editar'";
                                             }
                                             echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
                                         }
-                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
+                                        echo "<div style='border-bottom: 1px solid;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
@@ -243,15 +243,15 @@ date_default_timezone_set('America/Sao_Paulo');
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
-                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid black; cursor: pointer;";
+                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid; cursor: pointer;";
                                             if($tbl1[2] == 2){
-                                                echo "color: red;' title='Manutenção corretiva - clique para editar'";
+                                                echo "color: red; border-color: #6C7AB3;' title='Manutenção corretiva - clique para editar'";
                                             }else{
-                                                echo "color: black;' title='Manutenção preventiva - clique para editar'";
+                                                echo " border-color: #6C7AB3;' title='Manutenção preventiva - clique para editar'";
                                             }
                                             echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
                                         }
-                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
+                                        echo "<div style='border-bottom: 1px solid;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
@@ -262,15 +262,15 @@ date_default_timezone_set('America/Sao_Paulo');
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
-                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid black; cursor: pointer;";
+                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid; cursor: pointer;";
                                             if($tbl1[2] == 2){
-                                                echo "color: red;' title='Manutenção corretiva - clique para editar'";
+                                                echo "color: red; border-color: #6C7AB3;' title='Manutenção corretiva - clique para editar'";
                                             }else{
-                                                echo "color: black;' title='Manutenção preventiva - clique para editar'";
+                                                echo " border-color: #6C7AB3;' title='Manutenção preventiva - clique para editar'";
                                             }
                                             echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
                                         }
-                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
+                                        echo "<div style='border-bottom: 1px solid;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
@@ -281,15 +281,15 @@ date_default_timezone_set('America/Sao_Paulo');
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
-                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid black; cursor: pointer;";
+                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid; cursor: pointer;";
                                             if($tbl1[2] == 2){
-                                                echo "color: red;' title='Manutenção corretiva - clique para editar'";
+                                                echo "color: red; border-color: #6C7AB3;' title='Manutenção corretiva - clique para editar'";
                                             }else{
-                                                echo "color: black;' title='Manutenção preventiva - clique para editar'";
+                                                echo " border-color: #6C7AB3;' title='Manutenção preventiva - clique para editar'";
                                             }
                                             echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
                                         }
-                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
+                                        echo "<div style='border-bottom: 1px solid;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>
@@ -300,15 +300,15 @@ date_default_timezone_set('America/Sao_Paulo');
                                     $row1 = pg_num_rows($rs1);
                                     if($row1 > 0){
                                         while ($tbl1 = pg_fetch_row($rs1)){
-                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid black;";
+                                            echo "<div onclick='buscaData($tbl1[0], 1);' style='border-top: 1px solid; cursor: pointer;";
                                             if($tbl1[2] == 2){
-                                                echo "color: red;' title='Manutenção corretiva - clique para editar'";
+                                                echo "color: red; border-color: #6C7AB3;' title='Manutenção corretiva - clique para editar'";
                                             }else{
-                                                echo "color: black;' title='Manutenção preventiva - clique para editar'";
+                                                echo " border-color: #6C7AB3;' title='Manutenção preventiva - clique para editar'";
                                             }
                                             echo "><div style='font-weight: bold;'>".$tbl1[1]."</div>".$tbl1[3]."</div>";
                                         }
-                                        echo "<div style='border-bottom: 1px solid black;'></div>"; // para fechar o traço
+                                        echo "<div style='border-bottom: 1px solid;'></div>"; // para fechar o traço
                                     }
                                 ?>
                             </td>

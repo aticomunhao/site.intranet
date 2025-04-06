@@ -21,7 +21,14 @@ if(!isset($_SESSION["usuarioID"])){
         <script src="comp/js/jquery.mask.js"></script>
         <script src="comp/js/jquery-confirm.min.js"></script>   <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
         <style>
-             .relacmodalMovel{
+            /* Tamanho do checkbox e radiobox */
+            input[type=checkbox]{
+                transform: scale(1.2);
+            }
+            input[type=radio]{
+                transform: scale(1.2);
+            }
+            .relacmodalMovel{
                 display: none; 
                 position: fixed;
                 min-width: 800px;
@@ -33,7 +40,6 @@ if(!isset($_SESSION["usuarioID"])){
                 background-color: rgb(0,0,0); /* Fallback color */
                 background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
             }
-
             .modal-content-relacHorarioMovel{
                 background: linear-gradient(180deg, white, #00BFFF);
                 margin: 2% auto;
@@ -213,7 +219,6 @@ if(!isset($_SESSION["usuarioID"])){
         <script>
             LargTela = $(window).width(); // largura da tela ao abrir o módulo
             $(document).ready(function(){
-
 //                $('#carregaTema').load('modulos/config/carTema.php?carpag=escala_daf');
                 //Não vai liberar para os escalados - só o pdf impresso
                 document.getElementById("evliberames").style.visibility = "hidden"; 
@@ -968,10 +973,10 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-            function apagaLetra(Cod){
+            function apagaLetra(Cod, Letra){
                 $.confirm({
                     title: 'Apagar turno.',
-                    content: 'Confirma apagar este turno?',
+                    content: 'Confirma apagar turno: Letra '+Letra+' ?',
                     autoClose: 'Não|10000',
                     draggable: true,
                     buttons: {
@@ -2240,7 +2245,7 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
         <input type="hidden" id="guardaAno" value="<?php echo $Ano; ?>" />
         <input type="hidden" id="guardaCorListas" value="<?php echo $CorListas; ?>" />
         <input type="hidden" id="guardaEscalaId" value = "0" />
-        <input type="hidden" id="guardaTema" value = <?php echo $Tema; ?> />
+        <input type="hidden" id="guardaTema" value = "<?php echo $Tema; ?>" />
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div id="tricoluna0" class="row" style="margin: 0 auto;"> <!-- botões Inserir e Imprimir-->
@@ -2277,7 +2282,7 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                         <label id="etiqevliberames" for="evliberames" title="Acesso aos participantes da escala">liberado</label>
                 </div>
 
-                <div id="tricoluna2" class="col corCinza" style="text-align: center;">Escala <?php echo $SiglaGrupo; ?> </div> <!-- espaçamento entre colunas  -->
+                <div id="tricoluna2" class="col corCinza" style="text-align: center; font-size: 80%;">Escala <?php echo $SiglaGrupo; ?> </div> <!-- espaçamento entre colunas  -->
 
                 <div id="tricoluna3" class="col" style="margin: 0 auto; text-align: center;">
                     <label id="etiqtransfMesAnoEsc" class="etiq eItalic" style="padding-left: 40px;">Transferir para o mês: </label>
@@ -2436,7 +2441,7 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                 <div class="container" style="margin: 0 auto;">
                     <div class="row">
                         <div class="col" style="margin: 0 auto;"><button class="botpadrred" id="imprGrupos" style="font-size: 70%;" onclick="geralEscala();" title="Mostra a relação dos chefes, escalantes e efetivo das escalas">Geral Grupos</button></div>
-                        <div class="col"><h6 id="etiqNomeGrupo" style="text-align: center; color: #666;">Escala <?php echo $SiglaGrupo; ?></h6></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col"><h6 id="etiqNomeGrupo" style="text-align: center; color: #666; font-size: 80%;">Escala <?php echo $SiglaGrupo; ?></h6></div> <!-- Central - espaçamento entre colunas  -->
                         <div class="col" style="margin: 0 auto; text-align: center;"><button class="botpadrred" style="font-size: 70%;" onclick="resumoUsuEscala();" title="Mostra uma relação dos chefes, escalante e efetivo deste grupo">Resumo do Grupo</button></div> 
                     </div>
                 </div>
@@ -2488,7 +2493,7 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                         <td class="etiqAzul eItalic">Escala DAF:</td>
                         <td colspan="2">
                             <input type="checkbox" id="checkefetivo" onchange="marcaConfigEscalaEft(this);" >
-                            <label for="checkefetivo" class="etiqNorm eItalic">efetivo da escala</label>
+                            <label for="checkefetivo" class="etiqNorm eItalic">efetivo desta escala</label>
                         </td>
                         <td colspan="2">
                             <label id="mensagemConfig" style="color: red; font-weight: bold;"></label>
@@ -2498,14 +2503,14 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                         <td class="etiqAzul eItalic">Escala DAF:</td>
                         <td colspan="4">
                             <input type="checkbox" id="checkescalante" onchange="marcaConfigEscalaEsc(this);" >
-                            <label for="checkescalante" class="etiqNorm eItalic">escalante</label>
+                            <label for="checkescalante" class="etiqNorm eItalic">escalante desta escala</label>
                         </td>
                     </tr>
                     <tr>
                         <td class="etiqAzul eItalic">Escala DAF:</td>
                         <td colspan="4">
-                            <input type="checkbox" id="checkfiscal" onchange="marcaConfigEscalaFisc(this);" >
-                            <label for="checkfiscal" class="etiqNorm eItalic">fiscal</label>
+                            <input type="checkbox" id="checkfiscal" onchange="marcaConfigEscalaFisc(this);" title="Para acompanhar e fiscalizar todas as escalas." >
+                            <label for="checkfiscal" class="etiqNorm eItalic" title="Para acompanhar e fiscalizar todas as escalas.">fiscal de escalas</label>
                         </td>
                     </tr>
                     <tr>

@@ -343,7 +343,7 @@
                                                     echo "</div>";
                                                 }else{
                                                     if($Troca == 1){
-                                                        echo "<div class='quadrodiaCinza' style='border: 2px solid #FFD700; border-radius: 10px;' title='$LetraOrig'> $tbl4[0] </div>";
+                                                        echo "<div class='quadrodiaCinza' style='border: 2px solid; border-radius: 10px;' title='$LetraOrig'> $tbl4[0] </div>";
                                                     }else{
                                                         echo "<div class='quadrodiaCinza' title='$LetraOrig'> $tbl4[0] </div>";
                                                     }
@@ -356,7 +356,9 @@
                                                     echo "</div>";
                                                 }else{
                                                     echo "<div class='quadrodia' style='background: $CorFundo; "; 
-                                                    if($Troca == 1){echo "border: 2px solid #FFD700; border-radius: 10px;";}
+                                                    if($Troca == 1){
+                                                        echo "border: 2px solid; border-radius: 10px;";
+                                                    }
                                                     echo "' title='$LetraOrig'> $tbl4[0] ";
                                                     echo "</div>";
                                                 }
@@ -381,7 +383,7 @@
                                                     echo "</div>";
                                                 }else{
                                                     echo "<div class='quadrodia' style='background: $Cor; ";
-                                                    if($Troca == 1){echo "border: 2px solid #FFD700; border-radius: 10px; "; }; 
+                                                    if($Troca == 1){echo "border: 2px solid; border-radius: 10px; "; }; 
                                                     echo "' title='$LetraOrig'> $tbl4[0] ";
                                                     echo "</div>";
                                                 }

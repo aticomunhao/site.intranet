@@ -111,6 +111,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         $('#carregaTema').load('modulos/config/carTema.php?carpag=livroReg');
                                         $("#faixaCentral").load("modulos/lro/relReg.php");
+                                        document.getElementById("selectTema").style.visibility = "visible";
                                     }
                                 }
                             }
@@ -125,6 +126,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("etiqrubrica").style.visibility = "hidden";
                 document.getElementById("etiqcheckrubrica").style.visibility = "hidden";
                 document.getElementById("checkrubrica").style.visibility = "hidden";
+                document.getElementById("selectTema").style.visibility = "hidden";
                 if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) && parseInt(Resp.fiscalizaLro) === 1){
                     document.getElementById("botimprLRO").style.visibility = "visible";
                 }
@@ -1285,11 +1287,12 @@ if(!isset($_SESSION["usuarioID"])){
                 <h6>Livro de Registro de Ocorrências</h6>
             </div>
             <div id="tricoluna3" class="box" style="position: relative; float: left; width: 35%; text-align: right;">
-                <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%; padding-left: 5px;">Tema: </label>
-                <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" class="etiq" style="cursor: pointer;">&nbsp;Claro</label>
-                <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" class="etiq" style="cursor: pointer;">&nbsp;Escuro</label>
-                <label style="padding-left: 20px;"></label>
-
+                <div id="selectTema" style="position: relative; float: left; padding-left: 8px;">
+                    <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%; padding-left: 5px;">Tema: </label>
+                    <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" class="etiq" style="cursor: pointer;">&nbsp;Claro</label>
+                    <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" class="etiq" style="cursor: pointer;">&nbsp;Escuro</label>
+                    <label style="padding-left: 20px;"></label>
+                </div>
                 <img src="imagens/checkVerde.png" height="20px;" style="cursor: pointer;" onclick="abreCheckList();" title="Lista de Verificação (checklist)">
                 <label style="padding-left: 20px;"></label>
                 <button class="botpadrred" style="font-size: 80%;" id="botimprLRO" onclick="abreimprLRO();">Gerar PDF</button>

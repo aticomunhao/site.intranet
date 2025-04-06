@@ -124,7 +124,7 @@
                 <td class="etiq">Mensagem:</td>
                 <td>
                     <div class="col-xs-6">
-                        <textarea class="form-control" id='novamensagem' placeholder='Mensagem' rows='2' cols='65'></textarea>
+                        <textarea class="form-control" id='novamensagem' placeholder='Mensagem' rows='3' cols='85'></textarea>
                     </div>
                 </td>
                 <td style="text-align: center;"><input type="button" class="resetbot" style="color: blue; font-weight: bold; font-size: .7rem;" id="botenviar" value="Enviar" onclick="enviaMsg(<?php echo $IdTarefa; ?>, <?php echo $UsuLogadoId; ?>);" title="Enviar mensagem."></td>

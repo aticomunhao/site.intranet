@@ -290,7 +290,7 @@ if($Acao=="salvanomeempresa"){
         $tblCod = pg_fetch_row($rsCod);
         $Codigo = $tblCod[0];
         $CodigoNovo = ($Codigo+1);
-        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".empresas_ar (id, empresa) VALUES ($CodigoNovo, '$Nome') ");
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".empresas_ar (id, empresa, valorvisita) VALUES ($CodigoNovo, '$Nome', $ValorVis) ");
     }
     if(!$rs){
         $Erro = 1;
@@ -300,9 +300,8 @@ if($Acao=="salvanomeempresa"){
     echo $responseText;
 }
 
-if($Acao == "buscarelempresas"){  // vem de controleAr.php
+if($Acao=="buscarelempresas"){  // vem de controleAr.php
     $rsEmpr = pg_query($Conec, "SELECT id, empresa FROM ".$xProj.".empresas_ar WHERE ativo = 1 ORDER BY empresa");
-
     while ($tbl = pg_fetch_row($rsEmpr)){
        $Empr[] = array(
        'Cod' => $tbl[0],

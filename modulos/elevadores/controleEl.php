@@ -96,7 +96,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("botimpr").disabled = true;
                     document.getElementById("faixaMensagem").style.display = "block";
                 }
-
+                $('#carregaTema').load('modulos/config/carTema.php?carpag=controleAr');
                 //Autorizado a editar ou superusuário - se bloquear só o campo, o datepicker continua tentando carregar
                 if(parseInt(document.getElementById("guardaInsElev").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
                     $('#datavisins').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
@@ -705,7 +705,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         </script>
     </head>
-    <body>
+    <body class="corClara" onbeforeunload="return mudaTema(0)"> <!-- ao sair retorna os background claros -->
         <?php
         $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog'");
         $rowSis = pg_num_rows($rsSis);
@@ -725,19 +725,26 @@ if(!isset($_SESSION["usuarioID"])){
 
         $InsElev = parEsc("elev", $Conec, $xProj, $_SESSION["usuarioID"]); // procura marca em poslog
         $FiscElev = parEsc("fiscelev", $Conec, $xProj, $_SESSION["usuarioID"]); // procura marca em poslog
+        $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
         ?>
-        <div style="margin: 20px; border: 2px solid #009900; border-radius: 15px; padding: 20px; min-height: 200px;">
-            <div class="box" style="position: relative; float: left; width: 33%;">
-            <img src="imagens/settings.png" height="20px;" style="cursor: pointer; padding-right: 30px;" onclick="carregaConfig();" title="Configurar empresas de manutenção de Elevadores">
+        <div id="tricoluna0" style="margin: 20px; border: 2px solid #009900; border-radius: 15px; padding: 20px; min-height: 200px;">
+            <div id="tricoluna1" class="box" style="position: relative; float: left; width: 33%;">
+                <img src="imagens/settings.png" height="20px;" style="cursor: pointer; padding-right: 30px;" onclick="carregaConfig();" title="Configurar empresas de manutenção de Elevadores">
                 <input type="button" id="botinserir" class="resetbot fundoVerde" style="font-size: 80%;" value="Inserir Novo Elevador" onclick="insElev();">
             </div>
-            <div class="box" style="position: relative; float: left; width: 33%; text-align: center; border: 2px solid #C0C0C0; border-radius: 10px;">
-                <label style="font-size: 1.3em; padding-left: 5px;">Controle da Manutenção dos</label><label style="font-size: 1.3em; font-weight: bold; color: #000066; padding-right: 5px;">&nbsp;Elevadores</label>
+            <div id="tricoluna2" class="box" style="position: relative; float: left; width: 33%; text-align: center; border: 2px solid #C0C0C0; border-radius: 10px;">
+                <label style="font-size: 1.3em; padding-left: 5px;">Controle da Manutenção dos</label><label style="font-size: 1.3em; font-weight: bold; padding-right: 5px;">&nbsp;Elevadores</label>
             </div>
             
-            <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
-                <label style="font-size: .9rem;">Selecione o Ano: </label>
-                <select id="selectAno" onchange="modifAno();" style="font-size: .9rem; width: 70px;" title="Selecione o ano de trabalho.">
+            <div id="tricoluna3" class="box" style="position: relative; float: left; width: 33%; text-align: center;">
+                <div id="selectTema" style="position: relative; float: left; padding-left: 8px;">
+                    <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%;">Tema: </label>
+                    <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" class="etiq" style="cursor: pointer;">&nbsp;Claro</label>
+                    <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" class="etiq" style="cursor: pointer;">&nbsp;Escuro</label>
+                    <label style="padding-right: 5px;"></label>
+                </div>
+                <label style="font-size: 80%;">Selecione o Ano: </label>
+                <select id="selectAno" onchange="modifAno();" style="font-size: 80%; width: 70px;" title="Selecione o ano de trabalho.">
                     <option value="<?php echo $AnoIni; ?>"><?php echo $AnoIni; ?></option>
                         <?php 
                             if($rsAno){
@@ -748,12 +755,12 @@ if(!isset($_SESSION["usuarioID"])){
                             }
                         ?>
                 </select>
-                <label style="padding-left: 20px;"></label>
-                <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprAr();">PDF</button>
+                <label style="padding-left: 10px;"></label>
+                <button class="botpadrred" id="botimpr" style="padding-left: 5px; padding-right: 5px; font-size: 80%;" onclick="imprAr();">PDF</button>
             </div>
             
             <div id="faixacentral"></div>
-            <div id="faixaMensagem" style="display: none; position: relative; margin: 70px; padding: 20px; text-align: center;">
+            <div id="faixaMensagem" style="display: none; position: relative; margin: 120px; padding: 20px; text-align: center; border: 1px solid; border-radius: 15px;">
                 Usuário não cadastrado. <br>O acesso é proporcionado pela ATI.
             </div>
         </div>
@@ -771,7 +778,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         <!-- div para inserção novo elevador  -->
         <div id="relacmodalControle" class="relacmodal">
-            <div class="modal-content-Controle">
+            <div class="modal-content-Controle corPreta">
                 <span class="close" onclick="fechaModal();">&times;</span>
                 <h5 id="titulomodal" style="text-align: center; color: #666;">Controle de Manutenção de Elevadores</h5>
                 <div id="subtitulomodal" style="text-align: center; color: red;"></div>
@@ -791,7 +798,18 @@ if(!isset($_SESSION["usuarioID"])){
                     <tr>
                         <td class="etiq aDir">Empresa: </td>
                         <td>
-                            <select id="empresa" onchange="modif();" style="font-size: 1rem; width: 100%;" title="Selecione uma empresa."></select>
+                            <select id="empresa" onchange="modif();" style="font-size: 1rem; width: 100%;" title="Selecione uma empresa.">
+                                <option value=""></option>
+                                <?php 
+                                    $OpEmpr1 = pg_query($Conec, "SELECT id, empresa FROM ".$xProj.".empresas_el WHERE ativo = 1 ORDER BY empresa");
+                                    if($OpEmpr1){
+                                        while ($Opcoes = pg_fetch_row($OpEmpr1)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                ?>
+                            </select>
                         </td>
                         <td></td>
                         <td></td>
@@ -809,7 +827,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         <!-- div para inserção de nova data de visita preventiva ou corretiva -->
         <div id="relacmodalIns" class="relacmodal">
-            <div class="modal-content-Controle">
+            <div class="modal-content-Controle corPreta">
                 <span class="close" onclick="fechaModal();">&times;</span>
                 <h5 id="titulomodal" style="text-align: center; color: #666;">Controle de Manutenção de Elevadores</h5>
                 <div id="subtitulomodalins" style="text-align: center;"></div>
@@ -868,6 +886,16 @@ if(!isset($_SESSION["usuarioID"])){
                             <td class="etiq aDir" title="Nome da empresa contratada">Empresa: </td>
                             <td colspan="3">
                                 <select id="empresaCorret" onchange="modif();" style="font-size: 1rem; width: 100%;" title="Selecione uma empresa.">
+                                    <option value=""></option>
+                                    <?php 
+                                        $OpEmpr2 = pg_query($Conec, "SELECT id, empresa FROM ".$xProj.".empresas_el WHERE ativo = 1 ORDER BY empresa");
+                                        if($OpEmpr2){
+                                            while ($Opcoes = pg_fetch_row($OpEmpr2)){ ?>
+                                                <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                            <?php 
+                                            }
+                                        }
+                                    ?>
                                 </select>
                             </td>
                         </tr>
@@ -921,7 +949,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         <!-- div para o nome do Local do elevador  -->
         <div id="relacmodalLocal" class="relacmodal">
-            <div class="modal-content-Controle">
+            <div class="modal-content-Controle corPreta">
                 <span class="close" onclick="fechaModal();">&times;</span>
                 <h5 id="titulomodal" style="text-align: center; color: #666;">Controle de Manutenção de Elevadores</h5>
                 <div id="subtitulomodal" style="text-align: center; color: red;"></div>
@@ -941,7 +969,18 @@ if(!isset($_SESSION["usuarioID"])){
                     <tr>
                         <td class="etiq aDir">Empresa: </td>
                         <td>
-                           <select id="empresalocal" onchange="modif();" style="font-size: 1rem; width: 100%;" title="Selecione uma empresa."></select>
+                            <select id="empresalocal" onchange="modif();" style="font-size: 1rem; width: 100%;" title="Selecione uma empresa.">
+                                <option value=""></option>
+                                <?php 
+                                    $OpEmpr3 = pg_query($Conec, "SELECT id, empresa FROM ".$xProj.".empresas_el WHERE ativo = 1 ORDER BY empresa");
+                                    if($OpEmpr3){
+                                        while ($Opcoes = pg_fetch_row($OpEmpr3)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                ?>
+                            </select>
                         </td>
                         <td></td>
                         <td></td>
@@ -958,7 +997,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         <!-- div para editar nome das empresas  -->
         <div id="relacmodalConfig" class="relacmodal">
-            <div class="modal-content-Controle">
+            <div class="modal-content-Controle corPreta">
                 <span class="close" onclick="fechaModal();">&times;</span>
                 <h5 id="titulomodal" style="text-align: center; color: #666;">Empresas de Manutenção de Elevadores</h5>
                 <div class='divbot corFundo' onclick='insEmpresa()' title="Adicionar nova empresa de manutenção"> Inserir </div>
@@ -994,5 +1033,8 @@ if(!isset($_SESSION["usuarioID"])){
                 </div>
             </div>
         </div> <!-- Fim Modal-->
+        
+        <div id="carregaTema"></div> <!-- carrega a pág modulos/config/carTema.php - onde está a função mudaTema() -->
+
     </body>
 </html>

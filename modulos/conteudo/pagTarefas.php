@@ -5,7 +5,7 @@ if(!isset($_SESSION["usuarioID"])){
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
     <head>
         <meta charset="UTF-8"> 
         <title></title>
@@ -16,6 +16,10 @@ if(!isset($_SESSION["usuarioID"])){
         <script src="class/bootstrap/js/bootstrap.min.js"></script>
         <script src="comp/js/jquery-confirm.min.js"></script>   <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
         <style TYPE="text/css">
+            /* Tamanho do radiobox */
+            input[type=radio]{
+                transform: scale(1.2);
+            }
             .etiq{
                text-align: right; color: #808080; font-size: 70%; font-weight: bold; padding-right: 1px; padding-bottom: 1px;
             }
@@ -57,7 +61,6 @@ if(!isset($_SESSION["usuarioID"])){
                 border: 3px solid blue;
                 background-color: #C6E2FF;
             }
-
             .etiqInat{
                 background-color: #F5F5F5;
             }            
@@ -65,7 +68,6 @@ if(!isset($_SESSION["usuarioID"])){
                 border: 3px solid #F5F5F5;
                 background-color:rgb(31, 38, 45);
             }
-
             .divbot{ /* botão */
                 border: 1px solid blue;
                 background-color: blue;
@@ -1057,9 +1059,9 @@ if(!isset($_SESSION["usuarioID"])){
                 <td>
                     <div style="text-align: center; width: 100%; border: 1px solid #7D26CD; border-radius: 10px; padding-left: 10px; padding-right: 10px;">
                         <label class="etiqRoxa" style="padding-right: 10px;">Selecionar Área: </label>
-                        <input type="radio" name="verSetor" id="verSetor2" value="2" onclick="carregaSetor(value);"><label for="verSetor2" class="etiqRoxa" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Administrativa</label>
-                        <input type="radio" name="verSetor" id="verSetor1" value="1" onclick="carregaSetor(value);"><label for="verSetor1" class="etiqRoxa" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Manutenção</label>
-                        <input type="radio" name="verSetor" id="verSetor0" value="0" CHECKED onclick="carregaSetor(value);"><label for="verSetor0" class="etiqRoxa" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Ambas</label>
+                        <input type="radio" name="verSetor" id="verSetor2" value="2" onclick="carregaSetor(value);"><label for="verSetor2" class="etiqRoxa" style="font-size: 12px; font-weight: bold; padding-left: 3px; padding-right: 10px;">&nbsp;Administrativa</label>
+                        <input type="radio" name="verSetor" id="verSetor1" value="1" onclick="carregaSetor(value);"><label for="verSetor1" class="etiqRoxa" style="font-size: 12px; font-weight: bold; padding-left: 3px; padding-right: 10px;">&nbsp;Manutenção</label>
+                        <input type="radio" name="verSetor" id="verSetor0" value="0" CHECKED onclick="carregaSetor(value);"><label for="verSetor0" class="etiqRoxa" style="font-size: 12px; font-weight: bold; padding-left: 3px; padding-right: 10px;">&nbsp;Ambas</label>
                     </div>
                 </td>
             </tr>
@@ -1078,9 +1080,9 @@ if(!isset($_SESSION["usuarioID"])){
                         <input type="radio" name="verTipo" id="verTipo1" value="1" onclick="carregaTipo(value);"><label for="verTipo1" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Designadas</label>
                         <input type="radio" name="verTipo" id="verTipo2" value="2" onclick="carregaTipo(value);"><label for="verTipo2" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> Aceitas</label>
                         <input type="radio" name="verTipo" id="verTipo3" value="3" onclick="carregaTipo(value);"><label for="verTipo3" style="font-size: 12px; padding-left: 3px; padding-right: 10px;"> em Andamento</label>
-                        <input type="radio" name="verTipo" id="verTipo4" value="4" onclick="carregaTipo(value);"><label for="verTipo4" style="font-size: 12px; padding-left: 3px; padding-right: 25px;"> Terminadas</label>
-                        <input type="radio" name="verTipo" id="verTipo5" value="5" onclick="carregaTipo(value);"><label for="verTipo5" style="font-size: 12px; padding-left: 3px; color: #FF6600; font-weight: bold;"> Minhas Tarefas</label> <label id="quantMinhas" style="padding-right: 25px; font-size: 65%; color: #6C7AB3; font-style: italic; vertical-align: super;" title="Minhas tarefas ainda não terminadas"></label>
-                        <input type="radio" name="verTipo" id="verTipo6" value="6" onclick="carregaTipo(value);"><label for="verTipo6" style="font-size: 12px; padding-left: 3px; color: #6C7AB3; font-weight: bold;"> Meus Pedidos</label> <label id="quantPagas" style="padding-right: 25px; font-size: 65%; color: #6C7AB3; font-style: italic; vertical-align: super;" title="Meus pedidos ainda não terminados"></label>
+                        <input type="radio" name="verTipo" id="verTipo4" value="4" onclick="carregaTipo(value);"><label for="verTipo4" style="font-size: 12px; padding-left: 3px; padding-right: 25px;">&nbsp;Terminadas</label>
+                        <input type="radio" name="verTipo" id="verTipo5" value="5" onclick="carregaTipo(value);"><label for="verTipo5" style="font-size: 12px; padding-left: 3px; color: #FF6600; font-weight: bold;">&nbsp;Minhas Tarefas</label> <label id="quantMinhas" style="padding-right: 25px; font-size: 65%; color: #6C7AB3; font-style: italic; vertical-align: super;" title="Minhas tarefas ainda não terminadas"></label>
+                        <input type="radio" name="verTipo" id="verTipo6" value="6" onclick="carregaTipo(value);"><label for="verTipo6" style="font-size: 12px; padding-left: 3px; color: #6C7AB3; font-weight: bold;">&nbsp;Meus Pedidos</label> <label id="quantPagas" style="padding-right: 25px; font-size: 65%; color: #6C7AB3; font-style: italic; vertical-align: super;" title="Meus pedidos ainda não terminados"></label>
                         <input type="radio" name="verTipo" id="verTipo7" value="7" onclick="carregaTipo(value);" title="Tarefas com mensagens não lidas"><label for="verTipo7" style="font-size: 12px; padding-left: 3px;" title="Tarefas com mensagens não lidas"> com Mensagem</label>
                     </div>
                 </td>

@@ -410,6 +410,17 @@
             $diaSemana = 1;
 
             require_once("modulos/config/abrealas.php");
+            if(!isset($Conec)){
+                require_once("modulos/msgErro.php");
+                return false;
+            }
+            $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog'");
+            $rowSis = pg_num_rows($rsSis);
+            if($rowSis == 0){
+                require_once("modulos/msgErro.php");
+                return false;
+            }
+            
             $rs0 = pg_query($Conec, "SELECT textopag FROM ".$xProj.".setores WHERE codset = 1");
             $row0 = pg_num_rows($rs0);
             if($row0 > 0){

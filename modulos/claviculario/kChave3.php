@@ -29,32 +29,39 @@
         <h5>Chaves Ausentes</h5>
         <?php 
         $Hoje = date('Y/m/d');
-        $rs = pg_query($Conec, "SELECT ".$xProj.".chaves3_ctl.id, chaves_id, chavenum, chavenumcompl, chavesala, TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), funcentrega, usuretira, cpfretira, telef, chavelocal, datasaida 
+        $rs = pg_query($Conec, "SELECT ".$xProj.".chaves3_ctl.id, chaves_id, chavenum, chavenumcompl, chavesala, TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), funcentrega, usuretira, cpfretira, telef, chavelocal, 
+        datasaida, chavecompl 
         FROM ".$xProj.".chaves3_ctl INNER JOIN ".$xProj.".chaves3 ON ".$xProj.".chaves3_ctl.chaves_id = ".$xProj.".chaves3.id 
-        WHERE ".$xProj.".chaves3.ativo = 1 And usudevolve = 0 And TO_CHAR(datavolta, 'YYYY') = '3000' ORDER BY datasaida ");
+        WHERE ".$xProj.".chaves3.ativo = 1 And ".$xProj.".chaves3_ctl.ativo = 1 And usudevolve = 0 And TO_CHAR(datavolta, 'YYYY') = '3000' ORDER BY datasaida ");
         $row = pg_num_rows($rs);
         if($row > 0){
             while($tbl = pg_fetch_row($rs)){
                 $Cod = $tbl[0]; // id de chaves3_ctl
+                $IdChave = $tbl[1];
                 ?>
                 <div style="border: 2px solid #CFCFCF; border-radius: 8px; padding: 5px;">
                     <table style="margin: 0 auto; width:95%">
                         <tr>          
-                            <td colspan="2"><div class="quadrlista" style="border-color: #E90074; font-size: 130%;"> <?php echo str_pad($tbl[2], 3, 0, STR_PAD_LEFT); ?></div>
+                            <td colspan="2"><div class="quadrlista" style="border-color: #E90074; font-size: 130%;"> <?php echo str_pad($tbl[2], 3, 0, STR_PAD_LEFT)." ".$tbl[12]; ?></div>
                             <div class="quadrlista"><label class="etiq">Sala: </label> <?php echo $tbl[4]; ?></div>
-<!--                            <div class="quadrlista" style="border: 0px;"><label class="etiq">Local: </label> <?php echo $tbl[10]; ?></div> -->
                         </td>
                         </tr>
                         <tr>              
                             <td colspan="2">
                                 <?php
                                 if(strtotime($tbl[11]) < strtotime($Hoje)){
-                                    echo "<div class='quadrlista' style='text-align: left; color: red; border-color: red;'><label class='etiq' style='color: red;'>Retirada em </label> $tbl[5] </div>";
+                                    echo "<div class='quadrlista' style='text-align: left; color: red; border-color: red;'><label class='etiq' style='color: red;'>Retirada em </label><label style='font-weight: bold;'> $tbl[5] </label></div>";
                                 }else{
-                                    echo "<div class='quadrlista' style='text-align: left;'><label class='etiq'>Retirada em </label> $tbl[5] </div>";
+                                    echo "<div class='quadrlista' style='text-align: left;'><label class='etiq'>Retirada em </label><label style='font-weight: bold;'> $tbl[5] </label></div>";
                                 }
                                 ?>
-                                <div><input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Retorno" onclick="retornoChave(<?php echo $tbl[0]; ?>);"></div>
+                                <div><input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Retorno" onclick="retornoChave(<?php echo $tbl[0]; ?>);">
+                                <?php
+                                   if($_SESSION["AdmUsu"] > 6){
+                                        echo "<img src='imagens/lixeiraPreta.png' height='20px;' style='cursor: pointer;' onclick='apagaSaidaChave($Cod, $IdChave);' title='Apagar este lançamento.'>";
+                                    }
+                                ?>
+                                </div>
                             </td>
                         </tr>
                         <tr>              

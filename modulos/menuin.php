@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
     <head>
         <meta charset="utf-8">
         <title></title>
@@ -11,9 +11,9 @@
                 jQuery(function(){jQuery('ul.sf-menu').superfish();});
 
 				jQuery('ul.sf-menu').superfish({
-					delay:       500,                // one second delay on mouseout
-					speed:       'fast',             // faster animation speed
-					autoArrows:  false               // disable generation of arrow mark-up
+					delay:       500,                // delay no mouseout
+					speed:       'fast',             // animation speed
+					autoArrows:  false               // desativa a geração de setas mark-up
 				});
             });
         </script>
@@ -28,9 +28,9 @@
 			if(strtotime('2025/04/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
 				//0097
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog DROP COLUMN IF EXISTS numacessosip ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog DROP COLUMN IF EXISTS colecip ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog DROP COLUMN IF EXISTS usuip ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves ADD COLUMN IF NOT EXISTS chavecompl VARCHAR(10) ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves2 ADD COLUMN IF NOT EXISTS chavecompl VARCHAR(10) ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves3 ADD COLUMN IF NOT EXISTS chavecompl VARCHAR(10) ");
 
 			} // fim data limite
         ?>

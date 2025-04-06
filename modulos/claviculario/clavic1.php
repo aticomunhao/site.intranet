@@ -37,12 +37,11 @@ if(!isset($_SESSION["usuarioID"])){
             }
             .quadrinho {
                 font-size: 90%;
-                min-width: 40px;
                 min-height: 23px;
                 border: 1px solid #C0C0C0;
                 border-radius: 3px;
-                padding-left: 5px;
-                padding-right: 5px;
+                padding-left: 3px;
+                padding-right: 3px;
             }
             .quadrinhoClick {
                 font-size: 90%;
@@ -52,7 +51,8 @@ if(!isset($_SESSION["usuarioID"])){
                 padding-left: 5px;
                 padding-right: 5px;
                 cursor: pointer;
-                background: #FFFFF0;
+                background: #FFF8DC; 
+                color: black;
             }
             .quadrgrupo {
                 font-size: 90%;
@@ -102,15 +102,6 @@ if(!isset($_SESSION["usuarioID"])){
                    }
                 }
             }
-            function format_CnpjCpf(value){
-                //https://gist.github.com/davidalves1/3c98ef866bad4aba3987e7671e404c1e
-                const CPF_LENGTH = 11;
-                const cnpjCpf = value.replace(/\D/g, '');
-                if (cnpjCpf.length === CPF_LENGTH) {
-                    return cnpjCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/g, "\$1.\$2.\$3-\$4");
-                } 
-                  return cnpjCpf.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g, "\$1.\$2.\$3/\$4-\$5");
-            }
             
             $(document).ready(function(){
                 document.getElementById("botinserir").style.visibility = "hidden";
@@ -133,6 +124,8 @@ if(!isset($_SESSION["usuarioID"])){
                 }else{
                     document.getElementById("faixaMensagem").style.display = "block";
                 }
+
+                $('#carregaTema').load('modulos/config/carTema.php?carpag=clavic1');
 
                 $("#cpfsolicitante").mask("999.999.999-99");
                 $("#cpfentregador").mask("999.999.999-99");
@@ -190,6 +183,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("resulttelef").value = "";
                     document.getElementById("guardaPosCod").value = "";
                 });
+
                 $("#cpfsolicitante").change(function(){
                     document.getElementById("selecSolicitante").value = "";
                     document.getElementById("guardaCPF").value = "";
@@ -498,17 +492,34 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#selecMesAno").change(function(){
                     document.getElementById("selecAno").value = "";
                     if(document.getElementById("selecMesAno").value != ""){
-                        window.open("modulos/claviculario/imprChave1.php?acao=listamesChaves&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), document.getElementById("selecMesAno").value);
+                        window.open("modulos/claviculario/imprChave1.php?acao=listamesChaves&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), "Mes"+document.getElementById("selecMesAno").value);
                         document.getElementById("selecMesAno").value = "";
-                        document.getElementById("relacimprBens").style.display = "none";
+                        document.getElementById("relacimprChaves").style.display = "none";
                     }
                 });
                 $("#selecAno").change(function(){
                     document.getElementById("selecMesAno").value = "";
                     if(document.getElementById("selecAno").value != ""){
-                        window.open("modulos/claviculario/imprChave1.php?acao=listaanoChaves&ano="+encodeURIComponent(document.getElementById("selecAno").value), document.getElementById("selecAno").value);
+                        window.open("modulos/claviculario/imprChave1.php?acao=listaanoChaves&ano="+encodeURIComponent(document.getElementById("selecAno").value), "Ano"+document.getElementById("selecAno").value);
                         document.getElementById("selecAno").value = "";
-                        document.getElementById("relacimprBens").style.display = "none";
+                        document.getElementById("relacimprChaves").style.display = "none";
+                    }
+                });
+
+                $("#selecMesAnoMov").change(function(){
+                    document.getElementById("selecAnoMov").value = "";
+                    if(document.getElementById("selecMesAnoMov").value != ""){
+                        window.open("modulos/claviculario/imprChave1.php?acao=listamesChavesSoMovimentados&mesano="+encodeURIComponent(document.getElementById("selecMesAnoMov").value), "MesMov"+document.getElementById("selecMesAnoMov").value);
+                        document.getElementById("selecMesAnoMov").value = "";
+                        document.getElementById("relacimprChaves").style.display = "none";
+                    }
+                });
+                $("#selecAnoMov").change(function(){
+                    document.getElementById("selecMesAnoMov").value = "";
+                    if(document.getElementById("selecAnoMov").value != ""){
+                        window.open("modulos/claviculario/imprChave1.php?acao=listaanoChavesSoMovimentados&ano="+encodeURIComponent(document.getElementById("selecAnoMov").value), "AnoMov"+document.getElementById("selecAnoMov").value);
+                        document.getElementById("selecAnoMov").value = "";
+                        document.getElementById("relacimprChaves").style.display = "none";
                     }
                 });
 
@@ -527,12 +538,14 @@ if(!isset($_SESSION["usuarioID"])){
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 if(parseInt(Resp.coderro) === 0){
                                     document.getElementById("numchave").value = Resp.chavenum;
+                                    document.getElementById("chavecomplem").value = "";
                                     document.getElementById("localchave").value = "";
                                     document.getElementById("salachave").value = "";
                                     document.getElementById("complemchave").value = "";
                                     document.getElementById("obschave").value = "";
+                                    document.getElementById("apagarChaves").style.visibility = "hidden";
                                     document.getElementById("editaModalChave").style.display = "block";
-                                    document.getElementById("localchave").focus();
+                                    document.getElementById("salachave").focus();
                                 }else{
                                     alert("Houve um erro no servidor.")
                                 }
@@ -558,10 +571,13 @@ if(!isset($_SESSION["usuarioID"])){
                                 }else{
                                     document.getElementById("numchave").value = Resp.chavenum;
                                     document.getElementById("localchave").value = Resp.chavelocal;
+                                    document.getElementById("chavecomplem").value = Resp.chavecompl;
                                     document.getElementById("salachave").value = Resp.chavesala;
                                     document.getElementById("complemchave").value = Resp.chavenumcompl;
                                     document.getElementById("obschave").value = Resp.chaveobs;
+                                    document.getElementById("apagarChaves").style.visibility = "visible";
                                     document.getElementById("editaModalChave").style.display = "block";
+                                    document.getElementById("salachave").focus();
                                }
                             }
                         }
@@ -576,6 +592,7 @@ if(!isset($_SESSION["usuarioID"])){
                     if(ajax){
                         ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=salvaChave&codigo="+document.getElementById("guardaCod").value
                         +"&numchave="+document.getElementById("numchave").value
+                        +"&chavecompl="+document.getElementById("chavecomplem").value
                         +"&complemchave="+document.getElementById("complemchave").value
                         +"&salachave="+document.getElementById("salachave").value
                         +"&localchave="+document.getElementById("localchave").value
@@ -604,6 +621,74 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
+            function apagaChave(){
+                $.confirm({
+                    title: 'Confirmação',
+                    content: 'Confirma apagar esta chave?<br>Não haverá possibilidade de recuperação.<br>Continua?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=apagaChave&codigo="+document.getElementById("guardaCod").value, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro no servidor.")
+                                            }else if(parseInt(Resp.coderro) === 2){
+                                                $.confirm({
+                                                    title: 'Confirmação!',
+                                                    content: 'Esta chave consta ter sido retirada e ainda não devolvida. <br>Quer apagar mesmo assim?',
+                                                    autoClose: 'Não|30000',
+                                                    draggable: true,
+                                                    buttons: {
+                                                        Sim: function () {
+                                                            ajaxIni();
+                                                            if(ajax){
+                                                                ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=apagaChave_ctl&codigo="+document.getElementById("guardaCod").value, true);
+                                                                ajax.onreadystatechange = function(){
+                                                                    if(ajax.readyState === 4 ){
+                                                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                                                            Resp2 = eval("(" + ajax.responseText + ")");
+                                                                            if(parseInt(Resp2.coderro) === 1){
+                                                                                alert("Houve um erro no servidor.");
+                                                                            }else{
+                                                                                document.getElementById("editaModalChave").style.display = "none";
+                                                                                $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
+                                                                                $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");
+                                                                                $("#faixaagenda").load("modulos/claviculario/agChave1.php?acao=todos");
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                };
+                                                                ajax.send(null);
+                                                            }
+                                                        },
+                                                        Não: function () {}
+                                                    }
+                                                });
+                                            }else{
+                                                document.getElementById("editaModalChave").style.display = "none";
+                                                $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
+                                                $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");
+                                                $("#faixaagenda").load("modulos/claviculario/agChave1.php?acao=todos");
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {}
+                    }
+                });
+            }
+
             function saidaChave(Cod){ // id de chaves
                 document.getElementById("guardaCod").value = Cod;
                 document.getElementById("CodidChave").value = Cod;
@@ -618,7 +703,6 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.");
                                 }else{
-
                                     if(parseInt(Resp.coderro) === 2){
                                         $.confirm({
                                             title: 'Confirmação!',
@@ -1034,6 +1118,40 @@ if(!isset($_SESSION["usuarioID"])){
                 });
             }
 
+            function apagaSaidaChave(Cod, IdChaves){ // só para superusuários
+                $.confirm({
+                    title: 'Confirmação!',
+                    content: 'Confirma apagar esta retirada?',
+                    autoClose: 'Não|15000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=apagaretiradaChave&codigo="+Cod+"&idchaves="+IdChaves, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")"); 
+                                            if(parseInt(Resp.coderro) === 0){
+                                                $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
+                                                $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");
+                                                $("#faixaagenda").load("modulos/claviculario/agChave1.php?acao=todos");
+                                            }else{
+                                                alert("Houve um erro no servidor.")
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {}
+                    }
+                });
+            }
+
             function resumoUsuChaves(){
                 window.open("modulos/claviculario/imprUsuCh1.php?acao=listaUsuarios", "ChavesUsu");
             }
@@ -1090,6 +1208,16 @@ if(!isset($_SESSION["usuarioID"])){
                 return date1 > date2 ? true : false
             }
 
+            function format_CnpjCpf(value){
+                //https://gist.github.com/davidalves1/3c98ef866bad4aba3987e7671e404c1e
+                const CPF_LENGTH = 11;
+                const cnpjCpf = value.replace(/\D/g, '');
+                if (cnpjCpf.length === CPF_LENGTH) {
+                    return cnpjCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/g, "\$1.\$2.\$3-\$4");
+                } 
+                  return cnpjCpf.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g, "\$1.\$2.\$3/\$4-\$5");
+            }
+
             /* Brazilian initialisation for the jQuery UI date picker plugin. */
             /* Written by Leonildo Costa Silva (leocsilva@gmail.com). */
             jQuery(function($){
@@ -1115,10 +1243,10 @@ if(!isset($_SESSION["usuarioID"])){
 
         </script>
     </head>
-    <body>
+    <body class="corClara" onbeforeunload="return mudaTema(0)"> <!-- ao sair retorna os background claros -->
         <?php
         if(!$Conec){
-            echo "Sem contato com o PostGresql";
+            echo "Sem contato com os arquivos. Informe à ATI.";
             return false;
         }
         $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog'");
@@ -1202,6 +1330,7 @@ if(!isset($_SESSION["usuarioID"])){
         $Clav = parEsc("clav", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
         $Chave = parEsc("chave", $Conec, $xProj, $_SESSION["usuarioID"]); // pode pegar chaves
         $FiscClav = parEsc("fisc_clav", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
+        $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
 
         $OpUsuSolic = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave = 1 And ativo = 1 ORDER BY nomeusual, nomecompl");
         $OpUsuAgenda = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave = 1 And ativo = 1 ORDER BY nomeusual, nomecompl");
@@ -1211,20 +1340,31 @@ if(!isset($_SESSION["usuarioID"])){
         FROM ".$xProj.".chaves_ctl GROUP BY TO_CHAR(datasaida, 'MM'), TO_CHAR(datasaida, 'YYYY') ORDER BY TO_CHAR(datasaida, 'YYYY') DESC, TO_CHAR(datasaida, 'MM') DESC ");
         $OpcoesEscAno = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".chaves_ctl.datasaida)::text 
         FROM ".$xProj.".chaves_ctl GROUP BY 1 ORDER BY 1 DESC ");
+        $OpcoesEscMesMov = pg_query($Conec, "SELECT CONCAT(TO_CHAR(datasaida, 'MM'), '/', TO_CHAR(datasaida, 'YYYY')) 
+        FROM ".$xProj.".chaves_ctl GROUP BY TO_CHAR(datasaida, 'MM'), TO_CHAR(datasaida, 'YYYY') ORDER BY TO_CHAR(datasaida, 'YYYY') DESC, TO_CHAR(datasaida, 'MM') DESC ");
+        $OpcoesEscAnoMov = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".chaves_ctl.datasaida)::text 
+        FROM ".$xProj.".chaves_ctl GROUP BY 1 ORDER BY 1 DESC ");
 
         ?>
-        <div style="margin: 20px; padding: 10px; border: 2px solid; border-radius: 10px; min-height: 52px; background: #FFFFF0;">
-            <div class="box" style="position: relative; float: left; width: 17%;">
-            <img src="imagens/settings.png" height="20px;" id="imgChavesconfig" style="cursor: pointer; padding-right: 30px;" onclick="abreChavesConfig();" title="Configurar o acesso às chaves no claviculário da Portaria">
+        <div id="tricoluna0" style="margin: 10px; padding: 10px; border: 2px solid; border-radius: 10px; min-height: 52px;">
+            <div id="tricoluna1" class="box" style="position: relative; float: left; width: 17%;">
+                <img src="imagens/settings.png" height="20px;" id="imgChavesconfig" style="cursor: pointer; padding-right: 30px;" onclick="abreChavesConfig();" title="Configurar o acesso às chaves no claviculário da Portaria">
                 <input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Inserir Nova Chave" onclick="insChave();">
             </div>
-            <div class="box" style="position: relative; float: left; width: 55%; text-align: center;">
-                <h5><img src="imagens/Chave.png" height="40px;" style="padding-right: 20px; padding-bottom: 10px;" title="Controle de Chaves na Portaria">Controle de Chaves Portaria<img src="imagens/Chave.png" height="40px;" style="padding-left: 20px; padding-bottom: 10px;" title="Controle de Chaves na Portaria"></h5>
+            <div id="tricoluna2" class="box" style="position: relative; float: left; width: 55%; text-align: center;">
+                <h5><img src="imagens/Chave.png" height="30px;" style="padding-right: 20px; padding-bottom: 5px;" title="Controle de Chaves na Portaria">Controle de Chaves Portaria<img src="imagens/Chave.png" height="30px;" style="padding-left: 20px; padding-bottom: 5px;" title="Controle de Chaves na Portaria"></h5>
             </div>
-            <div class="box" style="position: relative; float: left; width: 25%; text-align: right;">
+            <div id="tricoluna3" class="box" style="position: relative; float: left; width: 25%; text-align: right;">
+                <div id="selectTema" style="position: relative; float: left; padding-left: 8px;">
+                    <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%;">Tema: </label>
+                    <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" class="etiq" style="cursor: pointer;">&nbsp;Claro</label>
+                    <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" class="etiq" style="cursor: pointer;">&nbsp;Escuro</label>
+                    <label style="padding-right: 5px;"></label>
+                </div>
                 <label style="padding-left: 20px;"></label>
                 <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="abreImprChaves();">PDF</button>
             </div>
+
             <div id="faixaMensagem" style="display: none; position: relative; margin: 70px; padding: 20px; text-align: center;">
                 <br><br><br>Usuário não cadastrado.
             </div>
@@ -1249,27 +1389,33 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="codagenda" value="0" />
         
         <div id="editaModalChave" class="relacmodal">
-            <div class="modal-content-relacChave">
+            <div class="modal-content-relacChave corPreta">
                 <span class="close" onclick="fechaEditaChave();">&times;</span>
                 <label style="color: #666;">Edição:</label>
                 <table style="margin: 0 auto; width: 85%;">
                     <tr>
                         <td class="etiq" style="padding-bottom: 7px;">Chave: </td>
-                        <td style="padding-bottom: 10px;"><input type="text" id="numchave" style="width: 70px; text-align: center;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('complemchave');return false;}" title="Número da chave. Preferencialmente único."/>
-                            <input type="text" id="complemchave" style="width: 250px; text-align: center;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('localchave');return false;}" title="Nome da Sala"/>
-                    </td>
+                        <td style="padding-bottom: 10px;"><input type="text" id="numchave" style="width: 70px; text-align: center;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('chavecomplem');return false;}" title="Número da chave. Preferencialmente único."/>
+                            <input type="text" id="chavecomplem" style="width: 60px; text-align: center;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('salachave');return false;}" title="Complemento do número da Chave"/> <label class="etiqAzul"><- complemento</label>
+                        </td>
                         <td style="padding-bottom: 10px;"></td>
                     </tr>
                     <tr>
-                        <td class="etiq">Local: </td>
-                        <td colspan="3" style="width: 100px;"><input type="text" id="localchave" maxlength="70" style="width: 300px; text-align: left;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('salachave');return false;}" title=""/></td>
+                        <td class="etiq">Sala nº: </td>
+                        <td colspan="3" style="width: 200px;"><input type="text" id="salachave" style="width: 100px; text-align: center;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('complemchave');return false;}" title="Número da sala"/></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td class="etiq">Sala nº: </td>
-                        <td colspan="3" style="width: 100px;"><input type="text" id="salachave" style="width: 100px; text-align: center;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('numchave');return false;}" title=""/></td>
+                        <td class="etiq">Sala Nome: </td>
+                        <td colspan="3" style="width: 100px;"><input type="text" id="complemchave" style="width: 250px; text-align: left;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('localchave');return false;}" title="Nome da sala"/></td>
                         <td></td>
                     </tr>
+                    <tr>
+                        <td class="etiq">Local: </td>
+                        <td colspan="3" style="width: 100px;"><input type="text" id="localchave" maxlength="70" style="width: 300px; text-align: left;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('numchave');return false;}" title=""/></td>
+                        <td></td>
+                    </tr>
+
                     <tr>
                         <td class="etiq">Observações: </td>
                         <td colspan="3" style="width: 100px;"><textarea id="obschave" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="2" cols="40" title="Observações" onchange="modif();"></textarea></td>
@@ -1277,15 +1423,16 @@ if(!isset($_SESSION["usuarioID"])){
                     </tr>
 
                     <tr>
-                        <td colspan="3" style="text-align: center; padding-top: 10px;"><button class="botpadrblue" onclick="salvaEditChave();">Salvar</button></td>
+                        <td style="text-align: center; padding-top: 10px;"><button class="botpadrred" id="apagarChaves" style="font-size: 60%;" onclick="apagaChave();">Apagar</button></td>
+                        <td colspan="2" style="text-align: center; padding-top: 10px;"><button class="botpadrblue" onclick="salvaEditChave();">Salvar</button></td>
                     </tr>
                 </table>
             </div>
         </div> <!-- Fim Modal-->
 
-<!-- Retirada Chave-->
+        <!-- Retirada Chave-->
         <div id="registroRetiradaChave" class="relacmodal">
-            <div class="modal-content-registroChave"> <!-- background transparent-->
+            <div class="modal-content-registroChave corPreta"> <!-- background transparent-->
                 <span class="close" style="font-size: 250%; color: black;" onclick="fechaRetiradaChave();">&times;</span>
 
                 <div style="border: 2px solid red; border-radius: 10px; background: linear-gradient(180deg, white, #fce8e7)">
@@ -1398,9 +1545,9 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
         </div> <!-- Fim Modal-->
 
-<!-- Retorno Chave -->
+        <!-- Retorno Chave -->
         <div id="registroRetornoChave" class="relacmodal">
-            <div class="modal-content-registroChave">
+            <div class="modal-content-registroChave corPreta">
                 <span class="close" style="font-size: 250%; color: black;" onclick="fechaRetornoChave();">&times;</span>
                 <div style="border: 2px solid blue; border-radius: 10px; background: linear-gradient(180deg, white, #89e9eb)">
                     <table style="margin: 0 auto; width: 85%;">
@@ -1478,7 +1625,7 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="4" style="text-align: center;"></td>
                         </tr>
                         <tr>
-                            <td colspan="4" style="text-align: center;">Busca Nome ou CPF de outro Entregador</td>
+                            <td colspan="4" style="text-align: center;">Busca Nome ou CPF de <u>outro Entregador</u></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Procura nome: </td>
@@ -1505,15 +1652,13 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                     </table>
                 </div>
-
-                
             </div>
         </div> <!-- Fim Modal-->
 
 
-<!-- Agenda Chave -->
+        <!-- Agenda Chave -->
         <div id="registroAgendaChave" class="relacmodal">
-            <div class="modal-content-registroChave">
+            <div class="modal-content-registroChave corPreta">
                 <span class="close" style="font-size: 250%; color: black;" onclick="fechaAgendaChave();">&times;</span>
                 <div style="border: 2px solid blue; border-radius: 10px; background: linear-gradient(180deg, white, #FFFF00)">
                     <table style="margin: 0 auto; width: 85%;">
@@ -1549,7 +1694,6 @@ if(!isset($_SESSION["usuarioID"])){
                     </table>
                 </div>
 
-
                 <div style="border: 2px solid red; border-radius: 10px; margin-top: 10px; background: linear-gradient(180deg, white, #FFFF00)">
                     <table style="margin: 0 auto; width: 85%;">
                         <tr>
@@ -1583,7 +1727,6 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                     </table>
                 </div>
-
 
                 <div style="border: 2px solid red; border-radius: 10px; margin-top: 10px; background: linear-gradient(180deg, white, #FFFF00)">
                     <table style="margin: 0 auto; width: 85%;">
@@ -1644,7 +1787,7 @@ if(!isset($_SESSION["usuarioID"])){
 
          <!-- Modal configuração-->
         <div id="modalChavesConfig" class="relacmodal">
-            <div class="modal-content-ChavesControle">
+            <div class="modal-content-ChavesControle corPreta">
                 <span class="close" onclick="fechaModalConfig();">&times;</span>
 
                 <!-- div três colunas -->
@@ -1721,7 +1864,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         <!-- div modal para imprimir em pdf  -->
         <div id="relacimprChaves" class="relacmodal">
-            <div class="modal-content-imprChaves">
+            <div class="modal-content-imprChaves corPreta">
                 <span class="close" onclick="fechaImprChaves();">&times;</span>
                 <h5 id="titulomodal" style="text-align: center;color: #666;">Controle de Chaves Portaria</h5>
                 <h6 id="titulomodal" style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
@@ -1761,6 +1904,43 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                     </table>
                 </div>
+                
+                <div style="margin-top: 5px; border: 2px solid; border-radius: 10px; padding: 10px;">
+                    <table style="margin: 0 auto; width: 95%;">
+                        <tr>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Mensal - Só as movimentadas - Selecione o Mês/Ano: </label></td>
+                            <td>
+                                <select id="selecMesAnoMov" style="font-size: 1rem; width: 90px;" title="Selecione o período.">
+                                    <option value=""></option>
+                                    <?php 
+                                    if($OpcoesEscMesMov){
+                                        while ($Opcoes = pg_fetch_row($OpcoesEscMesMov)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Anual - Só as movimentadas - Selecione o Ano: </label></td>
+                            <td>
+                                <select id="selecAnoMov" style="font-size: 1rem; width: 90px;" title="Selecione o Ano.">
+                                    <option value=""></option>
+                                    <?php 
+                                    if($OpcoesEscAnoMov){
+                                        while ($Opcoes = pg_fetch_row($OpcoesEscAnoMov)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
                 <div style="padding-bottom: 20px;"></div>
            </div>
         </div>
@@ -1772,6 +1952,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <div id="msgdevolv" style="color: white; font-size: 300%; text-align: center;">Chave DEVOLVIDA</div>
             </div>
         </div> <!-- Fim Modal-->
+
         <div id="modalAlerta" class="relacmodal">
             <div class="modal-content-tarjaVerm">
                 <span class="close" onclick="fechaAlerta();">&times;</span>
@@ -1781,6 +1962,8 @@ if(!isset($_SESSION["usuarioID"])){
                 <div id="msgAlerta4" style="color: white; font-size: 150%; text-align: center;"></div>
             </div>
         </div> <!-- Fim Modal-->
+
+        <div id="carregaTema"></div> <!-- carrega a pág modulos/config/carTema.php - onde está a função mudaTema() -->
 
     </body>
 </html>

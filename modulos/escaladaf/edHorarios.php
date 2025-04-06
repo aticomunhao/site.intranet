@@ -49,6 +49,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 <?php 
                 while($tbl3 = pg_fetch_row($rs3)){
                     $Cod = $tbl3[0];
+                    $Letra = $tbl3[1];
                     ?>
                     <tr>
                         <td style="display: none;"></td>
@@ -88,7 +89,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <?php
                         }
                         ?>
-                        <td style="text-align: center; padding-left: 5px;"><img src='imagens/lixeiraPreta.png' height='15px;' style='cursor: pointer; padding-right: 3px;' onclick='apagaLetra(<?php echo $Cod; ?>);' title='Apagar esta letra.'></td>
+                        <td style="text-align: center; padding-left: 5px;"><img src='imagens/lixeiraPreta.png' height='15px;' style='cursor: pointer; padding-right: 3px;' onclick="apagaLetra(<?php echo $Cod; ?>, '<?php echo $Letra; ?>');" title="Apagar esta letra."></td>
                     </tr>
                     <?php
                 }

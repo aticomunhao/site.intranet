@@ -27,7 +27,7 @@
     <div style="text-align: center; margin: 5px;">
         <h5>Agenda</h5>
         <?php 
-        $rs = pg_query($Conec, "SELECT ".$xProj.".chaves2_agd.id, chaves_id, chavenum, chavenumcompl, chavesala, TO_CHAR(datasaida, 'DD/MM/YYYY'), usuretira, cpfretira, telef, chavelocal, datasaida 
+        $rs = pg_query($Conec, "SELECT ".$xProj.".chaves2_agd.id, chaves_id, chavenum, chavenumcompl, chavesala, TO_CHAR(datasaida, 'DD/MM/YYYY'), usuretira, cpfretira, telef, chavelocal, datasaida, chavecompl 
         FROM ".$xProj.".chaves2_agd INNER JOIN ".$xProj.".chaves2 ON ".$xProj.".chaves2_agd.chaves_id = ".$xProj.".chaves2.id 
         WHERE ".$xProj.".chaves2.ativo = 1 And ".$xProj.".chaves2_agd.ativo = 1 ORDER BY datasaida ");
         $row = pg_num_rows($rs);
@@ -40,7 +40,7 @@
                 <div style="border: 2px solid #CFB53B; border-radius: 8px; padding: 5px;">
                     <table style="margin: 0 auto; width:95%">
                         <tr>          
-                            <td colspan="2"><div class="quadrlista" style="border-color: #E90074; font-size: 120%;"> <?php echo str_pad($tbl[2], 3, 0, STR_PAD_LEFT); ?></div>
+                            <td colspan="2"><div class="quadrlista" style="border-color: #E90074; font-size: 120%;"> <?php echo str_pad($tbl[2], 3, 0, STR_PAD_LEFT)." ".$tbl[11]; ?></div>
                             <div class="quadrlista"><label class="etiq">Sala: </label> <?php echo $tbl[4]; ?></div>
                             <div class="quadrlista" style="border: 0px;"></div>
                         </td>

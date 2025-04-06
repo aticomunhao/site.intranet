@@ -284,13 +284,13 @@ if($Acao=="salvanomeempresa"){
 
     $Erro = 0;
     if($Cod > 0){ // salvar
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".empresas_ar SET empresa = '$Nome', valorvisita = $ValorVis  WHERE id = $Cod ");
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".empresas_ar SET empresa = '$Nome', valorvisita = $ValorVis WHERE id = $Cod ");
     }else{ // inserir
         $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".empresas_ar");
         $tblCod = pg_fetch_row($rsCod);
         $Codigo = $tblCod[0];
         $CodigoNovo = ($Codigo+1);
-        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".empresas_ar (id, empresa) VALUES ($CodigoNovo, '$Nome') ");
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".empresas_ar (id, empresa, valorvisita) VALUES ($CodigoNovo, '$Nome', $ValorVis) ");
     }
     if(!$rs){
         $Erro = 1;

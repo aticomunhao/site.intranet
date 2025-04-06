@@ -70,7 +70,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(dataleitura4, 'DD/MM/YYYY'), date_part('dow', dataleitura4), leitura4, dataleitura4 FROM ".$xProj.".leitura_eletric WHERE colec = 4 And ativo = 1 ORDER BY dataleitura4 DESC ");
 
             ?>
-            <div  style="text-align: center;"><label class="titRelat">Energia Injetada<label></div>
+            <div style="text-align: center;"><label class="titRelat corPreta">Energia Injetada<label></div>
                 <table id="idTabela" class="display" style="margin: 0 auto; width: 95%;">
                     <thead>
                         <tr>

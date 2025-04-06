@@ -12,7 +12,7 @@ session_start();
             $AnoIni = date("Y"); 
             echo $AnoIni;
             ?>
-            ATI <label style="font-size: 90%;">a0097 </label>  <!-- 31/Mar/2025 -->
+            ATI <label style="font-size: 90%;">a0098 </label>  <!-- 07/Abr/2025 -->
             <label style="padding-left: 70px; font-size: 90%;">Este site não usa cookies</label>
         </div>
         <div style="padding-right: 20px; position: relative; float: right;">

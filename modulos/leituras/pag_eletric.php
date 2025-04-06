@@ -77,6 +77,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("selecVisuMesAnoEletric").style.visibility = "hidden";
                     document.getElementById("etiqselecVisuAnoEletric").style.visibility = "hidden";
                     document.getElementById("selecVisuAnoEletric").style.visibility = "hidden";
+                    document.getElementById("selectTema").style.visibility = "hidden"; 
 
                     if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 || parseInt(document.getElementById("FiscEletric").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // // se estiver marcado em cadusu para fazer a leitura
                         if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
@@ -85,6 +86,8 @@ if(!isset($_SESSION["usuarioID"])){
                             document.getElementById("selecVisuMesAnoEletric").style.visibility = "visible";
                             document.getElementById("etiqselecVisuAnoEletric").style.visibility = "visible";
                             document.getElementById("selecVisuAnoEletric").style.visibility = "visible";
+                            document.getElementById("botImprimir").style.visibility = "visible";
+                            document.getElementById("selectTema").style.visibility = "visible";  
                             $("#container5").load("modulos/leituras/carEletric.php");
                             $("#container6").load("modulos/leituras/carEstatEletric.php");
                             //para inserir tem que estar marcado no cadastro de usuários e ter o nível adm estabelecido nos parâmetros do sistema
@@ -92,6 +95,7 @@ if(!isset($_SESSION["usuarioID"])){
                             $("#container5").load("modulos/leituras/carMsg.php?msgtipo=2");
                             $("#container6").load("modulos/leituras/carMsg.php?msgtipo=2");
                         }
+                        $('#carregaTema').load('modulos/config/carTema.php?carpag=livroReg');
                     }else{
                         $("#container5").load("modulos/leituras/carMsg.php?msgtipo=1");
                         $("#container6").load("modulos/leituras/carMsg.php?msgtipo=1");
@@ -100,10 +104,10 @@ if(!isset($_SESSION["usuarioID"])){
                         document.getElementById("botImprimir").disabled = true;
                     }
                     //para editar obedece ao nivel administrativo
-                    if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) || parseInt(document.getElementById("UsuAdm").value) > 6){
-                        document.getElementById("botImprimir").style.visibility = "visible"; 
+//                    if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) || parseInt(document.getElementById("UsuAdm").value) > 6){
+//                        document.getElementById("botImprimir").style.visibility = "visible"; 
 //                        document.getElementById("imgEletricconfig").style.visibility = "visible"; 
-                    }
+//                    }
                     if(parseInt(document.getElementById("InsLeituraEletric").value) === 0){
                         document.getElementById("botInserir").style.visibility = "hidden"; 
                     }
@@ -238,11 +242,13 @@ if(!isset($_SESSION["usuarioID"])){
                 });
 
                 $("#selecVisuMesAnoEletric").change(function(){
+                    document.getElementById("selecVisuAnoEletric").value = "";
                     $("#container5").load("modulos/leituras/carEletric.php?mesano="+encodeURIComponent(document.getElementById("selecVisuMesAnoEletric").value));
                     $("#container6").load("modulos/leituras/carEstatEletric.php?mesano="+encodeURIComponent(document.getElementById("selecVisuMesAnoEletric").value));
                 });
 
                 $("#selecVisuAnoEletric").change(function(){
+                    document.getElementById("selecVisuMesAnoEletric").value = "";
                     $("#container5").load("modulos/leituras/carEletric.php?ano="+encodeURIComponent(document.getElementById("selecVisuAnoEletric").value));
                     $("#container6").load("modulos/leituras/carEstatEletric.php?ano="+encodeURIComponent(document.getElementById("selecVisuAnoEletric").value));
                 });
@@ -695,7 +701,7 @@ if(!isset($_SESSION["usuarioID"])){
                 };
         </script>
     </head>
-    <body>
+    <body class="corClara" onbeforeunload="return mudaTema(0)"> <!-- ao sair retorna os background claros -->
         <?php
             $Hoje = date('d/m/Y');
             $Erro = 0;
@@ -716,6 +722,7 @@ if(!isset($_SESSION["usuarioID"])){
             $Menu3 = escMenu($Conec, $xProj, 3);
             $DiaMedia = parAdm("dialeit_eletr", $Conec, $xProj);
             $ValorKwh = parAdm("valorkwh", $Conec, $xProj); // é o mesmo para pag_eletric2 e 3
+            $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
             
             // Preenche caixa de escolha mes/ano para impressão
             $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(dataleitura1, 'MM'), '/', TO_CHAR(dataleitura1, 'YYYY')) 
@@ -747,8 +754,8 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardaUltLeitura" value = "0" />
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
-            <div class="row"> <!-- botões Inserir e Imprimir-->
-                <div class="col" style="margin: 0 auto; text-align: left;">
+            <div id="tricoluna0" class="row" style="margin-left: 5px; margin-right: 5px;"> <!-- botões Inserir e Imprimir-->
+                <div id="tricoluna1" class="col" style="margin: 0 auto; text-align: left;">
                     <img src="imagens/settings.png" height="20px;" id="imgEletricconfig" style="cursor: pointer; padding-left: 30px;" onclick="abreEletric2Config();" title="Configurar o acesso ao processamento">
                     <label style="padding-right: 30px;"></label>
                     <button id="botInserir" class="botpadrblue" onclick="insereModal();" title="Inserir leitura do medidor de energia elétrica">Inserir</button>
@@ -765,13 +772,17 @@ if(!isset($_SESSION["usuarioID"])){
                         }
                         ?>
                     </select>
-
                 </div> <!-- quadro -->
-                <div class="col" style="text-align: center;">Controle do Consumo de Energia Elétrica<?php echo " - ".$Menu1; ?></div> <!-- espaçamento entre colunas  -->
-                <div class="col" style="margin: 0 auto; text-align: center;">
-                    
-                    <label id="etiqselecVisuAnoEletric" style="padding-left: 20px; font-size: .8rem;">Visualisar Ano: </label>
-                    <select id="selecVisuAnoEletric" style="font-size: .8rem; width: 90px;" title="Selecione o ano a visualisar.">
+                <div id="tricoluna2" style="width: 25%; text-align: center;">Controle do Consumo de Energia Elétrica<?php echo " - ".$Menu1; ?></div> <!-- espaçamento entre colunas  -->
+                <div id="tricoluna3" class="col" style="margin: 0 auto; text-align: center;">
+                    <div id="selectTema" style="position: relative; float: left">
+                        <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%;">Tema: </label>
+                        <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" class="etiq" style="cursor: pointer;">&nbsp;Claro</label>
+                        <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" class="etiq" style="cursor: pointer;">&nbsp;Escuro</label>
+                        <label style="padding-right: 5px;"></label>
+                    </div>
+                    <label id="etiqselecVisuAnoEletric" style="font-size: 80%;">Visualisar Ano: </label>
+                    <select id="selecVisuAnoEletric" style="font-size: 80%; width: 70px;" title="Selecione o ano a visualisar.">
                         <option value=""></option>
                         <?php 
                         if($OpcoesVisuAno){
@@ -782,15 +793,15 @@ if(!isset($_SESSION["usuarioID"])){
                         }
                         ?>
                     </select>
-                    <label style="padding-right: 30px;"></label>
+                    <label style="padding-right: 5px;"></label>
 
-                    <img src="imagens/iconGraf.png" height="46px;" id="botgrafico" style="cursor: pointer;" onclick="abreGrafico();" title="Gráfico de consumo anual">
-                    <label styke="padding-right: 30px;"></label>
-                    <button id="botImprimir" class="botpadrred" onclick="abreImprLeitura();">PDF</button>
+                    <img src="imagens/iconGraf.png" height="36px;" id="botgrafico" style="cursor: pointer;" onclick="abreGrafico();" title="Gráfico de consumo anual">
+                    <label styke="padding-right: 5px;"></label>
+                    <button id="botImprimir" class="botpadrred" style="padding-left: 5px; padding-right: 5px;" onclick="abreImprLeitura();">PDF</button>
                 </div> <!-- quadro -->
             </div>
 
-            <div style="padding: 10px; display: flex; align-items: center; justify-content: center;"> 
+            <div style="margin-top: 5px; display: flex; align-items: center; justify-content: center; border-top: 2px solid green;"> 
                 <div class="row" style="width: 95%;">
                     <div id="container5" class="col quadro" style="margin: 0 auto; width: 100%;"></div> <!-- quadro -->
 
@@ -802,9 +813,11 @@ if(!isset($_SESSION["usuarioID"])){
             </div> <!-- container  -->
         </div>
 
+        <div id="carregaTema"></div> <!-- carrega a pág modulos/config/carTema.php - onde está a função mudaTema() -->
+
         <!-- div modal para imprimir em pdf  -->
         <div id="relacimprLeituraEletric" class="relacmodal">
-            <div class="modal-content-imprLeitura">
+            <div class="modal-content-imprLeitura corPreta">
                 <span class="close" onclick="fechaModalImpr();">&times;</span>
                 <h5 id="titulomodal" style="text-align: center;color: #666;">Controle do Consumo de Eletricidade<?php echo " - ".$Menu1; ?></h5>
                 <h6 id="titulomodal" style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
@@ -851,7 +864,7 @@ if(!isset($_SESSION["usuarioID"])){
 
          <!-- Modal configuração-->
          <div id="modalEletric2Config" class="relacmodal">
-            <div class="modal-content-Eletric2Controle">
+            <div class="modal-content-Eletric2Controle corPreta">
                 <span class="close" onclick="fechaEletric2Config();">&times;</span>
                 <!-- div três colunas -->
                 <div class="container" style="margin: 0 auto;">
@@ -887,9 +900,6 @@ if(!isset($_SESSION["usuarioID"])){
                                             <input type="text" id="configvalorkwh" style="width: 90px; text-align: left; border: 1px solid #666; border-radius: 5px;" value="<?php echo $ValorKwh; ?>" onchange="salvaValorKwh();" onkeypress="if(event.keyCode===13){javascript:foco('configSelecEletric');return false;}" title="Valor em Reais."/>
                                         </td>
                                     </tr>
-
-      
-
                                 </table>
                             </div>
                         </div>

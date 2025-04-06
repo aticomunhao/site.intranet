@@ -620,9 +620,6 @@ if(!isset($_SESSION["usuarioID"])){
     </head>
     <body class="corClara" onbeforeunload="return mudaTema(0)"> <!-- ao sair retorna os background claros -->
         <?php
-
-$VarCor = "black";
-
             $Hoje = date('d/m/Y');
             $Erro = 0;
             $rs = pg_query($Conec, "SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_schema = 'cesb' And table_name = 'leitura_agua'");

@@ -43,6 +43,11 @@
         $Ano = $Proc[1];
     }
 
+    //Procura o último dia do mês para inserir a contagem de vale refeição
+    $rs2 = pg_query($Conec, "SELECT MAX(TO_CHAR(dataescala, 'DD')) FROM ".$xProj.".escaladaf WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano'");
+    $tbl2 = pg_fetch_row($rs2);
+    $UltDia = $tbl2[0];
+
     if($Acao == "listaturnos"){
         $objPHPExcel = new Spreadsheet();
 
@@ -77,7 +82,8 @@
         $objPHPExcel->getActiveSheet()->getStyle('A2:F2')->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_RED);
 
         $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(dataescala, 'DD/MM/YYYY'), TO_CHAR(dataescala, 'DD'), date_part('dow', dataescala), feriado 
-        FROM ".$xProj.".escaladaf WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo 
+        FROM ".$xProj.".escaladaf 
+        WHERE ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo 
         ORDER BY dataescala");
         $row0 = pg_num_rows($rs0);
         if($row0 > 0){
@@ -86,36 +92,80 @@
                 $Cod = $tbl0[0];
                 $Data = $tbl0[1];
                 $DiaId = $tbl0[0];
+                $Dia = $tbl0[2];
                 $objPHPExcel->getActiveSheet()->setCellValue('A'.$Num, $Data);
                 $objPHPExcel->getActiveSheet()->setCellValue('B'.$Num, $Semana_Extract[$tbl0[3]]);
                 
-                $rs1 = pg_query($Conec, "SELECT nomecompl, nomeusual, letraturno, turnoturno, destaque, date_part('dow', dataescala), feriado, valepag 
-                FROM ".$xProj.".escaladaf INNER JOIN (".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_ins.poslog_id = ".$xProj.".poslog.pessoas_id) ON ".$xProj.".escaladaf.id = ".$xProj.".escaladaf_ins.escaladaf_id  
-                WHERE escaladaf_id = $DiaId And grupo_id = $NumGrupo And poslog.eft_daf = 1 And escaladaf.ativo = 1 And escaladaf_ins.ativo = 1 And poslog.ativo = 1 ORDER BY nomeusual, nomecompl");
-                $row1 = pg_num_rows($rs1);
-                if($row1 > 0){
-                    while($tbl1 = pg_fetch_row($rs1)){
-                        if(is_null($tbl1[1]) || $tbl1[1] == ""){
-                            $Nome = substr($tbl1[0], 0, 20); //nome completo
+                $rs2 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog 
+                WHERE esc_grupo = $NumGrupo And poslog.eft_daf = 1 And poslog.ativo = 1 ORDER BY ordem_daf, nomeusual, nomecompl ");
+                $row2 = pg_num_rows($rs2);
+                if($row2 > 0){
+                    while($tbl2 = pg_fetch_row($rs2)){
+                        $PoslogId = $tbl2[0];
+                        if(is_null($tbl2[2]) || $tbl2[2] == ""){
+                            $Nome = substr($tbl2[1], 0, 20); //nome completo
                         }else{
-                            $Nome = substr($tbl1[1], 0, 20); //nome usual
-                        }
-
-                        $Letra = $tbl1[2];
-                        $Turno = $tbl1[3];
-                        $Vale = $tbl1[7];
-                        $DescVale = "Ok";
-                        if($Vale == 0){
-                            $DescVale = "Sem Vale";
+                            $Nome = substr($tbl2[2], 0, 20); //nome usual
                         }
                         $objPHPExcel->getActiveSheet()->setCellValue('C'.$Num, $Nome);
-                        $objPHPExcel->getActiveSheet()->setCellValue('D'.$Num, $Letra);
-                        $objPHPExcel->getActiveSheet()->setCellValue('E'.$Num, $Turno);
-                        $objPHPExcel->getActiveSheet()->setCellValue('F'.$Num, $DescVale);
+
+                        $rs1 = pg_query($Conec, "SELECT nomecompl, nomeusual, letraturno, turnoturno, destaque, date_part('dow', dataescala), feriado, valepag, poslog_id 
+                        FROM ".$xProj.".escaladaf INNER JOIN (".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".poslog ON ".$xProj.".escaladaf_ins.poslog_id = ".$xProj.".poslog.pessoas_id) ON ".$xProj.".escaladaf.id = ".$xProj.".escaladaf_ins.escaladaf_id  
+                        WHERE poslog.pessoas_id = $PoslogId And escaladaf_id = $DiaId And grupo_id = $NumGrupo And poslog.eft_daf = 1 And escaladaf.ativo = 1 And escaladaf_ins.ativo = 1 And poslog.ativo = 1 ORDER BY ordem_daf, nomeusual, nomecompl");
+                        $row1 = pg_num_rows($rs1);
+                        if($row1 > 0){
+                            while($tbl1 = pg_fetch_row($rs1)){
+                                $PoslogId = $tbl1[8];
+                                $Letra = $tbl1[2];
+                                $Turno = $tbl1[3];
+                                $Vale = $tbl1[7];
+                                $DescVale = "Ok";
+                                if($Vale == 0){
+                                    $DescVale = "Sem Vale";
+                                }
+                                $objPHPExcel->getActiveSheet()->setCellValue('D'.$Num, $Letra);
+                                $objPHPExcel->getActiveSheet()->setCellValue('E'.$Num, $Turno);
+                                $objPHPExcel->getActiveSheet()->setCellValue('F'.$Num, $DescVale);
+                            }
+                        }else{ // se não encontrar, está em branco
+                            $objPHPExcel->getActiveSheet()->setCellValue('D'.$Num, "-");
+                            $objPHPExcel->getActiveSheet()->setCellValue('E'.$Num, "-");
+                            $objPHPExcel->getActiveSheet()->setCellValue('F'.$Num, "-");
+                        }
                         $Num++;
                     }
                 }
-                $Num++;
+            }
+        }
+
+
+        //Contabem de serviços
+        $rs4 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog 
+        WHERE esc_grupo = $NumGrupo And poslog.eft_daf = 1 And poslog.ativo = 1 ORDER BY ordem_daf, nomeusual, nomecompl ");
+        $row4 = pg_num_rows($rs4);
+        if($row4 > 0){
+            $Num2 = ($Num+4); 
+            $objPHPExcel->getActiveSheet()->getStyle('C'.$Num2)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_RED);
+            $objPHPExcel->getActiveSheet()->setCellValue('C'.$Num2, "Contagem:");
+            $Num2++;
+
+            while($tbl4 = pg_fetch_row($rs4)){
+                $PoslogId = $tbl4[0];
+                if(is_null($tbl4[2]) || $tbl4[2] == ""){
+                    $Nome = substr($tbl4[1], 0, 20); //nome completo
+                }else{
+                    $Nome = substr($tbl4[2], 0, 20); //nome usual
+                }
+
+                $rs5 = pg_query($Conec, "SELECT COUNT(poslog_id) 
+                FROM ".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".escaladaf_turnos ON ".$xProj.".escaladaf_ins.turnos_id = ".$xProj.".escaladaf_turnos.id 
+                WHERE poslog_id = $PoslogId And TO_CHAR(dataescalains, 'MM') = '$Mes' And  TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo And infotexto = 0 And valepag = 1");
+                $tbl5 = pg_fetch_row($rs5);
+                $Total = $tbl5[0];
+
+                $objPHPExcel->getActiveSheet()->setCellValue('C'.$Num2, $Nome);
+                $objPHPExcel->getActiveSheet()->setCellValue('D'.$Num2, $Total);
+                $Num2++;
             }
         }
 

@@ -98,7 +98,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             $Leit24Ant = 0;
             $Cont = 0;
             ?>
-            <div  style="text-align: center;"><label class="titRelat">Leituras Medidor Eletricidade da Operadora<?php echo " - ".$Menu2; ?><label></div>
+            <div  style="text-align: center;"><label class="titRelat corPreta">Leituras Medidor Eletricidade da Operadora<?php echo " - ".$Menu2; ?><label></div>
                 <table id="idTabela" class="display" style="margin: 0 auto; width: 95%;">
                     <thead>
                         <tr>
@@ -143,8 +143,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
                                 if(strtotime($DataLinha) == strtotime($DataIni)){  // DataIni tem que ser igual ao dia da primeira leitura anotado em Parâmetros do Sistema
                                     $Leit24Ant = $ValorIni;  //1696.485;
-//echo "DataLinha é = DataIni";
-//echo "<br>";
                                 }else{
                                     $rs1 = pg_query($Conec, "SELECT leitura2 FROM ".$xProj.".leitura_eletric WHERE dataleitura2 = (date '$DataLinha' - 1) And colec = 2 And ativo = 1");
                                     $row1 = pg_num_rows($rs1);
@@ -170,13 +168,13 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <tr>
                             <td style="display: none;"></td>
                             <td style="display: none;"><?php echo $tbl0[0]; ?></td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%; <?php if(strtotime(date($tbl0[4])) != strtotime(date($DiaIni))){echo 'color: red; font-weight: bold;'; $DiaIni = date('Y/m/d', strtotime($DiaIni. '- 1 day'));}else{echo 'color: black; font-weight: normal;';} ?>" title="Data">
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%; <?php if(strtotime(date($tbl0[4])) != strtotime(date($DiaIni))){echo 'color: red; font-weight: bold;'; $DiaIni = date('Y/m/d', strtotime($DiaIni. '- 1 day'));}else{echo 'font-weight: normal;';} ?>" title="Data">
                                 <?php
                                 echo $tbl0[1];
                                 ?>
                             </td> <!-- Data -->
                             <td style="border-bottom: 1px solid gray; text-align: center; font-size: 70%;" title="Dia da Semana"><?php echo $Sem; ?></td> <!-- dia da semana --> 
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%; <?php if($Leit07 == 0){echo 'color: red;';}else{echo 'color: black;';} ?>" title="Leitura"><?php echo $Leit07; ?></td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%; <?php if($Leit07 == 0){echo 'color: red;';} ?>" title="Leitura"><?php echo $Leit07; ?></td>
                             <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;" title="Consumo do dia"><?php echo $Cons1." kWh"; ?></td>
                         </tr>
                         <?php
@@ -195,7 +193,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
         <!-- div modal para registrar leitura  -->
         <div id="relacmodalEletric" class="relacmodal">
-            <div class="modal-content-Eletric">
+            <div class="modal-content-Eletric corPreta">
                 <span class="close" onclick="fechaModal();">&times;</span>
                 <h5 id="titulomodal" style="text-align: center; color: #666;">Registrar Leitura Medidor Eletricidade</h5>
                 <div style="border: 2px solid blue; border-radius: 10px;">

@@ -22,8 +22,7 @@ if(!isset($_SESSION["usuarioID"])){
             $(document).ready(function(){
                 $("#mostraSlides").load("modulos/slides/carSlides.php");
                 if(parseInt(document.getElementById("guardamsg").value) === 1){
-//                    document.getElementById("slidecarregado").src = "modulos/slides/imagens/"+document.getElementById("arqslide").value;
-                    document.getElementById("slidecarregado").src = "modulos/conteudo/arquivos/"+document.getElementById("arqslide").value;
+                    document.getElementById("slidecarregado").src = "modulos/conteudo/arquivos/"+document.getElementById("arqslide").value; //modulos/slides/imagens/
                     document.getElementById("modalEditaSlide").style.display = "block";
                 }
                 if(parseInt(document.getElementById("guardamsg").value) === 2){
@@ -108,12 +107,6 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="arqslide" value="<?php if(isset($_SESSION['arquivo'])){ echo $_SESSION['arquivo'];}else{echo "";} ?>" />
         <input type="hidden" id="guardanum" value="<?php if(isset($_SESSION['gerenum'])){ echo $_SESSION['gerenum'];}else{echo "0";} ?>" /> 
 
-<?php
-if($_SESSION["usuarioID"] == 3){
-    echo "Arquivo: ".$_SESSION['arquivo'];
-}
-?>
-
         <div id="mostraSlides" style="margin: 20px auto; text-align: center; padding: 40px;"></div>
 
         <div id="buscaArquivo" style="position: relative; float: left; width: 99%; display: none; margin: 0 auto; text-align: center; padding: 30px;">
@@ -168,11 +161,10 @@ if($_SESSION["usuarioID"] == 3){
                     request.addEventListener('load', function(e){
                         $form.find('.progress-bar').addClass('progress-bar-success').html('upload completo...');
                         //Atualizar a página após o upload completo
-//                      setTimeout("window.open(self.location, '_self');", 1000);
                         setTimeout("$('#container3').load('modulos/slides/gereslide.php')", 2000);
                     });
                     //Arquivo responsável em fazer o upload do arquivo
-                    request.open("post", "modulos/slides/slideUpLoad.php?numslide="+document.getElementById("guardanum").value);
+                    request.open("post", "modulos/slides/slideUpload.php?numslide="+document.getElementById("guardanum").value);
                     request.send(formdata);
                 }
             });

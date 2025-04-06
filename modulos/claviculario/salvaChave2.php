@@ -16,7 +16,7 @@ if(isset($_REQUEST["acao"])){
         $UsuRetira = "";
         $NomeRetira = "";
         $Cod = (int) filter_input(INPUT_GET, 'codigo'); 
-        $rs = pg_query($Conec, "SELECT chavenum, chavenumcompl, chavelocal, chavesala, chaveobs FROM ".$xProj.".chaves2 WHERE id = $Cod");
+        $rs = pg_query($Conec, "SELECT chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, chavecompl FROM ".$xProj.".chaves2 WHERE id = $Cod");
         $row = pg_num_rows($rs);
         if($row > 0){
             $tbl = pg_fetch_row($rs);
@@ -45,7 +45,7 @@ if(isset($_REQUEST["acao"])){
                 }
             }
         }
-        $var = array("coderro"=>$Erro, "chavenum"=>$ChaveNum, "chavenumcompl"=>$tbl[1], "chavelocal"=>$tbl[2], "chavesala"=>$tbl[3], "chaveobs"=>$tbl[4], "nomeagendado"=>$NomeRetira);
+        $var = array("coderro"=>$Erro, "chavenum"=>$ChaveNum, "chavecompl"=>$tbl[5], "chavenumcompl"=>$tbl[1], "chavelocal"=>$tbl[2], "chavesala"=>$tbl[3], "chaveobs"=>$tbl[4], "nomeagendado"=>$NomeRetira);
         $responseText = json_encode($var);
         echo $responseText;
     }
@@ -54,20 +54,21 @@ if(isset($_REQUEST["acao"])){
         $Erro = 0;
         $Cod = (int) filter_input(INPUT_GET, 'codigo'); 
         $Num = (int) filter_input(INPUT_GET, 'numchave');
+        $ComplNum =  trim(strtoupper(filter_input(INPUT_GET, 'chavecompl'))); 
         $Compl =  filter_input(INPUT_GET, 'complemchave'); 
         $Sala =  filter_input(INPUT_GET, 'salachave'); 
         $Local =  filter_input(INPUT_GET, 'localchave'); 
         $Obs =  filter_input(INPUT_GET, 'obschave'); 
 
         if($Cod > 0){
-            $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves2 SET chavenum = $Num, chavenumcompl = '$Compl', chavelocal = '$Local', chavesala = '$Sala', chaveobs = '$Obs', usuedit = ". $_SESSION['usuarioID'].", dataedit = NOW()  WHERE id = $Cod");
+            $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves2 SET chavenum = $Num, chavecompl = '$ComplNum', chavenumcompl = '$Compl', chavelocal = '$Local', chavesala = '$Sala', chaveobs = '$Obs', usuedit = ". $_SESSION['usuarioID'].", dataedit = NOW()  WHERE id = $Cod");
         }else{
             $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves2");
             $tblCod = pg_fetch_row($rsCod);
             $CodigoNovo = $tblCod[0]+1;
 
-            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".chaves2 (id, chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente, usuins, datains) 
-            VALUES ($CodigoNovo, $Num, '$Compl', '$Local', '$Sala', '$Obs', 1, ". $_SESSION['usuarioID'].", NOW()) ");
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".chaves2 (id, chavenum, chavecompl, chavenumcompl, chavelocal, chavesala, chaveobs, presente, usuins, datains) 
+            VALUES ($CodigoNovo, $Num, '$ComplNum', '$Compl', '$Local', '$Sala', '$Obs', 1, ". $_SESSION['usuarioID'].", NOW()) ");
         }
         
         if(!$rs){
@@ -513,5 +514,54 @@ if(isset($_REQUEST["acao"])){
         echo $responseText;
     }
 
+    if($Acao == "apagaretiradaChave"){
+        $Erro = 0;
+        $Cod = (int) filter_input(INPUT_GET, 'codigo'); // id de chaves2_ctl
+        $CodIdChaves = (int) filter_input(INPUT_GET, 'idchaves2'); // id de chaves2
+        pg_query($Conec, "UPDATE ".$xProj.".chaves2 SET presente = 1 WHERE id = $CodIdChaves");
+        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".chaves2_ctl SET ativo = 0 WHERE id = $Cod");
+        if(!$rs1){
+            $Erro = 1;
+        }
+        $var = array("coderro"=>$Erro);
+        $responseText = json_encode($var);
+        echo $responseText;
+    }
+
+    if($Acao == "apagaChave"){
+        $Erro = 0;
+        $Cod = (int) filter_input(INPUT_GET, 'codigo'); // id de chaves
+
+        $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves2_ctl WHERE id = $Cod And usudevolve = 0");
+        $row = pg_num_rows($rs);
+        if($row == 1){
+            $Erro = 2; // chave ainda não voltou
+            $var = array("coderro"=>$Erro);
+            $responseText = json_encode($var);
+            echo $responseText;
+            return false;
+        }
+
+        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".chaves2 SET ativo = 0 WHERE id = $Cod");
+        if(!$rs1){
+            $Erro = 1;
+        }
+        $var = array("coderro"=>$Erro);
+        $responseText = json_encode($var);
+        echo $responseText;
+    }
+
+    if($Acao == "apagaChave_ctl"){
+        $Erro = 0; // apagar chave que ainda não voltou
+        $Cod = (int) filter_input(INPUT_GET, 'codigo'); 
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves2_ctl SET ativo = 0 WHERE chaves_id = $Cod And usudevolve = 0 ");
+        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".chaves2 SET ativo = 0 WHERE id = $Cod");
+        if(!$rs1){
+            $Erro = 1;
+        }
+        $var = array("coderro"=>$Erro);
+        $responseText = json_encode($var);
+        echo $responseText;
+    }
 
 }

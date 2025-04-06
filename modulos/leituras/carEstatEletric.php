@@ -22,7 +22,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         $Menu2 = escMenu($Conec, $xProj, 2);
         $Menu3 = escMenu($Conec, $xProj, 3);
         ?>
-        <div style="text-align: center;"><label class="titRelat">Controle do Consumo de Eletricidade<?php echo " - ".$Menu1; ?><label></div>
+        <div style="text-align: center;"><label class="titRelat corPreta">Controle do Consumo de Eletricidade<?php echo " - ".$Menu1; ?><label></div>
         <?php
         $mes_extenso = array(
             '01' => 'Janeiro',
@@ -174,12 +174,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     $Injet = 0;
                 }
 
-
                 $Eletric2Mes = buscaEletric2Mes($Conec, $xProj, $Ano, $Mes, $DiaMedia);
                 $Eletric2MesAnt = buscaEletric2Mes($Conec, $xProj, $Ano, $MesAnt, $DiaMedia);
                 $Eletric3Mes = buscaEletric3Mes($Conec, $xProj, $Ano, $Mes, $DiaMedia);
                 $Eletric3MesAnt = buscaEletric3Mes($Conec, $xProj, $Ano, $MesAnt, $DiaMedia);
-
 
                 if($LeitMesAtual == 0 || $LeitMesAnt == 0){ // ainda não chegou o dia
                     if($LeitMesAtual == 0){
@@ -195,7 +193,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     $Fatura = "R$ ".number_format((($LeitMesAtual - $LeitMesAnt)*$FatorCor-$Injet)*$CalcValorKwh, 2, ",",".");
                 }
                 ?>
-                <div style="border: 1px solid; border-radius: 10px">
+                <div style="border: 1px solid; border-radius: 10px;">
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>
                             <td style="font-size: 120%; font-weight: bold;"><?php echo $mes_extenso[$Mes]." ".$Ano; ?></td>

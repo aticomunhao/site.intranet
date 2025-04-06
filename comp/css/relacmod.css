@@ -419,7 +419,7 @@
     color: black;
     background-color: #FFFF00;
  }
- .botpadr:hover, .botpadrred:hover, .botpadrblue:hover, .botpadrTijolo:hover, .botpadramarelo:hover {
+ .resetbot:hover, .botpadr:hover, .botpadrred:hover, .botpadrblue:hover, .botpadrTijolo:hover, .botpadramarelo:hover {
     border-radius: 10px;
 }
 .divbot{
