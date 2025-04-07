@@ -67,8 +67,8 @@ if(isset($_REQUEST["acao"])){
             $tblCod = pg_fetch_row($rsCod);
             $CodigoNovo = $tblCod[0]+1;
 
-            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".chaves2 (id, chavenum, chavecompl, chavenumcompl, chavelocal, chavesala, chaveobs, presente, usuins, datains) 
-            VALUES ($CodigoNovo, $Num, '$ComplNum', '$Compl', '$Local', '$Sala', '$Obs', 1, ". $_SESSION['usuarioID'].", NOW()) ");
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".chaves2 (id, chavenum, chavecompl, chavenumcompl, chavelocal, chavesala, chaveobs, presente, usuins, datains, ativo) 
+            VALUES ($CodigoNovo, $Num, '$ComplNum', '$Compl', '$Local', '$Sala', '$Obs', 1, ". $_SESSION['usuarioID'].", NOW(), 1) ");
         }
         
         if(!$rs){
@@ -114,7 +114,7 @@ if(isset($_REQUEST["acao"])){
     if($Acao == "buscaNumero"){
         $Erro = 0;
         $Prox = 1;
-        $rs = pg_query($Conec, "SELECT MAX(chavenum) FROM ".$xProj.".chaves2");
+        $rs = pg_query($Conec, "SELECT MAX(chavenum) FROM ".$xProj.".chaves2 WHERE ativo = 1");
         $tbl = pg_fetch_row($rs);
         $Prox = ($tbl[0]+1);
     
