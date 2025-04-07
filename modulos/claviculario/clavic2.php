@@ -715,6 +715,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             buttons: {
                                                 Sim: function () {
                                                     document.getElementById("sainumchave").value = Resp.chavenum;
+                                                    document.getElementById("saichavecomplem").value = Resp.chavecompl;
                                                     document.getElementById("sailocalchave").value = Resp.chavelocal;
                                                     document.getElementById("saisalachave").value = Resp.chavesala;
                                                     document.getElementById("saicomplemchave").value = Resp.chavenumcompl;
@@ -727,13 +728,14 @@ if(!isset($_SESSION["usuarioID"])){
                                                     document.getElementById("guardaCPF").value = "";
                                                     document.getElementById("resultcpf").innerHTML = "";
                                                     document.getElementById("resultsetor").innerHTML = "";
-                                                    document.getElementById("codagenda").value = 0; // também é usado na funação entregaChave
+                                                    document.getElementById("codagenda").value = 0; // também é usado na função entregaChave
                                                 },
                                                 Não: function () {}
                                             }
                                         });
                                     }else{
                                         document.getElementById("sainumchave").value = Resp.chavenum;
+                                        document.getElementById("saichavecomplem").value = Resp.chavecompl;
                                         document.getElementById("sailocalchave").value = Resp.chavelocal;
                                         document.getElementById("saisalachave").value = Resp.chavesala;
                                         document.getElementById("saicomplemchave").value = Resp.chavenumcompl;
@@ -746,7 +748,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("guardaCPF").value = "";
                                         document.getElementById("resultcpf").innerHTML = "";
                                         document.getElementById("resultsetor").innerHTML = "";
-                                        document.getElementById("codagenda").value = 0; // também é usado na funação entregaChave
+                                        document.getElementById("codagenda").value = 0; // também é usado na função entregaChave
                                     }
                                 }
                             }
@@ -758,6 +760,24 @@ if(!isset($_SESSION["usuarioID"])){
 
             function entregaChave(){
                 if(document.getElementById("guardaCPF").value == ""){
+                    var nHora = new Date(); 
+                    var hora = nHora.getHours();
+                    var Cumpr = "Bom Dia!";
+                    if(hora >= 12){
+                        Cumpr = "Boa Tarde!";
+                    }
+                    if(hora >= 18){
+                        Cumpr = "Boa Noite!";
+                    }
+                    $.confirm({
+                        title: Cumpr,
+                        content: 'Selecione um usuário ou insira o CPF.',
+                        autoClose: 'OK|8000',
+                        draggable: true,
+                        buttons: {
+                            OK: function(){}
+                        }
+                    });
                     return false;
                 }
                 ajaxIni();
@@ -791,7 +811,10 @@ if(!isset($_SESSION["usuarioID"])){
             function abreAgendaChave1(){
                 document.getElementById("guardaPosCod").value = 0; // solicitante
                 document.getElementById("agendaselecSolicitante").value = "";
-                document.getElementById("agendanumchave").value = document.getElementById("sainumchave").value+document.getElementById("saicomplemchave").value;
+                document.getElementById("agendanumchave").value = document.getElementById("sainumchave").value;
+                document.getElementById("agendachavecomplem").value = document.getElementById("saichavecomplem").value;
+                document.getElementById("agendacomplemchave").value = document.getElementById("saicomplemchave").value;
+
                 document.getElementById("agendalocalchave").value = document.getElementById("sailocalchave").value;
                 document.getElementById("agendasalachave").value = document.getElementById("saisalachave").value;
                 document.getElementById("agendasolicitante").innerHTML = "";
@@ -806,7 +829,10 @@ if(!isset($_SESSION["usuarioID"])){
             function abreAgendaChave2(){
                 document.getElementById("guardaPosCod").value = 0; // solicitante
                 document.getElementById("agendaselecSolicitante").value = "";
-                document.getElementById("agendanumchave").value = document.getElementById("voltanumchave").value+document.getElementById("saicomplemchave").value;
+                document.getElementById("agendanumchave").value = document.getElementById("voltanumchave").value;
+                document.getElementById("agendachavecomplem").value = document.getElementById("voltachavecomplem").value;
+                document.getElementById("agendacomplemchave").value = document.getElementById("voltacomplemchave").value;
+
                 document.getElementById("agendalocalchave").value = document.getElementById("voltalocalchave").value;
                 document.getElementById("agendasalachave").value = document.getElementById("voltasalachave").value;
                 document.getElementById("agendasolicitante").innerHTML = "";
@@ -937,6 +963,7 @@ if(!isset($_SESSION["usuarioID"])){
 
             function retornoChave1(Cod){  // Cod = id de chaves  
                 document.getElementById("CodidChave").value = Cod;
+                document.getElementById("botagenda2").style.visibility = "visible";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/claviculario/salvaChave2.php?acao=retornoChave1&codigo="+Cod, true);
@@ -950,6 +977,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 }else{
                                     document.getElementById("guardaCod").value = Resp.codidctl; // id de chaves_ctl
                                     document.getElementById("voltanumchave").value = Resp.chavenum;
+                                    document.getElementById("voltachavecomplem").value = Resp.chavecompl;
                                     document.getElementById("voltacomplemchave").value = Resp.chavenumcompl;
                                     document.getElementById("voltalocalchave").value = Resp.chavelocal;
                                     document.getElementById("voltasalachave").value = Resp.chavesala;
@@ -970,6 +998,7 @@ if(!isset($_SESSION["usuarioID"])){
 
             function retornoChave(Cod){
                 document.getElementById("guardaCod").value = Cod; // id de chaves_ctl
+                document.getElementById("botagenda2").style.visibility = "hidden";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/claviculario/salvaChave2.php?acao=retornoChave&codigo="+Cod, true);
@@ -1410,22 +1439,22 @@ if(!isset($_SESSION["usuarioID"])){
                     </tr>
                     <tr>
                         <td class="etiq">Sala nº: </td>
-                        <td colspan="3" style="width: 200px;"><input type="text" id="salachave" style="width: 100px; text-align: center;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('complemchave');return false;}" title="Número da sala"/></td>
+                        <td colspan="3" style="width: 200px;"><input type="text" id="salachave" style="width: 180px; text-align: center;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('complemchave');return false;}" title="Número da sala"/></td>
                         <td></td>
                     </tr>
                     <tr>
                         <td class="etiq">Sala Nome: </td>
-                        <td colspan="3" style="width: 100px;"><input type="text" id="complemchave" style="width: 250px; text-align: left;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('localchave');return false;}" title="Nome da sala"/></td>
+                        <td colspan="3" style="width: 100px;"><input type="text" id="complemchave" style="width: 380px; text-align: left;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('localchave');return false;}" title="Nome da sala"/></td>
                         <td></td>
                     </tr>
                     <tr>
                         <td class="etiq">Local: </td>
-                        <td colspan="3" style="width: 100px;"><input type="text" id="localchave" maxlength="70" style="width: 300px; text-align: left;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('numchave');return false;}" title=""/></td>
+                        <td colspan="3" style="width: 100px;"><input type="text" id="localchave" maxlength="70" style="width: 380px; text-align: left;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('numchave');return false;}" title=""/></td>
                         <td></td>
                     </tr>
                     <tr>
                         <td class="etiq">Observações: </td>
-                        <td colspan="3" style="width: 100px;"><textarea id="obschave" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="2" cols="40" title="Observações" onchange="modif();"></textarea></td>
+                        <td colspan="3" style="width: 100px;"><textarea id="obschave" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="2" cols="43" title="Observações" onchange="modif();"></textarea></td>
                         <td></td>
                     </tr>
                     <tr>
@@ -1451,23 +1480,29 @@ if(!isset($_SESSION["usuarioID"])){
                     <tr>
                         <td class="etiq" style="padding-bottom: 7px;">Chave: </td>
                         <td><input disabled type="text" id="sainumchave" style="width: 70px; text-align: center; border: 1px solid #666; border-radius: 5px;" />
-                            <input disabled type="text" id="saicomplemchave" style="width: 70px; text-align: center; border: 1px solid #666; border-radius: 5px;" />
+                            <input disabled type="text" id="saichavecomplem" style="width: 60px; text-align: center; border: 1px solid #666; border-radius: 5px;" />
                         </td>
                         <td colspan="2" style="padding-bottom: 10px;"></td>
                     </tr>
                     <tr>
-                        <td class="etiq">Local: </td>
-                        <td colspan="3"><input disabled type="text" id="sailocalchave" style="width: 300px; text-align: center; border: 1px solid #666; border-radius: 5px;" /></td>
+                        <td class="etiq">Sala nº: </td>
+                        <td colspan="3"><input disabled type="text" id="saisalachave" style="width: 180px; text-align: center; border: 1px solid #666; border-radius: 5px;"/></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td class="etiq">Sala: </td>
-                        <td colspan="3"><input disabled type="text" id="saisalachave" style="width: 100px; text-align: center; border: 1px solid #666; border-radius: 5px;"/></td>
+                        <td class="etiq">Sala Nome: </td>
+                        <td colspan="3"><input disabled type="text" id="saicomplemchave" style="width: 380px; text-align: LEFT; border: 1px solid #666; border-radius: 5px;"/></td>
                         <td></td>
                     </tr>
+                    <tr>
+                        <td class="etiq">Local: </td>
+                        <td colspan="3"><input disabled type="text" id="sailocalchave" style="width: 380px; text-align: left; border: 1px solid #666; border-radius: 5px;" /></td>
+                        <td></td>
+                    </tr>
+
                     <tr>
                         <td class="etiq">Observações: </td>
-                        <td colspan="3" style="width: 100px;"><textarea disabled id="saiobschave" style="border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="2" cols="40"></textarea></td>
+                        <td colspan="3" style="width: 100px;"><textarea disabled id="saiobschave" style="border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="2" cols="43"></textarea></td>
                         <td></td>
                     </tr>
                     <tr>
@@ -1568,19 +1603,24 @@ if(!isset($_SESSION["usuarioID"])){
                         <tr>
                             <td class="etiq" style="padding-bottom: 7px;">Chave: </td>
                             <td><input disabled type="text" id="voltanumchave" style="width: 70px; text-align: center; border: 1px solid #666; border-radius: 5px;" />
-                                <input disabled type="text" id="voltacomplemchave" style="width: 70px; text-align: center; border: 1px solid #666; border-radius: 5px;" />
+                                <input disabled type="text" id="voltachavecomplem" style="width: 60px; text-align: center; border: 1px solid #666; border-radius: 5px;" />
                             </td>
                             <td colspan="2" style="padding-bottom: 10px;"></td>
                         </tr>
                         <tr>
-                            <td class="etiq">Local: </td>
-                            <td colspan="3"><input disabled type="text" id="voltalocalchave" style="width: 300px; text-align: center; border: 1px solid #666; border-radius: 5px;" /></td>
+                            <td class="etiq">Sala nº: </td>
+                            <td colspan="3"><input disabled type="text" id="voltasalachave" style="width: 180px; text-align: center; border: 1px solid #666; border-radius: 5px;"/></td>
                             <td></td>
                         </tr>
                         <tr>
-                        <td class="etiq">Sala: </td>
-                            <td colspan="3"><input disabled type="text" id="voltasalachave" style="width: 100px; text-align: center; border: 1px solid #666; border-radius: 5px;"/></td>
-                        <td></td>
+                            <td class="etiq">Sala Nome: </td>
+                            <td colspan="3"><input disabled type="text" id="voltacomplemchave" style="width: 380px; text-align: left; border: 1px solid #666; border-radius: 5px;" /></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="etiq">Local: </td>
+                            <td colspan="3"><input disabled type="text" id="voltalocalchave" style="width: 380px; text-align: left; border: 1px solid #666; border-radius: 5px;" /></td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td colspan="4" style="text-align: center; padding-top: 10px;"></td>
@@ -1630,7 +1670,7 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="4" style="text-align: center;"></td>
                         </tr>
                         <tr>
-                            <td colspan="4" style="text-align: center;">Busca Nome ou CPF de outro Entregador</td>
+                            <td colspan="4" style="text-align: center;">Busca Nome ou CPF de <u>outro Entregador</u></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Procura nome: </td>
@@ -1679,19 +1719,24 @@ if(!isset($_SESSION["usuarioID"])){
                         <tr>
                             <td class="etiq" style="padding-bottom: 7px;">Chave: </td>
                             <td><input disabled type="text" id="agendanumchave" style="width: 70px; text-align: center; border: 1px solid #666; border-radius: 5px;" />
-                                <input disabled type="text" id="agendacomplemchave" style="width: 70px; text-align: center; border: 1px solid #666; border-radius: 5px;" />
+                                <input disabled type="text" id="agendachavecomplem" style="width: 60px; text-align: center; border: 1px solid #666; border-radius: 5px;" />
                             </td>
                             <td colspan="2" style="padding-bottom: 10px;"></td>
                         </tr>
                         <tr>
-                            <td class="etiq">Local: </td>
-                            <td colspan="3"><input disabled type="text" id="agendalocalchave" style="width: 300px; text-align: left; border: 1px solid #666; border-radius: 5px;" /></td>
+                            <td class="etiq">Sala n°: </td>
+                            <td colspan="3"><input disabled type="text" id="agendasalachave" style="width: 180px; text-align: center; border: 1px solid #666; border-radius: 5px;"/></td>
                             <td></td>
                         </tr>
                         <tr>
-                        <td class="etiq">Sala: </td>
-                            <td colspan="3"><input disabled type="text" id="agendasalachave" style="width: 100px; text-align: center; border: 1px solid #666; border-radius: 5px;"/></td>
-                        <td></td>
+                            <td class="etiq">Sala Nome: </td>
+                            <td colspan="3"><input disabled type="text" id="agendacomplemchave" style="width: 380px; text-align: left; border: 1px solid #666; border-radius: 5px;"/></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="etiq">Local: </td>
+                            <td colspan="3"><input disabled type="text" id="agendalocalchave" style="width: 380px; text-align: left; border: 1px solid #666; border-radius: 5px;" /></td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td colspan="4" style="text-align: center; padding-top: 10px;"></td>

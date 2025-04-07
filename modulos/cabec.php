@@ -10,8 +10,6 @@
             <div id="container1Cen" class="fontSiteFamily" style="width: 47%; text-align: center;">
                 <?php
                 date_default_timezone_set('America/Sao_Paulo');
-//                $formatter = new IntlDateFormatter('pt_BR', IntlDateFormatter::FULL, IntlDateFormatter::NONE);  //FULL no primeiro parâmetro dá o dia da semana também
-//                echo $formatter->format(time());  // não funcionou na comunhão
                 $diasemana = array('Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado');
                 $data = date('Y-m-d');
                 $diasemana_numero = date('w', strtotime($data));     

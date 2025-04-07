@@ -64,7 +64,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
             $(document).ready(function(){
-                var nHora = new Date();   //   function mostraRelogio()  //em relacao.js da SCer
+                var nHora = new Date(); 
                 var hora = nHora.getHours();
                 var minuto = nHora.getMinutes();
                 var Cumpr = "Bom Dia!";

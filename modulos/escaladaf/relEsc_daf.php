@@ -338,12 +338,12 @@
                                             if($Sem == 0 || $diaFer == 1){ // domingo ou feriado
                                                 if($ValeRef == 0){ // sem Vale refeição
                                                     echo "<div class='quadrodiaCinza' style='border-width: 2px; border-color: red; ";
-                                                    if($Troca == 1){echo "border: 2px solid red; border-radius: 10px; ";};
+                                                    if($Troca == 1){echo "border: 2px solid red; border-radius: 30px; ";};
                                                     echo "' title='Sem vale refeição. $LetraOrig'> $tbl4[0]";
                                                     echo "</div>";
                                                 }else{
                                                     if($Troca == 1){
-                                                        echo "<div class='quadrodiaCinza' style='border: 2px solid; border-radius: 10px;' title='$LetraOrig'> $tbl4[0] </div>";
+                                                        echo "<div class='quadrodiaCinza' style='border: 2px solid; border-radius: 30px;' title='$LetraOrig'> $tbl4[0] </div>";
                                                     }else{
                                                         echo "<div class='quadrodiaCinza' title='$LetraOrig'> $tbl4[0] </div>";
                                                     }
@@ -351,13 +351,13 @@
                                             }else{
                                                 if($ValeRef == 0){ // sem Vale refeição
                                                     echo "<div class='quadrodia' style='border-width: 2px; border-color: red; background: $CorFundo; "; 
-                                                    if($Troca == 1){echo "border: 2px solid red; border-radius: 10px;";}
+                                                    if($Troca == 1){echo "border: 2px solid red; border-radius: 30px;";}
                                                     echo "' title='Sem vale refeição. $LetraOrig'> $tbl4[0] ";
                                                     echo "</div>";
                                                 }else{
                                                     echo "<div class='quadrodia' style='background: $CorFundo; "; 
                                                     if($Troca == 1){
-                                                        echo "border: 2px solid; border-radius: 10px;";
+                                                        echo "border: 2px solid; border-radius: 30px;";
                                                     }
                                                     echo "' title='$LetraOrig'> $tbl4[0] ";
                                                     echo "</div>";
@@ -378,12 +378,12 @@
                                             if($tbl4[0] != ""){
                                                 if($tbl4[5] == 0){ // sem vale refeição
                                                     echo "<div class='quadrodia' style='background: $Cor; border-width: 2px; border-color: red; ";
-                                                    if($Troca == 1){echo "border: 2px solid red; border-radius: 10px; ";};
+                                                    if($Troca == 1){echo "border: 2px solid red; border-radius: 30px; ";};
                                                     echo "' title='Sem vale refeição. $LetraOrig'> $tbl4[0] ";
                                                     echo "</div>";
                                                 }else{
                                                     echo "<div class='quadrodia' style='background: $Cor; ";
-                                                    if($Troca == 1){echo "border: 2px solid; border-radius: 10px; "; }; 
+                                                    if($Troca == 1){echo "border: 2px solid; border-radius: 30px; "; }; 
                                                     echo "' title='$LetraOrig'> $tbl4[0] ";
                                                     echo "</div>";
                                                 }

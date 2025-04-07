@@ -282,14 +282,14 @@ if(isset($_REQUEST["acao"])){
         $Telef = "";
 
         //Pega o número da chave
-        $rs0 = pg_query($Conec, "SELECT chavenum, chavenumcompl FROM ".$xProj.".chaves3 WHERE id = $Cod");
+        $rs0 = pg_query($Conec, "SELECT chavenum, chavecompl FROM ".$xProj.".chaves3 WHERE id = $Cod");
         $row0 = pg_num_rows($rs0);
         $tbl0=pg_fetch_row($rs0);
         $Chave = $tbl0[0].$tbl0[1];
 
         $rs1 = pg_query($Conec, "SELECT ".$xProj.".chaves3_ctl.id 
         FROM ".$xProj.".chaves3 INNER JOIN ".$xProj.".chaves3_ctl ON ".$xProj.".chaves3.id = ".$xProj.".chaves3_ctl.chaves_id 
-        WHERE CONCAT(chavenum, chavenumcompl) = '$Chave' And presente = 0 And usudevolve = 0 ");
+        WHERE CONCAT(chavenum, chavecompl) = '$Chave' And presente = 0 And usudevolve = 0 ");
         $row1 = pg_num_rows($rs1);
         if($row1 > 0){ 
             $tbl1=pg_fetch_row($rs1);
@@ -298,7 +298,7 @@ if(isset($_REQUEST["acao"])){
             $Ctl_id = 0;
         }
 
-        $rs = pg_query($Conec, "SELECT chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, usuretira, telef, cpfretira 
+        $rs = pg_query($Conec, "SELECT chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, usuretira, telef, cpfretira, chavecompl 
         FROM ".$xProj.".chaves3 INNER JOIN ".$xProj.".chaves3_ctl ON ".$xProj.".chaves3.id = ".$xProj.".chaves3_ctl.chaves_id
         WHERE ".$xProj.".chaves3_ctl.id = $Ctl_id");
         $row = pg_num_rows($rs);
@@ -321,7 +321,7 @@ if(isset($_REQUEST["acao"])){
             $Nome = $tbl2[1];
         }
 
-        $var = array("coderro"=>$Erro, "chavenum"=>$ChaveNum, "chavenumcompl"=>$tbl[1], "chavelocal"=>$tbl[2], "chavesala"=>$tbl[3], "chaveobs"=>$tbl[4], "telef"=>$Telef, "cpfretirou"=>$CpfRetirou, "nomecompl"=>$NomeCompl, "nome"=>$Nome, "codusuretirou"=>$UsuRetirou, "codidctl"=>$Ctl_id);
+        $var = array("coderro"=>$Erro, "chavenum"=>$ChaveNum, "chavenumcompl"=>$tbl[1], "chavecompl"=>$tbl[8], "chavelocal"=>$tbl[2], "chavesala"=>$tbl[3], "chaveobs"=>$tbl[4], "telef"=>$Telef, "cpfretirou"=>$CpfRetirou, "nomecompl"=>$NomeCompl, "nome"=>$Nome, "codusuretirou"=>$UsuRetirou, "codidctl"=>$Ctl_id);
         $responseText = json_encode($var);
         echo $responseText;
     }
@@ -334,7 +334,7 @@ if(isset($_REQUEST["acao"])){
         $CpfRetirou = "";
         $Telef = "";
 
-        $rs = pg_query($Conec, "SELECT chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, usuretira, telef, cpfretira 
+        $rs = pg_query($Conec, "SELECT chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, usuretira, telef, cpfretira, chavecompl 
         FROM ".$xProj.".chaves3 INNER JOIN ".$xProj.".chaves3_ctl ON ".$xProj.".chaves3.id = ".$xProj.".chaves3_ctl.chaves_id
         WHERE ".$xProj.".chaves3_ctl.id = $Cod");
         $row = pg_num_rows($rs);
@@ -357,7 +357,7 @@ if(isset($_REQUEST["acao"])){
             $Nome = $tbl2[1];
         }
 
-        $var = array("coderro"=>$Erro, "chavenum"=>$ChaveNum, "chavenumcompl"=>$tbl[1], "chavelocal"=>$tbl[2], "chavesala"=>$tbl[3], "chaveobs"=>$tbl[4], "telef"=>$Telef, "cpfretirou"=>$CpfRetirou, "nomecompl"=>$NomeCompl, "nome"=>$Nome, "codusuretirou"=>$UsuRetirou);
+        $var = array("coderro"=>$Erro, "chavenum"=>$ChaveNum, "chavenumcompl"=>$tbl[1], "chavecompl"=>$tbl[8], "chavelocal"=>$tbl[2], "chavesala"=>$tbl[3], "chaveobs"=>$tbl[4], "telef"=>$Telef, "cpfretirou"=>$CpfRetirou, "nomecompl"=>$NomeCompl, "nome"=>$Nome, "codusuretirou"=>$UsuRetirou);
         $responseText = json_encode($var);
         echo $responseText;
     }
@@ -370,7 +370,7 @@ if(isset($_REQUEST["acao"])){
         $Data = addslashes(filter_input(INPUT_GET, 'dataagenda')); 
         $Presente = 1;
 
-        $rs = pg_query($Conec, "SELECT chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente FROM ".$xProj.".chaves3 WHERE id = $Cod");
+        $rs = pg_query($Conec, "SELECT chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente, chavecompl FROM ".$xProj.".chaves3 WHERE id = $Cod");
         $row = pg_num_rows($rs);
         if($row > 0){
             $tbl = pg_fetch_row($rs);
@@ -428,7 +428,7 @@ if(isset($_REQUEST["acao"])){
             $TelefRetirou = "";
         }
 
-        $var = array("coderro"=>$Erro, "chavenum"=>$ChaveNum, "chavenumcompl"=>$tbl[1], "chavelocal"=>$tbl[2], "chavesala"=>$tbl[3], "chaveobs"=>$tbl[4], "presente"=>$tbl[5], "nomecompl"=>$NomeCompl, "nome"=>$Nome, "siglasetor"=>$SiglaSetor, "cpf"=>$Cpf, "telef"=>$Telef, "nomeretirou"=>$NomeRetirou, "cpfretirou"=>$CpfRetirou, "telefretirou"=>$TelefRetirou );
+        $var = array("coderro"=>$Erro, "chavenum"=>$ChaveNum, "chavenumcompl"=>$tbl[1], "chavecompl"=>$tbl[6], "chavelocal"=>$tbl[2], "chavesala"=>$tbl[3], "chaveobs"=>$tbl[4], "presente"=>$tbl[5], "nomecompl"=>$NomeCompl, "nome"=>$Nome, "siglasetor"=>$SiglaSetor, "cpf"=>$Cpf, "telef"=>$Telef, "nomeretirou"=>$NomeRetirou, "cpfretirou"=>$CpfRetirou, "telefretirou"=>$TelefRetirou );
         $responseText = json_encode($var);
         echo $responseText;
     }
