@@ -85,155 +85,29 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("botinserir").style.visibility = "hidden";
                 document.getElementById("imagconfig").style.visibility = "hidden";
                 document.getElementById("botsalvarextint").style.visibility = "hidden";
-                if(parseInt(document.getElementById("guardaInsExtint").value) === 1){
+                document.getElementById("botimprUsu").style.visibility = "hidden";
+
+                if(parseInt(document.getElementById("guardaInsExtint").value) === 1 || parseInt(document.getElementById("guardaFiscExtint").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
                     document.getElementById("botinserir").style.visibility = "visible";
                     document.getElementById("imagconfig").style.visibility = "visible";
                     document.getElementById("botsalvarextint").style.visibility = "visible";
                 }
+                if(parseInt(document.getElementById("UsuAdm").value) > 6){
+                    $("#configAdmin").load("modulos/extintores/admExtint.php");
+                    document.getElementById("botimprUsu").style.visibility = "visible";
+                }
 
-                $("#faixacentral").load("modulos/extintores/jExtint.php?acao="+document.getElementById("guardaAcao").value);
+                $('#carregaTema').load('modulos/config/carTema.php?carpag=clavic1');
 
                 if(parseInt(document.getElementById("guardaInsExtint").value) === 1){ // editar
                     $('#datarevis').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
                     $('#datavalid').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
                     $('#datavalcasco').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
                 }
-
-                $("#configselecSolicitante").change(function(){
-                    if(document.getElementById("configselecSolicitante").value == ""){
-                        document.getElementById("configcpfsolicitante").value = "";
-                        return false;
-                    }
-                    ajaxIni();
-                    if(ajax){
-                        ajax.open("POST", "modulos/extintores/salvaExtint.php?acao=buscausuario&codigo="+document.getElementById("configselecSolicitante").value, true);
-                        ajax.onreadystatechange = function(){
-                            if(ajax.readyState === 4 ){
-                                if(ajax.responseText){
-//alert(ajax.responseText);
-                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
-                                    if(parseInt(Resp.coderro) === 0){
-                                        document.getElementById("configcpfsolicitante").value = format_CnpjCpf(Resp.cpf);
-                                        if(parseInt(Resp.extint) === 1){
-                                            document.getElementById("registroExtint").checked = true;
-                                        }else{
-                                            document.getElementById("registroExtint").checked = false;
-                                        }
-                                        if(parseInt(Resp.fiscextint) === 1){
-                                            document.getElementById("fiscalExtint").checked = true;
-                                        }else{
-                                            document.getElementById("fiscalExtint").checked = false;
-                                        }
-                                    }else{
-                                        alert("Houve um erro no servidor.")
-                                    }
-                                }
-                            }
-                        };
-                        ajax.send(null);
-                    }
-                });
-                $("#configcpfsolicitante").click(function(){
-                    document.getElementById("configselecSolicitante").value = "";
-                });
-                $("#configcpfsolicitante").change(function(){
-                    document.getElementById("configselecSolicitante").value = "";
-                    ajaxIni();
-                    if(ajax){
-                        ajax.open("POST", "modulos/extintores/salvaExtint.php?acao=buscacpfusuario&cpf="+encodeURIComponent(document.getElementById("configcpfsolicitante").value), true);
-                        ajax.onreadystatechange = function(){
-                            if(ajax.readyState === 4 ){
-                                if(ajax.responseText){
-//alert(ajax.responseText);
-                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
-                                    if(parseInt(Resp.coderro) === 0){
-                                        document.getElementById("configselecSolicitante").value = Resp.PosCod;
-                                        if(parseInt(Resp.extint) === 1){
-                                            document.getElementById("registroExtint").checked = true;
-                                        }else{
-                                            document.getElementById("registroExtint").checked = false;
-                                        }
-                                        if(parseInt(Resp.fiscextint) === 1){
-                                            document.getElementById("fiscalExtint").checked = true;
-                                        }else{
-                                            document.getElementById("fiscalExtint").checked = false;
-                                        }
-                                    }
-                                    if(parseInt(Resp.coderro) === 2){
-                                        document.getElementById("registroExtint").checked = false;
-                                        document.getElementById("fiscalExtint").checked = false;
-                                        $('#mensagemConfig').fadeIn("slow");
-                                        document.getElementById("mensagemConfig").innerHTML = "Não encontrado";
-                                        $('#mensagemConfig').fadeOut(2000);
-                                    }
-                                    if(parseInt(Resp.coderro) === 1){
-                                        alert("Houve um erro no servidor.")
-                                    }
-                                }
-                            }
-                        };
-                        ajax.send(null);
-                    }
-                });
-
+                $("#faixacentral").load("modulos/extintores/jExtint.php?acao="+document.getElementById("guardaAcao").value);
 
 
             }); // fimm do ready
-
-            function marcaCheckBox(obj, Campo){
-                if(obj.checked === true){
-                    Valor = 1;
-                }else{
-                    Valor = 0;
-                }
-                if(document.getElementById("configselecSolicitante").value == ""){
-                    if(obj.checked === true){
-                        obj.checked = false;
-                    }else{
-                        obj.checked = true;
-                    }
-                    $('#mensagemConfig').fadeIn("slow");
-                    document.getElementById("mensagemConfig").innerHTML = "Selecione um usuário.";
-                    $('#mensagemConfig').fadeOut(2000);
-                    return false;
-                }
-                 ajaxIni();
-                if(ajax){
-                    ajax.open("POST", "modulos/extintores/salvaExtint.php?acao=configMarcaCheckBox&codigo="+document.getElementById("configselecSolicitante").value
-                    +"&campo="+Campo
-                    +"&valor="+Valor
-                    , true);
-                    ajax.onreadystatechange = function(){
-                        if(ajax.readyState === 4 ){
-                            if(ajax.responseText){
-//alert(ajax.responseText);
-                                Resp = eval("(" + ajax.responseText + ")");
-                                if(parseInt(Resp.coderro) === 1){
-                                    alert("Houve um erro no servidor.");
-                                }else{
-                                    if(parseInt(Resp.coderro) === 2){
-                                        obj.checked = true;
-                                        $.confirm({
-                                            title: 'Ação Suspensa!',
-                                            content: 'Não restaria outro marcado para gerenciar os extintores.',
-                                            draggable: true,
-                                            buttons: {
-                                                OK: function(){}
-                                            }
-                                        });
-                                        return false;
-                                    }else{
-                                        $('#mensagemConfig').fadeIn("slow");
-                                        document.getElementById("mensagemConfig").innerHTML = "Valor salvo.";
-                                        $('#mensagemConfig').fadeOut(1000);
-                                    }
-                                }
-                            }
-                        }
-                    };
-                    ajax.send(null);
-                }
-            }
 
             function insExtintor(){
                 document.getElementById("guardaid").value = 0;
@@ -481,6 +355,7 @@ if(!isset($_SESSION["usuarioID"])){
             function carregaConfig(){
                 $("#configEmpr").load("modulos/extintores/extEmpr.php");
                 $("#configTipos").load("modulos/extintores/extTipos.php");
+                $("#configAdmin").load("modulos/extintores/admExtint.php");
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/extintores/salvaExtint.php?acao=buscaConfig", true);
@@ -660,33 +535,33 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function salvaAviso(){
-                    ajaxIni();
-                    if(ajax){
-                        ajax.open("POST", "modulos/extintores/salvaExtint.php?acao=salvaaviso&valor="+document.getElementById("diasanteced").value, true);
-                        ajax.onreadystatechange = function(){
-                            if(ajax.readyState === 4 ){
-                                if(ajax.responseText){
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/extintores/salvaExtint.php?acao=salvaaviso&valor="+document.getElementById("diasanteced").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
 //alert(ajax.responseText);
-                                    Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
-                                    if(parseInt(Resp.coderro) === 0){
-                                        $('#mensagemConfig').fadeIn("slow");
-                                        document.getElementById("mensagemConfig").innerHTML = "Valor Salvo";
-                                        $('#mensagemConfig').fadeOut(2000);
-                                        $("#faixacentral").load("modulos/extintores/jExtint.php?acao=ext_todos");
-                                        var element = document.getElementById("ext_vencer");
-                                        element.classList.remove("fundoAzul");
-                                        var element = document.getElementById("ext_vencidos");
-                                        element.classList.remove("fundoAzul");
-                                        var element = document.getElementById("ext_todos");
-                                        element.classList.add("fundoAzul");
-                                    }else{
-                                        alert("Houve um erro no servidor.")
-                                    }
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    $('#mensagemConfig').fadeIn("slow");
+                                    document.getElementById("mensagemConfig").innerHTML = "Valor Salvo";
+                                    $('#mensagemConfig').fadeOut(2000);
+                                    $("#faixacentral").load("modulos/extintores/jExtint.php?acao=ext_todos");
+                                    var element = document.getElementById("ext_vencer");
+                                    element.classList.remove("fundoAzul");
+                                    var element = document.getElementById("ext_vencidos");
+                                    element.classList.remove("fundoAzul");
+                                    var element = document.getElementById("ext_todos");
+                                    element.classList.add("fundoAzul");
+                                }else{
+                                    alert("Houve um erro no servidor.")
                                 }
                             }
-                        };
-                        ajax.send(null);
-                    }
+                        }
+                    };
+                    ajax.send(null);
+                }
             }
             //põe fundo azul no botão Todos
             var element = document.getElementById("ext_todos");
@@ -744,7 +619,7 @@ if(!isset($_SESSION["usuarioID"])){
  
         </script>
     </head>
-    <body>
+    <body class="corClara" onbeforeunload="return mudaTema(0)"> <!-- ao sair retorna os background claros -->
         <?php
             date_default_timezone_set('America/Sao_Paulo');
             $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'poslog'");
@@ -818,6 +693,9 @@ if(!isset($_SESSION["usuarioID"])){
                     uf VARCHAR(3),
                     telefone VARCHAR(20),
                     contato VARCHAR(50),
+                    cnpjempr VARCHAR(20), 
+                    inscrempr VARCHAR(20), 
+                    obsempr text, 
                     ativo smallint DEFAULT 1 NOT NULL,
                     usuins integer DEFAULT 0 NOT NULL,
                     datains timestamp without time zone DEFAULT '3000-12-31',
@@ -842,40 +720,47 @@ if(!isset($_SESSION["usuarioID"])){
             $Data = date("d/m/Y H:i");
             $rsTipos = pg_query($Conec, "SELECT id, desc_tipo FROM ".$xProj.".extintores_tipo WHERE ativo = 1 ORDER BY desc_tipo");
             $rsEmpr = pg_query($Conec, "SELECT id, empresa FROM ".$xProj.".extintores_empr WHERE ativo = 1 ORDER BY empresa");
-            $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
 
             $InsExtint = parEsc("extint", $Conec, $xProj, $_SESSION["usuarioID"]); // procura marca em poslog
             $FiscExtint = parEsc("fisc_extint", $Conec, $xProj, $_SESSION["usuarioID"]);
             $TempoAviso  = parAdm("aviso_extint", $Conec, $xProj);
+            $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
     
         ?>
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
         <input type="hidden" id="guardaid" value="0" />
         <input type="hidden" id="mudou" value="0" />
         <input type="hidden" id="guardaInsExtint" value="<?php echo $InsExtint; ?>" />
+        <input type="hidden" id="guardaFiscExtint" value="<?php echo $FiscExtint; ?>" />
         <input type="hidden" id="guardaInsEdit" value="0" />
         <input type="hidden" id="guardaHoje" value="<?php echo $Hoje; ?>" />
         <input type="hidden" id="guardaCodEmpr" value="0" />
         <input type="hidden" id="guardaCodTipo" value="0" />
         <input type="hidden" id="guardaAcao" value="<?php echo $Acao; ?>" />
 
-        <div style="margin: 20px; border: 2px solid blue; border-radius: 15px; padding: 20px; min-height: 200px;">
-            <div class="box" style="position: relative; float: left; width: 33%;">
-            <img src="imagens/settings.png" height="20px;" id="imagconfig" style="cursor: pointer; padding-right: 30px;" onclick="carregaConfig();" title="Configurar tipos de extintor e empresas de manutenção">
+        <div id="tricoluna0" style="margin: 20px; border: 2px solid blue; border-radius: 15px; padding: 20px; min-height: 200px;">
+            <div id="tricoluna1" class="box" style="position: relative; float: left; width: 33%;">
+                <img src="imagens/settings.png" height="20px;" id="imagconfig" style="cursor: pointer; padding-right: 30px;" onclick="carregaConfig();" title="Configurar tipos de extintor e empresas de manutenção">
                 <input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Inserir Novo Extintor" onclick="insExtintor();">
             </div>
-            <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
+            <div id="tricoluna2" class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <h5>Controle de Extintores</h5>
                 <button id="ext_todos" class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="mostraExtint(id);">Todos</button>
                 <button id="ext_vencer" class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="mostraExtint(id);" title="Dentro do prazo para aviso <?php echo $TempoAviso.' dias'; ?>">a Vencer</button>
                 <button id="ext_vencidos" class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="mostraExtint(id);" title="Extintores com prazo de validade vencido.">Vencidos</button>
             </div>
-            <div class="box" style="position: relative; float: right; width: 33%; text-align: right;">
+            <div id="tricoluna3" class="box" style="position: relative; float: right; width: 33%; text-align: right;">
+                <div id="selectTema" style="position: relative; float: left; padding-left: 30px;">
+                    <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%; padding-left: 10px;">Tema: </label>
+                    <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);"><label for="corFundo0" style="font-size: 80%;">&nbsp;Claro</label>
+                    <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);"><label for="corFundo1" style="font-size: 80%;">&nbsp;Escuro</label>
+                </div>
                 <label style="padding-left: 20px;"></label>
                 <button class="botpadrred" style="font-size: 80%;" onclick="imprExtintModal();">PDF</button>
             </div>
 
             <div id="faixacentral"></div>
+
             <div id="faixaMensagem" style="display: none; position: relative; margin: 70px; padding: 20px; text-align: center;">
                 Usuário não cadastrado. <br>O acesso é proporcionado pela ATI.
             </div>
@@ -883,7 +768,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         <!-- div para inserção novo aparelho  -->
         <div id="relacmodalIns" class="relacmodal">
-            <div class="modal-content-Ins">
+            <div class="modal-content-Ins corPreta">
                 <span class="close" onclick="fechaModal();">&times;</span>
                 <h5 id="titulomodal" style="text-align: center; color: #666;">Extintor</h5>
                 <div id="subtitulomodal" style="text-align: center; color: red;"></div>
@@ -970,71 +855,18 @@ if(!isset($_SESSION["usuarioID"])){
 
         <!-- div para editar nome das empresas e Tipos de Extintores -->
         <div id="relacmodalConfig" class="relacmodal">
-            <div class="modal-content-Ins">
+            <div class="modal-content-Ins corPreta">
                 <span class="close" onclick="fechaModal();">&times;</span>
                 <div class="container" style="margin: 0 auto;">
                     <div class="row">
                         <div class="col" style="margin: 0 auto;"></div>
                         <div class="col"><h6 id="titulomodal" style="text-align: center; color: #666;">Controle de Extintores</h6></div> <!-- Central - espaçamento entre colunas  -->
-                        <div class="col" style="margin: 0 auto; text-align: center;"><button class="botpadrred" style="font-size: 70%;" onclick="imprUsuExtint();">Resumo em PDF</button></div> 
+                        <div class="col" style="margin: 0 auto; text-align: center;"><button id="botimprUsu" class="botpadrred" style="font-size: 70%;" onclick="imprUsuExtint();">Resumo em PDF</button></div> 
                     </div>
                 </div>
-                <label class="etiqAzul">Selecione um usuário para ver a configuração:</label>
-                <div style="position: relative; float: right; color: red; font-weight: bold; padding-right: 200px;" id="mensagemConfig"></div>
-                <table style="margin: 0 auto; width: 85%;">
-                    <tr>
-                        <td colspan="4" style="text-align: center;"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="4" class="etiqAzul" style="text-align: center;">Busca Nome ou CPF do Usuário</td>
-                    </tr>
-                    <tr>
-                        <td class="etiqAzul">Procura nome: </td>
-                        <td style="width: 100px;">
-                            <select id="configselecSolicitante" style="max-width: 230px;" onchange="modif();" title="Selecione um usuário.">
-                                <option value=""></option>
-                                <?php 
-                                if($OpConfig){
-                                    while ($Opcoes = pg_fetch_row($OpConfig)){ ?>
-                                        <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; if($Opcoes[2] != ""){echo " - ".$Opcoes[2];} ?></option>
-                                    <?php 
-                                    }
-                                }
-                                ?>
-                            </select>
-                        </td>
-                        <td class="etiqAzul"><label class="etiqAzul">ou CPF:</label></td>
-                        <td>
-                            <input type="text" id="configcpfsolicitante" style="width: 130px; text-align: center; border: 1px solid #666; border-radius: 5px;" onkeypress="if(event.keyCode===13){javascript:foco('configselecSolicitante');return false;}" title="Procura por CPF. Digite o CPF do usuário."/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="4" style="text-align: center; padding-top: 10px;"></td>
-                    </tr>
-                </table>
-                <table style="margin: 0 auto; width: 85%;">
-                    <tr>
-                        <td class="etiq80" title="Gerenciar extintores">Extintores:</td>
-                        <td colspan="4">
-                            <input type="checkbox" id="registroExtint" title="Gerenciar extintores" onchange="marcaCheckBox(this, 'extint');" >
-                            <label for="registroExtint" class="etiqNorm" title="Gerenciar extintores"> Gerenciar a disposição e manutenção dos extintores</label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="etiq80" title="Fiscalizar a compra de combustíveis">Extintores: </td>
-                        <td colspan="4">
-                            <input type="checkbox" id="fiscalExtint" title="Fiscalizar a manutenção dos extintores" onchange="marcaCheckBox(this, 'fisc_extint');" >
-                            <label for="fiscalExtint" class="etiqNorm" title="Fiscalizar a manutenção dos extintores"> Fiscalizar e acompanhar a manutenção dos extintores</label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="5" style="text-align: center; padding-top: 5px;"><div id="mensagemConfig__" style="color: red; font-weight: bold;"></div></td>
-                    <tr>
-                </table>
 
-                <hr class="etiqNorm">
+                <div id="configAdmin"></div> <!-- para superusuários -->
 
-                <div class="etiqNorm" style="text-align: center;"><H6>Configuração: Extintores</H6></div>
                 <div class="box" style="position: relative; float: left; width: 43%; margin-top: 10px; text-align: center; border: 1px solid; border-radius: 10px; background: linear-gradient(180deg, white, #86c1eb);">
                     <div class='divbot corFundo' style='margin-top: 10px; margin-left: 5px; margin-bottom: 5px;' onclick='insTipo()' title="Adicionar um novo tipo de extintor"> Adicionar </div>
                     <div id="configTipos" style="margin-bottom: 15px; text-align: center; width: 90%;"></div>
@@ -1073,7 +905,7 @@ if(!isset($_SESSION["usuarioID"])){
         </div> <!-- Fim Modal-->
 
         <div id="relacEditEmpresa" class="relacmodal">
-            <div class="modal-content-InsEmpresa">
+            <div class="modal-content-InsEmpresa corPreta">
                 <span class="close" onclick="fechaEditEmpr();">&times;</span>
                 <h5 id="titulomodalEmpr" style="text-align: center; color: #666;">Nome da nova Empresa</h5>
                     <table style="margin: 0 auto; width: 90%">
@@ -1128,7 +960,7 @@ if(!isset($_SESSION["usuarioID"])){
         </div> <!-- Fim Modal-->
 
         <div id="relacEditTipo" class="relacmodal">
-            <div class="modal-content-InsTipo">
+            <div class="modal-content-InsTipo corPreta">
                 <span class="close" onclick="fechaEditTipo();">&times;</span>
                 <h5 id="titulomodalTipo" style="text-align: center; color: #666;">Novo tipo de extintor</h5>
                     <table style="margin: 0 auto; width: 90%">
@@ -1149,7 +981,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         <!-- div modal para imprimir em pdf  -->
         <div id="relacimprExtint" class="relacmodal">
-            <div class="modal-content-InsImpr">
+            <div class="modal-content-InsImpr corPreta">
                 <span class="close" onclick="fechaModalImpr();">&times;</span>
                 <h5 id="titulomodal" style="text-align: center;color: #666;">Controle de Manutenção de Extintores</h5>
                 <h6 id="titulomodal" style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
@@ -1167,6 +999,8 @@ if(!isset($_SESSION["usuarioID"])){
            </div>
            <br><br>
         </div> <!-- Fim Modal-->
+
+        <div id="carregaTema"></div> <!-- carrega a pág modulos/config/carTema.php - onde está a função mudaTema() -->
 
     </body>
 </html>

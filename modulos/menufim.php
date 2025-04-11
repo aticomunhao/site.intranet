@@ -23,6 +23,7 @@
 //				document.getElementById("etiqtela").innerHTML = $(window).width();
 //				var versaoJquery = $.fn.jquery; 
 //				alert(versaoJquery);
+				LargTela = $(window).width(); // largura da tela ao abrir o módulo
             });
         </script>
     </head>
@@ -56,7 +57,23 @@
 			}else{
 				$Setor = "";
 			}
-
+			
+			$LargTela = 1280; // laptop 14pol
+			if($LargTela > 1280){
+				$Quant = 15; // Quantidade de caracteres no nome ou cargo
+				$Campo = "115px"; // larg campo nome ou cargo 
+			}else{
+				$Quant = 15;
+				$Campo = "105px";
+			}
+			if($LargTela < 1270){ // chrome - laptop 14pol
+				$Quant = 10;
+				$Campo = "90px";
+			}
+			if($LargTela == 1900){
+				$Quant = 20;
+				$Campo = "150px";
+			}
 			date_default_timezone_set('America/Sao_Paulo');
             $rs = pg_query($Conec, "SELECT column_name, data_type, character_maximum_length FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'setores'");
             $row = pg_num_rows($rs);
@@ -242,7 +259,10 @@
 								echo "<a href='#' onclick='openhref(68);'>$Menu3</a>";
 								echo "</li>";
 
-								if($_SESSION["usuarioID"] == 3){
+								$Viat = parEsc("viatura", $Conec, $xProj, $_SESSION["usuarioID"]);
+								$FiscViat = parEsc("fisc_viat", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal
+//								if($_SESSION["usuarioID"] == 3){
+								if($Viat == 1 || $FiscViat == 1){
 									echo "<li><a href='#' onclick='openhref(93);'>Viaturas</a></li>"; // eletricidade 5 - viaturas
 								}
 							?>
@@ -254,11 +274,18 @@
 					<?php
 						$Extint = parEsc("extint", $Conec, $xProj, $_SESSION["usuarioID"]);
 						$Fisc_Extint = parEsc("fisc_extint", $Conec, $xProj, $_SESSION["usuarioID"]);
-						if($Extint == 1 || $Fisc_Extint == 1){
+						if($Extint == 1 || $Fisc_Extint == 1 || $_SESSION["AdmUsu"] > 6){
 							echo "<li>";
 								echo "<a href='#' onclick='openhref(91);'>Extintores</a>";
 							echo "</li>";
 						}
+
+						$Filtro = parEsc("filtros", $Conec, $xProj, $_SESSION["usuarioID"]);
+						$FiscFiltro = parEsc("fisc_filtros", $Conec, $xProj, $_SESSION["usuarioID"]);
+						if($Filtro == 1 || $FiscFiltro == 1 || $_SESSION["AdmUsu"] > 6){
+							echo "<li><a href='#' onclick='openhref(94);'>Filtros Água</a></li>"; 
+						}
+
 						$Viatura = parEsc("viatura", $Conec, $xProj, $_SESSION["usuarioID"]);// combustíveis
 						$FiscViat = parEsc("fisc_viat", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal
 						if($Viatura == 1 || $FiscViat == 1 || $_SESSION["AdmUsu"] > 6){

@@ -23,12 +23,9 @@ if(!isset($_SESSION['AdmUsu'])){
 
     class PDF extends FPDF{
         function Footer(){
-           // Vai para 1.5 cm da parte inferior
-           $this->SetY(-15);
-           // Seleciona a fonte Arial itálico 8
-           $this->SetFont('Arial','I',8);
-           // Imprime o número da página corrente e o total de páginas
-           $this->Cell(0, 10, 'Impresso: '.date("d/m/Y H:i").'                   Pag '.$this->PageNo().'/{nb}', 0, 0, 'R');
+            $this->SetY(-15); // Vai para 1.5 cm da parte inferior
+            $this->SetFont('Arial','I',8);// Seleciona a fonte Arial itálico 8
+            $this->Cell(0, 10, 'Impresso: '.date("d/m/Y H:i").'                   Pag '.$this->PageNo().'/{nb}', 0, 0, 'R'); // data/hora + nº página / total de páginas
          }
     }
 
@@ -45,17 +42,17 @@ if(!isset($_SESSION['AdmUsu'])){
             }
         }
     }
-    $pdf->SetX(40); 
+//    $pdf->SetX(40); 
     $pdf->SetFont('Arial','' , 14); 
-    $pdf->Cell(150, 5, $Cabec1, 0, 2, 'C');
+    $pdf->Cell(0, 5, $Cabec1, 0, 2, 'C');
     $pdf->SetFont('Arial','' , 12); 
-    $pdf->Cell(150, 5, $Cabec2, 0, 2, 'C');
+    $pdf->Cell(0, 5, $Cabec2, 0, 2, 'C');
     $pdf->SetFont('Arial','' , 10); 
-    $pdf->Cell(150, 5, $Cabec3, 0, 2, 'C');
+    $pdf->Cell(0, 5, $Cabec3, 0, 2, 'C');
     $pdf->SetFont('Arial', '' , 10);
     $pdf->SetTextColor(25, 25, 112);
     if($Acao == "impr" ){
-        $pdf->MultiCell(150, 3, "Registro de Ocorrência", 0, 'C', false);
+        $pdf->MultiCell(0, 3, "Registro de Ocorrência", 0, 'C', false);
     }
 
     $pdf->SetTextColor(0, 0, 0);
@@ -67,11 +64,10 @@ if(!isset($_SESSION['AdmUsu'])){
     $rs = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), turno, descturno, numrelato, nomecompl, usuant, relato, ocor, nomeusual, relsubstit, usuprox 
     FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id
     WHERE ".$xProj.".livroreg.ativo = 1 And ".$xProj.".livroreg.id =  $Num");
-
     $row = pg_num_rows($rs);
+
     $tbl = pg_fetch_row($rs);
     $CodAnt = $tbl[0];
-
     $UsuAnt = $tbl[6];
     $UsuProx = $tbl[11];
 
@@ -92,14 +88,11 @@ if(!isset($_SESSION['AdmUsu'])){
         $NomeProx = "";
     }
 
-
     $DescTurno = $tbl[3];
 
     $pdf->SetFont('Arial', 'B', 9);
     $pdf->ln(7);
-
     $pdf->SetTextColor(125, 125, 125); //cinza  //   $pdf->SetTextColor(190, 190, 190); //cinza claro   //  $pdf->SetTextColor(204, 204, 204); //cinza mais claro
-
     $pdf->SetFont('Arial', '', 9);
     $pdf->Cell(16, 4, "- Registro: ", 0, 0, 'L');
     $pdf->SetFont('Arial', 'B', 9);
@@ -117,9 +110,8 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->SetFont('Arial', '', 10);
     $pdf->SetDrawColor(200); // cinza claro
 
-
     $pdf->SetX(20); 
-    $pdf->Cell(60, 4, "I - Recebí do serviço de: ".$NomeAnt, 0, 1, 'L');
+    $pdf->Cell(60, 4, "I - Recebí o serviço de: ".$NomeAnt, 0, 1, 'L');
     $pdf->ln(2);
     $lin = $pdf->GetY();
     $pdf->Line(10, $lin, 200, $lin);
@@ -138,30 +130,35 @@ if(!isset($_SESSION['AdmUsu'])){
         $pdf->SetX(25); 
         $pdf->Cell(0, 4, "Não houve ocorrências", 0, 1, 'L');
         if($RelSubst != ""){
+            $pdf->ln(2);
             $pdf->SetFont('Arial', '', 7);
-            $pdf->SetX(15);
-            $pdf->MultiCell(0, 4, "Observações: ".$RelSubst, 0, 'J', false); //relato
+            $pdf->SetX(25);
+            $pdf->MultiCell(0, 3, "Observações: ", 0, 'L', false); //relato
+            $pdf->SetX(35);
+            $pdf->MultiCell(0, 4, $RelSubst, 0, 'J', false); //relato
             $pdf->SetFont('Arial', '', 8);
         }
     }else{
-        $pdf->SetX(20); 
+        $pdf->SetX(25); 
         $pdf->MultiCell(0, 5, $tbl[7], 0, 'J', false); //relato
         if($RelSubst != ""){
+            $pdf->ln(2);
             $pdf->SetFont('Arial', '', 7);
-            $pdf->SetX(15);
-            $pdf->MultiCell(0, 4, "Observações: ".$RelSubst, 0, 'J', false); //relato
+            $pdf->SetX(25);
+            $pdf->MultiCell(0, 3, "Observações: ", 0, 'L', false); //relato
+            $pdf->SetX(35);
+            $pdf->MultiCell(0, 4, $RelSubst, 0, 'J', false); //relato
             $pdf->SetFont('Arial', '', 8);
         }
     }
     $pdf->ln(2);
-
+    $pdf->SetFont('Arial', '', 10);
     $lin = $pdf->GetY();
     $pdf->Line(10, $lin, 200, $lin);
     $pdf->ln(5);
     $pdf->SetX(20); 
     $pdf->Cell(60, 4, "III - Passei o serviço para: ".$NomeProx, 0, 1, 'L');
 
-    
     $pdf->ln(3);
     $lin = $pdf->GetY();
     $pdf->Line(10, $lin, 200, $lin);

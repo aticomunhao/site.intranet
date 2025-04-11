@@ -7,17 +7,15 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     <head>
         <meta charset="UTF-8">
         <title></title>
-        <style>
-
-        </style>
         <script>
             new DataTable('#idTabela', {
-                paging: false,
-                //scrollY: 100,
-//                scrollX: true,
-                searching: false,
+                lengthMenu: [
+                    [100, 200, 300],
+                    [100, 200, 300]
+                ],
                 language: {
                     info: 'Mostrando Página _PAGE_ of _PAGES_',
+                    lengthMenu: 'Mostrando _MENU_ registros por página',
                     infoEmpty: 'Nenhum registro encontrado',
                     infoFiltered: '(filtrado de _MAX_ registros)',
                     zeroRecords: 'Nada foi encontrado'
@@ -30,10 +28,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 $id = data[1];
                 document.getElementById("guardaid").value = $id;
                 carregaExtintor($id);
-            });
-
-            $(document).ready(function(){
-
             });
 
         </script>
@@ -67,19 +61,19 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         
         $row0 = pg_num_rows($rs0);
         ?>
-        <div style="padding: 5px;">
+        <div style="margin-top: 70px; padding: 5px; border-top: 2px solid blue; border-radius: 10px;">
             <table id="idTabela" class="display" style="width:99%;">
                 <thead>
                     <tr>
                         <th style="display: none;"></th>
                         <th style="display: none;"></th>
-                        <th class="etiq" style="text-align: center;">Número</th>
-                        <th class="etiq">Tipo</th>
-                        <th class="etiq">Capacidade</th>
-                        <th class="etiq">Local</th>
-                        <th class="etiq" style="text-align: center;">Revisado</th>
-                        <th class="etiq" style="text-align: center;">Vencimento</th>
-                        <th class="etiq"></th>
+                        <th class="etiq" style="border-bottom: 1px solid gray; text-align: center;">Número</th>
+                        <th class="etiq" style="border-bottom: 1px solid gray;">Tipo</th>
+                        <th class="etiq" style="border-bottom: 1px solid gray;">Capacidade</th>
+                        <th class="etiq" style="border-bottom: 1px solid gray;">Local</th>
+                        <th class="etiq" style="border-bottom: 1px solid gray; text-align: center;">Revisado</th>
+                        <th class="etiq" style="border-bottom: 1px solid gray; text-align: center;">Vencimento</th>
+                        <th class="etiq" style="border-bottom: 1px solid gray;"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -102,13 +96,13 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     <tr>
                         <td style="display: none;"></td>
                         <td style="display: none;"><?php echo $tbl[0]; ?></td>
-                        <td style="text-align: center;"><?php echo str_pad($tbl[1], 3, 0, STR_PAD_LEFT); ?></td>
-                        <td><?php echo $tbl[3]; ?></td>
-                        <td><?php echo $tbl[4]; ?></td>
-                        <td><?php echo $tbl[2]; ?></td>
-                        <td style="text-align: center;"><?php echo $DataRevis; ?></td>
-                        <td style="text-align: center;<?php if($tbl[10] == 'aviso'){echo 'color: #CD00CD; font-weight: bold;';}else if($tbl[10] == 'vencido'){echo 'color: red; font-weight: bold;';}else{echo 'color: black; font-weight: normal;';} ?>"><?php echo $DataValid; ?></td>
-                        <td style="text-align: center;"><?php if($tbl[11] == 'vencido'){echo "<img src='imagens/oknao.png' title='Vencido'>";} ?></td>
+                        <td style="border-bottom: 1px solid gray; text-align: center;"><?php echo str_pad($tbl[1], 3, 0, STR_PAD_LEFT); ?></td>
+                        <td style="border-bottom: 1px solid gray;"><?php echo $tbl[3]; ?></td>
+                        <td style="border-bottom: 1px solid gray;"><?php echo $tbl[4]; ?></td>
+                        <td style="border-bottom: 1px solid gray;"><?php echo $tbl[2]; ?></td>
+                        <td style="border-bottom: 1px solid gray; text-align: center;"><?php echo $DataRevis; ?></td>
+                        <td style="border-bottom: 1px solid gray; text-align: center;<?php if($tbl[10] == 'aviso'){echo 'color: #CD00CD; font-weight: bold;';}else if($tbl[10] == 'vencido'){echo 'color: red; font-weight: bold;';}else{echo 'font-weight: normal;';} ?>"><?php echo $DataValid; ?></td>
+                        <td style="border-bottom: 1px solid gray; text-align: center;"><?php if($tbl[11] == 'vencido'){echo "<img src='imagens/oknao.png' title='Vencido'>";} ?></td>
                     </tr>
                     <?php
                     }

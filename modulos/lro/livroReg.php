@@ -1411,7 +1411,6 @@ if(!isset($_SESSION["usuarioID"])){
            </div>
         </div> <!-- Fim Modal-->
 
-
         <!-- div modal para mostrar ocorrência  -->
         <div id="relacMostramodalReg" class="relacmodal">
             <div class="modal-content-RegistroLRO">
@@ -1485,7 +1484,6 @@ if(!isset($_SESSION["usuarioID"])){
                 </div>
            </div>
         </div> <!-- Fim Modal-->
-
 
         <!-- div modal para redigir complemento  -->
         <div id="relacmodalCompl" class="relacmodal">
@@ -1580,7 +1578,6 @@ if(!isset($_SESSION["usuarioID"])){
            </div>
         </div> <!-- Fim Modal-->
 
-
         <!-- div modal para checklist -->
         <div id="relacCheckList" class="relacmodal">
             <div class="checkList-content">
@@ -1604,7 +1601,6 @@ if(!isset($_SESSION["usuarioID"])){
                 </div>
             </div>
         </div>  <!-- Fim Modal checklist-->
-
 
         <!-- Modal configuração-->
         <div id="modalLROconfig" class="relacmodal">
@@ -1730,7 +1726,6 @@ if(!isset($_SESSION["usuarioID"])){
            </div>
         </div>
 
-
         <!-- div modal para instruções -->
         <div id="relacHelpLRO" class="relacmodal">
             <div class="modalMsg-content">
@@ -1740,11 +1735,11 @@ if(!isset($_SESSION["usuarioID"])){
                 <div style="color: #000000; border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
                     Regras inseridas:
                     <ul>
-                        <li>1 - O Livro de Registro de Ocorrências (LRO) destina-se a registrar os acontecimentos dignos de registro durante os turnos de serviço na portaria.</li>
+                        <li>1 - O Livro de Registro de Ocorrências (LRO) destina-se a anotar os acontecimentos dignos de registro durante os turnos de serviço na portaria.</li>
                         <li>2 - O funcionário designado para inserir o registro deve anotar ao final do turno (botão Inserir Registro) tudo o que ocorreu durante seu serviço.</li>
                         <li>3 - Se quiser, o funcionário pode iniciar o registro (botão Inserir Registro) já no início do turno, salvar e deixar para enviar o relato ao final do serviço (botão Enviar).</li>
                         <li>4 - Ao salvar o registro, ele aparecerá no topo da relação e pode ser editado até o final do turno. Basta clicar sobre linha do registro e depois em Editar na caixa que aparece.</li>
-                        <li>5 - Ao final do turno um clique no botão Enviar encerra o serviço e envia o relato para a administração.</li>
+                        <li>5 - Ao final do turno um clique no botão <b>Enviar</b> encerra o serviço e envia o relato para a administração.</li>
                         <li>6 - Depois de enviado o registro não poderá mais ser alterado.</li>
                         <li>7 - Caso haja necessidade de complementar o registro depois de enviado, é possível inserir outro registro para o mesmo turno pelo mesmo funcionário no mesmo dia.</li>
                         <li>8 - Esse segundo registro terá o mesmo número e será nomeado como complementar. Não pode ser feito em outro dia.</li>

@@ -123,7 +123,7 @@ if($Acao == "configMarcaCheckBox"){
     $Valor = (int) filter_input(INPUT_GET, 'valor');
 
     if($Campo == "viatura" && $Valor == 0){
-        $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE combust = 1");
+        $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE viatura = 1");
         $row = pg_num_rows($rs);
         if($row == 1){
             $Erro = 2;

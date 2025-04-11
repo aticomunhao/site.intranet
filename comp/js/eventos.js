@@ -152,6 +152,9 @@ function openhref(Num){
     if(parseInt(Num) === 93){
         $('#container3').load('modulos/leituras/pag_eletric5.php');
     }
+    if(parseInt(Num) === 94){
+        $('#container3').load('modulos/filtros/pagFiltros.php');
+    }
 
 }
 

@@ -38,12 +38,9 @@ if(!isset($_SESSION['AdmUsu'])){
 
     class PDF extends FPDF{
         function Footer(){
-           // Vai para 1.5 cm da parte inferior
-           $this->SetY(-15);
-           // Seleciona a fonte Arial itálico 8
-           $this->SetFont('Arial','I',8);
-           // Imprime o número da página corrente e o total de páginas
-           $this->Cell(0, 10, 'Impresso: '.date("d/m/Y H:i").'                   Pag '.$this->PageNo().'/{nb}', 0, 0, 'R');
+            $this->SetY(-15); // Vai para 1.5cm da parte inferior
+            $this->SetFont('Arial','I',8);
+            $this->Cell(0, 10, 'Impresso: '.date("d/m/Y H:i").'                   Pag '.$this->PageNo().'/{nb}', 0, 0, 'R'); // data/hora + nº página / total de páginas
          }
     }
 
@@ -62,18 +59,18 @@ if(!isset($_SESSION['AdmUsu'])){
             }
         }
     }
-    $pdf->SetX(40); 
+
     $pdf->SetFont('Arial','' , 14); 
-    $pdf->Cell(150, 5, $Cabec1, 0, 2, 'C');
+    $pdf->Cell(0, 5, $Cabec1, 0, 2, 'C');
     $pdf->SetFont('Arial','' , 12); 
 //    $pdf->Cell(150, 5, $Cabec2, 0, 2, 'C');
-    $pdf->Cell(150, 5, 'Diretoria Administrativa e Financeira', 0, 2, 'C');
+    $pdf->Cell(0, 5, 'Diretoria Administrativa e Financeira', 0, 2, 'C');
     $pdf->SetFont('Arial','' , 10); 
-    $pdf->Cell(150, 5, $Cabec3, 0, 2, 'C');
+    $pdf->Cell(0, 5, $Cabec3, 0, 2, 'C');
     $pdf->SetFont('Arial', '' , 10);
     $pdf->SetTextColor(25, 25, 112);
 
-    $pdf->MultiCell(150, 3, "Livro de Registro de Ocorrências", 0, 'C', false);
+    $pdf->MultiCell(0, 3, "Livro de Registro de Ocorrências", 0, 'C', false);
 
     $pdf->SetTextColor(0, 0, 0);
     $pdf->SetFont('Arial', '', 6);

@@ -374,9 +374,17 @@ if($Acao =="buscaacesso"){
             $rsExt = pg_query($Conec, "SELECT id FROM ".$xProj.".extintores WHERE ativo = 1 And datavalid <= CURRENT_DATE+$TempoAviso");
             $rowExtint = pg_num_rows($rsExt);
         }
+        //Filtros
+        $rowFiltr = 0;
+        $InsFiltros = parEsc("filtros", $Conec, $xProj, $_SESSION["usuarioID"]); // procura marca em poslog
+        $FiscFiltros = parEsc("fisc_filtros", $Conec, $xProj, $_SESSION["usuarioID"]);
+        if($InsFiltros == 1 || $FiscFiltros == 1){
+            $rsFiltr = pg_query($Conec, "SELECT id FROM ".$xProj.".filtros WHERE ativo = 1 And notific = 1 And pararaviso = 0 And dataaviso <= CURRENT_DATE");
+            $rowFiltr = pg_num_rows($rsFiltr);
+        }
     }
 
-    $var = array("coderro"=>$Erro, "marca"=>$Marca, "acessos"=>$NumAcessos, "msg"=>$msg, "temTarefa"=>$rowTar, "msgTar"=>$msgTar, "bens"=>$rowBens, "bensdestinar"=>$rowDest, "contrato1"=>$rowContr1, "contrato2"=>$rowContr2, "temRecado"=>$TemRecado, "recadoTar"=>$recadoTar, "CodTarefa"=>$CodTar, "selecionar"=>$Selec, "usuario"=>$_SESSION["usuarioID"], "temExtintor"=>$rowExtint);
+    $var = array("coderro"=>$Erro, "marca"=>$Marca, "acessos"=>$NumAcessos, "msg"=>$msg, "temTarefa"=>$rowTar, "msgTar"=>$msgTar, "bens"=>$rowBens, "bensdestinar"=>$rowDest, "contrato1"=>$rowContr1, "contrato2"=>$rowContr2, "temRecado"=>$TemRecado, "recadoTar"=>$recadoTar, "CodTarefa"=>$CodTar, "selecionar"=>$Selec, "usuario"=>$_SESSION["usuarioID"], "temExtintor"=>$rowExtint, "temFiltro"=>$rowFiltr);
     $responseText = json_encode($var);
     echo $responseText;
 }

@@ -76,6 +76,14 @@
                 text-align: center; padding: 10px; border: 2px solid; border-radius: 10px;
                 cursor: pointer;
             }
+            .divTemFiltro{
+                display: none; 
+                margin-bottom: 0px; 
+                color: white; font-weight: bold; 
+                background-color:rgb(9, 182, 93);
+                text-align: center; padding: 10px; border: 2px solid; border-radius: 10px;
+                cursor: pointer;
+            }
             .blink{
                 animation: blink 1.2s infinite;
             }
@@ -117,6 +125,7 @@
                 document.getElementById("temBensPrazo").style.display = "none";
                 document.getElementById("temContrato").style.display = "none";
                 document.getElementById("temExtintor").style.display = "none";
+                document.getElementById("temFiltro").style.display = "none";
 
                 $('#container1').load('modulos/cabec.php');
                 $('#container2').load('modulos/menufim.php?diasemana='+document.getElementById('guardadiasemana').value);
@@ -171,6 +180,10 @@
                                     if(parseInt(Resp.temExtintor) > 0){
                                         document.getElementById("temExtintor").innerHTML = "Há extintor com prazo de validade expirando.";
                                         document.getElementById("temExtintor").style.display = "block";
+                                    }
+                                    if(parseInt(Resp.temFiltro) > 0){
+                                        document.getElementById("temFiltro").innerHTML = "Há filtro/purificador necessitando de cuidados.";
+                                        document.getElementById("temFiltro").style.display = "block";
                                     }
                                 }else{
                                     alert("Houve erro ao salvar");
@@ -472,6 +485,7 @@
                     <div id="temBensPrazo" class="divTemBensPrazo" onclick="carregaBens('Destinar');"></div>
                     <div id="temContrato" class="divTemContrato" onclick="carregaContrato(document.getElementById('guardaContrato').value);"></div>
                     <div id="temExtintor" class="divTemExtintor" onclick="carregaExtintor('Vencido');"></div>
+                    <div id="temFiltro" class="divTemFiltro" onclick="carregaFiltro('Vencido');"></div>
 
                     <!-- texto da página inicial  -->
                     <div id="container7" style="padding-left: 10px; padding-right: 10px;"></div>

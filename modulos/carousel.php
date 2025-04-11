@@ -20,19 +20,36 @@
             //  o nome da imagem é modificado a cada mudança para contornar o cache de imagem
             $rs1 = pg_query($Conec, "SELECT descarq FROM ".$xProj.".carousel WHERE codcar = 1");
             $tbl1 = pg_fetch_row($rs1);
-            $Slide1 = $tbl1[0];
+//            $Slide1 = $tbl1[0];
+            if(file_exists("../imagens/slides/".$tbl1[0])){
+                $Slide1 = $tbl1[0];
+            }else{
+                $Slide1 = "imgfundo0.jpg";
+            }
 
             $rs2 = pg_query($Conec, "SELECT descarq FROM ".$xProj.".carousel WHERE codcar = 2");
             $tbl2 = pg_fetch_row($rs2);
-            $Slide2 = $tbl2[0];
+            if(file_exists("../imagens/slides/".$tbl2[0])){
+                $Slide2 = $tbl2[0];
+            }else{
+                $Slide2 = "imgfundo1.jpg";
+            }
 
             $rs3 = pg_query($Conec, "SELECT descarq FROM ".$xProj.".carousel WHERE codcar = 3");
             $tbl3 = pg_fetch_row($rs3);
-            $Slide3 = $tbl3[0];
+            if(file_exists("../imagens/slides/".$tbl3[0])){
+                $Slide3 = $tbl3[0];
+            }else{
+                $Slide3 = "imgfundo2.jpg";
+            }
 
             $rs4 = pg_query($Conec, "SELECT descarq FROM ".$xProj.".carousel WHERE codcar = 4");
             $tbl4 = pg_fetch_row($rs4);
-            $Slide4 = $tbl4[0];
+            if(file_exists("../imagens/slides/".$tbl4[0])){
+                $Slide4 = $tbl4[0];
+            }else{
+                $Slide4 = "imgfundo3.jpg";
+            }
         ?>
 
         <div class="carousel-inner">
