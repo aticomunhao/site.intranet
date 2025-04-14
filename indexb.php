@@ -182,7 +182,7 @@
                                         document.getElementById("temExtintor").style.display = "block";
                                     }
                                     if(parseInt(Resp.temFiltro) > 0){
-                                        document.getElementById("temFiltro").innerHTML = "Há filtro/purificador necessitando de cuidados.";
+                                        document.getElementById("temFiltro").innerHTML = "Há Filtro/Purificador de Água necessitando de cuidados.";
                                         document.getElementById("temFiltro").style.display = "block";
                                     }
                                 }else{
@@ -247,7 +247,6 @@
                 $('#container3').load('modulos/conteudo/pagTarefas.php?selec=1');
             }
             function carregaMsgTar(){ // carrega tarefa com mensagem não lida
-//                $('#container3').load('modulos/conteudo/pagTarefas.php?selec='+document.getElementById('selecionar').value+'&numtarefa='+document.getElementById("numTarefa").value);
                 $('#container3').load('modulos/conteudo/pagTarefas.php?selec=7&numtarefa='+document.getElementById("numTarefa").value);
             }
             function carregaBens(Valor){
@@ -262,6 +261,9 @@
             }
             function carregaExtintor(){
                 $('#container3').load('modulos/extintores/pagExtint.php?acao=vencervencidos');
+            }
+            function carregaFiltro(){
+                $('#container3').load('modulos/filtros/pagFiltros.php?acao=vencidos');
             }
             function fechaComemorat(){
                 document.getElementById("modalComemorat").style.display = "none";

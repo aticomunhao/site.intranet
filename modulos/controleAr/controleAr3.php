@@ -567,20 +567,8 @@ if(!isset($_SESSION["usuarioID"])){
                 if(parseInt(document.getElementById("guardaInsArCond").value) === 1 || parseInt(document.getElementById("guardaFiscArCond").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
                     $("#configAr").load("modulos/controleAr/relEmpr.php");
                     document.getElementById("relacmodalConfig").style.display = "block";
-                }else{
-                    $.confirm({
-                        title: 'Informação!',
-                        content: 'Credenciais para acompanhar e fiscalizar.',
-                        autoClose: 'OK|5000',
-                        draggable: true,
-                        buttons: {
-                            OK: function(){}
-                        }
-                    });
-                    return false;
                 }
             }
-
             function editaEmpresa(Cod){
                 document.getElementById("guardaCodEmpr").value = Cod;
                 ajaxIni();

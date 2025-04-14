@@ -239,10 +239,8 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
       arfisc smallint NOT NULL DEFAULT 0,
       eletric2 smallint NOT NULL DEFAULT 0,
       eletric3 smallint NOT NULL DEFAULT 0,
-      fisceletric smallint NOT NULL DEFAULT 0,
       fiscbens smallint NOT NULL DEFAULT 0,
       soinsbens smallint NOT NULL DEFAULT 0
-
       arcond2 smallint NOT NULL DEFAULT 0,
       arcond3 smallint NOT NULL DEFAULT 0,
       elev smallint NOT NULL DEFAULT 0,

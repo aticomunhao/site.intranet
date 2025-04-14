@@ -220,6 +220,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 <br>
                 <?php
             }
+        }else{
+            echo "<div style='text-align: center; border: 1px solid; border-radius: 10px'>Nada foi encontrado</div>";
         }
         ?>
     </body>

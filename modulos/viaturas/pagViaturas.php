@@ -946,12 +946,12 @@ if(!isset($_SESSION["usuarioID"])){
                 <input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Inserir" onclick="insereCompra();" title="Registrar abasteimento ou manutenção nas viaturas.">
             </div>
             <div id="tricoluna2" class="box corClara" style="position: relative; float: left; width: 33%; text-align: center;">
-                <h5>Controle de Viaturas</h5>
+                <h5>Controle de Despesas com Viaturas</h5>
             </div>
             <div id="tricoluna3" class="box corClara" style="position: relative; float: left; width: 33%; text-align: right;">
                 <label id="etiqcorFundo" class="etiqAzul" style="font-size: 80%; padding-left: 10px;">Tema: </label>
-                <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);"><label for="corFundo0" style="font-size: 80%;">&nbsp;Claro</label>
-                <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);"><label for="corFundo1" style="font-size: 80%;">&nbsp;Escuro</label>
+                <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" style="cursor: pointer; font-size: 80%;">&nbsp;Claro</label>
+                <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" style="cursor: pointer; font-size: 80%;">&nbsp;Escuro</label>
                 <label style="padding-left: 30px;"></label>
                 <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprCombust();">PDF</button>
             </div>

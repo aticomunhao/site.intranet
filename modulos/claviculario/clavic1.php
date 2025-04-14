@@ -960,7 +960,6 @@ if(!isset($_SESSION["usuarioID"])){
 
             function retornoChave1(Cod){  // Cod = id de chaves  
                 document.getElementById("CodidChave").value = Cod;
-                document.getElementById("botagenda2").style.visibility = "visible";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=retornoChave1&codigo="+Cod, true);
@@ -995,7 +994,6 @@ if(!isset($_SESSION["usuarioID"])){
 
             function retornoChave(Cod){
                 document.getElementById("guardaCod").value = Cod; // id de chaves_ctl
-                document.getElementById("botagenda2").style.visibility = "hidden";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=retornoChave&codigo="+Cod, true);
@@ -1882,7 +1880,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td class="etiq80" title="Fiscalizar a entrega e devolução das chaves do claviculário da Portaria">DAF:</td>
                         <td colspan="4">
                             <input type="checkbox" id="fiscalChaves" title="Gerenciar, fiscalizar a entrega e devolução das chaves do claviculário da Portaria" onchange="marcaChave(this, 'fisc_clav');" >
-                            <label for="fiscalChaves" title="Gereciar, fiscalizar e editar as chaves do claviculário da Portaria">gerenciar, editar e fiscalizar as chaves do claviculário da Portaria</label>
+                            <label for="fiscalChaves" title="Gereciar, fiscalizar e editar as chaves do claviculário da Portaria">gerenciar, editar e agendar as chaves do claviculário da Portaria</label>
                         </td>
                     </tr>
                     <tr>
@@ -1892,7 +1890,6 @@ if(!isset($_SESSION["usuarioID"])){
                             <label for="registroChaves" title="Registrar a entrega e devolução das chaves do claviculário da Portaria">registrar a entrega e devolução das chaves do claviculário da Portaria</label>
                         </td>
                     </tr>
-
                     <tr>
                         <td class="etiq80" style="border-bottom: 1px solid black;" title="Autorizado a retirar chaves do claviculário da Portaria">Usuário</td>
                         <td colspan="4" style="border-bottom: 1px solid;">
@@ -1913,7 +1910,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <span class="close" onclick="fechaImprChaves();">&times;</span>
                 <h5 id="titulomodal" style="text-align: center;color: #666;">Controle de Chaves Portaria</h5>
                 <h6 id="titulomodal" style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
-                <div style="border: 2px solid #C6E2FF; border-radius: 10px; padding: 10px;">
+                <div style="border: 2px solid; border-radius: 10px; padding: 10px;">
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>
                             <td style="text-align: right;"><label style="font-size: 80%;">Mensal - Selecione o Mês/Ano: </label></td>

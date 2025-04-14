@@ -24,6 +24,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     {
                         target: 3,
                         orderable: false
+                    },
+                    {
+                        target: 6,
+                        orderable: false
                     }
                 ],
                 lengthMenu: [
@@ -35,7 +39,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     infoEmpty: 'Nenhum registro encontrado',
                     infoFiltered: '(filtrado de _MAX_ registros)',
                     lengthMenu: 'Mostrando _MENU_ registros por página',
-                    zeroRecords: 'Nada foi encontrado'
+                    zeroRecords: 'Nenhum registro encontrado.'
                 }
             });
             table = new DataTable('#idTabela');
@@ -154,13 +158,13 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 <caption class="etiqRoxa" style="text-align: center;"><?php echo $row0." registros"; ?></caption>
                 <thead>
                     <tr>
-                        <th style="display: none;"></th>
-                        <th style="display: none;"></th>
-                        <th>Data</th>
-                        <th>Sem</th>
-                        <th style="text-align: center;">Nº Processo</th>
-                        <th style="text-align: center;">Descrição do Bem</th>
-                        <th style="text-align: center;" title="Dias decorridos desde o registro">Dias</th>
+                        <td style="display: none;"></td>
+                        <td style="display: none;"></td>
+                        <td class="etiqRoxa" style="border-bottom: 1px solid gray;">Data</td>
+                        <td class="etiqRoxa" style="border-bottom: 1px solid gray;" title="Dia da semana">Sem</td>
+                        <td class="etiqRoxa" style="border-bottom: 1px solid gray;" title="Número do processo">Processo</td>
+                        <td class="etiqRoxa" style="border-bottom: 1px solid gray;">Descrição do Bem</td>
+                        <td class="etiqRoxa" style="text-align: right; border-bottom: 1px solid gray;" title="Tempo decorrido desde o registro">Tempo</td>
                     </tr>
                 </thead>
                 <tbody>
@@ -183,11 +187,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <tr>
                             <td style="display: none;"></td>
                             <td style="display: none;"><?php echo $tbl0[0]; ?></td>
-                            <td><?php echo $tbl0[1]; ?></td> <!-- data -->
-                            <td style="font-size: 80%;"><?php echo $Semana_Extract[$tbl0[12]]; ?></td> <!-- dia semana -->
-                            <td style="text-align: center;"><?php echo $tbl0[2]; ?></td> <!-- num processo -->
-                            <td><?php echo nl2br($tbl0[3]); ?>
-                                <hr style="margin: 0; padding: 0px;">
+                            <td style="border-bottom: 1px solid gray;"><?php echo $tbl0[1]; ?></td> <!-- data -->
+                            <td style="border-bottom: 1px solid gray; font-size: 80%;"><?php echo $Semana_Extract[$tbl0[12]]; ?></td> <!-- dia semana -->
+                            <td style="border-bottom: 1px solid gray; text-align: center;"><?php echo $tbl0[2]; ?></td> <!-- num processo -->
+                            <td style="border-bottom: 1px solid gray;"><?php echo nl2br($tbl0[3]); ?>
+                                <hr style="margin: 0; padding: 0px; color: transparent;">
                                 <?php
                                 if($Edit == 1){
                                     if($Edit == 1 && $SobGuarda == 0 && $GuardaCSG == 0 && $Restit == 0 && $Arquivado == 0){
@@ -200,7 +204,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     }else{
                                         echo "<button disabled class='botTable fundoCinza corAzulClaro'>SSV</button>";
                                     }
-
                                     if($Destino == 0){
                                         if($Restit == 0){
                                             echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 2, $Restit);' title='Formuário de restituição ao proprietário'>Restituição</button>";
@@ -210,7 +213,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     }else{
                                         echo "<button disabled class='botTable fundoCinza corAzulClaro'>Restituição</button>";
                                     }
-
                                     if($Edit == 1 && $Restit == 0 && $Arquivado == 0 && $Destino == 0 && $Dias >= 90 && $EncBens == 1){
                                         echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 4, $Restit);' title='Destinação após 90 dias'>Destinação</button>";
                                     }else{
@@ -226,7 +228,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                             }
                                         }
                                     }
-
                                     if($Edit == 1 && $Restit == 0 && $Arquivado == 0 && $Destino > 0 && $EncDestino == 0 && $Dias >= 90){
                                         echo "<button class='botTable fundoAmarelo' style='min-width: 100px;' onclick='mostraBem($tbl0[0], 5, $Restit);' title='Recebimento no destino'>$DescDestino</button>";
                                     }else{
@@ -254,7 +255,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     }
                                     echo "<br>";
                                 }
-
                                 if($UsuIns > 0){
                                     echo "<div class='etiqResult' title='Registro inicial'>Registrado</div>";
                                 }
@@ -283,10 +283,13 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
                                 ?>
                             </td> <!-- descrição do bem -->
- 
-                            <td style="text-align: center; font-size: 80%;"><?php
+                             <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;"><?php
                                 if($Arquivado == 0){
-                                    echo "<div title='$Dias dias decorridos desde o registro'> $Dias </div>";
+                                    if($Dias > 1){
+                                        echo "<div style='text-align: center;' title='$Dias dias decorridos desde o registro'> $Dias dias</div>";
+                                    }else{
+                                        echo "<div style='text-align: center;' title='$Dias dia decorrido desde o registro'> $Dias dia</div>";
+                                    }
                                 }
                                 ?>
                             </td>

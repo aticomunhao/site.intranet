@@ -10,6 +10,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <title></title>
         <script type="text/javascript">
             new DataTable('#idTabela', {
+                info: false, // inform de pág sendo visualizada
+                paging: false,  // paginação 
                 lengthMenu: [
                     [50, 100, 200],
                     [50, 100, 200]
@@ -39,13 +41,23 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     <body> 
         <?php
             date_default_timezone_set('America/Sao_Paulo');
+            if(isset($_REQUEST["acao"])){
+                $Acao = $_REQUEST["acao"];
+            }else{
+                $Acao = "todos";
+            }
             $Filtro = parEsc("filtros", $Conec, $xProj, $_SESSION["usuarioID"]);
             $FiscFiltro = parEsc("fisc_filtros", $Conec, $xProj, $_SESSION["usuarioID"]);
+
+            $Condic = $xProj.".filtros.ativo = 1";
+            if($Acao == "vencidos"){ // quando vem do aviso da página inicial 
+                $Condic = $xProj.".filtros.ativo = 1 And notific = 1 And pararaviso = 0 And dataaviso <= CURRENT_DATE";
+            }
 
             $rs0 = pg_query($Conec, "SELECT ".$xProj.".filtros.id, numapar, descmarca, desctipo, TO_CHAR(datatroca, 'DD/MM/YYYY'), TO_CHAR(datatroca, 'YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'YYYY'), localinst, modelo, 
             CASE WHEN dataaviso <= CURRENT_DATE AND notific = 1 THEN 'aviso' END
             FROM ".$xProj.".filtros_tipos INNER JOIN (".$xProj.".filtros INNER JOIN ".$xProj.".filtros_marcas ON ".$xProj.".filtros.codmarca = ".$xProj.".filtros_marcas.id) ON ".$xProj.".filtros.tipofiltro =  ".$xProj.".filtros_tipos.id 
-            WHERE ".$xProj.".filtros.ativo = 1 ORDER BY numapar ");
+            WHERE $Condic ORDER BY numapar ");
 
             ?>
             <div style="text-align: center;"><label class="titRelat">Filtros e Purificadores<label></div>

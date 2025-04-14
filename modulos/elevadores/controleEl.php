@@ -550,17 +550,6 @@ if(!isset($_SESSION["usuarioID"])){
                 if(parseInt(document.getElementById("guardaInsElev").value) === 1 || parseInt(document.getElementById("guardaFiscElev").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
                     $("#configAr").load("modulos/elevadores/relEmprEl.php");
                     document.getElementById("relacmodalConfig").style.display = "block";
-                }else{
-                    $.confirm({
-                        title: 'Informação!',
-                        content: 'Usuário não autorizado.',
-                        autoClose: 'OK|5000',
-                        draggable: true,
-                        buttons: {
-                            OK: function(){}
-                        }
-                    });
-                    return false;
                 }
             }
 

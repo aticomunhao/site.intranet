@@ -36,7 +36,6 @@ if(!isset($_SESSION['AdmUsu'])){
     $DestinoBem = (int) $tbl[19];
     $UsuDestino = $tbl[23];
     $UsuArquiv = $tbl[21];
-//    $Intervalo = (int) $tbl[24];
     $Dias = (int) $tbl[25];
     $DestSetor = $tbl[26];
     $DestProcesso = $tbl[27];
@@ -132,14 +131,14 @@ if(!isset($_SESSION['AdmUsu'])){
     if($Cabec1 == ""){
         $Cabec1 = "COMUNHÃO ESPÍRITA DE BRASÍLIA";
     }
-    $pdf->SetX(40); 
     $pdf->SetFont('Arial','' , 14); 
-    $pdf->Cell(150, 5, $Cabec1, 0, 2, 'C');
+    $pdf->MultiCell(0, 5, $Cabec1, 0, 'C', false);
     $pdf->SetFont('Arial','' , 12); 
-//    $pdf->Cell(150, 5, $Cabec2, 0, 2, 'C');
-    $pdf->Cell(150, 5, "Diretoria Administrativa e Financeira", 0, 2, 'C');
+//    $pdf->MultiCell(0, 3, $Cabec2, 0, 'C', false);
+    $pdf->MultiCell(0, 5, "Diretoria Administrativa e Financeira", 0, 'C', false);
     $pdf->SetFont('Arial','' , 10); 
-    $pdf->Cell(150, 5, $Cabec3, 0, 2, 'C');
+//    $pdf->MultiCell(0, 5, $Cabec3, 0, 'C', false);
+    $pdf->MultiCell(0, 5, "Achados e Perdidos", 0, 'C', false);
     $pdf->SetFont('Arial', '' , 10);
     $pdf->SetTextColor(25, 25, 112);
     if($Acao == "impr" ){
@@ -149,9 +148,6 @@ if(!isset($_SESSION['AdmUsu'])){
     $pdf->SetTextColor(0, 0, 0);
     $pdf->SetFont('Arial', '', 6);
     $pdf->ln();
-//    $lin = $pdf->GetY();
-//    $pdf->Line(10, $lin, 200, $lin);
-
     $pdf->SetFont('Arial', 'B', 9);
     $pdf->ln(3);
 
@@ -183,7 +179,6 @@ if(!isset($_SESSION['AdmUsu'])){
         $pdf->SetFont('Arial', '', 10);
         $pdf->MultiCell(0, 5, $tbl[2], 0, 'J', true); //relato
         $pdf->ln(3);
-
 
         $pdf->SetX(15); 
         $pdf->SetFont('Arial', 'I', 8);

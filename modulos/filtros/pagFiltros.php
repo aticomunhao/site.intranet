@@ -94,8 +94,8 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("botimprUsu").style.visibility = "hidden";
 
                 if(parseInt(document.getElementById("guardaEdit").value) === 1 || parseInt(document.getElementById("guardaFiscal").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
-                    $("#container5").load("modulos/filtros/jFiltros.php?acao=todos");
-                    $("#container6").load("modulos/filtros/kFiltros.php?acao=todos");
+                    $("#container5").load("modulos/filtros/jFiltros.php?acao="+document.getElementById("guardaAcao").value);
+                    $("#container6").load("modulos/filtros/kFiltros.php?acao="+document.getElementById("guardaAcao").value);
                     document.getElementById("botimpr").style.visibility = "visible";
 
                     if(parseInt(document.getElementById("guardaEdit").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ 
@@ -116,7 +116,6 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#dataVencim").mask("99/99/9999");
 
                 $('#carregaTema').load('modulos/config/carTema.php?carpag=clavic1');
-
 
             }); // fim do ready
 
@@ -1005,6 +1004,14 @@ if(!isset($_SESSION["usuarioID"])){
 
         $OpMarcas = pg_query($Conec, "SELECT id, descmarca FROM ".$xProj.".filtros_marcas WHERE ativo = 1 ORDER BY descmarca");
         $OpTipos = pg_query($Conec, "SELECT id, desctipo FROM ".$xProj.".filtros_tipos WHERE ativo = 1 ORDER BY desctipo ");
+
+        if(isset($_REQUEST["acao"])){
+            $Acao = $_REQUEST["acao"];
+        }else{
+            $Acao = "todos";
+        }
+        //filtrado - precisa botão para mostrar todos
+        $Acao = "todos";
         ?>
 
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>" />
@@ -1015,6 +1022,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardaCodMarca" value="0" />
         <input type="hidden" id="guardaPrazo" value = "" />
         <input type="hidden" id="guardaHoje" value = "<?php echo $Hoje; ?>" />
+        <input type="hidden" id="guardaAcao" value="<?php echo $Acao; ?>" />
 
         <!-- div três colunas -->
         <div id="tricoluna0" class="corClara" style="margin: 5px; padding: 10px; border: 2px solid blue; border-radius: 10px; min-height: 50px;">
@@ -1023,13 +1031,13 @@ if(!isset($_SESSION["usuarioID"])){
                 <input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Inserir" onclick="insereFiltro();" title="Registrar abasteimento ou manutenção nas viaturas.">
             </div>
             <div id="tricoluna2" class="box corClara" style="position: relative; float: left; width: 33%; text-align: center;">
-                <h5>Filtros e Purificadores</h5>
+                <h5>Filtros e Purificadores de Água</h5>
             </div>
             <div id="tricoluna3" class="box corClara" style="position: relative; float: left; width: 33%; text-align: right;">
                 <div id="selectTema" style="position: relative; float: left; padding-left: 30px;">
                     <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%; padding-left: 10px;">Tema: </label>
-                    <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);"><label for="corFundo0" style="font-size: 80%;">&nbsp;Claro</label>
-                    <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);"><label for="corFundo1" style="font-size: 80%;">&nbsp;Escuro</label>
+                    <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" style="cursor: pointer; font-size: 80%;">&nbsp;Claro</label>
+                    <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" style="cursor: pointer; font-size: 80%;">&nbsp;Escuro</label>
                 </div>
                 <label style="padding-left: 10px;"></label>
                 <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprFiltros();">PDF</button>

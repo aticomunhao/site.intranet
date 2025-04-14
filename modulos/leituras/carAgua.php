@@ -27,7 +27,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 data = tableLe.row(this).data();
                 $id = data[1];
                 document.getElementById("guardacod").value = $id;                
-                if($id !== 0){
+                if($id != 0){
                     if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value)){
                         carregaModal($id);
                     }
@@ -44,7 +44,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
     </head>
     <body> 
-        <div  style="text-align: center;"><label class="titRelat">Leituras Hidrômetro<label></div>
+        <div style="text-align: center;"><label class="titRelat">Leituras Hidrômetro<label></div>
             <?php 
                 date_default_timezone_set('America/Sao_Paulo');
                 $admIns = parAdm("insleituraagua", $Conec, $xProj);   // nível para inserir 

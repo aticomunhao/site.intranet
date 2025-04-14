@@ -27,9 +27,10 @@
 			//Provisório
 			if(strtotime('2025/04/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//0101
+				//0102
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS filtros smallint NOT NULL DEFAULT 0 ");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisc_filtros smallint NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog DROP COLUMN IF EXISTS fisceletric ");
 				pg_query($Conec, "UPDATE ".$xProj.".poslog SET filtros = 1 WHERE pessoas_id = 3");
 				pg_query($Conec, "UPDATE ".$xProj.".poslog SET filtros = 1 WHERE pessoas_id = 83");
 				pg_query($Conec, "UPDATE ".$xProj.".poslog SET filtros = 1 WHERE pessoas_id = 37");

@@ -259,11 +259,11 @@
 								echo "<a href='#' onclick='openhref(68);'>$Menu3</a>";
 								echo "</li>";
 
-								$Viat = parEsc("viatura", $Conec, $xProj, $_SESSION["usuarioID"]);
-								$FiscViat = parEsc("fisc_viat", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal
+								$Eletric5 = parEsc("eletric5", $Conec, $xProj, $_SESSION["usuarioID"]);
+								$FiscEletric = parEsc("fisc_eletric", $Conec, $xProj, $_SESSION["usuarioID"]); 
 //								if($_SESSION["usuarioID"] == 3){
-								if($Viat == 1 || $FiscViat == 1){
-									echo "<li><a href='#' onclick='openhref(93);'>Viaturas</a></li>"; // eletricidade 5 - viaturas
+								if($Eletric5 == 1 || $FiscEletric == 1|| $_SESSION["AdmUsu"] > 6){
+									echo "<li><a href='#' onclick='openhref(93);'>Viaturas Elétricas</a></li>"; // eletricidade 5 - viaturas
 								}
 							?>
 						</ul>

@@ -79,32 +79,8 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("etiqselecVisuAnoAgua").style.visibility = "hidden"; 
                     document.getElementById("selecVisuAnoAgua").style.visibility = "hidden"; 
                     document.getElementById("botgrafico").style.visibility = "hidden"; 
-                    document.getElementById("selectTema").style.visibility = "hidden"; 
 
-                    var nHora = new Date(); 
-                    var hora = nHora.getHours();
-
-                    var Cumpr = "Bom Dia!";
-                    if(hora >= 12){
-                        Cumpr = "Boa Tarde!";
-                    }
-                    if(hora >= 18){
-                        Cumpr = "Boa Noite!";
-                    }
-
-                    if(parseInt(document.getElementById("InsLeitura").value) === 0 && parseInt(document.getElementById("FiscAgua").value) === 0 ){
-                        $.confirm({
-                            title: Cumpr,
-                            content: 'Usuário não cadastrado para este acesso. <br>O acesso é proporcionado pela ATI.',
-                            autoClose: 'OK|7000',
-                            draggable: true,
-                            buttons: {
-                                OK: function(){}
-                            }
-                        });
-                    }else{
-                        $('#carregaTema').load('modulos/config/carTema.php?carpag=pag_agua');
-                    }
+                    $('#carregaTema').load('modulos/config/carTema.php?carpag=pag_agua');
 
                     if(parseInt(document.getElementById("InsLeitura").value) === 1 || parseInt(document.getElementById("FiscAgua").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // se estiver marcado em cadusu para fazer a leitura
                         if(parseInt(document.getElementById("InsLeitura").value) === 1 || parseInt(document.getElementById("UsuAdm").value) >= 6){
@@ -113,15 +89,10 @@ if(!isset($_SESSION["usuarioID"])){
                             document.getElementById("selecVisuMesAnoAgua").style.visibility = "visible";
                             document.getElementById("etiqselecVisuAnoAgua").style.visibility = "visible"; 
                             document.getElementById("selecVisuAnoAgua").style.visibility = "visible"; 
-                            document.getElementById("selectTema").style.visibility = "visible"; 
                             document.getElementById("botgrafico").style.visibility = "visible"; 
 
                             $("#container5").load("modulos/leituras/carAgua.php");
                             $("#container6").load("modulos/leituras/carEstatAgua.php");
-                            //para inserir tem que estar marcado no cadastro de usuários e ter o nível adm estabelecido nos parâmetros do sistema
-                        }else{
-                            $("#container5").load("modulos/leituras/carMsg.php?msgtipo=2");
-                            $("#container6").load("modulos/leituras/carMsg.php?msgtipo=2");
                         }
                     }else{
                         $("#container5").load("modulos/leituras/carMsg.php?msgtipo=1");
@@ -263,8 +234,10 @@ if(!isset($_SESSION["usuarioID"])){
             }); // fim do ready
 
             function carregaModal(Cod){
-                if(parseInt(document.getElementById("InsLeitura").value) === 0){
-                    return false;
+                if(parseInt(document.getElementById("UsuAdm").value) < 7){
+                    if(parseInt(document.getElementById("InsLeitura").value) === 0){
+                        return false;
+                    }
                 }
                 ajaxIni();
                 if(ajax){
@@ -704,7 +677,6 @@ if(!isset($_SESSION["usuarioID"])){
                     <button id="botImprimir" class="botpadrred" onclick="abreImprLeitura();">PDF</button>
                 </div> <!-- quadro -->
             </div>
-
 
             <div style="padding: 5px; display: flex; align-items: center; justify-content: center;"> 
                 <div class="row" style="width: 97%;">

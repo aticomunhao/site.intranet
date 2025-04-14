@@ -78,7 +78,6 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("selecVisuMesAnoEletric").style.visibility = "hidden";
                     document.getElementById("etiqselecVisuAnoEletric").style.visibility = "hidden";
                     document.getElementById("selecVisuAnoEletric").style.visibility = "hidden";
-                    document.getElementById("selectTema").style.visibility = "hidden"; 
 
                     if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 || parseInt(document.getElementById("FiscEletric").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // // se estiver marcado em cadusu para fazer a leitura
                         if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
@@ -88,7 +87,6 @@ if(!isset($_SESSION["usuarioID"])){
                             document.getElementById("selecVisuMesAnoEletric").style.visibility = "visible";
                             document.getElementById("etiqselecVisuAnoEletric").style.visibility = "visible";
                             document.getElementById("selecVisuAnoEletric").style.visibility = "visible";
-                            document.getElementById("selectTema").style.visibility = "visible"; 
                             $("#container5").load("modulos/leituras/carEletric5.php");
                             $("#container6").load("modulos/leituras/carEstatEletric5.php");
                             //para inserir tem que estar marcado no cadastro de usuários e ter o nível adm estabelecido nos parâmetros do sistema
@@ -96,7 +94,6 @@ if(!isset($_SESSION["usuarioID"])){
                             $("#container5").load("modulos/leituras/carMsg.php?msgtipo=2");
                             $("#container6").load("modulos/leituras/carMsg.php?msgtipo=2");
                         }
-                        $('#carregaTema').load('modulos/config/carTema.php?carpag=livroReg');
                     }else{
                         $("#container5").load("modulos/leituras/carMsg.php?msgtipo=1");
                         $("#container6").load("modulos/leituras/carMsg.php?msgtipo=1");
@@ -104,6 +101,9 @@ if(!isset($_SESSION["usuarioID"])){
                         document.getElementById("botgrafico").style.visibility = "hidden"; 
                         document.getElementById("botImprimir").disabled = true;
                     }
+
+                    $('#carregaTema').load('modulos/config/carTema.php?carpag=livroReg');
+
                     //para editar obedece ao nivel administrativo
                     if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) || parseInt(document.getElementById("UsuAdm").value) > 6){
                         document.getElementById("botImprimir").style.visibility = "visible"; 

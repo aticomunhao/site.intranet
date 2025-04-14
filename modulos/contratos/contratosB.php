@@ -100,11 +100,6 @@ if(!isset($_SESSION["usuarioID"])){
                 padding-right: 10px;
                 font-size: 80%;
             }
-
-            tr td {
-                border: 0px solid;
-            }
- 
         </style>
         <script>
              function ajaxIni(){
@@ -136,10 +131,12 @@ if(!isset($_SESSION["usuarioID"])){
             $(document).ready(function(){
                 if(parseInt(document.getElementById("guardaContr").value) === 1 || parseInt(document.getElementById("guardaFiscContr").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
                     $("#faixacontatante").load("modulos/contratos/jContratB.php");
-//                    $("#faixacontratada").load("modulos/contratos/jContrat2.php");
                 }else{
                     document.getElementById("faixaMensagem").style.display = "block";
                 }
+
+                $('#carregaTema').load('modulos/config/carTema.php?carpag=clavic1');
+
                 $("#dataAssinat").mask("99/99/9999");
                 $('#dataAssinat').datepicker({ uiLibrary: 'bootstrap4', locale: 'pt-br', format: 'dd/mm/yyyy' });
                 $("#dataVencim").mask("99/99/9999");
@@ -868,7 +865,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         </script>
     </head>
-    <body>
+    <body class="corClara" onbeforeunload="return mudaTema(0)"> <!-- ao sair retorna os background claros -->
         <?php
         if(!$Conec){
             echo "Sem contato com o PostGresql";
@@ -950,6 +947,8 @@ if(!isset($_SESSION["usuarioID"])){
         }
         $Contr = parEsc("contr", $Conec, $xProj, $_SESSION["usuarioID"]);
         $FiscContr = parEsc("fisc_contr", $Conec, $xProj, $_SESSION["usuarioID"]);
+        $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
+
         $OpSetor = pg_query($ConecPes, "SELECT id, sigla FROM ".$xPes.".setor WHERE dt_fim IS NULL ORDER BY sigla");
         $OpDias = pg_query($Conec, "SELECT codesc FROM ".$xProj.".escolhas WHERE codesc <= 120 ORDER BY codesc");
         $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
@@ -965,8 +964,8 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardaCodEmpr" value="0" />
         <input type="hidden" id="mudou" value="0" />
 
-        <div style="margin: 20px;">
-            <div class="box" style="position: relative; float: left; width: 33%;">
+        <div id="tricoluna0" style="margin: 20px;">
+            <div id="tricoluna1" class="box" style="position: relative; float: left; width: 33%;">
                 <?php
                 if($Contr == 1){
                 ?>
@@ -978,10 +977,15 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 ?>
             </div>
-            <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
+            <div id="tricoluna2" class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <h4>Controle de Contratos</h4>
             </div>
-            <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
+            <div id="tricoluna3" class="box" style="position: relative; float: left; width: 33%; text-align: center;">
+                <div id="selectTema" style="position: relative; float: left; padding-left: 30px;">
+                    <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%; padding-left: 10px;">Tema: </label>
+                    <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" style="cursor: pointer; font-size: 80%;">&nbsp;Claro</label>
+                    <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" style="cursor: pointer; font-size: 80%;">&nbsp;Escuro</label>
+                </div>
                 <label style="padding-left: 20px;"></label>
                 <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprListaContratos();" title="Gera um arquivo pdf com as duas relações.">PDF</button>
             </div>
@@ -995,13 +999,10 @@ if(!isset($_SESSION["usuarioID"])){
         <!-- div três colunas -->
         <div style="margin: 0 auto; justify-content: center; align-items: center;">
             <div style="position: relative; float: left; margin: 5px; text-align: center; width: 98%; border: 1px solid; border-radius: 10px; overflow: auto;"><div id="faixacontatante"></div></div>
-<!--            <div style="position: relative; float: left; width: 1%;"></div>
-            <div style="position: relative; float: left; margin: 5px; text-align: center; width: 48%; border: 1px solid; border-radius: 10px;"><div id="faixacontratada"></div></div>
- -->
         </div>
 
         <div id="editaModalContratos" class="relacmodal">
-            <div class="modal-content-relacContr">
+            <div class="modal-content-relacContr corPreta">
                 <span class="close" style="font-size: 250%; color: black;" onclick="fechaInsContrato();">&times;</span>
                 <div style="border: 2px solid blue; border-radius: 10px; margin-top: 10px; background: linear-gradient(180deg, white, #87CEEB)">
                     <table style="margin: 0 auto; width: 85%;">
@@ -1065,7 +1066,6 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                     </table>
                 </div>
-
 
                 <div style="border: 2px solid blue; border-radius: 10px; margin-top: 10px; background: linear-gradient(180deg, white, #87CEEB)">
                     <table style="margin: 0 auto; width: 85%;">
@@ -1162,7 +1162,7 @@ if(!isset($_SESSION["usuarioID"])){
 
          <!-- Modal configuração-->
         <div id="modalContratosConfig" class="relacmodal">
-            <div class="modal-content-ContratosControle">
+            <div class="modal-content-ContratosControle corPreta">
                 <span class="close" onclick="fechaContratosConfig();">&times;</span>
 
                 <!-- div três colunas -->
@@ -1232,7 +1232,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         <!-- div para editar nome das empresas  -->
         <div id="relacmodalEmpresas" class="relacmodal">
-            <div class="modal-content-Empresa">
+            <div class="modal-content-Empresa corPreta">
                 <span class="close" onclick="fechaEmpresas();">&times;</span>
                 <h5 id="titulomodalEmpr" style="text-align: center; color: #666;">Empresas Contratadas e Contratantes</h5>
                 <div class='divbot corFundo' onclick='insEmpresa()' title="Adicionar nova empresa"> Inserir </div>
@@ -1243,7 +1243,7 @@ if(!isset($_SESSION["usuarioID"])){
         </div> <!-- Fim Modal-->
 
         <div id="relacEditEmpresa" class="relacmodal">
-            <div class="modal-content-editEmpresas">
+            <div class="modal-content-editEmpresas corPreta">
                 <span class="close" onclick="fechaEditEmpr();">&times;</span>
                 <h5 id="titulomodalEdit" style="text-align: center; color: #666;">Editar Nome da Empresa</h5>
                 <div id="subtitulomodal" style="text-align: center; color: red;"></div>
@@ -1284,6 +1284,8 @@ if(!isset($_SESSION["usuarioID"])){
            </div>
            <br><br>
         </div> <!-- Fim Modal-->
+
+        <div id="carregaTema"></div> <!-- carrega a pág modulos/config/carTema.php - onde está a função mudaTema() -->
 
     </body>
 </html>

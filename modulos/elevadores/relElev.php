@@ -11,7 +11,10 @@ date_default_timezone_set('America/Sao_Paulo');
         <title></title>
         <script type="text/javascript">
             new DataTable('#idTabela', {
+                info: false, // inform de pág sendo visualizada
+                paging: false,  // paginação 
                 ordering: false, // desabilita ordenação das colunas
+                searching: false, // desabilita a caixa de procura
                 lengthMenu: [
                     [100, 200, 500],
                     [100, 200, 500]
@@ -45,12 +48,13 @@ date_default_timezone_set('America/Sao_Paulo');
             }else{
                 $Ano = date("Y");
             }
-//            $Ano = "2024";
+
             $Condic = "".$xProj.".controle_el.id != 0 And num_ap IS NOT NULL And ativo = 1";
             $rs0 = pg_query($Conec, "SELECT id, num_ap, localap FROM ".$xProj.".controle_el WHERE $Condic ORDER BY num_ap"); 
             $row0 = pg_num_rows($rs0);
         ?>
-        <br><br>
+
+        <div style="margin-top: 60px; border-top: 2px solid green;">
             <table id="idTabela" style="margin: 0 auto;">
                 <thead>
                     <tr>
@@ -317,8 +321,9 @@ date_default_timezone_set('America/Sao_Paulo');
                     }
                 }
                 ?>
-            </tbody>
-        </table>
-        <br><br><br><br>
+                </tbody>
+            </table>
+            <br><br>
+        </div>
     </body>
 </html>

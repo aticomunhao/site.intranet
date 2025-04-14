@@ -752,8 +752,8 @@ if(!isset($_SESSION["usuarioID"])){
             <div id="tricoluna3" class="box" style="position: relative; float: right; width: 33%; text-align: right;">
                 <div id="selectTema" style="position: relative; float: left; padding-left: 30px;">
                     <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%; padding-left: 10px;">Tema: </label>
-                    <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);"><label for="corFundo0" style="font-size: 80%;">&nbsp;Claro</label>
-                    <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);"><label for="corFundo1" style="font-size: 80%;">&nbsp;Escuro</label>
+                    <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" style="font-size: 80%; cursor: pointer;">&nbsp;Claro</label>
+                    <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" style="font-size: 80%; cursor: pointer;">&nbsp;Escuro</label>
                 </div>
                 <label style="padding-left: 20px;"></label>
                 <button class="botpadrred" style="font-size: 80%;" onclick="imprExtintModal();">PDF</button>

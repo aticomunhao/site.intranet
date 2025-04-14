@@ -10,6 +10,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <title></title>
         <script type="text/javascript">
             new DataTable('#idTabela', {
+                info: false, // inform de pág sendo visualizada
+                paging: false,  // paginação 
+                searching: false, 
                 lengthMenu: [
                     [100, 200, 500, 1000],
                     [100, 200, 500, 1000]

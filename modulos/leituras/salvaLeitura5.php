@@ -158,6 +158,10 @@ if($Acao =="salvaDataEletric"){
 if($Acao =="ultDataEletric"){
     $Erro = 0;
     $ValorIni = 0;
+//    $MesAtual = date('m');
+//    $AnoAtual = date('Y');
+//    $UltDay = "01/".$MesAtual."/".$AnoAtual;
+    $UltDay = date('d/m/Y', strtotime($Hoje. ' - 1 day'));
     $rs = pg_query($Conec, "SELECT MAX(dataleitura5) FROM ".$xProj.".leitura_eletric WHERE colec = 5 And ativo = 1");
     if(!$rs){
         $Erro = 1;
@@ -206,7 +210,7 @@ if($Acao =="ultDataEletric"){
         }else{
             $UltLeit = 0;
         }
-        $var = array("coderro"=>$Erro, "data"=>$tbl[0], "sem"=>$semana["$Sem"], "proximo"=>$ProxDay, "valorini"=>$ValorIni, "ultleitura"=>$UltLeit);
+        $var = array("coderro"=>$Erro, "data"=>$tbl[0], "sem"=>$semana["$Sem"], "proximo"=>$ProxDay, "valorini"=>$ValorIni, "ultleitura"=>$UltLeit, "ultday"=>$UltDay);
     }else{
         $var = array("coderro"=>$Erro);
     }
