@@ -26,6 +26,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     info: 'Mostrando Página _PAGE_ of _PAGES_',
                     infoEmpty: 'Nenhum registro encontrado',
                     infoFiltered: '(filtrado de _MAX_ registros)',
+                    lengthMenu: 'Mostrando _MENU_ registros por página',
                     zeroRecords: 'Nada foi encontrado'
                 }
             });
@@ -44,9 +45,28 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     <body>
         <?php
         $Contr = parEsc("contr", $Conec, $xProj, $_SESSION["usuarioID"]);
+
+        $rsV = pg_query($Conec, "SELECT id FROM ".$xProj.".contratos2 WHERE ativo = 1 And emvigor = 1");
+        $rowV = pg_num_rows($rsV);
+        $ContrVigor = $rowV." em vigor";
+
+        $rsT = pg_query($Conec, "SELECT id FROM ".$xProj.".contratos2 WHERE ativo = 1 And emvigor = 2");
+        $rowT = pg_num_rows($rsT);
+        if($rowT > 1){
+            $ContrTerm = " - ".$rowT." terminados";
+        }else{
+            $ContrTerm = " - ".$rowT." terminado";
+        }
+        $rsR = pg_query($Conec, "SELECT id FROM ".$xProj.".contratos2 WHERE ativo = 1 And emvigor = 3");
+        $rowR = pg_num_rows($rsR);
+        if($rowR > 1){
+            $ContrResc = " - ".$rowR." rescindidos";
+        }else{
+            $ContrResc = " - ".$rowR." rescindido";
+        }
         ?>
         <div style="margin: 20px;">
-            <div class="box" style="position: relative; float: left; width: 33%; text-align: left;">
+            <div class="box" style="position: relative; float: left; width: 20%; text-align: left;">
                 <?php
                 if($Contr == 1){
                 ?>
@@ -57,10 +77,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 }
                 ?>
             </div>
-            <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
+            <div class="box" style="position: relative; float: left; width: 58%; text-align: center;">
                 <h5>Empresas Contratantes</h5>
+                <label style="font-size: 80%;"><?php echo ($rowV+$rowT+$rowR)." Contratos: &nbsp;&nbsp;".$ContrVigor.$ContrTerm.$ContrResc; ?></label>
             </div>
-            <div class="box" style="position: relative; float: left; width: 33%; text-align: right;">
+            <div class="box" style="position: relative; float: left; width: 20%; text-align: right;">
             <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprContratantes();" title="Gera um arquivo pdf com a relação das contratantes." >PDF</button>
             <label style="padding-left: 5px;"></label>
             </div>
@@ -70,7 +91,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <?php
         $rs0 = pg_query($Conec, "SELECT id, numcontrato, TO_CHAR(dataassinat, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), codsetor, codempresa, vigencia, notific, objetocontr, 
         CASE WHEN dataaviso <= CURRENT_DATE AND datavencim >= CURRENT_DATE THEN 'aviso' END, emvigor 
-        FROM ".$xProj.".contratos2 WHERE ativo = 1 ORDER BY dataassinat DESC");
+        FROM ".$xProj.".contratos2 WHERE ativo = 1 ORDER BY emvigor, dataassinat DESC");
         $row0 = pg_num_rows($rs0);
         ?>
         <div style="padding: 10px;">

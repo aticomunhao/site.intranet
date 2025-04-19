@@ -155,6 +155,9 @@ function openhref(Num){
     if(parseInt(Num) === 94){
         $('#container3').load('modulos/filtros/pagFiltros.php');
     }
+    if(parseInt(Num) === 95){
+        $('#container3').load('modulos/config/estatUsu.php');
+    }
 
 }
 

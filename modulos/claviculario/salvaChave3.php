@@ -437,11 +437,11 @@ if(isset($_REQUEST["acao"])){
         $Erro = 0;
         $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de polog
 
-        $rs1 = pg_query($Conec, "SELECT clav3, chave3, fisc_clav3, cpf FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
+        $rs1 = pg_query($Conec, "SELECT clav3, chave3, fisc_clav3, cpf, clav_edit3 FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
         $row1 = pg_num_rows($rs1);
         if($row1 > 0){
             $tbl1 = pg_fetch_row($rs1);
-            $var = array("coderro"=>$Erro, "claviculario"=>$tbl1[0], "pegachave"=>$tbl1[1], "fiscchaves"=>$tbl1[2], "cpf"=>$tbl1[3]);
+            $var = array("coderro"=>$Erro, "claviculario"=>$tbl1[0], "pegachave"=>$tbl1[1], "fiscchaves"=>$tbl1[2], "cpf"=>$tbl1[3], "editachave"=>$tbl1[4]);
         }else{
             $Erro = 1;
             $var = array("coderro"=>$Erro);
@@ -457,7 +457,7 @@ if(isset($_REQUEST["acao"])){
         $Cpf2 = str_replace(".", "", $Cpf1);
         $GuardaCpf = str_replace("-", "", $Cpf2);
 
-        $rs1 = pg_query($Conec, "SELECT clav3, chave3, fisc_clav3, cpf, pessoas_id FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf'");
+        $rs1 = pg_query($Conec, "SELECT clav3, chave3, fisc_clav3, cpf, pessoas_id, clav_edit3 FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf'");
         if(!$rs1){
             $Erro = 1;
             $var = array("coderro"=>$Erro);
@@ -465,7 +465,7 @@ if(isset($_REQUEST["acao"])){
         $row1 = pg_num_rows($rs1);
         if($row1 > 0){
             $tbl1 = pg_fetch_row($rs1);
-            $var = array("coderro"=>$Erro, "claviculario"=>$tbl1[0], "pegachave"=>$tbl1[1], "fiscchaves"=>$tbl1[2], "cpf"=>$tbl1[3], "PosCod"=>$tbl1[4]);
+            $var = array("coderro"=>$Erro, "claviculario"=>$tbl1[0], "pegachave"=>$tbl1[1], "fiscchaves"=>$tbl1[2], "cpf"=>$tbl1[3], "PosCod"=>$tbl1[4], "editachave"=>$tbl1[5]);
         }else{
             $Erro = 2;
             $var = array("coderro"=>$Erro);
@@ -480,8 +480,8 @@ if(isset($_REQUEST["acao"])){
         $Campo = filter_input(INPUT_GET, 'campo');
         $Valor = (int) filter_input(INPUT_GET, 'valor');
 
-        if($Campo == "fisc_clav3" && $Valor == 0){
-            $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE fisc_clav3 = 1");
+        if($Campo == "clav_edit3" && $Valor == 0){
+            $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE clav_edit3 = 1");
             $row = pg_num_rows($rs);
             if($row == 1){
                 $Erro = 2;

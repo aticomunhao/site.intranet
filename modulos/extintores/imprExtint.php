@@ -90,15 +90,16 @@ if(isset($_REQUEST["acao"])){
         $pdf->SetFont('Arial', '', 10);
 
         $rs0 = pg_query($Conec, "SELECT id, ext_num, ext_local, ext_empresa, ext_tipo, ext_capac, ext_reg, ext_serie, TO_CHAR(datacarga, 'DD/MM/YYYY'), TO_CHAR(datavalid, 'DD/MM/YYYY'), TO_CHAR(datacasco, 
-        'DD/MM/YYYY'), TO_CHAR(datacasco, 'YYYY'), CASE WHEN datavalid BETWEEN CURRENT_DATE AND CURRENT_DATE+$TempoAviso THEN 'aviso' WHEN datavalid < CURRENT_DATE THEN 'vencido' END, CASE WHEN datavalid <= CURRENT_DATE THEN 'vencido' END
-        FROM ".$xProj.".extintores WHERE $Condic ORDER BY ext_num");
+        'DD/MM/YYYY'), TO_CHAR(datacasco, 'YYYY'), ext_compl, CASE WHEN datavalid BETWEEN CURRENT_DATE AND CURRENT_DATE+$TempoAviso THEN 'aviso' WHEN datavalid < CURRENT_DATE THEN 'vencido' END, CASE WHEN datavalid <= CURRENT_DATE THEN 'vencido' END
+        FROM ".$xProj.".extintores WHERE $Condic ORDER BY ext_num, ext_compl");
         $row0 = pg_num_rows($rs0);
         $pdf->ln(5);
         if($row0 > 0){
             $pdf->SetFont('Arial', 'I', 7);
             $pdf->SetX(15);
             $pdf->Cell(10, 5, "Núm", 0, 0, 'C');
-            $pdf->Cell(45, 5, "Tipo", 0, 0, 'L');
+            $pdf->Cell(10, 5, "Compl", 0, 0, 'L');
+            $pdf->Cell(35, 5, "Tipo", 0, 0, 'L');
             $pdf->Cell(20, 5, "Capacidade", 0, 0, 'L'); // capacidade
             $pdf->Cell(22, 5, "Inspeção", 0, 0, 'L'); // datacarga
             $pdf->Cell(22, 5, "Vencimento", 0, 0, 'L'); // vencimento
@@ -140,19 +141,25 @@ if(isset($_REQUEST["acao"])){
                 }else{
                     $DescTipo = "";
                 }
+                if(is_null($tbl0[12])){
+                    $Compl = "";
+                }else{
+                    $Compl = $tbl0[12];
+                }
 
                 $pdf->ln(1);
                 $pdf->SetX(15);
                 $pdf->Cell(10, 5, str_pad($Num, 3, 0, STR_PAD_LEFT), 0, 0, 'C');
-                $pdf->Cell(45, 5, substr($DescTipo,0,25), 0, 0, 'L');
+                $pdf->Cell(10, 5, substr($Compl, 0, 5), 0, 0, 'L');
+                $pdf->Cell(35, 5, substr($DescTipo, 0, 25), 0, 0, 'L');
                 $pdf->Cell(20, 5, substr($tbl0[5], 0, 13), 0, 0, 'L'); // capacidade
                 $pdf->Cell(22, 5, $tbl0[8], 0, 0, 'L'); // datacarga
 
                 //Vencimento
-                if($tbl0[12] == 'aviso'){
+                if($tbl0[13] == 'aviso'){
                     $pdf->SetTextColor(205, 0, 205); // magenta3
                 }
-                if($tbl0[12] == 'vencido'){
+                if($tbl0[13] == 'vencido'){
                     $pdf->SetTextColor(255, 0, 0); // vermelho
                 }
                 $pdf->Cell(22, 5, $tbl0[9], 0, 0, 'L'); // vencimento
@@ -162,7 +169,7 @@ if(isset($_REQUEST["acao"])){
                 $pdf->MultiCell(0, 4, $tbl0[2], 0, 'L', false); // local
 
                 //Segunda linha
-                $pdf->SetX(25);
+                $pdf->SetX(35);
                 $pdf->Cell(40, 4, "Reg: ".substr($tbl0[6], 0, 22), 0, 0, 'L'); // registro
                 $pdf->Cell(40, 4, "Série: ".substr($tbl0[7],0,22), 0, 0, 'L'); // série
                 $pdf->Cell(29, 4, "Casco: ".$DataCasco, 0, 0, 'L'); // casco

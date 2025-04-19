@@ -115,12 +115,12 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("botagenda1").style.visibility = "hidden";
                 document.getElementById("botagenda2").style.visibility = "hidden";
                 document.getElementById("imgChavesconfig").style.visibility = "hidden";
-                
-                if(parseInt(document.getElementById("registrachaves").value) === 1 || parseInt(document.getElementById("editachaves").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+
+                if(parseInt(document.getElementById("guardaEditaChaves").value) === 1 || parseInt(document.getElementById("guardaEntregaChaves").value) === 1 || parseInt(document.getElementById("guardaFiscChaves").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
                     $("#faixacentral").load("modulos/claviculario/jChave2.php?acao=todos");
                     $("#faixamostra").load("modulos/claviculario/kChave2.php?acao=todos");
                     $("#faixaagenda").load("modulos/claviculario/agChave2.php?acao=todos");
-                    if(parseInt(document.getElementById("editachaves").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ 
+                    if(parseInt(document.getElementById("guardaEditaChaves").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ 
                         document.getElementById("botinserir").style.visibility = "visible";
                         document.getElementById("botimpr").style.visibility = "visible";
                         document.getElementById("botagenda1").style.visibility = "visible";
@@ -129,6 +129,9 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 }else{
                     document.getElementById("faixaMensagem").style.display = "block";
+                }
+                if(parseInt(document.getElementById("guardaFiscChaves").value) === 1){
+                    document.getElementById("botimpr").style.visibility = "visible";
                 }
 
                 $('#carregaTema').load('modulos/config/carTema.php?carpag=clavic2');
@@ -407,6 +410,10 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#configselecSolicitante").change(function(){
                     if(document.getElementById("configselecSolicitante").value == ""){
                         document.getElementById("configcpfsolicitante").value = "";
+                        document.getElementById("registroChaves").checked = false;
+                        document.getElementById("retiraChave").checked = false;
+                        document.getElementById("fiscalChaves").checked = false;
+                        document.getElementById("editChaves").checked = false;
                         return false;
                     }
                     ajaxIni();
@@ -434,6 +441,11 @@ if(!isset($_SESSION["usuarioID"])){
                                         }else{
                                             document.getElementById("fiscalChaves").checked = false;
                                         }
+                                        if(parseInt(Resp.editachave) === 1){
+                                            document.getElementById("editChaves").checked = true;
+                                        }else{
+                                            document.getElementById("editChaves").checked = false;
+                                        }
                                     }else{
                                         alert("Houve um erro no servidor.")
                                     }
@@ -445,7 +457,12 @@ if(!isset($_SESSION["usuarioID"])){
                 });
 
                 $("#configcpfsolicitante").click(function(){
+                    document.getElementById("configcpfsolicitante").value = "";
                     document.getElementById("configselecSolicitante").value = "";
+                    document.getElementById("registroChaves").checked = false;
+                    document.getElementById("retiraChave").checked = false;
+                    document.getElementById("fiscalChaves").checked = false;
+                    document.getElementById("editChaves").checked = false;
                 });
                 $("#configcpfsolicitante").change(function(){
                     document.getElementById("configselecSolicitante").value = "";
@@ -474,11 +491,17 @@ if(!isset($_SESSION["usuarioID"])){
                                         }else{
                                             document.getElementById("fiscalChaves").checked = false;
                                         }
+                                        if(parseInt(Resp.editachave) === 1){
+                                            document.getElementById("editChaves").checked = true;
+                                        }else{
+                                            document.getElementById("editChaves").checked = false;
+                                        }
                                     }
                                     if(parseInt(Resp.coderro) === 2){
                                         document.getElementById("registroChaves").checked = false;
                                         document.getElementById("retiraChave").checked = false;
                                         document.getElementById("fiscalChaves").checked = false;
+                                        ocument.getElementById("editChaves").checked = false;
                                         $('#mensagemConfig').fadeIn("slow");
                                         document.getElementById("mensagemConfig").innerHTML = "Não encontrado";
                                         $('#mensagemConfig').fadeOut(2000);
@@ -493,6 +516,11 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
 
+                $("#imprRelChave").click(function(){
+                    document.getElementById("selecAno").value = "";
+                    document.getElementById("selecMesAno").value = "";
+                    window.open("modulos/claviculario/imprChave2.php?acao=relac", "RelacChavesDAF");
+                });
                 $("#selecMesAno").change(function(){
                     document.getElementById("selecAno").value = "";
                     if(document.getElementById("selecMesAno").value != ""){
@@ -509,7 +537,6 @@ if(!isset($_SESSION["usuarioID"])){
                         document.getElementById("relacimprChaves").style.display = "none";
                     }
                 });
-
                 $("#selecMesAnoMov").change(function(){
                     document.getElementById("selecAnoMov").value = "";
                     if(document.getElementById("selecMesAnoMov").value != ""){
@@ -1191,6 +1218,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("registroChaves").checked = false;
                 document.getElementById("retiraChave").checked = false;
                 document.getElementById("fiscalChaves").checked = false;
+                document.getElementById("editChaves").checked = false;
                 document.getElementById("configcpfsolicitante").value = "";
                 document.getElementById("configselecSolicitante").value = "";
                 document.getElementById("modalChavesConfig").style.display = "block";
@@ -1363,6 +1391,7 @@ if(!isset($_SESSION["usuarioID"])){
 
 
         $Clav = parEsc("clav2", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
+        $ClavEdit = parEsc("clav_edit", $Conec, $xProj, $_SESSION["usuarioID"]); // edita, modifica
         $Chave = parEsc("chave2", $Conec, $xProj, $_SESSION["usuarioID"]); // pode pegar chaves
         $FiscClav = parEsc("fisc_clav2", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
         $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
@@ -1421,8 +1450,9 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="CodidChave" value="0" />
         <input type="hidden" id="mudou" value="0" />
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>" />
-        <input type="hidden" id="editachaves" value="<?php echo $FiscClav; ?>" />
-        <input type="hidden" id="registrachaves" value="<?php echo $Clav; ?>" />
+        <input type="hidden" id="guardaFiscChaves" value="<?php echo $FiscClav; ?>" />
+        <input type="hidden" id="guardaEditaChaves" value="<?php echo $ClavEdit; ?>" />
+        <input type="hidden" id="guardaEntregaChaves" value="<?php echo $Clav; ?>" />
         <input type="hidden" id="codagenda" value="0" />
         
         <div id="editaModalChave" class="relacmodal">
@@ -1885,23 +1915,29 @@ if(!isset($_SESSION["usuarioID"])){
 
                 <table style="margin: 0 auto; width: 85%;">
                     <tr>
-                        <td class="etiq80" title="Fiscalizar a entrega e devolução das chaves do claviculário da DAF">DAF:</td>
-                        <td colspan="4">
-                            <input type="checkbox" id="fiscalChaves" title="Gerenciar, fiscalizar a entrega e devolução das chaves do claviculário da DAF" onchange="marcaChave(this, 'fisc_clav2');" >
-                            <label for="fiscalChaves" title="Gereciar, fiscalizar e editar as chaves do claviculário da DAF">gerenciar, editar e fiscalizar as chaves do claviculário da DAF</label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="etiq80" title="Registrar a entrega e devolução das chaves do claviculário da DAF">DAF: </td>
+                        <td class="etiq" title="Registrar a entrega e devolução das chaves do claviculário da DAF">DAF: </td>
                         <td colspan="4">
                             <input type="checkbox" id="registroChaves" title="Registrar a entrega e devolução das chaves do claviculário da DAF" onchange="marcaChave(this, 'clav2');" >
-                            <label for="registroChaves" title="Registrar a entrega e devolução das chaves do claviculário da DAF">registrar a entrega e devolução das chaves do claviculário da DAF</label>
+                            <label for="registroChaves" title="Registrar a entrega e devolução das chaves do claviculário da DAF">registrar a entrega e devolução das chaves do claviculário na DAF</label>
                         </td>
                     </tr>
-
                     <tr>
-                        <td class="etiq80" style="border-bottom: 1px solid black;" title="Autorizado a retirar chaves do claviculário da DAF">Usuário</td>
-                        <td colspan="4" style="border-bottom: 1px solid;">
+                        <td class="etiq" title="Inserir, modificar, editar a descrição das chaves do claviculário da DAF">DAF:</td>
+                        <td colspan="4">
+                            <input type="checkbox" id="editChaves" title="Gerenciar, inserir, modificar a descrição das chaves do claviculário da DAF" onchange="marcaChave(this, 'clav_edit2');" >
+                            <label for="editChaves" title="Inserir, modificar, editar a descrição das chaves do claviculário da DAF">inserir, editar e apagar chaves do claviculário da DAF</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="etiq" title="Apenas fiscalizar o funcionamento do claviculário da DAF">DAF: </td>
+                        <td colspan="4">
+                            <input type="checkbox" id="fiscalChaves" title="Apenas fiscalizar o funcionamento do claviculário da DAF" onchange="marcaChave(this, 'fisc_clav2');" >
+                            <label for="fiscalChaves" title="Apenas fiscalizar o funcionamento do claviculário da DAF">fiscalizar o funcionamento do claviculário da DAF</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="etiq" style="border-bottom: 1px solid black;" title="Autorizado a retirar chaves do claviculário da DAF"></td>
+                        <td colspan="4" style="border-bottom: 1px solid; padding-left: 20px;">
                             <input type="checkbox" id="retiraChave" title="Autorizado a retirar chaves do claviculário da DAF" onchange="marcaChave(this, 'chave2');" >
                             <label for="retiraChave" title="Autorizado a retirar chaves do claviculário da DAF">usuário autorizado a retirar chaves do claviculário da DAF</label>
                         </td>
@@ -1915,14 +1951,18 @@ if(!isset($_SESSION["usuarioID"])){
 
         <!-- div modal para imprimir em pdf  -->
         <div id="relacimprChaves" class="relacmodal">
-            <div class="modal-content-imprChaves2 corPreta">
+            <div class="modal-content-imprChaves corPreta">
                 <span class="close" onclick="fechaImprChaves();">&times;</span>
                 <h5 style="text-align: center;color: #666;">Controle de Chaves da DAF</h5>
-                <h6 style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
-                <div style="border: 2px solid; border-radius: 10px; padding: 10px;">
+                <h6 style="text-align: center; padding-bottom: 18px; color: #666;">Gerar PDF</h6>
+                <div style="border: 2px solid; border-radius: 10px; padding: 10px; text-align: center;">
+                    <input type="button" id="imprRelChave" class="resetbot fundoAzul2" style="font-size: 80%;" value="Relação completa do claviculário da DAF">
+                </div>
+                <div style="margin-top: 5px; border: 2px solid; border-radius: 10px; padding: 10px;">
+                    <div style="text-align: center; color: #666;">Relação completa com movimentação</div>
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>
-                            <td style="text-align: right;"><label style="font-size: 80%;">Mensal Todas - Selecione o Mês/Ano: </label></td>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Mensal - Selecione o Mês/Ano: </label></td>
                             <td>
                                 <select id="selecMesAno" style="font-size: 1rem; width: 90px;" title="Selecione o período.">
                                     <option value=""></option>
@@ -1938,7 +1978,7 @@ if(!isset($_SESSION["usuarioID"])){
                             </td>
                         </tr>
                         <tr>
-                            <td style="text-align: right;"><label style="font-size: 80%;">Anual Todas - Selecione o Ano: </label></td>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Anual - Selecione o Ano: </label></td>
                             <td>
                                 <select id="selecAno" style="font-size: 1rem; width: 90px;" title="Selecione o Ano.">
                                     <option value=""></option>
@@ -1955,11 +1995,12 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                     </table>
                 </div>
-
+                
                 <div style="margin-top: 5px; border: 2px solid; border-radius: 10px; padding: 10px;">
+                    <div style="text-align: center; color: #666;">Relação das Chaves que tiveram movimentação</div>
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>
-                            <td style="text-align: right;"><label style="font-size: 80%;">Mensal - Só as movimentadas - Selecione o Mês/Ano: </label></td>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Mensal - Selecione o Mês/Ano: </label></td>
                             <td>
                                 <select id="selecMesAnoMov" style="font-size: 1rem; width: 90px;" title="Selecione o período.">
                                     <option value=""></option>
@@ -1975,7 +2016,7 @@ if(!isset($_SESSION["usuarioID"])){
                             </td>
                         </tr>
                         <tr>
-                            <td style="text-align: right;"><label style="font-size: 80%;">Anual - Só as movimentadas - Selecione o Ano: </label></td>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Anual - Selecione o Ano: </label></td>
                             <td>
                                 <select id="selecAnoMov" style="font-size: 1rem; width: 90px;" title="Selecione o Ano.">
                                     <option value=""></option>
@@ -1992,7 +2033,6 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                     </table>
                 </div>
-
                 <div style="padding-bottom: 20px;"></div>
            </div>
         </div>

@@ -132,6 +132,7 @@ if($Acao=="salvanometipo"){
 if($Acao=="salvadados"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Num = filter_input(INPUT_GET, 'numero');
+    $Compl = trim(strtoupper(filter_input(INPUT_GET, 'complem')));
     $Registro = filter_input(INPUT_GET, 'registroextint');
     $NumSerie = filter_input(INPUT_GET, 'serieextint');
     $Local = filter_input(INPUT_GET, 'localextint');
@@ -165,14 +166,14 @@ if($Acao=="salvadados"){
        
      $Erro = 0;
     if($Cod > 0){ // salvar
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".extintores SET ext_num = $Num, ext_local = '$Local', ext_empresa = $Empresa, ext_tipo = $Tipo, ext_capac = '$Capac', ext_reg = '$Registro', ext_serie = '$NumSerie', datacarga = '$DataRev', datavalid = '$DataVal', datacasco = '$DataCasco', ativo = 1, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE id = $Cod ");
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".extintores SET ext_num = $Num, ext_compl = '$Compl', ext_local = '$Local', ext_empresa = $Empresa, ext_tipo = $Tipo, ext_capac = '$Capac', ext_reg = '$Registro', ext_serie = '$NumSerie', datacarga = '$DataRev', datavalid = '$DataVal', datacasco = '$DataCasco', ativo = 1, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE id = $Cod ");
     }else{ // inserir
         $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".extintores");
         $tblCod = pg_fetch_row($rsCod);
         $Codigo = $tblCod[0];
         $CodigoNovo = ($Codigo+1);
-        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".extintores (id, ext_num, ext_local, ext_empresa, ext_tipo, ext_capac, ext_reg, ext_serie, datacarga, datavalid, datacasco, ativo, usuins, datains) 
-        VALUES ($CodigoNovo, $Num, '$Local', $Empresa, $Tipo, '$Capac', '$Registro', '$NumSerie', '$DataRev', '$DataVal', '$DataCasco', 1, ".$_SESSION["usuarioID"].", NOW() ) ");
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".extintores (id, ext_num, ext_compl, ext_local, ext_empresa, ext_tipo, ext_capac, ext_reg, ext_serie, datacarga, datavalid, datacasco, ativo, usuins, datains) 
+        VALUES ($CodigoNovo, $Num, '$Compl', '$Local', $Empresa, $Tipo, '$Capac', '$Registro', '$NumSerie', '$DataRev', '$DataVal', '$DataCasco', 1, ".$_SESSION["usuarioID"].", NOW() ) ");
     }
     if(!$rs){
         $Erro = 1;
@@ -185,7 +186,8 @@ if($Acao=="salvadados"){
 if($Acao=="buscaextintor"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Erro = 0;
-    $rs = pg_query($Conec, "SELECT id, ext_num, ext_local, ext_empresa, ext_tipo, ext_capac, ext_reg, ext_serie, TO_CHAR(datacarga, 'DD/MM/YYYY'), TO_CHAR(datavalid, 'DD/MM/YYYY'), TO_CHAR(datacasco, 'DD/MM/YYYY'), ativo, usuins, datains FROM ".$xProj.".extintores WHERE id = $Cod");
+    $rs = pg_query($Conec, "SELECT id, ext_num, ext_local, ext_empresa, ext_tipo, ext_capac, ext_reg, ext_serie, TO_CHAR(datacarga, 'DD/MM/YYYY'), TO_CHAR(datavalid, 'DD/MM/YYYY'), TO_CHAR(datacasco, 'DD/MM/YYYY'), 
+    ext_compl, ativo, usuins, datains FROM ".$xProj.".extintores WHERE id = $Cod");
     $row = pg_num_rows($rs);
     if($row > 0){
         $tbl = pg_fetch_row($rs);
@@ -197,7 +199,7 @@ if($Acao=="buscaextintor"){
         return false;
     }
 
-    $var = array("coderro"=>$Erro, "extint"=>str_pad($tbl[1], 3, 0, STR_PAD_LEFT), "local"=>$tbl[2], "empresa"=>$tbl[3], "tipo"=>$tbl[4], "capacid"=>$tbl[5], "registro"=>$tbl[6], "numserie"=>$tbl[7], "revis"=>$tbl[8], "valid"=>$tbl[9], "casco"=>$tbl[10] );
+    $var = array("coderro"=>$Erro, "extint"=>str_pad($tbl[1], 3, 0, STR_PAD_LEFT), "local"=>$tbl[2], "empresa"=>$tbl[3], "tipo"=>$tbl[4], "capacid"=>$tbl[5], "registro"=>$tbl[6], "numserie"=>$tbl[7], "revis"=>$tbl[8], "valid"=>$tbl[9], "casco"=>$tbl[10], "complem"=>$tbl[11] );
     $responseText = json_encode($var);
     echo $responseText;
 }

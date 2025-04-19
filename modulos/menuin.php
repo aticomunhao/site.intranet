@@ -27,24 +27,23 @@
 			//Provisório
 			if(strtotime('2025/04/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//0102
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS filtros smallint NOT NULL DEFAULT 0 ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS fisc_filtros smallint NOT NULL DEFAULT 0 ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog DROP COLUMN IF EXISTS fisceletric ");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET filtros = 1 WHERE pessoas_id = 3");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET filtros = 1 WHERE pessoas_id = 83");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET filtros = 1 WHERE pessoas_id = 37");
+				//0103
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".usulog ALTER COLUMN datalogout SET DEFAULT '3000-12-31 00:00:00' ");
+				pg_query($Conec, "UPDATE ".$xProj.".usulog SET ativo = 0 WHERE datalogout = datalogin");
+				pg_query($Conec, "UPDATE ".$xProj.".usulog SET ativo = 0 WHERE TO_CHAR(datalogin, 'MM') = '02' ");
 
-				pg_query($Conec, "UPDATE ".$xProj.".carousel SET descarq = 'imgfundo0_C2025.jpg' WHERE codcar = 1");
-                pg_query($Conec, "UPDATE ".$xProj.".carousel SET descarq = 'imgfundo1_C2025.jpg' WHERE codcar = 2");
-                pg_query($Conec, "UPDATE ".$xProj.".carousel SET descarq = 'imgfundo2_C2025.jpg' WHERE codcar = 3");
-                pg_query($Conec, "UPDATE ".$xProj.".carousel SET descarq = 'imgfundo3_C2025.jpg' WHERE codcar = 4");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS clav_edit smallint NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS clav_edit2 smallint NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS clav_edit3 smallint NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET clav_edit = fisc_clav WHERE fisc_clav = 1");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET clav_edit2 = fisc_clav2 WHERE fisc_clav2 = 1");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET clav_edit3 = fisc_clav3 WHERE fisc_clav3 = 1");
 
-				//0098
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves ADD COLUMN IF NOT EXISTS chavecompl VARCHAR(10) ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves2 ADD COLUMN IF NOT EXISTS chavecompl VARCHAR(10) ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves3 ADD COLUMN IF NOT EXISTS chavecompl VARCHAR(10) ");
+//				pg_query($Conec, "DROP TABLE IF EXISTS ".$xPes.".chavesprov");
 
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".extintores ADD COLUMN IF NOT EXISTS ext_compl VARCHAR(10) ");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET extsen = 0 WHERE pessoas_id = 30");
+			
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

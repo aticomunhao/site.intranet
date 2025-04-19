@@ -1019,9 +1019,9 @@ if(!isset($_SESSION["usuarioID"])){
                             <td class="etiq" style="padding-bottom: 7px;">Contrato: </td>
                             <td style="padding-bottom: 10px;"><input type="text" id="numcontrato" style="width: 200px; text-align: center; border:1px solid; border-radius: 5px;"/></td>
                             <td>
-                                <input type="radio" name="vigorcontrato" id="vigorcontrato1" value="1" title="Contrato em vigor" onclick="mudaStatus(value);"><label for="vigorcontrato1" class="etiqAzul" style="padding-left: 3px;"> Em Vigor</label>
-                                <input type="radio" name="vigorcontrato" id="vigorcontrato2" value="2" title="Contrato vencido." onclick="mudaStatus(value);"><label for="vigorcontrato2" class="etiqAzul" style="padding-left: 3px;"> Vencido</label>
-                                <input type="radio" name="vigorcontrato" id="vigorcontrato3" value="3" title="Contrato vencido." onclick="mudaStatus(value);"><label for="vigorcontrato3" class="etiqAzul" style="padding-left: 3px;"> Rescindido</label>
+                                <input type="radio" name="vigorcontrato" id="vigorcontrato1" value="1" title="Contrato em vigor." onclick="mudaStatus(value);"><label for="vigorcontrato1" class="etiqAzul" style="padding-left: 3px;"> Em Vigor</label>
+                                <input type="radio" name="vigorcontrato" id="vigorcontrato2" value="2" title="Contrato terminado." onclick="mudaStatus(value);"><label for="vigorcontrato2" class="etiqAzul" style="padding-left: 3px;"> Terminado</label>
+                                <input type="radio" name="vigorcontrato" id="vigorcontrato3" value="3" title="Contrato rescindido." onclick="mudaStatus(value);"><label for="vigorcontrato3" class="etiqAzul" style="padding-left: 3px;"> Rescindido</label>
                             </td>
                             <td></td>
                             <td class="etiq" style="padding-bottom: 7px;"><label id="numsequencia" style="font-size: 150%; border:1px solid; border-radius: 5px; padding-left: 3px; padding-right: 3px;" title="Mera sugestão para numeração."></label></td>
