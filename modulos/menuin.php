@@ -31,7 +31,6 @@
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".usulog ALTER COLUMN datalogout SET DEFAULT '3000-12-31 00:00:00' ");
 				pg_query($Conec, "UPDATE ".$xProj.".usulog SET ativo = 0 WHERE datalogout = datalogin");
 				pg_query($Conec, "UPDATE ".$xProj.".usulog SET ativo = 0 WHERE TO_CHAR(datalogin, 'MM') = '02' ");
-
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS clav_edit smallint NOT NULL DEFAULT 0 ");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS clav_edit2 smallint NOT NULL DEFAULT 0 ");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS clav_edit3 smallint NOT NULL DEFAULT 0 ");
