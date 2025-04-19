@@ -71,9 +71,9 @@
             function logModal0(Valor){
                 if(Valor.length >= 6){ // porque pode ser 0
                     if(parseInt(document.getElementById("guardaleng").value) > 0){
-                    if(parseInt(Valor.length) >= parseInt(document.getElementById("guardaleng").value)){
-                        logModal1(); // para evitar contar 2 acessos quanto o usuário aciona enter ativando o botão Entrar (logModal())
-                    }
+                        if(parseInt(Valor.length) >= parseInt(document.getElementById("guardaleng").value)){
+                            logModal1(); // para evitar contar 2 acessos quanto o usuário aciona enter ativando o botão Entrar (logModal())
+                        }
                     }
                 }
             }
@@ -93,7 +93,6 @@
                     $('#mensagem').fadeOut(3000);
                     return false;
                 }
-                document.getElementById("entradaLog0").value = "0"; // para voltar ao original
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/config/registr.php?acao=loglog&usuario="+encodeURIComponent(document.getElementById("usuario").value)+"&senha="+encodeURIComponent(document.getElementById("senha").value), true);
@@ -120,6 +119,7 @@
                                   document.getElementById("relacmodalLog").style.display = "none";
                                   location.replace("indexb.php"); // location.replace(-> abre na mesma aba
                                 }
+//                                document.getElementById("entradaLog0").value = "0"; // para voltar ao original
                             }
                         }
                     };
@@ -274,7 +274,8 @@
                         </tr>
                         <tr>
 <!--                            <td><input type="password" id="senha" class="form-control" value="" title="Termine com Enter" onkeypress="if(event.keyCode===13){logModal();}"></td> -->
-                            <td><input type="password" id="senha" class="form-control" value="" onkeyup="if(event.keyCode !== 13){logModal0(value);};" onkeypress="if(event.keyCode===13){logModal();}"></td>
+<!--                            <td><input type="password" id="senha" class="form-control" value="" onkeyup="if(event.keyCode !== 13){logModal0(value);};" onkeypress="if(event.keyCode===13){logModal();}"></td> -->
+                            <td><input type="password" id="senha" class="form-control" value="" onkeyup="if(event.keyCode !== 13){logModal0(value);};" onkeypress="if(event.keyCode===13){javascript:foco('entrar');return false;}"></td>
                             <td style="text-align: center;"><img id="olhoSecaoSenha" style="cursor: pointer;" title="Mantenha clicado para visualizar a senha inserida." src="imagens/olhosenha.png" alt="" width="25" height="15" draggable="false"></td>
                         </tr>
                         <tr>

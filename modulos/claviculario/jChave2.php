@@ -7,9 +7,8 @@
     require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     date_default_timezone_set('America/Sao_Paulo'); 
 
+    $ClavEdit = parEsc("clav_edit2", $Conec, $xProj, $_SESSION["usuarioID"]); // edita, modifica
     $Clav = parEsc("clav2", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
-    $Chave = parEsc("chave2", $Conec, $xProj, $_SESSION["usuarioID"]); // pode pegar chaves
-	$FiscClav = parEsc("fisc_clav2", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
 
     $rs = pg_query($Conec, "SELECT id, chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente, chavecompl 
     FROM ".$xProj.".chaves2 WHERE ativo = 1 ORDER BY chavenum, chavenumcompl ");
@@ -33,12 +32,13 @@
                 if($row > 0){
                     while($tbl = pg_fetch_row($rs)){
                         $Cod = $tbl[0];
+                        $Presente = $tbl[6];
                         ?>
                         <tr>
                             <td style="display: none;"><?php echo $Cod; ?></td>
                             <td>
                                 <?php
-                                if($FiscClav == 1 || $_SESSION["AdmUsu"]  > 6){
+                                if($ClavEdit == 1 || $_SESSION["AdmUsu"]  > 6){
                                     ?>
                                     <div class="quadrinhoClick" onclick="editaChave(<?php echo $Cod; ?>);" title="Clique para editar."> <?php echo str_pad($tbl[1], 3, 0, STR_PAD_LEFT); ?></div>
                                     <?php
@@ -56,8 +56,12 @@
                             <td><div class="quadrinho" style="font-size: 80%; text-align: left;"> <?php echo $tbl[5]; ?></div></td>
                             <td class="etiq aCentro">
                                 <?php
-                                if($tbl[6] == 1){
-                                    echo "<img src='imagens/ChaveAzul.png' height='20px;' style='cursor: pointer;' onclick='saidaChave($Cod);' title='Chave presente'>";
+                                if($Presente == 1){
+                                    if($Clav == 1 || $ClavEdit == 1){
+                                        echo "<img src='imagens/ChaveAzul.png' height='20px;' style='cursor: pointer;' onclick='saidaChave($Cod);' title='Chave presente'>";
+                                    }else{
+                                        echo "<img src='imagens/ChaveAzul.png' height='20px;' title='Chave presente'>";
+                                    }
                                 }else{
                                     echo "<img src='imagens/ChaveVerm.png' height='20px;' style='cursor: pointer;' onclick='retornoChave1($Cod);' title='Chave ausente'>";
                                 }

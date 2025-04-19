@@ -8,6 +8,7 @@
     require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     date_default_timezone_set('America/Sao_Paulo'); 
 
+    $ClavEdit = parEsc("clav_edit2", $Conec, $xProj, $_SESSION["usuarioID"]); // edita, modifica
     $Clav = parEsc("clav2", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
     $Chave = parEsc("chave2", $Conec, $xProj, $_SESSION["usuarioID"]); // pode pegar chaves
 	$FiscClav = parEsc("fisc_clav2", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
@@ -98,7 +99,7 @@
             }
         }else{
             ?>
-            <div style="text-align: center; padding-left: 5px; padding-rigth: 5px;"><label class="etiq">Nenhum Lançamento </label> </div>
+            <div style="text-align: center; padding-left: 5px; padding-rigth: 5px;"><label class="etiq">Tudo em ordem</label> </div>
             <?php
         }
         ?>

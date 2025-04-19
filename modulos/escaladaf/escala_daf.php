@@ -1825,9 +1825,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 ajax.onreadystatechange = function(){
                                     if(ajax.readyState === 4 ){
                                         if(ajax.responseText){
-if(parseInt(document.getElementById("guardaUsuId").value) === 3){
-alert(ajax.responseText);
-}
+//alert(ajax.responseText);
                                             Resp = eval("(" + ajax.responseText + ")");
                                             document.getElementById("imgEspera").style.visibility = "hidden"; 
                                             if(parseInt(Resp.coderro) === 1){

@@ -120,7 +120,8 @@ if(!isset($_SESSION["usuarioID"])){
 //alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 if(parseInt(Resp.coderro) === 0){
-                                    document.getElementById("numextintor").innerHTML = Resp.extint;
+                                    document.getElementById("numextintor").value = Resp.extint;
+                                    document.getElementById("complextintor").value = "";
                                     document.getElementById("mudou").value = "0";
                                     document.getElementById("subtitulomodal").innerHTML = "Inserindo novo extintor";
                                     document.getElementById("registroextint").value = "";
@@ -156,7 +157,8 @@ if(!isset($_SESSION["usuarioID"])){
 //alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 if(parseInt(Resp.coderro) === 0){
-                                    document.getElementById("numextintor").innerHTML = Resp.extint;
+                                    document.getElementById("numextintor").value = Resp.extint;
+                                    document.getElementById("complextintor").value = Resp.complem;
                                     document.getElementById("mudou").value = "0";
                                     document.getElementById("subtitulomodal").innerHTML = "";
                                     document.getElementById("registroextint").value = Resp.registro;
@@ -314,7 +316,8 @@ if(!isset($_SESSION["usuarioID"])){
                     ajaxIni();
                     if(ajax){
                         ajax.open("POST", "modulos/extintores/salvaExtint.php?acao=salvadados&codigo="+document.getElementById("guardaid").value
-                        +"&numero="+encodeURIComponent(document.getElementById("numextintor").innerHTML)
+                        +"&numero="+encodeURIComponent(document.getElementById("numextintor").value)
+                        +"&complem="+encodeURIComponent(document.getElementById("complextintor").value)
                         +"&registroextint="+encodeURIComponent(document.getElementById("registroextint").value)
                         +"&serieextint="+encodeURIComponent(document.getElementById("serieextint").value)
                         +"&localextint="+encodeURIComponent(document.getElementById("localextint").value)
@@ -776,7 +779,11 @@ if(!isset($_SESSION["usuarioID"])){
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>
                             <td class="etiq aDir">Extintor nº: </td>
-                            <td colspan="2"><label class="aCentro" style="padding-left: 5px; font-weight: bold;" id="numextintor"></label></td>
+                            <td colspan="2">
+<!--                                <label class="aCentro" id="numextintor" style="padding-left: 5px; font-weight: bold;"></label> -->
+                                <input type="text" id="numextintor" class="aCentro" onchange="modif();" style="width: 70px; border: 1px solid; border-radius: 5px; padding-left: 3px; font-weight: bold;">
+                                <input type="text" id="complextintor" class="aCentro" onchange="modif();" style="width: 50px; border: 1px solid; border-radius: 5px; padding-left: 3px; font-weight: bold;" title="Complemento para o número do extintor.">
+                            </td>
                             <td class="etiq aDir">nº de Registro:</td>
                             <td colspan="2"><input type="text" id="registroextint" valor="" onchange="modif();" style="width: 150px; border: 1px solid; border-radius: 5px; padding-left: 3px;"></td>
                             <td class="etiq aDir">nº de Série:</td>

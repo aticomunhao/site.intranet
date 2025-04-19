@@ -8,6 +8,7 @@
     require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     date_default_timezone_set('America/Sao_Paulo'); 
 
+    $ClavEdit = parEsc("clav_edit", $Conec, $xProj, $_SESSION["usuarioID"]); // edita, modifica
     $Clav = parEsc("clav", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
     $Chave = parEsc("chave", $Conec, $xProj, $_SESSION["usuarioID"]); // pode pegar chaves
 	$FiscClav = parEsc("fisc_clav", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
@@ -88,7 +89,7 @@
                             <td colspan="2">
                                 <div>
                                     <?php
-                                    if($FiscClav == 1){
+                                    if($ClavEdit == 1){
                                         echo "<img src='imagens/lixeiraPreta.png' height='20px;' style='cursor: pointer; padding-right: 3px;' onclick='apagaAgendaChaves($CodAg);' title='Apagar este agendamento.'>";
                                     }
                                     if(strtotime($tbl[10]) == strtotime($Hoje)){

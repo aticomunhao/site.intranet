@@ -74,9 +74,11 @@ if($Acao =="salvaev"){
     $numEv = (int) filter_input(INPUT_GET, 'numEv'); // numEv = 0 novo lançamento
     if($numEv > 0){ // pega a data da inserção e cancela o lanç anterior pq pode haver mudança de duração
         $DataIns = "3000-12-31";
-        $rsIns = pg_query($Conec, "SELECT to_char(datains, 'YYYY/MM/DD HH24:MI') FROM ".$xProj.".calendev WHERE ativo = 1 And evnum = $numEv");
+        $UsuIns = 0;
+        $rsIns = pg_query($Conec, "SELECT to_char(datains, 'YYYY/MM/DD HH24:MI'), usuins FROM ".$xProj.".calendev WHERE ativo = 1 And evnum = $numEv");
         $tblIns = pg_fetch_row($rsIns);
         $DataIns = $tblIns[0]; // guarda a data de inserção para o novo lançamento
+        $UsuIns = $tblIns[1];
         $rsApag = pg_query($Conec, "UPDATE ".$xProj.".calendev SET ativo = 0 WHERE evnum = $numEv"); // desativa o lançamento anterior
     }
 
@@ -122,9 +124,9 @@ if($Acao =="salvaev"){
         $Codigo = $tblCod[0];
         $CodigoNovo = ($Codigo+1);
         if($numEv > 0){ // modificação
-            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".calendev (idev, evnum, titulo, cor, dataini, localev, repet, fixo, avobrig, avok, datains, datamodif) VALUES ($CodigoNovo, $ProxEv, '$Texto', '$Cor', '$Dia', '$Local', $Repet, $Fixo, $Obrig, $Obrig, '$DataIns', NOW() )");
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".calendev (idev, evnum, titulo, cor, dataini, localev, repet, fixo, avobrig, avok, usuins, datains, usumodif, datamodif) VALUES ($CodigoNovo, $ProxEv, '$Texto', '$Cor', '$Dia', '$Local', $Repet, $Fixo, $Obrig, $Obrig, $UsuIns, '$DataIns', ". $_SESSION['usuarioID'].", NOW() )");
         }else{ // novo evento
-            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".calendev (idev, evnum, titulo, cor, dataini, localev, repet, fixo, avobrig, avok, datains) VALUES ($CodigoNovo, $ProxEv, '$Texto', '$Cor', '$Dia', '$Local', $Repet, $Fixo, $Obrig, $Obrig, NOW() )");
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".calendev (idev, evnum, titulo, cor, dataini, localev, repet, fixo, avobrig, avok, usuins, datains) VALUES ($CodigoNovo, $ProxEv, '$Texto', '$Cor', '$Dia', '$Local', $Repet, $Fixo, $Obrig, $Obrig, ". $_SESSION['usuarioID'].", NOW() )");
         }
     }else{
         $Dia = date('Y/m/d', $diaIniUnix);
@@ -133,14 +135,14 @@ if($Acao =="salvaev"){
                 $rsCod = pg_query($Conec, "SELECT MAX(idev) FROM ".$xProj.".calendev");
                 $tblCod = pg_fetch_row($rsCod);
                 $Codigo = $tblCod[0];
-                $rs = pg_query($Conec, "INSERT INTO ".$xProj.".calendev (idev, evnum, titulo, cor, dataini, localev, repet, fixo, avobrig, avok, datains, datamodif) VALUES (($Codigo+1), $ProxEv, '$Texto', '$Cor', '$Dia', '$Local', $Repet, $Fixo, $Obrig, $Obrig, '$DataIns', NOW() )");
+                $rs = pg_query($Conec, "INSERT INTO ".$xProj.".calendev (idev, evnum, titulo, cor, dataini, localev, repet, fixo, avobrig, avok, usuins, datains, usumodif, datamodif) VALUES (($Codigo+1), $ProxEv, '$Texto', '$Cor', '$Dia', '$Local', $Repet, $Fixo, $Obrig, $Obrig, $UsuIns, '$DataIns', ". $_SESSION['usuarioID'].", NOW() )");
                 $Soma = strtotime($Dia . ' + 1 day'); // soma um dia no formato unix
                 $Dia = date('Y/m/d', $Soma); // transforma para poder lançar no BD.
             }else{
                 $rsCod = pg_query($Conec, "SELECT MAX(idev) FROM ".$xProj.".calendev");
                 $tblCod = pg_fetch_row($rsCod);
                 $Codigo = $tblCod[0];
-                $rs = pg_query($Conec, "INSERT INTO ".$xProj.".calendev (idev, evnum, titulo, cor, dataini, localev, repet, fixo, avobrig, avok, datains) VALUES (($Codigo+1), $ProxEv, '$Texto', '$Cor', '$Dia', '$Local', $Repet, $Fixo, $Obrig, $Obrig, NOW() )");
+                $rs = pg_query($Conec, "INSERT INTO ".$xProj.".calendev (idev, evnum, titulo, cor, dataini, localev, repet, fixo, avobrig, avok, usuins, datains) VALUES (($Codigo+1), $ProxEv, '$Texto', '$Cor', '$Dia', '$Local', $Repet, $Fixo, $Obrig, $Obrig, ". $_SESSION['usuarioID'].", NOW() )");
                 $Soma = strtotime($Dia . ' + 1 day'); // soma um dia no formato unix
                 $Dia = date('Y/m/d', $Soma); // transforma para poder lançar no BD.
             }

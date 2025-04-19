@@ -464,5 +464,102 @@ if(isset($_REQUEST["acao"])){
         }
         $pdf->Output();
     }
+    if($Acao == "relac"){
+        $pdf = new PDF();
+        $pdf->AliasNbPages(); // pega o número total de páginas
+        $pdf->AddPage("L", "A4");
+        $pdf->SetLeftMargin(30);
+        $pdf->SetTitle('Resumo Clavic DAF', $isUTF8=TRUE);
+        //Monta o arquivo pdf        
+        $pdf->SetFont('Arial', '' , 12); 
+        $pdf->SetTitle('Claviculário DAF', $isUTF8=TRUE);
+        if($Dom != "" && $Dom != "NULL"){
+            if(file_exists('../../imagens/'.$Dom)){
+                if(getimagesize('../../imagens/'.$Dom)!=0){
+                    $pdf->Image('../../imagens/'.$Dom,12,8,16,20);
+                }
+            }
+        }
+        $pdf->SetFont('Arial','' , 14); 
+        $pdf->Cell(0, 5, $Cabec1, 0, 2, 'C');
+        $pdf->SetFont('Arial','' , 12); 
+    //    $pdf->Cell(0, 5, $Cabec2, 0, 2, 'C');
+        $pdf->Cell(0, 5, 'Diretoria Administrativa e Financeira', 0, 2, 'C');
+        $pdf->SetFont('Arial','' , 10); 
+        $pdf->Cell(0, 5, $Cabec3, 0, 2, 'C');
+        $pdf->SetFont('Arial', '' , 10);
+        $pdf->SetTextColor(25, 25, 112);
+        $pdf->MultiCell(0, 3, "Claviculário da DAF", 0, 'C', false);
+    
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->SetFont('Arial', '', 6);
+        $pdf->ln();
+        $lin = $pdf->GetY();
+        $pdf->Line(10, $lin, 290, $lin);
+        $pdf->SetDrawColor(200); // cinza claro
+        $pdf->ln(7);  
 
+        $rs0 = pg_query($Conec, "SELECT id, chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente, chavecompl 
+        FROM ".$xProj.".chaves2 
+        WHERE ativo = 1 And chavenum != 0 ORDER BY chavenum");
+        $row0 = pg_num_rows($rs0);
+        $pdf->SetFont('Arial', 'I', 14);
+
+        $pdf->MultiCell(0, 5, "Relação de Chaves", 0, 'C', false);
+        $pdf->ln(5);
+        if($row0 > 0){
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->SetX(25);
+            $pdf->Cell(25, 3, "Chave", 0, 0, 'L');
+            $pdf->Cell(20, 3, "Sala", 0, 0, 'L');
+            $pdf->Cell(60, 3, "Nome", 0, 0, 'L');
+            $pdf->Cell(60, 3, "Local", 0, 0, 'L');
+            $pdf->Cell(150, 3, "Obs", 0, 1, 'L');
+            $lin = $pdf->GetY();
+            $pdf->Line(25, $lin, 282, $lin);
+            $pdf->SetFont('Arial', '', 10);
+
+            while($tbl0 = pg_fetch_row($rs0)){
+                $Cod = $tbl0[0];
+                $pdf->SetX(25); 
+                $pdf->SetFont('Arial', 'B', 10);
+                $pdf->Cell(25, 5, str_pad($tbl0[1], 3, 0, STR_PAD_LEFT)." ".$tbl0[7], 0, 0, 'L');
+                $pdf->SetFont('Arial', '', 10);
+                if(is_null($tbl0[4]) || $tbl0[4] == ""){
+                    $Sala = "";
+                }else{
+                    $Sala = $tbl0[4];
+                }
+                if(is_null($tbl0[2]) || $tbl0[2] == ""){
+                    $NomeSala = "";
+                }else{
+                    $NomeSala = $tbl0[2];
+                }
+                if(is_null($tbl0[3]) || $tbl0[3] == ""){
+                    $Local = "";
+                }else{
+                    $Local = $tbl0[3];
+                }
+
+                $lin = $pdf->GetY();
+                $pdf->Line(25, $lin, 282, $lin);
+                
+                $pdf->Cell(20, 5, substr($Sala, 0, 10), 0, 0, 'L'); // sala
+                $pdf->Cell(60, 5, substr($NomeSala, 0, 26), 0, 0, 'L'); // nome
+                $pdf->SetFont('Arial', '', 8);
+                $pdf->Cell(60, 5, substr($Local, 0, 45), 0, 0, 'L'); // Local
+                $pdf->MultiCell(0, 5, $tbl0[5], 0, 'L', false); // Obs
+                $pdf->SetFont('Arial', '', 10);
+                $lin = $pdf->GetY();
+                $pdf->Line(25, $lin, 282, $lin);
+            }
+            $lin = $pdf->GetY();               
+            $pdf->Line(10, $lin, 290, $lin);
+            $pdf->ln(10);
+        }else{
+            $pdf->SetFont('Arial', 'I', 11);
+            $pdf->MultiCell(0, 3, "Nada foi encontrad0", 0, 'C', false);
+        }
+        $pdf->Output();
+    }
  }

@@ -198,8 +198,9 @@
 					<?php
 					//Claviculário da DAF
 					$Clav2 = parEsc("clav2", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
+					$ClavEdit2 = parEsc("clav_edit2", $Conec, $xProj, $_SESSION["usuarioID"]); // edita, modifica
 					$FiscClav2 = parEsc("fisc_clav2", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
-					if($Clav2 == 1 || $FiscClav2 == 1 || $_SESSION["AdmUsu"] > 6){
+					if($ClavEdit2 == 1 || $Clav2 == 1 || $FiscClav2 == 1 || $_SESSION["AdmUsu"] > 6){
 						echo "<li>";
 							echo "<a href='#' onclick='openhref(79);'>Chaves DAF</a>";
 						echo "</li>";
@@ -207,8 +208,9 @@
 
 					//Claviculário Chaves Lacradas
 					$Clav3 = parEsc("clav3", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
+					$ClavEdit3 = parEsc("clav_edit3", $Conec, $xProj, $_SESSION["usuarioID"]); // edita, modifica
 					$FiscClav3 = parEsc("fisc_clav3", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
-					if($Clav3 == 1 || $FiscClav3 == 1 || $_SESSION["AdmUsu"] > 6){
+					if($ClavEdit3 == 1 || $Clav3 == 1 || $FiscClav3 == 1 || $_SESSION["AdmUsu"] > 6){
 						echo "<li>";
 							echo "<a href='#' onclick='openhref(80);'>Chaves Lacradas</a>";
 						echo "</li>";
@@ -216,8 +218,9 @@
 
 					//Claviculário da Portaria
 					$Clav = parEsc("clav", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
+					$ClavEdit = parEsc("clav_edit", $Conec, $xProj, $_SESSION["usuarioID"]); // edita, modifica
 					$FiscClav = parEsc("fisc_clav", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
-					if($Clav == 1 || $FiscClav == 1 || $_SESSION["AdmUsu"] > 6){
+					if($ClavEdit == 1 || $Clav == 1 || $FiscClav == 1 || $_SESSION["AdmUsu"] > 6){
 						echo "<li>";
 							echo "<a href='#' onclick='openhref(75);'>Chaves Portaria</a>";
 						echo "</li>";
@@ -302,9 +305,9 @@
 							echo "<li>";
 								echo "<a href='#'>Acertos</a>";
 								echo "<ul>";
-//									echo "<li><a href='#' onclick='openhref(92);'>Logs Usuários</a></li>";
-									echo "<li><a href='#' onclick='openhref(60);'>Tabelas</a></li>";
 									echo "<li><a href='#' onclick='openhref(66);'>php Info</a></li>";
+									echo "<li><a href='#' onclick='openhref(60);'>Tabelas</a></li>";
+									echo "<li><a href='#' onclick='openhref(95);'>Usuários</a></li>";
 								echo "</ul>";
 							echo "</li>";
 						}

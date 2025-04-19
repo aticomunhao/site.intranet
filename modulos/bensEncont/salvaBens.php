@@ -393,3 +393,105 @@ if($Acao=="encerraProcesso"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
+if($Acao=="buscaReivind"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Erro = 0;
+    $rs1 = pg_query($Conec, "SELECT to_char(datareiv, 'DD/MM/YYYY'), TO_CHAR(dataperdeu, 'DD/MM/YYYY'), nome, email, telef, localperdeu, descdobemperdeu, observ, processoreiv, encontrado, entregue 
+    FROM ".$xProj.".bensreivind WHERE id = $Cod ");
+    if(!$rs1){
+        $Erro = 1;
+        $var = array("coderro"=>$Erro);
+    }else{
+        $tbl1 = pg_fetch_row($rs1);
+        if(is_null($tbl1[5])){
+            $Local = "";
+        }else{
+            $Local = $tbl1[5];
+        }
+        if(is_null($tbl1[6])){
+            $Desc = "";
+        }else{
+            $Desc = $tbl1[6];
+        }
+        if(is_null($tbl1[7])){
+            $Obs = "";
+        }else{
+            $Obs = $tbl1[7];
+        }
+        $var = array("coderro"=>$Erro, "datareiv"=>$tbl1[0], "dataperdeu"=>$tbl1[1], "nome"=>$tbl1[2], "email"=>$tbl1[3], "telef"=>$tbl1[4], "localperdeu"=>nl2br($Local), "descdobem"=>nl2br($Desc), "observ"=>nl2br($Obs), "processo"=>$tbl1[8], "encontrado"=>$tbl1[9], "entregue"=>$tbl1[10]);
+    }
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao=="buscaProcReivind"){
+    $Erro = 0;
+    $Ano = date('Y');
+    //Número do relato - reinicia a cada ano
+    $rs0 = pg_query($Conec, "SELECT MAX(LEFT(processoreiv, 3)) FROM ".$xProj.".bensreivind WHERE TO_CHAR(datareiv, 'YYYY') = '$Ano' ");
+    $tbl0 = pg_fetch_row($rs0);
+    if(!$rs0){
+        $Erro = 1;
+    }
+    $Num = $tbl0[0];
+    $Processo = str_pad(($Num+1), 3, "0", STR_PAD_LEFT);
+    $NumRelat = $Processo."/".$Ano;
+
+    $var = array("coderro"=>$Erro, "numprocesso"=>$NumRelat);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+if($Acao=="salvaReivind"){
+    $Erro = 0;
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Registro = addslashes(filter_input(INPUT_GET, 'numregistro'));
+
+    $DataR = addslashes($_REQUEST['dataReivind']);
+    $DataP = addslashes($_REQUEST['dataPerdido']);
+
+    $DataReg = implode("-", array_reverse(explode("/", $DataR)));
+    $DataPerdeu = implode("-", array_reverse(explode("/", $DataP)));
+    $DescBem = str_replace("'","\"",$_REQUEST["descdobemPerdeu"]); // substituir aspas simples por duplas
+    $Nome = addslashes($_REQUEST['nomereclamante']);
+    $Email = addslashes($_REQUEST['emailreclamante']);
+    $Telef = addslashes($_REQUEST['telefreclamante']);
+    $Local = str_replace("'","\"",$_REQUEST["localperdeu"]);
+    $Obs = str_replace("'","\"",$_REQUEST["obsperdeu"]);
+
+    $Encontr = (int) filter_input(INPUT_GET, 'encontrado');
+    $Entreg = (int) filter_input(INPUT_GET, 'entregue');
+
+    if($Cod > 0){ // salvar
+        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensreivind SET processoreiv = '$Registro', datareiv = '$DataReg', dataperdeu = '$DataPerdeu', nome = '$Nome', email = '$Email', telef = '$Telef', localperdeu = '$Local', descdobemperdeu = '$DescBem', observ = '$Obs', encontrado = $Encontr, entregue = $Entreg, ativo = 1, usuins = ".$_SESSION["usuarioID"].", datains = NOW() WHERE id = $Cod");
+    }else{ // inserir novo
+        //Cod novo para o BD
+        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".bensreivind");
+        $tblCod = pg_fetch_row($rsCod);
+        $Codigo = $tblCod[0];
+        $CodigoNovo = $Codigo+1; 
+        $rs1 = pg_query($Conec, "INSERT INTO ".$xProj.".bensreivind (id, processoreiv, datareiv, dataperdeu, nome, email, telef, localperdeu, descdobemperdeu, observ, encontrado, entregue, ativo, usuins, datains) 
+        VALUES($CodigoNovo, '$Registro', '$DataReg', '$DataPerdeu', '$Nome', '$Email', '$Telef', '$Local', '$DescBem', '$Obs', $Encontr, $Entreg, 1, ".$_SESSION["usuarioID"].", NOW() )");
+        $Cod = $CodigoNovo; // mandar de volta para o botão salvar sem fechar
+    }
+    if(!$rs1){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro, "codigo"=>$Cod);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+if($Acao=="apagaReivind"){
+    $Erro = 0;
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+
+    if($Cod > 0){ // salvar
+        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensreivind SET ativo = 0, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE id = $Cod");
+    }
+    if(!$rs1){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}

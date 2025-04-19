@@ -22,10 +22,31 @@ if(!isset($_SESSION["usuarioID"])){
         <script src="comp/js/jquery.mask.js"></script>
         <script src="class/gijgo/js/messages/messages.pt-br.js"></script>
         <style>
+           /* Tamanho do checkbox */
+            input[type=checkbox]{
+                transform: scale(1.2);
+            }
             .modal-content-BensControle{
                 background: linear-gradient(180deg, white, #86c1eb);
                 margin: 10% auto; /* 10% do topo e centrado */
                 padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 70%;
+            }
+            .modal-content-Reivindic{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 10% auto; /* 10% do topo e centrado */
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 75%;
+                min-height: 500px;
+            }
+            .modal-content-EditaReinvindic{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 12% auto;
+                padding: 10px;
                 border: 1px solid #888;
                 border-radius: 15px;
                 width: 70%;
@@ -95,6 +116,8 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("selectTema").style.visibility = "hidden"; 
                 document.getElementById("selectBens").style.visibility = "hidden"; 
                 document.getElementById("imgHelpBens").style.visibility = "hidden"; 
+                document.getElementById("botApagaReiv").style.visibility = "hidden";
+                document.getElementById("imprReciboReiv").style.visibility = "hidden";
 
                 if(parseInt(document.getElementById("guardaEditBens").value) === 0 && parseInt(document.getElementById("guardaFiscBens").value) === 0 && parseInt(document.getElementById("guardaSoInsBens").value) === 0){
                     $("#carregaBens").load("modulos/leituras/carMsg.php?msgtipo=1");
@@ -109,17 +132,21 @@ if(!isset($_SESSION["usuarioID"])){
                 //Impedir a mudança de data do registro de bem encontrado -> liberado a pedido em 16/08/2024
 //                DataPr = compareDates ("30/06/2024", dataAtualFormatada()); // se o prazo for maior que a data atual
 //                if(DataPr == true){ // se for maior que a data atual
-                    $('#dataregistro').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
+                    $('#dataregistro').datepicker({ uiLibrary: 'bootstrap5', locale: 'pt-br', format: 'dd/mm/yyyy' });
 //                }else{
 //                    document.getElementById("dataregistro").disabled = true;
 //                }
 
-                $('#dataachado').datepicker({ uiLibrary: 'bootstrap3', locale: 'pt-br', format: 'dd/mm/yyyy' });
+                $('#dataachado').datepicker({ uiLibrary: 'bootstrap5', locale: 'pt-br', format: 'dd/mm/yyyy' });
+                $('#dataReivind').datepicker({ uiLibrary: 'bootstrap5', locale: 'pt-br', format: 'dd/mm/yyyy' });
+                $('#dataPerdido').datepicker({ uiLibrary: 'bootstrap5', locale: 'pt-br', format: 'dd/mm/yyyy' });
 
                 $("#cpfproprietario").mask("999.999.999-99");
                 $("#configCpfBens").mask("999.999.999-99");
                 $("#dataregistro").mask("99/99/9999");
                 $("#dataachado").mask("99/99/9999");
+                $("#dataReivind").mask("99/99/9999");
+                $("#dataPerdido").mask("99/99/9999");
 
                 if(parseInt(document.getElementById("guardaEditBens").value) === 1){ // tem que estar autorizado no cadastro de usuários
                     if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
@@ -257,6 +284,26 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#resumoBens").click(function(){
                     window.open("modulos/bensEncont/imprResumo.php?acao=resumo", "Resumo");
                     document.getElementById("relacimprBens").style.display = "none";
+                });
+                $("#imprReciboReiv").click(function(){
+                    if(parseInt(document.getElementById("mudou").value) === 1){
+                        $.confirm({
+                            title: 'Alerta',
+                            content: 'Há alterações não salvas. Confirma gerar PDF sem as alterações?',
+                            autoClose: 'Não|10000',
+                            draggable: true,
+                            buttons: {
+                                Sim: function () {
+                                    window.open("modulos/bensEncont/imprRecReiv.php?acao=imprReciboReiv&codigo="+document.getElementById("guardaid").value, "Recibo");
+                                },
+                                Não: function () {
+                                }
+                            }
+                        });
+                    }else{
+                        window.open("modulos/bensEncont/imprRecReiv.php?acao=imprReciboReiv&codigo="+document.getElementById("guardaid").value, "Recibo");
+                    }
+                    
                 });
 
                 $("#selecprocesso").change(function(){
@@ -518,7 +565,6 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function mostraBem(Cod, modal, Restit){
-//alert(Cod);
                 document.getElementById("guardamodal").value = modal;
                 ajaxIni();
                 if(ajax){
@@ -1044,6 +1090,9 @@ if(!isset($_SESSION["usuarioID"])){
             function fechaModalReg(){
                 document.getElementById("relacmodalRegistro").style.display = "none";
             }
+            function fechaModalReiv(){
+                document.getElementById("relacmodalReivindic").style.display = "none";
+            }
             function abreImprBens(){
                 document.getElementById("relacimprBens").style.display = "block";
             }
@@ -1109,7 +1158,6 @@ if(!isset($_SESSION["usuarioID"])){
                         document.getElementById("encaminhaBens").disabled = false;
                     }
                 }
-
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=configMarcafBem&codigo="+document.getElementById("configSelecBens").value
@@ -1156,6 +1204,238 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("configCpfBens").value = "";
                 document.getElementById("configSelecBens").value = "";
                 document.getElementById("modalBensConfig").style.display = "block";
+            }
+            function abreReiv(){
+                document.getElementById("relacmodalReivindic").style.display = "block";
+                $("#faixaReivind").load("modulos/bensEncont/jReivind.php");
+            }
+
+            function carregaInsReivind(Cod){
+                document.getElementById("guardaid").value = 0;
+                document.getElementById("mudou").value = 0;
+                document.getElementById("botApagaReiv").style.visibility = "hidden"; 
+                document.getElementById("imprReciboReiv").style.visibility = "hidden";
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=buscaProcReivind&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.")
+                                }else{
+                                    document.getElementById("numregistroReiv").value = Resp.numprocesso;
+                                    document.getElementById("dataReivind").value = document.getElementById("guardahoje").value;
+                                    document.getElementById("dataPerdido").value = document.getElementById("guardahoje").value;
+                                    document.getElementById("nomereclamante").value = "";
+                                    document.getElementById("emailreclamante").value = "";
+                                    document.getElementById("telefreclamante").value = "";
+                                    document.getElementById("localperdeu").value = "";
+                                    document.getElementById("descdobemPerdeu").value = "";
+                                    document.getElementById("obsperdeu").value = "";
+                                    document.getElementById("bemEncontrado").checked = false;
+                                    document.getElementById("bemEntregue").checked = false;
+                                    document.getElementById("relacEditaReivindic").style.display = "block";
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+            function carregaReivind(Cod){
+                document.getElementById("guardaid").value = Cod;
+                document.getElementById("mudou").value = 0;
+                document.getElementById("imprReciboReiv").style.visibility = "visible";
+                if(parseInt(document.getElementById("UsuAdm").value) > 6){
+                    document.getElementById("botApagaReiv").style.visibility = "visible";
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=buscaReivind&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.")
+                                }else{
+                                    document.getElementById("numregistroReiv").value = Resp.processo;
+                                    document.getElementById("dataReivind").value = Resp.datareiv;
+                                    document.getElementById("dataPerdido").value = Resp.dataperdeu;
+                                    document.getElementById("nomereclamante").value = Resp.nome;
+                                    document.getElementById("emailreclamante").value = Resp.email;
+                                    document.getElementById("telefreclamante").value = Resp.telef;
+                                    document.getElementById("localperdeu").value = Resp.localperdeu;
+                                    document.getElementById("descdobemPerdeu").value = Resp.descdobem;
+                                    document.getElementById("obsperdeu").value = Resp.observ;
+                                    if(parseInt(Resp.encontrado) === 0){
+                                        document.getElementById("bemEncontrado").checked = false;    
+                                    }else{
+                                        document.getElementById("bemEncontrado").checked = true;
+                                    }
+                                    if(parseInt(Resp.entregue) === 0){
+                                        document.getElementById("bemEntregue").checked = false;    
+                                    }else{
+                                        document.getElementById("bemEntregue").checked = true;
+                                    }
+                                    document.getElementById("relacEditaReivindic").style.display = "block";
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+            function salvaReivindic(Op){
+                if(parseInt(document.getElementById("mudou").value) === 0){
+                    if(parseInt(Op) === 1){ //Salvar e Fechar
+                        document.getElementById("relacEditaReivindic").style.display = "none";
+                    }else{
+                        if(parseInt(document.getElementById("guardaid").value) === 1){ // não está inserindo
+                            $('#mensagemReinvOK').fadeIn("slow");
+                            document.getElementById("mensagemReinvOK").innerHTML = "Tudo em ordem.";
+                            $('#mensagemReinvOK').fadeOut(2000); 
+                        }
+                    }
+                    return false;
+                }
+                if(document.getElementById("dataReivind").value == ""){
+                    document.getElementById("dataReivind").focus();
+                    $('#mensagemReinv').fadeIn("slow");
+                    document.getElementById("mensagemReinv").innerHTML = "Insira a data do registro.";
+                    $('#mensagemReinv').fadeOut(2000);
+                    return false;
+                }
+                if(document.getElementById("dataPerdido").value == ""){
+                    document.getElementById("dataPerdido").focus();
+                    $('#mensagemReinv').fadeIn("slow");
+                    document.getElementById("mensagemReinv").innerHTML = "Insira a data em que o objeto foi perdido.";
+                    $('#mensagemReinv').fadeOut(2000);
+                    return false;
+                }
+                if(document.getElementById("descdobemPerdeu").value == ""){
+                    document.getElementById("descdobemPerdeu").focus();
+                    $('#mensagemReinv').fadeIn("slow");
+                    document.getElementById("mensagemReinv").innerHTML = "Insira a descrição do objeto reivindicado.";
+                    $('#mensagemReinv').fadeOut(2000); 
+                    return false;
+                }
+                if(document.getElementById("localperdeu").value == ""){
+                    document.getElementById("localperdeu").focus();
+                    $('#mensagemReinv').fadeIn("slow");
+                    document.getElementById("mensagemReinv").innerHTML = "Insira o nome do local em que o objeto pode ter sido perdido.";
+                    $('#mensagemReinv').fadeOut(2000); 
+                    return false;
+                }
+                if(document.getElementById("nomereclamante").value == ""){
+                    document.getElementById("nomereclamante").focus();
+                    $('#mensagemReinv').fadeIn("slow");
+                    document.getElementById("mensagemReinv").innerHTML = "Insira o nome do reclamante.";
+                    $('#mensagemReinv').fadeOut(2000); 
+                    return false;
+                }
+                if(document.getElementById("emailreclamante").value == ""){
+                    document.getElementById("emailreclamante").focus();
+                    $('#mensagemReinv').fadeIn("slow");
+                    document.getElementById("mensagemReinv").innerHTML = "Insira o endereço de E-Mail do reclamante.";
+                    $('#mensagemReinv').fadeOut(2000); 
+                    return false;
+                }
+                if(document.getElementById("telefreclamante").value == ""){
+                    document.getElementById("telefreclamante").focus();
+                    $('#mensagemReinv').fadeIn("slow");
+                    document.getElementById("mensagemReinv").innerHTML = "Insira o número do telefone do reclamante.";
+                    $('#mensagemReinv').fadeOut(2000); 
+                    return false;
+                }
+                Encontr = 0;
+                if(document.getElementById("bemEncontrado").checked == true){
+                    Encontr = 1;
+                }
+                Entreg = 0;
+                if(document.getElementById("bemEntregue").checked == true){
+                    Entreg = 1;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=salvaReivind&codigo="+document.getElementById("guardaid").value
+                    +"&numregistro="+document.getElementById("numregistroReiv").value
+                    +"&dataReivind="+document.getElementById("dataReivind").value
+                    +"&dataPerdido="+document.getElementById("dataPerdido").value
+                    +"&nomereclamante="+encodeURIComponent(document.getElementById("nomereclamante").value)
+                    +"&emailreclamante="+encodeURIComponent(document.getElementById("emailreclamante").value)
+                    +"&telefreclamante="+encodeURIComponent(document.getElementById("telefreclamante").value)
+                    +"&localperdeu="+encodeURIComponent(document.getElementById("localperdeu").value)
+                    +"&descdobemPerdeu="+encodeURIComponent(document.getElementById("descdobemPerdeu").value)
+                    +"&obsperdeu="+encodeURIComponent(document.getElementById("obsperdeu").value)
+                    +"&encontrado="+Encontr
+                    +"&entregue="+Entreg
+                    , true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.")
+                                }else{
+                                    document.getElementById("mudou").value = 0;
+                                    document.getElementById("guardaid").value = Resp.codigo; // para o botão salvar sem fechar
+                                    if(parseInt(Op) === 1){ //Salvar e Fechar
+                                        document.getElementById("relacEditaReivindic").style.display = "none";
+                                    }
+                                    $('#mensagemReinv').fadeIn("slow");
+                                    document.getElementById("mensagemReinv").innerHTML = "Documento Salvo.";
+                                    $('#mensagemReinv').fadeOut(2000); 
+                                    $("#faixaReivind").load("modulos/bensEncont/jReivind.php");
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function apagarReivindic(){
+                $.confirm({
+                    title: 'Apagar',
+                    content: 'Confirma apagar este lançamento?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=apagaReivind&codigo="+document.getElementById("guardaid").value, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro no servidor.")
+                                            }else{
+                                                document.getElementById("relacEditaReivindic").style.display = "none";
+                                                $("#faixaReivind").load("modulos/bensEncont/jReivind.php");
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                        }
+                    }
+                });
+            }
+
+            function fechaEditReivind(){
+                document.getElementById("relacEditaReivindic").style.display = "none";
             }
             function fechaBensConfig(){
                 document.getElementById("modalBensConfig").style.display = "none";
@@ -1261,6 +1541,28 @@ if(!isset($_SESSION["usuarioID"])){
                 return true
             }
 
+            //Para validar endereço de e-mail
+            function IsEmail(text){
+                document.getElementById("mudou").value = "1";// modificou
+                if(text !== ""){
+                    var atpos = text.indexOf("@");
+                    var dotpos = text.lastIndexOf(".");
+                    if(atpos < 1 || dotpos < atpos+2 || dotpos+2 >= x.length){
+                        $('#mensagemReinv').fadeIn("slow");
+                        document.getElementById("mensagemReinv").innerHTML = "Não parece ser um endereço de e-mail válido.";
+                        $('#mensagemReinv').fadeOut(2000); 
+                        return false;
+                    }
+                    if(text.search("www") >= 0){
+                        $('#mensagemReinv').fadeIn("slow");
+                        document.getElementById("mensagemReinv").innerHTML = "Não parece ser um endereço de e-mail válido.";
+                        $('#mensagemReinv').fadeOut(2000); 
+                        return false;
+                    }
+                    return true;
+                }
+            }
+
             //mostra a ação quando clicar na mensagem da página inicial
             function mostraBens(Valor){
                 $("#carregaBens").load("modulos/bensEncont/relBens.php?acao="+Valor);
@@ -1286,6 +1588,50 @@ if(!isset($_SESSION["usuarioID"])){
                 echo "Faltam tabelas. Informe à ATI.";
                 return false;
             }
+            function validaEmail($email){
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)){
+                echo("$email is a valid email address");
+              } else {
+                echo("$email is not a valid email address");
+              }
+            }
+//-------------- Provisório
+//            pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".bensreivind");
+            $rs0 = pg_query($Conec, "SELECT table_name FROM INFORMATION_SCHEMA.tables WHERE table_schema = 'cesb' And table_name = 'bensreivind'");
+            $row0 = pg_num_rows($rs0);
+            if($row0 == 0){
+                pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bensreivind (
+                    id SERIAL PRIMARY KEY, 
+                    datareiv date DEFAULT '3000-12-31',
+                    dataperdeu date DEFAULT '3000-12-31',
+                    processoreiv character varying(50), 
+                    nome character varying(100), 
+                    email character varying(50), 
+                    telef character varying(50),
+                    localperdeu text,
+                    descdobemperdeu text, 
+                    observ text, 
+                    encontrado smallint DEFAULT 0 NOT NULL, 
+                    entregue smallint DEFAULT 0 NOT NULL, 
+                    ativo smallint DEFAULT 1 NOT NULL, 
+                    usuins bigint DEFAULT 0 NOT NULL,
+                    datains timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+                    usuedit bigint DEFAULT 0 NOT NULL,
+                    dataedit timestamp without time zone DEFAULT '3000-12-31' 
+                    )
+                ");
+            }
+            $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".bensreivind LIMIT 1");
+            $row1 = pg_num_rows($rs1);
+            if($row1 == 0){
+                pg_query($Conec, "INSERT INTO ".$xProj.".bensreivind (id, datareiv, dataperdeu, processoreiv, nome, email, telef, localperdeu, descdobemperdeu, ativo, usuins, datains) 
+                VALUES (1, '2025-04-18', '2025-04-18', '001/2025', 'Fulano de Tal', 'fulano@gmail.com', '(61) 9 9999-8888', 'Pátio principal', 'Carteira com todos os documentos', 1, 3, '2025-04-18')");
+//                pg_query($Conec, "INSERT INTO ".$xProj.".bensreivind (id, datareiv, dataperdeu, processoreiv, nome, email, telef, localperdeu, descdobemperdeu, ativo, usuins, datains) 
+//                VALUES (2, '2025-04-19', '2025-04-19', '002/2025', 'Sicrano Fulanildo da Silva Sauro', 'sicrano@gmail.com', '(61) 9 9999-7777', 'Pátio principal', 'Relógio despertador para uso no pulso ou no pé com campainha de quartzo brilhante revestido com pó de lacraia nova.', 1, 3, '2025-04-19')");
+            }
+
+
+//--------------
 
             if(isset($_REQUEST["acao"])){
                 $Acao = $_REQUEST["acao"];
@@ -1304,9 +1650,7 @@ if(!isset($_SESSION["usuarioID"])){
         $EncBens = parEsc("encbens", $Conec, $xProj, $_SESSION["usuarioID"]);
         $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
 
-
         //bens, fiscbens, soinsbens, encbens
-
 
         $OpDestBens = pg_query($Conec, "SELECT numdest, descdest FROM ".$xProj.".bensdestinos ORDER BY descdest");
         $OpProcesso = pg_query($Conec, "SELECT id, processo FROM ".$xProj.".bensprocessos ORDER BY processo");
@@ -1319,10 +1663,13 @@ if(!isset($_SESSION["usuarioID"])){
         ?>
         <!-- div três colunas -->
         <div id="tricoluna0" style="margin: 0 auto; text-align: center;">
-            <div id="tricoluna1" style="position: relative; float: left; text-align: center; width: 25%; padding-left: 20px;">
+            <div id="tricoluna1" style="position: relative; float: left; text-align: center; width: 25%; padding-left: 10px;">
                 <div class="col quadro" style="text-align: left;">
-                <img src="imagens/settings.png" height="20px;" id="imgBensconfig" style="cursor: pointer; padding-right: 30px;" onclick="abreBensConfig();" title="Configurar o acesso ao processamento de Achados e Perdidos">
-                    <button class="botpadrGr fundoAmarelo" id="botInsReg" onclick="abreRegistro();" >Novo Registro</button>
+                    <img src="imagens/settings.png" height="20px;" id="imgBensconfig" style="cursor: pointer; padding-right: 10px;" onclick="abreBensConfig();" title="Configurar o acesso ao processamento de Achados e Perdidos">
+                    <button id="botInsReg" class="botpadramarelo" onclick="abreRegistro();" title="Registrar um objeto encontrado.">Novo Registro</button>
+                    <div style="position: relative; float: right;">
+                        <button style="font-size: 70%; padding-left: 3px; padding-right: 3px;" class="botpadrblue" onclick="abreReiv();" title="Registrar uma reivindicação de objeto perdido na Casa.">Reivindicação</button>
+                    </div>
                 </div>
             </div>
             <div id="tricoluna2" style="position: relative; float: left; text-align: center; width: 48%;">
@@ -1367,6 +1714,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="admIns" value="<?php echo $admIns; ?>" /> <!-- nível mínimo para inserir  -->
         <input type="hidden" id="admEdit" value="<?php echo $admEdit; ?>" /> <!-- nível mínimo para editar -->
         <input type="hidden" id="guardaIndex" value="<?php echo $Acao; ?>" /> <!-- ordem do índex -->
+        <input type="hidden" id="guardaid" value = "" />
 
         <div style="margin: 80px; border: 2px solid blue; border-radius: 15px; padding: 10px; padding-top: 2px;">
             <div id="carregaBens"></div>
@@ -1906,28 +2254,28 @@ if(!isset($_SESSION["usuarioID"])){
 
                 <table style="margin: 0 auto; width: 85%;">
                     <tr>
-                        <td class="etiq80" title="Registrar recebimento e guardar os Achados e Perdidos">DAF:</td>
+                        <td class="etiq" title="Registrar recebimento e guardar os Achados e Perdidos">DAF:</td>
                         <td colspan="4">
                             <input type="checkbox" id="preencheBens" title="Registrar e prover a guarda dos Achados e Perdidos." onchange="marcaBem(this, 'bens');" >
                             <label for="preencheBens" title="Registrar e prover a guarda dos Achados e Perdidos.">registrar e prover a guarda dos Achados e Perdidos.</label>
                         </td>
                     </tr>
                     <tr>
-                        <td class="etiq80" title="Encaminhar bens após o prazo estabelecido">DAF:</td>
+                        <td class="etiq" title="Encaminhar bens após o prazo estabelecido">DAF:</td>
                         <td colspan="4">
                             <input type="checkbox" id="encaminhaBens" title="Dar destino aos Achados e Perdidos após o prazo estabelecido e Arquivar o processo." onchange="marcaBem(this, 'encbens');" >
                             <label for="encaminhaBens" title="Dar destino e arquivar.">dar destino após prazo estabelecido e arquivar o processo.</label>
                         </td>
                     </tr>
                     <tr>
-                        <td class="etiq80" title="Apenas registrar o recebimento de Achados e Perdidos. Apropriado para os funcionários da Portaria.">Portaria:</td>
+                        <td class="etiq" title="Apenas registrar o recebimento de Achados e Perdidos. Apropriado para os funcionários da Portaria.">Portaria:</td>
                         <td colspan="4">
                             <input type="checkbox" id="soPreencheBens" title="Apenas registrar recebimento de Achados e Perdidos. Apropriado para os funcionários da Portaria." onchange="marcaBem(this, 'soinsbens');" >
                             <label for="soPreencheBens" title="Apenas registrar recebimento de Achados e Perdidos. Apropriado para os funcionários da Portaria.">apenas registrar Achados e Perdidos</label>
                         </td>
                     </tr>
                     <tr>
-                        <td class="etiq80" style="border-bottom: 1px solid;" title="Fiscalizar os registros de Achados e Perdidos - Só fiscaliza. Não pode registrar os Achados e Perdidos.">Administração:</td>
+                        <td class="etiq" style="border-bottom: 1px solid;" title="Fiscalizar os registros de Achados e Perdidos - Só fiscaliza. Não pode registrar os Achados e Perdidos.">Administração:</td>
                         <td colspan="4" style="border-bottom: 1px solid;">
                             <input type="checkbox" id="fiscBens" title="Fiscalizar os registros de Achados e Perdidos - Só fiscaliza. Não pode registrar os Achados e Perdidos." onchange="marcaBem(this, 'fiscbens');" >
                             <label for="fiscBens" title="Fiscalizar os registros de Achados e Perdidos - Só fiscaliza. Não pode registrar os Achados e Perdidos.">fiscalizar os registros de Achados e Perdidos</label>
@@ -1988,6 +2336,112 @@ if(!isset($_SESSION["usuarioID"])){
            </div>
         </div>
 
+        <!-- div modal para registrar reivindicação de bem perdido  -->
+        <div id="relacmodalReivindic" class="relacmodal">
+            <div class="modal-content-Reivindic">
+                <span class="close" onclick="fechaModalReiv();">&times;</span>
+                <!-- div três colunas -->
+                <div class="container" style="margin: 0 auto;">
+                    <div class="row">
+                        <div class="col quadro" style="margin: 0 auto; text-align: left">
+                            <button style="font-size: 70%; padding-left: 3px; padding-right: 3px;" class="botpadrblue" onclick="carregaInsReivind();" >Inserir Nova</button>
+                        </div>
+                        <div class="col quadro"><h5 style="color: #666;">Reclamação de Bens Perdidos</h5></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col quadro" style="margin: 0 auto; text-align: right; padding-right: 30px;">
+                            <button class="botpadrred" style="font-size: 80%;" onclick="abreImprReinv();">PDF</button>
+                        </div> 
+                    </div>
+                </div>
+                <div id="faixaReivind"></div>
+            </div>
+        </div>  <!-- Fim Modal Help-->
+
+        <!-- div modal para editar reivindicação  -->
+        <div id="relacEditaReivindic" class="relacmodal">
+            <div class="modal-content-EditaReinvindic">
+                <span class="close" onclick="fechaEditReivind();">&times;</span>
+                <!-- div três colunas -->
+                <div class="container" style="margin: 0 auto;">
+                    <div class="row">
+                        <div class="col quadro" style="margin: 0 auto;"></div>
+                        <div class="col quadro"><h5 id="tituloEditReiv" style="color: #666;">Registro de Reclamação</h5></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col quadro" style="margin: 0 auto; text-align: right; padding-right: 30px;"><button class="botpadrred" id="imprReciboReiv" style="font-size: 80%;">Recibo</button></div> 
+                    </div>
+                </div>
+                <div style="border: 2px solid blue; border-radius: 10px; padding: 10px;">
+                    <table style="margin: 0 auto; width:85%;">
+                        <tr>
+                            <td class="etiqAzul" style="min-width: 150px;">Data da reclamação: </td>
+                            <td>
+                                <input type="text" id="dataReivind" width="150" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;">
+                            </td>
+                            <td class="etiqAzul">Número do Processo: </td>
+                            <td><input disabled type="text" id="numregistroReiv" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;"></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul">Descrição do objeto perdido: </td>
+                            <td colspan="3">
+                                <textarea id="descdobemPerdeu" style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="3" cols="60" onchange="modif();" placeholder="Descrição"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul">Data em que foi perdido: </td>
+                            <td><input type="text" id="dataPerdido" width="150" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;"></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul">Local em que foi perdido: </td>
+                            <td colspan="3"><textarea id="localperdeu" style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="2" cols="60" onchange="modif();" placeholder="Local"></textarea></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul">Nome do reclamante: </td>
+                            <td colspan="3"><input type="text" id="nomereclamante" style="border: 1px solid blue; border-radius: 5px; font-size: .9em; width: 90%;" value="" onchange="modif();" placeholder="Nome do reclamante"></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul">E-Mail: </td>
+                            <td colspan="3"><input type="text" id="emailreclamante" style="border: 1px solid blue; border-radius: 5px; font-size: .9em; width: 90%;" onchange="IsEmail(value);" placeholder="E-Mail do reclamante"></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul">Telefone: </td>
+                            <td colspan="3"><input type="text" id="telefreclamante" style="border: 1px solid blue; border-radius: 5px; font-size: .9em; width: 90%;" onchange="modif();" placeholder="Telefone do reclamante"></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul">Observações: </td>
+                            <td colspan="3"><textarea id="obsperdeu" style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="2" cols="60" onchange="modif();"></textarea></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul"></td>
+                            <td colspan="3"></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul"></td>
+                            <td colspan="3">
+                                <input type="checkbox" id="bemEncontrado" onclick="modif();">
+                                <label for="bemEncontrado" style="color: black;">Objeto encontrado</label>
+                                    <label style="padding-left: 30px;"></label>
+                                <input type="checkbox" id="bemEntregue" onclick="modif();">
+                                <label for="bemEntregue" style="color: black;">Objeto entregue</label>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <button id="botApagaReiv" class="botpadrTijolo" style="font-size: 70%;" onclick="apagarReivindic();">Apagar</button>
+                            </td>
+                            <td colspan="3" style="text-align: right;">
+                                <button class="botpadrblue" onclick="salvaReivindic(0);">Salvar</button>
+                                <label style="padding-left: 30px;"></label>
+                                <button class="botpadrblue" onclick="salvaReivindic(1);">Salvar e Fechar</button>
+                        </td>
+                        </tr>
+                    </table>
+                    <div id="mensagemReinv" style="color: red; font-weight: bold; margin: 5px; text-align: center; padding-top: 10px;"></div>
+                    <div id="mensagemReinvOK" style="color: green; font-weight: bold; margin: 5px; text-align: center; padding-top: 10px;"></div>
+                </div>
+           </div>
+        </div> <!-- Fim Modal-->
+
         <!-- div modal para leitura instruções -->
         <div id="relacHelpBens" class="relacmodal">
             <div class="modalMsg-content">
@@ -2006,5 +2460,6 @@ if(!isset($_SESSION["usuarioID"])){
                 </div>
             </div>
         </div>  <!-- Fim Modal Help-->
+
     </body>
 </html>

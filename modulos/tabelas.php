@@ -240,7 +240,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
       eletric2 smallint NOT NULL DEFAULT 0,
       eletric3 smallint NOT NULL DEFAULT 0,
       fiscbens smallint NOT NULL DEFAULT 0,
-      soinsbens smallint NOT NULL DEFAULT 0
+      soinsbens smallint NOT NULL DEFAULT 0, 
       arcond2 smallint NOT NULL DEFAULT 0,
       arcond3 smallint NOT NULL DEFAULT 0,
       elev smallint NOT NULL DEFAULT 0,
@@ -252,6 +252,7 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
       esc_horaini character varying(10) DEFAULT '08:00',
       esc_horafim character varying(10) DEFAULT '17:00',
       esc_marca smallint NOT NULL DEFAULT 1,
+      clav_edit smallint NOT NULL DEFAULT 0,
       clav smallint NOT NULL DEFAULT 0,
       chave smallint NOT NULL DEFAULT 1,
       fisc_clav smallint NOT NULL DEFAULT 0,
@@ -267,9 +268,11 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
       mes_escdaf character varying(10),
       chefe_escdaf smallint NOT NULL DEFAULT 0,
       enc_escdaf smallint NOT NULL DEFAULT 0,
+      clav_edit2 smallint NOT NULL DEFAULT 0,
       clav2 smallint NOT NULL DEFAULT 0,
       chave2 smallint NOT NULL DEFAULT 1,
       fisc_clav2 smallint NOT NULL DEFAULT 0,
+      clav_edit3 smallint NOT NULL DEFAULT 0,
       clav3 smallint NOT NULL DEFAULT 0,
       chave3 smallint NOT NULL DEFAULT 1,
       fisc_clav3 smallint NOT NULL DEFAULT 0,
@@ -331,8 +334,8 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
       valorkwh double precision NOT NULL DEFAULT 1,
       consdiario1 double precision NOT NULL DEFAULT 0,
       consdiario2 double precision NOT NULL DEFAULT 0,
-      consdiario3 double precision NOT NULL DEFAULT 0,
-      ");
+      consdiario3 double precision NOT NULL DEFAULT 0 
+      ) ");
    echo "Tabela ".$xProj.".leitura_eletric. <br>";   
 
  
@@ -914,6 +917,8 @@ echo "Tabela ".$xProj.".visitas_ar checada. <br>";
       pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf WHERE dataescala < CURRENT_DATE - interval '$PrazoDel years'");
       pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf WHERE dataescala < CURRENT_DATE - interval '2 months' And ativo = 0;");
       pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf WHERE datains < CURRENT_DATE - interval '$PrazoDel years' And ativo = 0"); // Apaga só os deletados
+      pg_query($Conec, "DELETE FROM ".$xProj.".usulog WHERE ativo = 0"); // Apaga os deletados
+      pg_query($Conec, "DELETE FROM ".$xProj.".usulog WHERE datalogin < CURRENT_DATE - interval '$PrazoDel years'");
    
    }else{
       echo "Eliminação de registros antigos desativado. <br>";   
