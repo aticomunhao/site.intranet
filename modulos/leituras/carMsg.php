@@ -12,12 +12,17 @@
         }else{
             $Msg = 1;
         }
-         if($Msg == 1){
-            $Texto = "Usuário não cadastrado. <br>O acesso é proporcionado pela ATI.";
-         }
-         if($Msg == 2){
-            $Texto = "Usuário sem acesso administrativo. <br>O acesso é proporcionado pela ATI.";
-         }
+        $Cumpr = "";
+        if(isset($_REQUEST["cumpr"])){
+            $Cumpr = $_REQUEST["cumpr"];
+        }
+
+        if($Msg == 1){
+            $Texto = $Cumpr."<br>Usuário não cadastrado. <br>O acesso é proporcionado pela DAF/ATI.";
+        }
+        if($Msg == 2){
+            $Texto = $Cumpr."<br>Usuário sem acesso administrativo. <br>O acesso é proporcionado pela DAF/ATI.";
+        }
         ?>
         <div style="text-align: center;">
         <table style="margin: 0 auto;">

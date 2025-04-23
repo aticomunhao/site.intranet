@@ -231,7 +231,6 @@ if($Acao=="salvaMensagem"){
             $Campo = "execLido";
         }
 
-//        $Sql = pg_query($Conec, "INSERT INTO ".$xProj.".tarefas_msg (idUser, idTarefa, TextoMsg, DataMsg, Tarefa_Ativ, Tarefa_Lida, Leitura) VALUES($idLogado, $idTarefa, '$textoExt', NOW(), 1, 0, CONCAT(NOW(), ' - ', '$NomeLogado', ' - Inserção', '\n'))");
         $rsCod = pg_query($Conec, "SELECT MAX(idmsg) FROM ".$xProj.".tarefas_msg");
         $tblCod = pg_fetch_row($rsCod);
         $Codigo = $tblCod[0];

@@ -87,6 +87,14 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("selecturno").value = "3";
                 }
 
+                document.getElementById("faixaMensagem").innerHTML = "Bom Dia!<br>Usuário não cadastrado. <br>O acesso é proporcionado pela DAF/ATI.";
+                if(hora >= 12){
+                    document.getElementById("faixaMensagem").innerHTML = "Boa Tarde!<br>Usuário não cadastrado. <br>O acesso é proporcionado pela DAF/ATI.";
+                }
+                if(hora >= 18){
+                    document.getElementById("faixaMensagem").innerHTML = "Boa Noite!<br>Usuário não cadastrado. <br>O acesso é proporcionado pela DAF/ATI.";
+                }
+
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/lro/salvaReg.php?acao=AcessoLro", true);
@@ -99,19 +107,9 @@ if(!isset($_SESSION["usuarioID"])){
                                     alert("Houve um erro no servidor.")
                                 }else{
                                     if(parseInt(Resp.lro) === 0 && parseInt(Resp.fisclro) === 0 && parseInt(document.getElementById("UsuAdm").value) < 7){
-                                        $.confirm({
-                                            title: Cumpr,
-                                            content: 'Usuário não cadastrado para acesso ao LRO. <br>O acesso é proporcionado pela ATI.',
-                                            autoClose: 'OK|7000',
-                                            draggable: true,
-                                            buttons: {
-                                                OK: function(){}
-                                            }
-                                        });
+                                        document.getElementById("faixaMensagem").style.display = "block";
                                     }else{
-                                        $('#carregaTema').load('modulos/config/carTema.php?carpag=livroReg');
                                         $("#faixaCentral").load("modulos/lro/relReg.php");
-                                        document.getElementById("selectTema").style.visibility = "visible";
                                     }
                                 }
                             }
@@ -119,6 +117,7 @@ if(!isset($_SESSION["usuarioID"])){
                     };
                     ajax.send(null);
                 }
+                $('#carregaTema').load('modulos/config/carTema.php?carpag=livroReg');
 
                 document.getElementById("botRedigirCompl").style.visibility = "hidden"; // para redigir um complemento
                 document.getElementById("botimprLRO").style.visibility = "hidden"; // botão de imprimir todo o LRO
@@ -126,7 +125,6 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("etiqrubrica").style.visibility = "hidden";
                 document.getElementById("etiqcheckrubrica").style.visibility = "hidden";
                 document.getElementById("checkrubrica").style.visibility = "hidden";
-                document.getElementById("selectTema").style.visibility = "hidden";
                 if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) && parseInt(Resp.fiscalizaLro) === 1){
                     document.getElementById("botimprLRO").style.visibility = "visible";
                 }
@@ -1300,7 +1298,12 @@ if(!isset($_SESSION["usuarioID"])){
                 <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpLRO();" title="Guia rápido">
             </div>
             <div id="faixaCentral"></div>
+
+            <div id="faixaMensagem" style="display: none; position: relative; margin: 120px; padding: 20px; text-align: center; border: 1px solid; border-radius: 15px;">
+                Usuário não cadastrado. <br>O acesso é proporcionado pela DAF/ATI.
+            </div>
         </div>
+
         <div id="carregaTema"></div> <!-- carrega a pág modulos/config/carTema.php - onde está a função mudaTema() -->
 
         <!-- div modal para registrar ocorrência  -->

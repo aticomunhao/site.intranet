@@ -85,6 +85,15 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             $(document).ready(function(){
+                var nHora = new Date(); 
+                var hora = nHora.getHours();
+                document.getElementById("faixaMensagem").innerHTML = "Bom Dia!<br>Usuário não cadastrado. <br>O acesso é proporcionado pela DAF/ATI.";
+                if(hora >= 12){
+                    document.getElementById("faixaMensagem").innerHTML = "Boa Tarde!<br>Usuário não cadastrado. <br>O acesso é proporcionado pela DAF/ATI.";
+                }
+                if(hora >= 18){
+                    document.getElementById("faixaMensagem").innerHTML = "Boa Noite!<br>Usuário não cadastrado. <br>O acesso é proporcionado pela DAF/ATI.";
+                }
                 if(parseInt(document.getElementById("guardaInsElev").value) === 1 || parseInt(document.getElementById("guardaFiscElev").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
                     $("#faixacentral").load("modulos/elevadores/relElev.php?acao=todos&ano="+document.getElementById("selectAno").value);
                     if(parseInt(document.getElementById("guardaInsElev").value) === 0 && parseInt(document.getElementById("UsuAdm").value) < 7){ //Só fiscaliza

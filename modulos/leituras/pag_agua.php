@@ -70,6 +70,15 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
             $(document).ready(function(){
+                var nHora = new Date(); 
+                var hora = nHora.getHours();
+                var Cumpr = "Bom Dia!";
+                if(hora >= 12){
+                    Cumpr = "Boa Tarde!";
+                }
+                if(hora >= 18){
+                    Cumpr = "Boa Noite!";
+                }
                 if(parseInt(document.getElementById("guardaerro").value) === 0){
                     document.getElementById("botInserir").style.visibility = "hidden"; 
                     document.getElementById("botImprimir").style.visibility = "hidden"; 
@@ -95,8 +104,8 @@ if(!isset($_SESSION["usuarioID"])){
                             $("#container6").load("modulos/leituras/carEstatAgua.php");
                         }
                     }else{
-                        $("#container5").load("modulos/leituras/carMsg.php?msgtipo=1");
-                        $("#container6").load("modulos/leituras/carMsg.php?msgtipo=1");
+                        $("#container5").load("modulos/leituras/carMsg.php?msgtipo=1&cumpr="+encodeURIComponent(Cumpr));
+                        $("#container6").load("modulos/leituras/carMsg.php?msgtipo=1&cumpr="+encodeURIComponent(Cumpr));
                         document.getElementById("botgrafico").style.visibility = "hidden"; 
                         document.getElementById("botImprimir").disabled = true;
                         document.getElementById("imgAguaConfig").style.visibility = "hidden"; 

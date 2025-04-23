@@ -158,7 +158,9 @@ function openhref(Num){
     if(parseInt(Num) === 95){
         $('#container3').load('modulos/config/estatUsu.php');
     }
-
+    if(parseInt(Num) === 96){
+        $('#container3').load('modulos/bebedouros/pagBebed.php');
+    }
 }
 
 function openhrefDir(Num){

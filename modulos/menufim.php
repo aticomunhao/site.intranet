@@ -174,6 +174,12 @@
 					?>
 					<li>
 						<a href='#' onclick='openhref(34);'>Água</a>
+<!--						<ul>
+							<li><a href='#' onclick='openhref(96);'>Bebedouros</a></li>
+							<li><a href='#' onclick='openhref(94);'>Filtros de Água</a>
+							<li><a href='#' onclick='openhref(34);'>Leituras Hidrômetro</a></li>
+						</ul>
+-->
 					</li>
 					<li>
 						<a href='#'>Ar Condicionado</a>
@@ -196,6 +202,11 @@
 					</li>
 
 					<?php
+					if($_SESSION["usuarioID"] == 3){
+						echo "<li>";
+							echo "<a href='#' onclick='openhref(96);'>Bebedouros</a>";
+						echo "</li>";
+					}
 					//Claviculário da DAF
 					$Clav2 = parEsc("clav2", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
 					$ClavEdit2 = parEsc("clav_edit2", $Conec, $xProj, $_SESSION["usuarioID"]); // edita, modifica
@@ -264,7 +275,6 @@
 
 								$Eletric5 = parEsc("eletric5", $Conec, $xProj, $_SESSION["usuarioID"]);
 								$FiscEletric = parEsc("fisc_eletric", $Conec, $xProj, $_SESSION["usuarioID"]); 
-//								if($_SESSION["usuarioID"] == 3){
 								if($Eletric5 == 1 || $FiscEletric == 1|| $_SESSION["AdmUsu"] > 6){
 									echo "<li><a href='#' onclick='openhref(93);'>Viaturas Elétricas</a></li>"; // eletricidade 5 - viaturas
 								}
@@ -286,7 +296,7 @@
 						$Filtro = parEsc("filtros", $Conec, $xProj, $_SESSION["usuarioID"]);
 						$FiscFiltro = parEsc("fisc_filtros", $Conec, $xProj, $_SESSION["usuarioID"]);
 						if($Filtro == 1 || $FiscFiltro == 1 || $_SESSION["AdmUsu"] > 6){
-							echo "<li><a href='#' onclick='openhref(94);'>Filtros Água</a></li>"; 
+							echo "<li><a href='#' onclick='openhref(94);'>Filtros de Água</a></li>"; 
 						}
 
 						$Viatura = parEsc("viatura", $Conec, $xProj, $_SESSION["usuarioID"]);// combustíveis
@@ -398,9 +408,7 @@
 				?>
 			</li>
 			<li>
-<!--				<a href="#" onclick="openhref(98);"><sup>Sair - Encerrar Sessão <label id="etiqtela"></label> <div id="nomeLogado" style="padding-top: 2px;"> <?php echo $Nome; ?></sup> <?php echo $Setor; ?></div></a> 
-				<a href="#" onclick="openhref(98);"><sup>Sair - Encerrar Sessão - <?php echo $Nome; ?> <?php echo $Setor; ?></sup></a> -->
-				<a href="#" onclick="openhref(98);"><sup>Sair - Encerrar Sessão <div id="nomeLogado" style="padding-top: 2px;"> <?php echo $Nome; ?></sup> <?php echo $Setor; ?></div></a>
+				<a href="#" onclick="openhref(98);"><sup>Sair - Encerrar Sessão <div style="padding-top: 2px;"> <?php echo $Nome; ?></sup> <?php echo $Setor; ?></div></a>
 			</li>
         </ul>
     </body>

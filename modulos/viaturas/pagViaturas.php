@@ -59,6 +59,15 @@ if(!isset($_SESSION["usuarioID"])){
                 width: 55%;
                 max-width: 900px;
             }
+            .modal-content-InsImpr{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 10% auto; /* 10% do topo e centrado */
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 65%;
+                max-width: 500px;
+            }
            .quadro{
                 position: relative; float: left; margin: 5px; width: 95%; border: 1px solid; border-radius: 10px; padding: 2px; padding-top: 5px;
             }
@@ -132,6 +141,26 @@ if(!isset($_SESSION["usuarioID"])){
                             }
                         };
                         ajax.send(null);
+                    }
+                });
+                $("#botimpr").click(function(){
+                    document.getElementById("relacimprViat").style.display = "block";
+                });
+    
+                $("#selecMesAno").change(function(){
+                    document.getElementById("selecAno").value = "";
+                    if(document.getElementById("selecMesAno").value != ""){
+                        window.open("modulos/viaturas/imprViat.php?acao=listamesViat&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), "Mes"+document.getElementById("selecMesAno").value);
+                        document.getElementById("selecMesAno").value = "";
+                        document.getElementById("relacimprViat").style.display = "none";
+                    }
+                });
+                $("#selecAno").change(function(){
+                    document.getElementById("selecMesAno").value = "";
+                    if(document.getElementById("selecAno").value != ""){
+                        window.open("modulos/viaturas/imprViat.php?acao=listaanoViat&ano="+encodeURIComponent(document.getElementById("selecAno").value), "Ano"+document.getElementById("selecAno").value);
+                        document.getElementById("selecAno").value = "";
+                        document.getElementById("relacimprViat").style.display = "none";
                     }
                 });
 
@@ -802,6 +831,9 @@ if(!isset($_SESSION["usuarioID"])){
             function fechaEditManut(){
                 document.getElementById("relacEditManut").style.display = "none";
             }
+            function fechaModalImpr(){
+                document.getElementById("relacimprViat").style.display = "none";
+            }
             function foco(id){
                 document.getElementById(id).focus();
             }
@@ -930,6 +962,11 @@ if(!isset($_SESSION["usuarioID"])){
         $rsManut = pg_query($Conec, "SELECT id, desc_manut FROM ".$xProj.".viaturas_manut WHERE ativo = 1 ORDER BY desc_manut");
         $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
 
+        $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(datacompra, 'MM'), '/', TO_CHAR(datacompra, 'YYYY')) 
+        FROM ".$xProj.".viaturas GROUP BY TO_CHAR(datacompra, 'MM'), TO_CHAR(datacompra, 'YYYY') ORDER BY TO_CHAR(datacompra, 'YYYY') DESC, TO_CHAR(datacompra, 'MM') DESC ");
+        $OpcoesEscAno = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".viaturas.datacompra)::text 
+        FROM ".$xProj.".viaturas GROUP BY 1 ORDER BY 1 DESC ");
+
         ?>
         <input type="hidden" id="mudou" value="0" />
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>" />
@@ -953,7 +990,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" style="cursor: pointer; font-size: 80%;">&nbsp;Claro</label>
                 <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" style="cursor: pointer; font-size: 80%;">&nbsp;Escuro</label>
                 <label style="padding-left: 30px;"></label>
-                <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprCombust();">PDF</button>
+                <button id="botimpr" class="botpadrred" style="font-size: 80%;">PDF</button>
             </div>
             <div id="faixaMensagem" style="display: none; position: relative; margin: 70px; padding: 20px; text-align: center;">
                 <br><br><br>Usuário não cadastrado.
@@ -1208,5 +1245,53 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
         </div> <!-- Fim Modal-->
 
+        <!-- div modal para imprimir em pdf  -->
+        <div id="relacimprViat" class="relacmodal">
+            <div class="modal-content-InsImpr corPreta">
+                <span class="close" onclick="fechaModalImpr();">&times;</span>
+                <h5 style="text-align: center;color: #666;">Controle de Viaturas</h5>
+                <h6 style="text-align: center; padding-bottom: 18px; color: #666;">Gerar PDF</h6>
+                <div style="margin-top: 5px; border: 2px solid; border-radius: 10px; padding: 10px;">
+                    <table style="margin: 0 auto; width: 95%;">
+                        <tr>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Mensal - Selecione o Mês/Ano: </label></td>
+                            <td>
+                                <select id="selecMesAno" style="font-size: 1rem; width: 90px;" title="Selecione o período.">
+                                    <option value=""></option>
+                                    <?php 
+                                    if($OpcoesEscMes){
+                                        while ($Opcoes = pg_fetch_row($OpcoesEscMes)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Anual - Selecione o Ano: </label></td>
+                            <td>
+                                <select id="selecAno" style="font-size: 1rem; width: 90px;" title="Selecione o Ano.">
+                                    <option value=""></option>
+                                    <?php 
+                                    if($OpcoesEscAno){
+                                        while ($Opcoes = pg_fetch_row($OpcoesEscAno)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+   
+                <div style="padding-bottom: 20px;"></div>
+           </div>
+           <br><br>
+        </div> <!-- Fim Modal-->
+    
     </body>
 </html>

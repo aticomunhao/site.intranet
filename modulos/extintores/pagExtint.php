@@ -990,8 +990,8 @@ if(!isset($_SESSION["usuarioID"])){
         <div id="relacimprExtint" class="relacmodal">
             <div class="modal-content-InsImpr corPreta">
                 <span class="close" onclick="fechaModalImpr();">&times;</span>
-                <h5 id="titulomodal" style="text-align: center;color: #666;">Controle de Manutenção de Extintores</h5>
-                <h6 id="titulomodal" style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
+                <h5 style="text-align: center;color: #666;">Controle de Manutenção de Extintores</h5>
+                <h6 style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
                 <div>
                     <table style="margin: 0 auto;">
                         <tr>
@@ -1000,7 +1000,6 @@ if(!isset($_SESSION["usuarioID"])){
                             <td><div style="margin: 5px; padding: 5px; border: 2px solid #C6E2FF; border-radius: 10px;"><button class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="ImprExtint('vencidos');" title="Extintores com prazo de validade vencido.">Vencidos</button></div></td>
                         </tr>
                     </table>
-
                 </div>
                 <div style="padding-bottom: 20px;"></div>
            </div>

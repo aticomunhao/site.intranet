@@ -11,7 +11,7 @@ if(!isset($_SESSION["usuarioID"])){
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>Filtros</title>
+        <title>Bebedouros</title>
         <link rel="stylesheet" type="text/css" media="screen" href="class/dataTable/datatables.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="class/gijgo/css/gijgo.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
@@ -50,13 +50,13 @@ if(!isset($_SESSION["usuarioID"])){
                 width: 35%;
                 max-width: 900px;
             }
-            .modal-content-relacFiltros{
+            .modal-content-relacEquip{
                 background: transparent;
-                margin: 10% auto; /* 10% do topo e centrado */
+                margin: 10% auto; 
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 70%; /* acertar de acordo com a tela */
+                width: 70%; 
                 max-width: 900px;
             }
             .modal-content-InsEmpresa{
@@ -66,6 +66,33 @@ if(!isset($_SESSION["usuarioID"])){
                 border: 1px solid #888;
                 border-radius: 15px;
                 width: 55%;
+                max-width: 900px;
+            }
+            .modal-content-relacAbastec{
+                background: transparent;
+                margin: 10% auto; 
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 980px; 
+ /*               max-width: 900px; */
+            }
+            .modal-content-relacEditaAbastec{
+                background: transparent;
+                margin: 10% auto; 
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 50%;
+                max-width: 900px;
+            }
+            .modal-content-escImprBebed{
+                background: linear-gradient(180deg, white, #0099FF);
+                margin: 10% auto; 
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 50%;
                 max-width: 900px;
             }
         </style>
@@ -103,8 +130,8 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("botimprUsu").style.visibility = "hidden";
 
                 if(parseInt(document.getElementById("guardaEdit").value) === 1 || parseInt(document.getElementById("guardaFiscal").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
-                    $("#container5").load("modulos/filtros/jFiltros.php?acao="+document.getElementById("guardaAcao").value);
-                    $("#container6").load("modulos/filtros/kFiltros.php?acao="+document.getElementById("guardaAcao").value);
+                    $("#container5").load("modulos/bebedouros/jBebed.php?acao="+document.getElementById("guardaAcao").value);
+                    $("#container6").load("modulos/bebedouros/kBebed.php?acao="+document.getElementById("guardaAcao").value);
                     document.getElementById("botimpr").style.visibility = "visible";
 
                     if(parseInt(document.getElementById("guardaEdit").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ 
@@ -116,50 +143,76 @@ if(!isset($_SESSION["usuarioID"])){
                 }
 
                 if(parseInt(document.getElementById("UsuAdm").value) > 6){
-                    $("#configAdmin").load("modulos/filtros/admFiltros.php");
+                    $("#configAdmin").load("modulos/bebedouros/admBebed.php");
                     document.getElementById("botimprUsu").style.visibility = "visible";
                 }
 
-                $('#dataTrocaFiltro').datepicker({ uiLibrary: 'bootstrap5', locale: 'pt-br', format: 'dd/mm/yyyy' });
-                $("#dataTrocaFiltro").mask("99/99/9999");
+                $("#imprRelBebed").click(function(){
+                    document.getElementById("selecAno").value = "";
+                    document.getElementById("selecMesAno").value = "";
+                    window.open("modulos/bebedouros/imprBebed.php?acao=listaBebed", "listaBebed");
+                });
+
+                $("#selecMesAno").change(function(){
+                    document.getElementById("selecAno").value = "";
+                    if(document.getElementById("selecMesAno").value != ""){
+                        window.open("modulos/bebedouros/imprCons.php?acao=listaMes&mesano="+encodeURIComponent(document.getElementById("selecMesAno").value), "Mes"+document.getElementById("selecMesAno").value);
+                        document.getElementById("selecMesAno").value = "";
+                        document.getElementById("relacImprBebed").style.display = "none";
+                    }
+                });
+                $("#selecAno").change(function(){
+                    document.getElementById("selecMesAno").value = "";
+                    if(document.getElementById("selecAno").value != ""){
+                        window.open("modulos/bebedouros/imprCons.php?acao=listaAno&ano="+encodeURIComponent(document.getElementById("selecAno").value), "Ano"+document.getElementById("selecAno").value);
+                        document.getElementById("selecAno").value = "";
+                        document.getElementById("relacImprBebed").style.display = "none";
+                    }
+                });
+                $("#imprBebedAbast").click(function(){
+                    window.open("modulos/bebedouros/imprCons.php?acao=listaIndiv&bebedouro="+document.getElementById("guardaCodMarca").value, "Bebed"+document.getElementById("guardaCodMarca").value);
+                });
+
+                $('#dataManut').datepicker({ uiLibrary: 'bootstrap5', locale: 'pt-br', format: 'dd/mm/yyyy' });
+                $('#dataAbastec').datepicker({ uiLibrary: 'bootstrap5', locale: 'pt-br', format: 'dd/mm/yyyy' });
+                $("#dataManut").mask("99/99/9999");
                 $("#dataVencim").mask("99/99/9999");
+                $("#dataAbastec").mask("99/99/9999");
 
                 $('#carregaTema').load('modulos/config/carTema.php?carpag=clavic1');
 
             }); // fim do ready
 
             function carregaConfig(){
-                $("#configMarcas").load("modulos/filtros/jMarcas.php");
-                $("#configTipos").load("modulos/filtros/jTipos.php");
-                $("#configEmpr").load("modulos/filtros/jEmpr.php");
-                $("#configAdmin").load("modulos/filtros/admFiltros.php");
+                $("#configMarcas").load("modulos/bebedouros/jMarcas.php");
+                $("#configTipos").load("modulos/bebedouros/jTipos.php");
+                $("#configEmpr").load("modulos/bebedouros/jEmpr.php");
+                $("#configAdmin").load("modulos/bebedouros/admBebed.php");
                 document.getElementById("relacmodalConfig").style.display = "block";
             }
             function fechaConfig(){
                 document.getElementById("relacmodalConfig").style.display = "none";
             }
 
-            function insereFiltro(){
+            function insereEquip(){
                 document.getElementById("botApagaLanc").style.visibility = "hidden";
+                document.getElementById("botinsAbastecer").style.visibility = "hidden";
                 document.getElementById("guardaCodMarca").value = 0;
-                document.getElementById("numfiltro").value = "";
                 document.getElementById("localinstal").value = "";
                 document.getElementById("selecMarca").value = 1;
                 document.getElementById("selecTipo").value = 1;
-                document.getElementById("modelofiltro").value = "";
-                document.getElementById("selecPrazo").value = "12";
-                document.getElementById("diasAnteced").value = "30";
+                document.getElementById("modeloBebedouro").value = "";
+                document.getElementById("selecPrazo").value = "1";
+                document.getElementById("diasAnteced").value = "10";
                 document.getElementById("notifica1").checked = true;
                 document.getElementById("pararaviso").checked = false;
-//                document.getElementById("dataTrocaFiltro").value = "";
-                document.getElementById("dataTrocaFiltro").value = document.getElementById("guardaHoje").value;
-                document.getElementById("editaModalFiltros").style.display = "block";
+                document.getElementById("dataManut").value = document.getElementById("guardaHoje").value;
+                document.getElementById("editaModalEquipam").style.display = "block";
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/filtros/salvaFiltros.php?acao=calcprazo&datatroca="+encodeURIComponent(document.getElementById("dataTrocaFiltro").value)
+                    ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=calcprazo&datatroca="+encodeURIComponent(document.getElementById("dataManut").value)
                     +"&prazoselec="+document.getElementById("selecPrazo").value
-                    +"&diasanteced="+document.getElementById("diasAnteced").value
-                    , true);
+                    +"&diasanteced="+document.getElementById("diasAnteced").value, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -168,7 +221,9 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 0){
                                     document.getElementById("dataVencim").value = Resp.datafinal;
                                     document.getElementById("dataAviso").value = Resp.dataaviso;
-                                    document.getElementById("numfiltro").value = Resp.proxnumero;
+                                    document.getElementById("numequip").value = Resp.proxnumero;
+                                    document.getElementById("numEquipam").innerHTML = Resp.proxnumero;
+                                    document.getElementById("numEquipamAbast").innerHTML = Resp.proxnumero;
                                 }else{
                                     alert("Houve um erro no servidor.")
                                 }
@@ -179,26 +234,31 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-            function editaFiltro(Cod){
+            function editaEquip(Cod){
                 document.getElementById("guardaCodMarca").value = Cod;
+                document.getElementById("botinsAbastecer").style.visibility = "visible";
                 if(parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário 
                     document.getElementById("botApagaLanc").style.visibility = "visible";
                 }
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/filtros/salvaFiltros.php?acao=buscadadosFiltro&codigo="+Cod, true);
+                    ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=buscadadosEquip&codigo="+Cod, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
 //alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 if(parseInt(Resp.coderro) === 0){
-                                    document.getElementById("numfiltro").value = Resp.numapar;
+                                    document.getElementById("numequip").value = Resp.numapar;
+                                    document.getElementById("numEquipam").innerHTML = Resp.numapar;
+                                    document.getElementById("numEquipamAbast").innerHTML = Resp.numapar;
+                                    document.getElementById("botInsEditaAbastec").innerHTML = "Abastecer Bebedouro "+Resp.numapar;
+                                    document.getElementById("guardaNum").value = Resp.numapar;
                                     document.getElementById("localinstal").value = Resp.localinst;
                                     document.getElementById("selecMarca").value = Resp.codmarca;
                                     document.getElementById("selecTipo").value = Resp.codtipo;
-                                    document.getElementById("dataTrocaFiltro").value = Resp.datatroca;
-                                    document.getElementById("modelofiltro").value = Resp.modelo;
+                                    document.getElementById("dataManut").value = Resp.datatroca;
+                                    document.getElementById("modeloBebedouro").value = Resp.modelo;
                                     document.getElementById("dataVencim").value = Resp.datavenc;
                                     document.getElementById("dataAviso").value = Resp.dataaviso;
                                     document.getElementById("selecPrazo").value = Resp.prazotroca;
@@ -222,7 +282,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("pararaviso").style.visibility = "hidden";
                                         document.getElementById("etiqpararaviso").style.visibility = "hidden";
                                     }
-                                    document.getElementById("editaModalFiltros").style.display = "block";
+                                    document.getElementById("editaModalEquipam").style.display = "block";
                                 }else{
                                     alert("Houve um erro no servidor.")
                                 }
@@ -233,8 +293,8 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-            function salvaEditaFiltro(){
-                if(document.getElementById("numfiltro").value == ""){
+            function salvaEditaEquip(){
+                if(document.getElementById("numequip").value == ""){
                     $('#mensagem').fadeIn("slow");
                     document.getElementById("mensagem").innerHTML = "Insira o número dado ao equipamento";
                     $('#mensagem').fadeOut(2000);
@@ -254,25 +314,25 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 if(document.getElementById("selecTipo").value == ""){
                     $('#mensagem').fadeIn("slow");
-                    document.getElementById("mensagem").innerHTML = "Selecione o tipo de elemento filtrante";
+                    document.getElementById("mensagem").innerHTML = "Selecione o tipo de bebedouro";
                     $('#mensagem').fadeOut(2000);
                     return false;
                 }
-                if(document.getElementById("dataTrocaFiltro").value == ""){
+                if(document.getElementById("dataManut").value == ""){
                     $('#mensagem').fadeIn("slow");
-                    document.getElementById("mensagem").innerHTML = "Insira a data em que foi trocado o elemento filtrante";
+                    document.getElementById("mensagem").innerHTML = "Insira a data da ÚLTIMA LIMPEZA da base do bebedouro";
                     $('#mensagem').fadeOut(2000);
                     return false;
                 }
                 if(document.getElementById("selecPrazo").value == ""){
                     $('#mensagem').fadeIn("slow");
-                    document.getElementById("mensagem").innerHTML = "Insira um prazo para e troca do atual elemento filtrante";
+                    document.getElementById("mensagem").innerHTML = "Insira um prazo para e efetuar NOVA limpeza do bebedouro";
                     $('#mensagem').fadeOut(2000);
                     return false;
                 }
                 if(document.getElementById("dataVencim").value == ""){
                     $('#mensagem').fadeIn("slow");
-                    document.getElementById("mensagem").innerHTML = "Insira a data de vencimento do atual elemento filtrante";
+                    document.getElementById("mensagem").innerHTML = "Insira a DATA para limpeza da base do bebedouro";
                     $('#mensagem').fadeOut(2000);
                     return false;
                 }
@@ -285,7 +345,7 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                     if(document.getElementById("dataAviso").value == ""){
                         $('#mensagem').fadeIn("slow");
-                        document.getElementById("mensagem").innerHTML = "Insira a data para emitir a notificação de troca do elemento filtrante";
+                        document.getElementById("mensagem").innerHTML = "Insira a data para emitir a notificação pra limpeza do bebedouro";
                         $('#mensagem').fadeOut(2000);
                         return false;
                     }
@@ -296,16 +356,16 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/filtros/salvaFiltros.php?acao=salvaEditFiltro&codigo="+document.getElementById("guardaCodMarca").value
-                    +"&numfiltro="+document.getElementById("numfiltro").value
+                    ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=salvaEditBebed&codigo="+document.getElementById("guardaCodMarca").value
+                    +"&numequip="+document.getElementById("numequip").value
                     +"&localinst="+encodeURIComponent(document.getElementById("localinstal").value)
                     +"&codmarca="+document.getElementById("selecMarca").value
                     +"&codtipo="+document.getElementById("selecTipo").value
-                    +"&datatroca="+encodeURIComponent(document.getElementById("dataTrocaFiltro").value)
-                    +"&modelo="+encodeURIComponent(document.getElementById("modelofiltro").value)
+                    +"&datatroca="+encodeURIComponent(document.getElementById("dataManut").value)
+                    +"&modelo="+encodeURIComponent(document.getElementById("modeloBebedouro").value)
                     +"&datavenc="+encodeURIComponent(document.getElementById("dataVencim").value)
                     +"&dataaviso="+encodeURIComponent(document.getElementById("dataAviso").value)
-                    +"&observ="+encodeURIComponent(document.getElementById("observfiltro").value)
+                    +"&observ="+encodeURIComponent(document.getElementById("observBebed").value)
                     +"&notif="+Notif
                     +"&prazotroca="+document.getElementById("selecPrazo").value
                     +"&diasanteced="+document.getElementById("diasAnteced").value, true);
@@ -315,9 +375,9 @@ if(!isset($_SESSION["usuarioID"])){
 //alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 if(parseInt(Resp.coderro) === 0){
-                                    $("#container5").load("modulos/filtros/jFiltros.php?acao=todos");
-                                    $("#container6").load("modulos/filtros/kFiltros.php?acao=todos");
-                                    document.getElementById("editaModalFiltros").style.display = "none";
+                                    $("#container5").load("modulos/bebedouros/jBebed.php?acao=todos");
+                                    $("#container6").load("modulos/bebedouros/kBebed.php?acao=todos");
+                                    document.getElementById("editaModalEquipam").style.display = "none";
                                 }else{
                                     alert("Houve um erro no servidor.")
                                 }
@@ -328,7 +388,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
-            function apagarFiltro(){
+            function apagarEquip(){
                 $.confirm({
                     title: 'Confirmação!',
                     content: 'Confirma apagar este equipamento?<br>Os lançamentos serão perdidos.<br>Continua?',
@@ -338,7 +398,7 @@ if(!isset($_SESSION["usuarioID"])){
                         Sim: function () {
                             ajaxIni();
                             if(ajax){
-                                ajax.open("POST", "modulos/filtros/salvaFiltros.php?acao=apagaFiltro&codigo="+document.getElementById("guardaCodMarca").value, true);
+                                ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=apagaEquip&codigo="+document.getElementById("guardaCodMarca").value, true);
                                 ajax.onreadystatechange = function(){
                                     if(ajax.readyState === 4 ){
                                         if(ajax.responseText){
@@ -347,9 +407,9 @@ if(!isset($_SESSION["usuarioID"])){
                                             if(parseInt(Resp.coderro) === 1){
                                                 alert("Houve um erro no servidor.")
                                             }else{
-                                                $("#container5").load("modulos/filtros/jFiltros.php?acao=todos");
-                                                $("#container6").load("modulos/filtros/kFiltros.php?acao=todos");
-                                                document.getElementById("editaModalFiltros").style.display = "none";
+                                                $("#container5").load("modulos/bebedouros/jBebed.php?acao=todos");
+                                                $("#container6").load("modulos/bebedouros/kBebed.php?acao=todos");
+                                                document.getElementById("editaModalEquipam").style.display = "none";
                                             }
                                         }
                                     }
@@ -367,7 +427,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("guardaCodMarca").value = "0";
                 document.getElementById("editNomeMarca").value = "";
                 document.getElementById("botApagaEditMarca").style.visibility = "hidden";
-                document.getElementById("titulomodalMarca").innerHTML = "Nova marca de filtro/purificador";
+                document.getElementById("titulomodalMarca").innerHTML = "Nova marca de Bebedouro";
                 document.getElementById("relacEditMarca").style.display = "block";
                 document.getElementById("editNomeMarca").focus();
             }
@@ -379,7 +439,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/filtros/salvaFiltros.php?acao=buscaMarca&codigo="+Cod, true);
+                    ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=buscaMarca&codigo="+Cod, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -387,7 +447,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 if(parseInt(Resp.coderro) === 0){
                                     document.getElementById("editNomeMarca").value = Resp.nome;
-                                    document.getElementById("titulomodalMarca").innerHTML = "Edita marca de filtro/purificador";
+                                    document.getElementById("titulomodalMarca").innerHTML = "Edita marca de bebedouro";
                                     document.getElementById("relacEditMarca").style.display = "block";
                                 }else{
                                     alert("Houve um erro no servidor.")
@@ -402,7 +462,7 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("editNomeMarca").value != ""){
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/filtros/salvaFiltros.php?acao=salvanovaMarca&codigo="+document.getElementById("guardaCodMarca").value 
+                        ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=salvanovaMarca&codigo="+document.getElementById("guardaCodMarca").value 
                         +"&nomemarca="+encodeURIComponent(document.getElementById("editNomeMarca").value), true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
@@ -411,9 +471,9 @@ if(!isset($_SESSION["usuarioID"])){
                                     Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                     if(parseInt(Resp.coderro) === 0){
                                         document.getElementById("relacEditMarca").style.display = "none";
-                                        $("#configMarcas").load("modulos/filtros/jMarcas.php");
-                                        $("#container5").load("modulos/filtros/jFiltros.php?acao=todos");
-                                        $("#container6").load("modulos/filtros/kFiltros.php?acao=todos");
+                                        $("#configMarcas").load("modulos/bebedouros/jMarcas.php");
+                                        $("#container5").load("modulos/bebedouros/jBebed.php?acao=todos");
+                                        $("#container6").load("modulos/bebedouros/kBebed.php?acao=todos");
                                     }else{
                                         alert("Houve um erro no servidor.")
                                     }
@@ -436,7 +496,7 @@ if(!isset($_SESSION["usuarioID"])){
                         Sim: function () {
                             ajaxIni();
                             if(ajax){
-                                ajax.open("POST", "modulos/filtros/salvaFiltros.php?acao=apagaMarca&codigo="+document.getElementById("guardaCodMarca").value, true);
+                                ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=apagaMarca&codigo="+document.getElementById("guardaCodMarca").value, true);
                                 ajax.onreadystatechange = function(){
                                     if(ajax.readyState === 4 ){
                                         if(ajax.responseText){
@@ -445,10 +505,9 @@ if(!isset($_SESSION["usuarioID"])){
                                             if(parseInt(Resp.coderro) === 1){
                                                 alert("Houve um erro no servidor.")
                                             }else{
-                                                $("#configMarcas").load("modulos/filtros/jMarcas.php");
-//                                                carregaTipos(); // recarrega relação
-                                                $("#container5").load("modulos/filtros/jFiltros.php?acao=todos");
-                                                $("#container6").load("modulos/filtros/kFiltros.php?acao=todos");
+                                                $("#configMarcas").load("modulos/bebedouros/jMarcas.php");
+                                                $("#container5").load("modulos/bebedouros/jBebed.php?acao=todos");
+                                                $("#container6").load("modulos/bebedouros/kBebed.php?acao=todos");
                                                 document.getElementById("relacEditMarca").style.display = "none";
                                             }
                                         }
@@ -467,7 +526,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("guardaCodMarca").value = "0";
                 document.getElementById("editNomeTipo").value = "";
                 document.getElementById("botApagaEditTipo").style.visibility = "hidden";
-                document.getElementById("titulomodalTipo").innerHTML = "Novo tipo de elemento filtrante";
+                document.getElementById("titulomodalTipo").innerHTML = "Novo tipo de Bebedouro";
                 document.getElementById("relacEditTipo").style.display = "block";
                 document.getElementById("editNomeTipo").focus();
             }
@@ -478,7 +537,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/filtros/salvaFiltros.php?acao=buscaTipo&codigo="+Cod, true);
+                    ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=buscaTipo&codigo="+Cod, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -486,7 +545,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 if(parseInt(Resp.coderro) === 0){
                                     document.getElementById("editNomeTipo").value = Resp.nome;
-                                    document.getElementById("titulomodalTipo").innerHTML = "Edita tipo de filtro";
+                                    document.getElementById("titulomodalTipo").innerHTML = "Edita tipo de bebedouro";
                                     document.getElementById("relacEditTipo").style.display = "block";
                                 }else{
                                     alert("Houve um erro no servidor.")
@@ -501,7 +560,7 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("editNomeTipo").value != ""){
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/filtros/salvaFiltros.php?acao=salvanovoTipo&codigo="+document.getElementById("guardaCodMarca").value 
+                        ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=salvanovoTipo&codigo="+document.getElementById("guardaCodMarca").value 
                         +"&nometipo="+encodeURIComponent(document.getElementById("editNomeTipo").value), true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
@@ -510,9 +569,9 @@ if(!isset($_SESSION["usuarioID"])){
                                     Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                     if(parseInt(Resp.coderro) === 0){
                                         document.getElementById("relacEditTipo").style.display = "none";
-                                        $("#configTipos").load("modulos/filtros/jTipos.php");
-                                        $("#container5").load("modulos/filtros/jFiltros.php?acao=todos");
-                                        $("#container6").load("modulos/filtros/kFiltros.php?acao=todos");
+                                        $("#configTipos").load("modulos/bebedouros/jTipos.php");
+                                        $("#container5").load("modulos/bebedouros/jBebed.php?acao=todos");
+                                        $("#container6").load("modulos/bebedouros/kBebed.php?acao=todos");
                                         
                                     }else{
                                         alert("Houve um erro no servidor.")
@@ -536,7 +595,7 @@ if(!isset($_SESSION["usuarioID"])){
                         Sim: function () {
                             ajaxIni();
                             if(ajax){
-                                ajax.open("POST", "modulos/filtros/salvaFiltros.php?acao=apagaTipo&codigo="+document.getElementById("guardaCodMarca").value, true);
+                                ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=apagaTipo&codigo="+document.getElementById("guardaCodMarca").value, true);
                                 ajax.onreadystatechange = function(){
                                     if(ajax.readyState === 4 ){
                                         if(ajax.responseText){
@@ -545,9 +604,9 @@ if(!isset($_SESSION["usuarioID"])){
                                             if(parseInt(Resp.coderro) === 1){
                                                 alert("Houve um erro no servidor.")
                                             }else{
-                                                $("#configTipos").load("modulos/filtros/jTipos.php");
-                                                $("#container5").load("modulos/filtros/jFiltros.php?acao=todos");
-                                                $("#container6").load("modulos/filtros/kFiltros.php?acao=todos");
+                                                $("#configTipos").load("modulos/bebedouros/jTipos.php");
+                                                $("#container5").load("modulos/bebedouros/jBebed.php?acao=todos");
+                                                $("#container6").load("modulos/bebedouros/kBebed.php?acao=todos");
                                                 document.getElementById("relacEditTipo").style.display = "none";
                                             }
                                         }
@@ -586,7 +645,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/filtros/salvaFiltros.php?acao=buscaEmpresa&codigo="+Cod, true);
+                    ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=buscaEmpresa&codigo="+Cod, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -631,7 +690,7 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("mudou").value != "0"){
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/filtros/salvaFiltros.php?acao=salvaEmpresa&codigo="+document.getElementById("guardaCodMarca").value 
+                        ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=salvaEmpresa&codigo="+document.getElementById("guardaCodMarca").value 
                         +"&nomeempresa="+encodeURIComponent(document.getElementById("editNomeEmpr").value)
                         +"&editEnder="+encodeURIComponent(document.getElementById("editEnder").value)
                         +"&editCEP="+encodeURIComponent(document.getElementById("editCEP").value)
@@ -650,9 +709,9 @@ if(!isset($_SESSION["usuarioID"])){
                                     Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                     if(parseInt(Resp.coderro) === 0){
                                         document.getElementById("relacEditEmpresa").style.display = "none";
-                                        $("#configEmpr").load("modulos/filtros/jEmpr.php");
-                                        $("#container5").load("modulos/filtros/jFiltros.php?acao=todos");
-                                        $("#container6").load("modulos/filtros/kFiltros.php?acao=todos");
+                                        $("#configEmpr").load("modulos/bebedouros/jEmpr.php");
+                                        $("#container5").load("modulos/bebedouros/jBebed.php?acao=todos");
+                                        $("#container6").load("modulos/bebedouros/kBebed.php?acao=todos");
                                     }else{
                                         alert("Houve um erro no servidor.")
                                     }
@@ -675,7 +734,7 @@ if(!isset($_SESSION["usuarioID"])){
                         Sim: function () {
                             ajaxIni();
                             if(ajax){
-                                ajax.open("POST", "modulos/filtros/salvaFiltros.php?acao=apagaEmpre&codigo="+document.getElementById("guardaCodMarca").value, true);
+                                ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=apagaEmpre&codigo="+document.getElementById("guardaCodMarca").value, true);
                                 ajax.onreadystatechange = function(){
                                     if(ajax.readyState === 4 ){
                                         if(ajax.responseText){
@@ -684,11 +743,158 @@ if(!isset($_SESSION["usuarioID"])){
                                             if(parseInt(Resp.coderro) === 1){
                                                 alert("Houve um erro no servidor.")
                                             }else{
-                                                $("#configEmpr").load("modulos/filtros/jEmpr.php");
-//                                                carregaTipos(); // recarrega relação
-                                                $("#container5").load("modulos/filtros/jFiltros.php?acao=todos");
-                                                $("#container6").load("modulos/filtros/kFiltros.php?acao=todos");
+                                                $("#configEmpr").load("modulos/bebedouros/jEmpr.php");
+                                                $("#container5").load("modulos/bebedouross/jBebed.php?acao=todos");
+                                                $("#container6").load("modulos/bebedouross/kBebed.php?acao=todos");
                                                 document.getElementById("relacEditEmpresa").style.display = "none";
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                        }
+                    }
+                });
+            }
+
+            function InsEditaAbastec(){
+                document.getElementById("botApagaAbast").style.visibility = "hidden";
+                document.getElementById("botSalvaInsAbastec").style.visibility = "visible"; // inserir volume
+                document.getElementById("botSalvaEditaAbastec").style.visibility = "hidden";
+                document.getElementById("titEditInsEquipamAbast").innerHTML = "Abastecer Bebedouro";
+                document.getElementById("guardaIdCtl").value = 0;
+                document.getElementById("dataAbastec").value = "";
+                document.getElementById("volumeAbast").value = "";
+                document.getElementById("editaAbastec").style.display = "block";
+            }
+            function carEditaAbastec(Cod, idCtl, Data, Vol){
+                document.getElementById("botApagaAbast").style.visibility = "visible";
+                document.getElementById("botSalvaInsAbastec").style.visibility = "hidden";
+                document.getElementById("botSalvaEditaAbastec").style.visibility = "visible"; // editar data/volume
+                document.getElementById("titEditInsEquipamAbast").innerHTML = "Editando Abastecimento Bebedouro"; 
+                document.getElementById("guardaCodMarca").value = Cod;
+                document.getElementById("guardaIdCtl").value = idCtl;  // id do arquivo bebed.ctl para editar/deletar
+                document.getElementById("dataAbastec").value = Data;
+                document.getElementById("volumeAbast").value = Vol;
+                document.getElementById("editaAbastec").style.display = "block";
+            }
+            function insAbastec(Cod, Num){
+                document.getElementById("guardaCodMarca").value = Cod;
+                document.getElementById("numEquipam").innerHTML = Num;
+                document.getElementById("botInsEditaAbastec").innerHTML = "Abastecer Bebedouro "+Num;
+                document.getElementById("numEquipamAbast").innerHTML = Num;
+                document.getElementById("botSalvaInsAbastec").style.visibility = "visible";
+                document.getElementById("botSalvaEditaAbastec").style.visibility = "hidden";
+                document.getElementById("editaModalAbastec").style.display = "block";
+                $("#relaBebed").load("modulos/bebedouros/iBebed.php?acao=todos&codigo="+Cod);
+            }
+            function insAbastecer(){
+                insAbastec(document.getElementById("guardaCodMarca").value, document.getElementById("guardaNum").value);
+            }
+
+            function salvarEditaAbastec(){
+                if(document.getElementById("dataAbastec").value == ""){
+                    $('#mensagemAbastec').fadeIn("slow");
+                    document.getElementById("mensagemAbastec").innerHTML = "Insira a data";
+                    $('#mensagemAbastec').fadeOut(2000);
+                    return false;
+                }
+                if(document.getElementById("volumeAbast").value == ""){
+                    $('#mensagemAbastec').fadeIn("slow");
+                    document.getElementById("mensagemAbastec").innerHTML = "Insira o volume em litros";
+                    $('#mensagemAbastec').fadeOut(2000);
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=salvaAbastec&codigo="+document.getElementById("guardaIdCtl").value
+                    +"&data="+encodeURIComponent(document.getElementById("dataAbastec").value)
+                    +"&volume="+document.getElementById("volumeAbast").value
+                    , true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    document.getElementById("editaAbastec").style.display = "none";
+                                    document.getElementById("editaModalAbastec").style.display = "block";
+                                    $("#relaBebed").load("modulos/bebedouros/iBebed.php?acao=todos&codigo="+document.getElementById("guardaCodMarca").value);
+                                    $("#container6").load("modulos/bebedouros/kBebed.php?acao=todos");
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+            function salvarAbastec(){
+                if(document.getElementById("dataAbastec").value == ""){
+                    $('#mensagemAbastec').fadeIn("slow");
+                    document.getElementById("mensagemAbastec").innerHTML = "Insira a data";
+                    $('#mensagemAbastec').fadeOut(2000);
+                    return false;
+                }
+                if(document.getElementById("volumeAbast").value == ""){
+                    $('#mensagemAbastec').fadeIn("slow");
+                    document.getElementById("mensagemAbastec").innerHTML = "Insira o volume em litros";
+                    $('#mensagemAbastec').fadeOut(2000);
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=insAbastec&codigo="+document.getElementById("guardaCodMarca").value
+                    +"&data="+encodeURIComponent(document.getElementById("dataAbastec").value)
+                    +"&volume="+document.getElementById("volumeAbast").value
+                    , true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    document.getElementById("editaAbastec").style.display = "none";
+                                    document.getElementById("editaModalAbastec").style.display = "block";
+                                    $("#relaBebed").load("modulos/bebedouros/iBebed.php?acao=todos&codigo="+document.getElementById("guardaCodMarca").value);
+                                    $("#container6").load("modulos/bebedouros/kBebed.php?acao=todos");
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+            
+            function apagarAbastec(){
+                $.confirm({
+                    title: 'Confirmação!',
+                    content: 'Confirma apagar este lançamento?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=apagaAbastec&codigo="+document.getElementById("guardaIdCtl").value, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro no servidor.")
+                                            }else{
+                                                document.getElementById("editaAbastec").style.display = "none";
+                                                document.getElementById("editaModalAbastec").style.display = "block";
+                                                $("#relaBebed").load("modulos/bebedouros/iBebed.php?acao=todos&codigo="+document.getElementById("guardaCodMarca").value);
+                                                $("#container6").load("modulos/bebedouros/kBebed.php?acao=todos");
                                             }
                                         }
                                     }
@@ -706,13 +912,13 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("selecPrazo").value == ""){
                     return false;
                 }
-                if(document.getElementById("dataTrocaFiltro").value == ""){
+                if(document.getElementById("dataManut").value == ""){
                     return false;
                 }
                 document.getElementById("guardaPrazo").value = "";
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/filtros/salvaFiltros.php?acao=calcprazo&datatroca="+encodeURIComponent(document.getElementById("dataTrocaFiltro").value)
+                    ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=calcprazo&datatroca="+encodeURIComponent(document.getElementById("dataManut").value)
                     +"&prazoselec="+document.getElementById("selecPrazo").value
                     +"&diasanteced="+document.getElementById("diasAnteced").value
                     , true);
@@ -739,11 +945,11 @@ if(!isset($_SESSION["usuarioID"])){
                     return false;
                 }
                 document.getElementById("guardaPrazo").value = "";
-                if(compareDates(document.getElementById("dataTrocaFiltro").value, document.getElementById("dataVencim").value) == true){
+                if(compareDates(document.getElementById("dataManut").value, document.getElementById("dataVencim").value) == true){
                     document.getElementById("dataVencim").focus();
                     $.confirm({
                         title: 'Atenção!',
-                        content: 'A data do vencimento é de antes da data de troca do filtro.',
+                        content: 'A data do vencimento é de antes da data da manutenção.',
                         draggable: true,
                         buttons: {
                             OK: function(){}
@@ -753,9 +959,9 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/filtros/salvaFiltros.php?acao=calcaviso&vencim="+encodeURIComponent(document.getElementById("dataVencim").value)
+                    ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=calcaviso&vencim="+encodeURIComponent(document.getElementById("dataVencim").value)
                     +"&diasanteced="+document.getElementById("diasAnteced").value
-                    +"&datatroca="+encodeURIComponent(document.getElementById("dataTrocaFiltro").value)
+                    +"&datatroca="+encodeURIComponent(document.getElementById("dataManut").value)
                     , true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
@@ -765,11 +971,11 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 0){
                                     if(document.getElementById("notifica1").checked === true){
                                         document.getElementById("dataAviso").value = Resp.dataaviso;
-                                        if(compareDates(document.getElementById("dataTrocaFiltro").value, Resp.dataaviso) == true){
+                                        if(compareDates(document.getElementById("dataManut").value, Resp.dataaviso) == true){
                                             document.getElementById("dataAviso").focus();
                                             $.confirm({
                                                 title: 'Atenção!',
-                                                content: 'A data do aviso é de antes da data de troca do filtro.',
+                                                content: 'A data do aviso é de antes da data da manutenção.',
                                                 draggable: true,
                                                 buttons: {
                                                     OK: function(){}
@@ -807,7 +1013,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }
                 ajaxIni();
                 if(ajax){
-                    ajax.open("POST", "modulos/filtros/salvaFiltros.php?acao=mudarAviso&codigo="+document.getElementById("guardaCodMarca").value+"&valor="+Valor, true);
+                    ajax.open("POST", "modulos/bebedouros/salvaBebed.php?acao=mudarAviso&codigo="+document.getElementById("guardaCodMarca").value+"&valor="+Valor, true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
@@ -826,18 +1032,22 @@ if(!isset($_SESSION["usuarioID"])){
                 
             }
 
+            function abreEscImprBebed(){
+                document.getElementById("relacImprBebed").style.display = "block";
+            }
+            function fechaImprChaves(){
+                document.getElementById("relacImprBebed").style.display = "none";
+            }
             function calcVenc(){
                 calcPrazo();
                 document.getElementById("mudou").value = "1";
             }
-            function imprFiltros(){
-                window.open("modulos/filtros/imprFiltros.php?acao=listaFiltros", "listaFiltros");
+
+            function imprUsuBebed(){
+                window.open("modulos/bebedouros/imprUsuBebed.php?acao=listaUsuarios", "listaUsuBebed");
             }
-            function imprUsuFiltros(){
-                window.open("modulos/filtros/imprUsuFiltr.php?acao=listaUsuarios", "listaUsuFiltros");
-            }
-            function fechaInsFiltro(){
-                document.getElementById("editaModalFiltros").style.display = "none";
+            function fechaInsBebed(){
+                document.getElementById("editaModalEquipam").style.display = "none";
             }
             function fechaModalConfig(){
                 document.getElementById("relacmodalConfig").style.display = "none";
@@ -851,6 +1061,13 @@ if(!isset($_SESSION["usuarioID"])){
             function fechaEditEmpr(){
                 document.getElementById("relacEditEmpresa").style.display = "none";
             }
+            function fechaInsAbastec(){
+                document.getElementById("editaModalAbastec").style.display = "none";
+            }
+            function fechaEditaAbastec(){
+                document.getElementById("editaAbastec").style.display = "none";
+            }
+
             function foco(id){
                 document.getElementById(id).focus();
             }
@@ -882,15 +1099,14 @@ if(!isset($_SESSION["usuarioID"])){
         <?php
         date_default_timezone_set('America/Sao_Paulo');
 
-
 //------- Provisório
-//        pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".filtros");
-        pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".filtros (
+//        pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".bebed");
+        pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bebed (
                 id SERIAL PRIMARY KEY, 
                 numapar integer NOT NULL DEFAULT 0,
-                codmarca integer NOT NULL DEFAULT 1,
+                codmarca integer NOT NULL DEFAULT 1, 
                 modelo character varying(30), 
-                tipofiltro integer NOT NULL DEFAULT 1, 
+                codtipo integer NOT NULL DEFAULT 1, 
                 localinst character varying(200), 
                 datatroca date DEFAULT '3000-12-31', 
                 datavencim date DEFAULT '3000-12-31', 
@@ -901,6 +1117,7 @@ if(!isset($_SESSION["usuarioID"])){
                 diasanteced character varying(10),  
                 observ text, 
                 codempr integer NOT NULL DEFAULT 1, 
+                consumo integer NOT NULL DEFAULT 0, 
                 ativo smallint DEFAULT 1 NOT NULL, 
                 usuins integer DEFAULT 0 NOT NULL,
                 datains timestamp without time zone DEFAULT '3000-12-31',
@@ -908,24 +1125,44 @@ if(!isset($_SESSION["usuarioID"])){
                 dataedit timestamp without time zone DEFAULT '3000-12-31' 
                 ) 
             ");
-            $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".filtros LIMIT 2");
+            $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".bebed LIMIT 2");
             $row = pg_num_rows($rs);
             if($row == 0){
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros (id, numapar, codmarca, modelo, tipofiltro, localinst, observ, ativo) VALUES(1, 1, 3, '', 1, 'Harmonização DAO - Sala 008', '', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros (id, numapar, codmarca, modelo, tipofiltro, localinst, observ, ativo) VALUES(2, 2, 2, '', 2, 'Bezerra', '', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros (id, numapar, codmarca, modelo, tipofiltro, localinst, observ, ativo) VALUES(3, 3, 2, '', 3, 'Bezerra', '', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros (id, numapar, codmarca, modelo, tipofiltro, localinst, observ, ativo) VALUES(4, 4, 2, '', 1, '1º andar', '', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros (id, numapar, codmarca, modelo, tipofiltro, localinst, observ, ativo) VALUES(5, 5, 2, '', 4, 'DAF Fin.', '', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros (id, numapar, codmarca, modelo, tipofiltro, localinst, observ, ativo) VALUES(6, 6, 2, 'Pressão', 1, '2º andar A', 'Com a tarja verde no refil - Filtro BAG', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros (id, numapar, codmarca, modelo, tipofiltro, localinst, observ, ativo) VALUES(7, 7, 2, 'Pressão', 1, 'Térreo - Masc', 'Com a tarja verde no refil - Filtro BAG', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros (id, numapar, codmarca, modelo, tipofiltro, localinst, observ, ativo) VALUES(8, 8, 2, 'Refil Purificador', 1, 'Cozinha Eventos Espaço Cultural', '', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros (id, numapar, codmarca, modelo, tipofiltro, localinst, observ, ativo) VALUES(9, 9, 2, 'Avanti', 1, 'André Luiz', '', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros (id, numapar, codmarca, modelo, tipofiltro, localinst, observ, ativo) VALUES(10, 10, 2, 'Avanti', 1, 'Chico Xavier', '', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros (id, numapar, codmarca, modelo, tipofiltro, localinst, observ, ativo) VALUES(11, 11, 2, 'Filtro Industrial', 1, 'Pátio Auta de Souza', '', 1)");
+                pg_query($Conec, "INSERT INTO ".$xProj.".bebed (id, numapar, codmarca, modelo, codtipo, localinst, observ, ativo) VALUES(1, 1, 3, 'Verona', 1, 'Recepção 1º andar', '', 1)");
+                pg_query($Conec, "INSERT INTO ".$xProj.".bebed (id, numapar, codmarca, modelo, codtipo, localinst, observ, ativo) VALUES(2, 2, 2, 'PBE-200', 2, 'Auditório', '', 1)");
+                pg_query($Conec, "INSERT INTO ".$xProj.".bebed (id, numapar, codmarca, modelo, codtipo, localinst, observ, ativo) VALUES(3, 3, 2, 'Gen-1A', 1, 'Sala 1', '', 1)");
+                pg_query($Conec, "INSERT INTO ".$xProj.".bebed (id, numapar, codmarca, modelo, codtipo, localinst, observ, ativo) VALUES(4, 4, 2, '', 1, 'Térreo 1', '', 1)");
+                pg_query($Conec, "INSERT INTO ".$xProj.".bebed (id, numapar, codmarca, modelo, codtipo, localinst, observ, ativo) VALUES(5, 5, 1, '', 2, 'Atendimento', '', 1)");
             }
 
-//            pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".filtros_marcas");
-            pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".filtros_marcas (
+//            pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".bebed_ctl");
+            pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bebed_ctl (
+                id SERIAL PRIMARY KEY, 
+                bebed_id integer DEFAULT 0 NOT NULL,
+                datatroca date DEFAULT '3000-12-31', 
+                volume integer DEFAULT 0 NOT NULL,
+                ativo smallint DEFAULT 1 NOT NULL, 
+                usuins integer DEFAULT 0 NOT NULL,
+                datains timestamp without time zone DEFAULT '3000-12-31',
+                usuedit integer DEFAULT 0 NOT NULL,
+                dataedit timestamp without time zone DEFAULT '3000-12-31' 
+                ) 
+            ");
+//            $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".bebed_ctl LIMIT 2");
+//            $row = pg_num_rows($rs);
+//            if($row == 0){
+//                $DiaIni = strtotime(date('Y/m/01')); // número - para começar com o dia 1
+//                $DiaIni = strtotime("-1 day", $DiaIni); // para começar com o dia 1 no loop for
+//                for($i = 0; $i < 1280; $i++){
+//                    $Amanha = strtotime("+1 day", $DiaIni);
+//                    $DiaIni = $Amanha;
+//                    $Data = date("Y/m/d", $Amanha); // data legível
+//                    pg_query($Conec, "INSERT INTO ".$xProj.".bebed_ctl (bebed_id, datatroca, volume, usuins) VALUES (1, '$Data', 20, 3)");
+//                }                
+//            }
+
+//            pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".bebed_marcas");
+            pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bebed_marcas (
                 id SERIAL PRIMARY KEY, 
                 descmarca character varying(30), 
                 ativo smallint DEFAULT 1 NOT NULL, 
@@ -935,21 +1172,21 @@ if(!isset($_SESSION["usuarioID"])){
                 dataedit timestamp without time zone DEFAULT '3000-12-31' 
                 ) 
             ");
-            $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".filtros_marcas LIMIT 2");
+            $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".bebed_marcas LIMIT 2");
             $row = pg_num_rows($rs);
             if($row == 0){
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros_marcas (id, descmarca, ativo) VALUES(1, 'Genérico', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros_marcas (id, descmarca, ativo) VALUES(2, 'IBBL', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros_marcas (id, descmarca, ativo) VALUES(3, 'Colormaq', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros_marcas (id, descmarca, ativo) VALUES(4, 'Esmaltec', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros_marcas (id, descmarca, ativo) VALUES(5, 'Masterfrio', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros_marcas (id, descmarca, ativo) VALUES(6, 'Newmaq', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros_marcas (id, descmarca, ativo) VALUES(7, 'Frisbel', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros_marcas (id, descmarca, ativo) VALUES(8, 'Libell', 1)");
+                pg_query($Conec, "INSERT INTO ".$xProj.".bebed_marcas (id, descmarca, ativo) VALUES(1, 'Genérico', 1)");
+                pg_query($Conec, "INSERT INTO ".$xProj.".bebed_marcas (id, descmarca, ativo) VALUES(2, 'IBBL', 1)");
+                pg_query($Conec, "INSERT INTO ".$xProj.".bebed_marcas (id, descmarca, ativo) VALUES(3, 'Colormaq', 1)");
+                pg_query($Conec, "INSERT INTO ".$xProj.".bebed_marcas (id, descmarca, ativo) VALUES(4, 'Esmaltec', 1)");
+                pg_query($Conec, "INSERT INTO ".$xProj.".bebed_marcas (id, descmarca, ativo) VALUES(5, 'Masterfrio', 1)");
+                pg_query($Conec, "INSERT INTO ".$xProj.".bebed_marcas (id, descmarca, ativo) VALUES(6, 'Newmaq', 1)");
+                pg_query($Conec, "INSERT INTO ".$xProj.".bebed_marcas (id, descmarca, ativo) VALUES(7, 'Frisbel', 1)");
+                pg_query($Conec, "INSERT INTO ".$xProj.".bebed_marcas (id, descmarca, ativo) VALUES(8, 'Libell', 1)");
             }
     
-//            pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".filtros_tipos");
-            pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".filtros_tipos (
+//            pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".bebed_tipos");
+            pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bebed_tipos (
                 id SERIAL PRIMARY KEY, 
                 desctipo character varying(30), 
                 ativo smallint DEFAULT 1 NOT NULL, 
@@ -959,18 +1196,15 @@ if(!isset($_SESSION["usuarioID"])){
                 dataedit timestamp without time zone DEFAULT '3000-12-31' 
                 ) 
             ");
-            $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".filtros_tipos LIMIT 2");
+            $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".bebed_tipos LIMIT 2");
             $row = pg_num_rows($rs);
             if($row == 0){
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros_tipos (id, desctipo, ativo) VALUES(1, 'Comum', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros_tipos (id, desctipo, ativo) VALUES(2, 'Areia', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros_tipos (id, desctipo, ativo) VALUES(3, 'Carvão Ativado', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros_tipos (id, desctipo, ativo) VALUES(4, 'Quartzo', 1)");
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros_tipos (id, desctipo, ativo) VALUES(5, 'Seixos', 1)");
+                pg_query($Conec, "INSERT INTO ".$xProj.".bebed_tipos (id, desctipo, ativo) VALUES(1, 'Bancada', 1)");
+                pg_query($Conec, "INSERT INTO ".$xProj.".bebed_tipos (id, desctipo, ativo) VALUES(2, 'Pedestal', 1)");
             }
 
-//            pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".filtros_empr");
-            pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".filtros_empr (
+//            pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".bebed_empr");
+            pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bebed_empr (
                 id SERIAL PRIMARY KEY, 
                 descempresa character varying(30), 
                 ender VARCHAR(250), 
@@ -991,15 +1225,15 @@ if(!isset($_SESSION["usuarioID"])){
                 datadel timestamp without time zone DEFAULT '3000-12-31' 
                 ) 
             ");
-            $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".filtros_empr LIMIT 2");
+            $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".bebed_empr LIMIT 2");
             $row = pg_num_rows($rs);
             if($row == 0){
-                pg_query($Conec, "INSERT INTO ".$xProj.".filtros_empr (id, descempresa, ender, cep, cidade, uf, ativo) VALUES(1, 'Comércio Local', 'Av. Sobe e Desce e Nunca Aparece, 1001. - Setor de Empresas', '70000-000', 'Brasília', 'DF', 1)");
+                pg_query($Conec, "INSERT INTO ".$xProj.".bebed_empr (id, descempresa, ender, cep, cidade, uf, ativo) VALUES(1, 'Comércio Local', 'Av. Sobe e Desce e Nunca Aparece, 1001. - Setor de Empresas', '70000-000', 'Brasília', 'DF', 1)");
             }
 
 //-------
 
-        $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'filtros'");
+        $rsSis = pg_query($Conec, "SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_schema = 'cesb' And TABLE_NAME = 'bebed'");
         $rowSis = pg_num_rows($rsSis);
         if($rowSis == 0){
             require_once("../msgErro.php");
@@ -1007,12 +1241,17 @@ if(!isset($_SESSION["usuarioID"])){
         }
 
         $Hoje = date('d/m/Y');
-        $Filtro = parEsc("filtros", $Conec, $xProj, $_SESSION["usuarioID"]);
-        $FiscFiltro = parEsc("fisc_filtros", $Conec, $xProj, $_SESSION["usuarioID"]);
+        $Bebed = parEsc("bebed", $Conec, $xProj, $_SESSION["usuarioID"]);
+        $FiscBebed = parEsc("bebed_fisc", $Conec, $xProj, $_SESSION["usuarioID"]);
         $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
 
-        $OpMarcas = pg_query($Conec, "SELECT id, descmarca FROM ".$xProj.".filtros_marcas WHERE ativo = 1 ORDER BY descmarca");
-        $OpTipos = pg_query($Conec, "SELECT id, desctipo FROM ".$xProj.".filtros_tipos WHERE ativo = 1 ORDER BY desctipo ");
+        $OpMarcas = pg_query($Conec, "SELECT id, descmarca FROM ".$xProj.".bebed_marcas WHERE ativo = 1 ORDER BY descmarca");
+        $OpTipos = pg_query($Conec, "SELECT id, desctipo FROM ".$xProj.".bebed_tipos WHERE ativo = 1 ORDER BY desctipo ");
+
+        $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(datatroca, 'MM'), '/', TO_CHAR(datatroca, 'YYYY')) 
+        FROM ".$xProj.".bebed_ctl GROUP BY TO_CHAR(datatroca, 'MM'), TO_CHAR(datatroca, 'YYYY') ORDER BY TO_CHAR(datatroca, 'YYYY') DESC, TO_CHAR(datatroca, 'MM') DESC ");
+        $OpcoesEscAno = pg_query($Conec, "SELECT EXTRACT(YEAR FROM ".$xProj.".bebed_ctl.datatroca)::text 
+        FROM ".$xProj.".bebed_ctl GROUP BY 1 ORDER BY 1 DESC ");
 
         if(isset($_REQUEST["acao"])){
             $Acao = $_REQUEST["acao"];
@@ -1025,22 +1264,24 @@ if(!isset($_SESSION["usuarioID"])){
 
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>" />
         <input type="hidden" id="mudou" value="0" />
-        <input type="hidden" id="guardaEdit" value="<?php echo $Filtro; ?>" />
-        <input type="hidden" id="guardaFiscal" value="<?php echo $FiscFiltro; ?>" />
+        <input type="hidden" id="guardaEdit" value="<?php echo $Bebed; ?>" />
+        <input type="hidden" id="guardaFiscal" value="<?php echo $FiscBebed; ?>" />
         <input type="hidden" id="guardaUsuId" value="<?php echo $_SESSION["usuarioID"]; ?>" />
         <input type="hidden" id="guardaCodMarca" value="0" />
+        <input type="hidden" id="guardaIdCtl" value="0" />
         <input type="hidden" id="guardaPrazo" value = "" />
         <input type="hidden" id="guardaHoje" value = "<?php echo $Hoje; ?>" />
         <input type="hidden" id="guardaAcao" value="<?php echo $Acao; ?>" />
+        <input type="hidden" id="guardaNum" value = "" />
 
         <!-- div três colunas -->
         <div id="tricoluna0" class="corClara" style="margin: 5px; padding: 10px; border: 2px solid blue; border-radius: 10px; min-height: 50px;">
             <div id="tricoluna1" class="box corClara" style="position: relative; float: left; width: 33%;">
-                <img src="imagens/settings.png" height="20px;" id="imgConfig" style="cursor: pointer; padding-right: 20px;" onclick="carregaConfig();" title="Configurar o acesso ao controle de viaturas">
-                <input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Inserir" onclick="insereFiltro();" title="Registrar abasteimento ou manutenção nas viaturas.">
+                <img src="imagens/settings.png" height="20px;" id="imgConfig" style="cursor: pointer; padding-right: 20px;" onclick="carregaConfig();" title="Configurar o acesso ao controle dos bebedouros">
+                <input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Inserir" onclick="insereEquip();" title="Inserir um novo bebedouro.">
             </div>
             <div id="tricoluna2" class="box corClara" style="position: relative; float: left; width: 33%; text-align: center;">
-                <h5>Filtros e Purificadores de Água</h5>
+                <h5>Bebedouros Instalados</h5>
             </div>
             <div id="tricoluna3" class="box corClara" style="position: relative; float: left; width: 33%; text-align: right;">
                 <div id="selectTema" style="position: relative; float: left; padding-left: 30px;">
@@ -1049,7 +1290,7 @@ if(!isset($_SESSION["usuarioID"])){
                     <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" style="cursor: pointer; font-size: 80%;">&nbsp;Escuro</label>
                 </div>
                 <label style="padding-left: 10px;"></label>
-                <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="imprFiltros();">PDF</button>
+                <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="abreEscImprBebed();">PDF</button>
             </div>
 
             <div id="faixaMensagem" style="display: none; position: relative; margin: 70px; padding: 20px; text-align: center; border: 1px solid; border-radius: 15px;">
@@ -1059,10 +1300,10 @@ if(!isset($_SESSION["usuarioID"])){
 
         <!-- Tabelas -->
         <div id="container5" style="margin-top 10px; width: 70%;"></div>
-        <div id="intercolunas" style="width: 1%;"></div> <!-- espaçamento entre colunas  -->
-        <div id="container6" style="margin-top 10px; width: 25%;"></div>
+        <div id="intercolunas" style="width: 1%;"></div>  <!-- espaçamento entre colunas -->
+        <div id="container6" style="margin-top 10px; width: 25%;"></div> 
 
-        <!-- config para inserir usuários, filtros, empresas... -->
+        <!-- config para inserir usuários, bebedouros, empresas... -->
         <div id="relacmodalConfig" class="relacmodal">
             <div class="modal-content-Config">
                 <span class="close" onclick="fechaModalConfig();">&times;</span>
@@ -1070,8 +1311,8 @@ if(!isset($_SESSION["usuarioID"])){
                 <div class="container" style="margin: 0 auto;">
                     <div class="row">
                         <div class="col" style="margin: 0 auto;"></div>
-                        <div class="col"><h6 id="titulomodal" style="text-align: center; color: #666;">Controle dos Filtros e Purificadores</h6></div> <!-- Central - espaçamento entre colunas  -->
-                        <div class="col" style="margin: 0 auto; text-align: center;"><button id="botimprUsu" class="botpadrred" style="font-size: 70%;" onclick="imprUsuFiltros();">Resumo em PDF</button></div> 
+                        <div class="col"><h6 id="titulomodal" style="text-align: center; color: #666;">Controle dos Bebedouros</h6></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col" style="margin: 0 auto; text-align: center;"><button id="botimprUsu" class="botpadrred" style="font-size: 70%;" onclick="imprUsuBebed();">Resumo em PDF</button></div> 
                     </div>
                 </div>
                 
@@ -1082,7 +1323,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td style="vertical-align: top;">
                             <div style="position: relative; float: left; width: 99%; margin-top: 10px; text-align: center; border: 1px solid; border-radius: 10px; background: linear-gradient(180deg, white, #86c1eb);">
                                 <div style="margin: 20px; min-width: 200px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px; background: linear-gradient(180deg, white, #86c1eb);">
-                                    <div class='divbot corFundo' onclick='insMarca()' title="Adicionar uma nova marca de filtro/purificador"> Adicionar </div>
+                                    <div class='divbot corFundo' onclick='insMarca()' title="Adicionar uma nova marca de bebedouro"> Adicionar </div>
                                     <div id="configMarcas" style="margin-bottom: 15px; text-align: center; width: 90%;"></div>
                                 </div>
                             </div>
@@ -1118,7 +1359,7 @@ if(!isset($_SESSION["usuarioID"])){
         <div id="relacEditMarca" class="relacmodal">
             <div class="modal-content-InsMarca">
                 <span class="close" onclick="fechaEditMarca();">&times;</span>
-                <h5 id="titulomodalMarca" style="text-align: center; color: #666;">Nova Marca de filtro/purificador</h5>
+                <h5 id="titulomodalMarca" style="text-align: center; color: #666;">Nova Marca de bebedouro</h5>
                     <table style="margin: 0 auto; width: 90%">
                         <tr>
                             <td class="etiq aDir">Marca: </td>
@@ -1140,7 +1381,7 @@ if(!isset($_SESSION["usuarioID"])){
         <div id="relacEditTipo" class="relacmodal">
             <div class="modal-content-InsTipo">
                 <span class="close" onclick="fechaEditTipo();">&times;</span>
-                <h5 id="titulomodalTipo" style="text-align: center; color: #666;">Novo Tipo de Filtro</h5>
+                <h5 id="titulomodalTipo" style="text-align: center; color: #666;">Novo Tipo de Bebedouro</h5>
                     <table style="margin: 0 auto; width: 90%">
                         <tr>
                             <td class="etiq aDir">Tipo: </td>
@@ -1216,26 +1457,27 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
         </div> <!-- Fim Modal-->
 
-        <div id="editaModalFiltros" class="relacmodal">
-            <div class="modal-content-relacFiltros corPreta">
-                <span class="close" style="font-size: 250%; color: black;" onclick="fechaInsFiltro();">&times;</span>
+        <!-- edita Equipamento -->
+        <div id="editaModalEquipam" class="relacmodal">
+            <div class="modal-content-relacEquip corPreta">
+                <span class="close" style="font-size: 250%; color: black;" onclick="fechaInsBebed();">&times;</span>
                 <div style="border: 2px solid blue; border-radius: 10px; margin-top: 10px; background: linear-gradient(180deg, white, #87CEEB)">
+                    <div style="position: relative; float: left; padding: 10px;">
+                        <button id="botinsAbastecer" class="botpadrblue" style="font-size: 70%; padding-left: 2px; padding-right: 2px;" onclick="insAbastecer();">Abastecer</button>
+                    </div>
                     <table style="margin: 0 auto; width: 85%;">
                         <tr>
                             <td colspan="5" style="text-align: center; padding-top: 10px;"></td>
                         </tr>
                         <tr>
-                            <td colspan="5" style="text-align: center; padding-top: 10px;"><label id="titmodaledit">Filtros e Purificadores</label></td>
-                        </tr>
-                        <tr>
-                            <td colspan="5" style="text-align: center; padding-top: 10px;"></td>
+                            <td colspan="5" style="text-align: center; padding-top: 10px;"><label id="titmodaledit">Bebedouro</label></td>
                         </tr>
                         <tr>
                             <td class="etiq">Número: </td>
                             <td colspan="4" style="text-align: left; padding-top: 10px;">
-                                <input type="text" id="numfiltro" style="width: 70px; text-align: center; border: 1px solid; border-radius: 5px; font-weight: bold;" placeholder="Número" onkeypress="if(event.keyCode===13){javascript:foco('localinstal');return false;}"/>
+                                <input type="text" id="numequip" style="width: 70px; text-align: center; border: 1px solid; border-radius: 5px; font-weight: bold;" placeholder="Número" onkeypress="if(event.keyCode===13){javascript:foco('localinstal');return false;}"/>
                                 <label class="etiq">Local: </label>
-                                <input type="text" id="localinstal" maxlength="200" style="width: 560px;text-align: left; border: 1px solid; border-radius: 5px;" placeholder="Local de instalação" onkeypress="if(event.keyCode===13){javascript:foco('modelofiltro');return false;}"/>
+                                <input type="text" id="localinstal" maxlength="200" style="width: 560px;text-align: left; border: 1px solid; border-radius: 5px;" placeholder="Local de instalação" onkeypress="if(event.keyCode===13){javascript:foco('modeloBebedouro');return false;}"/>
                             </td>
                         </tr>
                         <tr>
@@ -1254,10 +1496,10 @@ if(!isset($_SESSION["usuarioID"])){
                                 </select>
 
                                 <label class="etiq">Modelo: </label>
-                                <input type="text" id="modelofiltro" maxlength="30" style="width: 250px; text-align: left; border: 1px solid; border-radius: 5px;" placeholder="Modelo" onkeypress="if(event.keyCode===13){javascript:foco('dataTrocaFiltro');return false;}"/>
+                                <input type="text" id="modeloBebedouro" maxlength="30" style="width: 250px; text-align: left; border: 1px solid; border-radius: 5px;" placeholder="Modelo" onkeypress="if(event.keyCode===13){javascript:foco('dataManut');return false;}"/>
 
-                                <label class="etiq">Tipo filtro: </label>
-                                <select id="selecTipo" style="max-width: 150px;" onchange="modif();" title="Selecione um tipo de filtro.">
+                                <label class="etiq">Tipo Bebedouro: </label>
+                                <select id="selecTipo" style="max-width: 150px;" onchange="modif();" title="Selecione um tipo de Bebedouro.">
                                     <option value=""></option>
                                     <?php 
                                     if($OpTipos){
@@ -1273,7 +1515,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <tr>
                             <td class="etiq">Observ: </td>
                             <td colspan="4" style="text-align: left;">
-                                <textarea id="observfiltro" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="2" cols="58" title="Observações" onchange="modif();"></textarea>
+                                <textarea id="observBebed" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="2" cols="58" title="Observações" onchange="modif();"></textarea>
                             </td>
                         </tr>
                         <tr>
@@ -1291,12 +1533,12 @@ if(!isset($_SESSION["usuarioID"])){
                             <td class="etiq aCentro"></td>
                             <td class="etiq aCentro"></td>
                             <td class="etiq aCentro"></td>
-                            <td colspan="2" class="etiq aCentro" style="border-inline: 1px solid; border-top: 1px solid;">Elemento Filtrante</td>
+                            <td colspan="2" class="etiq aCentro" style="border-inline: 1px solid; border-top: 1px solid;">Limpeza da Base do Bebedouro</td>
                         </tr>
                         <tr>
-                            <td class="etiq aEsq">Data de troca:</td>
-                            <td class="etiq aEsq">Prazo de troca:</td>
-                            <td class="etiq aEsq">Data de Vencimento:</td>
+                            <td class="etiq aEsq">Data da limpeza:</td>
+                            <td class="etiq aEsq">Intervalo:</td>
+                            <td class="etiq aEsq">Próxima Limpeza:</td>
                             <td class="etiq aCentro" style="border-left: 1px solid;">Notificação?</td>
                             <td class="etiq aCentro" style="border-right: 1px solid;">Antecedência</td>
                         </tr>
@@ -1304,10 +1546,10 @@ if(!isset($_SESSION["usuarioID"])){
                         <tr>
                             <!-- on change nas datas com o datepicker trava a máquina -->
                             <td style="text-align: center;">
-                                <input type="text" id="dataTrocaFiltro" width="150" onclick="$datepicker.open();" onchange="calcVenc();" style="text-align: center; border: 1px solid; border-radius: 5px;" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('dataVencim');return false;}"/>
+                                <input type="text" id="dataManut" width="150" onclick="$datepicker.open();" onchange="calcVenc();" style="text-align: center; border: 1px solid; border-radius: 5px;" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('dataVencim');return false;}"/>
                             </td>
                             <td>
-                            <select id="selecPrazo" style="min-width: 50px;" onchange="calcPrazo();" title="Selecione um prazo para a troca do elemento filtrante.">
+                                <select id="selecPrazo" style="min-width: 50px;" onchange="calcPrazo();" title="Selecione um prazo para a limpeza do bebedouro.">
                                     <option value=""></option>
                                     <option value="1"> 1 mês</option>
                                     <option value="2"> 2 meses</option>
@@ -1357,25 +1599,151 @@ if(!isset($_SESSION["usuarioID"])){
                             </td>
                             <td colspan="2" style="text-align: center; border-left: 1px solid; border-bottom: 1px solid; border-right: 1px solid; border-color: #9C9C9C;">
                                 <label class="etiq">Dia aviso:</label>
-                                <input type="text" id="dataAviso" style="text-align: center; border: 1px solid; border-radius: 5px; width: 110px;" placeholder="Data Aviso" onkeypress="if(event.keyCode===13){javascript:foco('numfiltro');return false;}"/>
+                                <input type="text" id="dataAviso" style="text-align: center; border: 1px solid; border-radius: 5px; width: 110px;" placeholder="Data Aviso" onkeypress="if(event.keyCode===13){javascript:foco('numequip');return false;}"/>
                             </td>
                         </tr>
 
                         <tr>
-                            <td colspan="5" style="text-align: center; padding-top: 10px;"></td>
-                        </tr>
-                        <tr>
-                            <td><button class="botpadrred" style="font-size: 60%;" id="botApagaLanc" onclick="apagarFiltro();">Apagar</button></td>
-                            <td colspan="4" style="text-align: center; padding-top: 10px;"><button class="botpadrblue" onclick="salvaEditaFiltro();">Salvar</button></td>
-                        </tr>
-                        <tr>
                             <td colspan="5" style="text-align: center; padding-top: 5px;"><div id="mensagem" style="color: red; font-weight: bold;"></div></td>
+                        </tr>
                         <tr>
+                            <td style="border-bottom: 1px solid gray;"><button class="botpadrred" style="font-size: 60%;" id="botApagaLanc" onclick="apagarEquip();">Apagar</button></td>
+                            <td colspan="4" style="border-bottom: 1px solid gray; text-align: center; padding: 5px;"><button class="botpadrblue" onclick="salvaEditaEquip();">Salvar</button></td>
+                        </tr>
                     </table>
                     <br>
-                </div>    
+                </div>
+
+                </div>
             </div>
         </div> <!-- Fim Modal-->
+
+
+        <!-- Abastecimento -->
+        <div id="editaModalAbastec" class="relacmodal">
+            <div class="modal-content-relacAbastec corPreta">
+                <span class="close" style="font-size: 250%; color: black;" onclick="fechaInsAbastec();">&times;</span>
+                <div style="margin: 0 auto; border: 2px solid blue; border-radius: 10px; margin-top: 10px; background: linear-gradient(180deg, white, #87CEEB)">
+                    <table style="margin: 0 auto; width: 95%;">
+                        <tr>
+                            <td colspan="3" style="text-align: center;">
+                                <label>Abastecimento</label> <br> <label></label>Bebedouro: <label id="numEquipam"></label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><button id="botInsEditaAbastec" class="botpadrblue" onclick="InsEditaAbastec();">Abastecer Bebedouro</button></td>
+                            <td></td>
+                            <td class="aDir"><button id="imprBebedAbast" class="botpadrred" style="font-size: 80%;" id="botimpr">PDF</button></td>
+                        </tr>
+                    </table>
+                    
+                    <div id="relaBebed" style="overflow: auto; width: 900px; margin: 10px; border: 2px solid blue; border-radius: 10px; background: linear-gradient(180deg, white, #87CEEB)"></div>
+
+                </div>
+            </div>
+        </div> <!-- Fim Modal-->
+
+
+        <!-- edita Equipamento -->
+        <div id="editaAbastec" class="relacmodal">
+            <div class="modal-content-relacEditaAbastec corPreta">
+                <span class="close" style="font-size: 250%; color: black;" onclick="fechaEditaAbastec();">&times;</span>
+                <div style="border: 2px solid red; border-radius: 10px; margin-top: 10px; padding: 10px; background: linear-gradient(180deg, white, #87CEEB)">
+                    <table style="margin: 0 auto; width: 65%;">
+                        <tr>
+                            <td colspan="3" style="text-align: center;"><label id="titEditInsEquipamAbast">Abastecer Bebedouro</label> <label id="numEquipamAbast"></label></td>
+                        </tr>
+                        <tr>
+                            <td class="etiq aCentro"></td>
+                            <td class="etiq aCentro"></td>
+                            <td class="etiq aCentro"></td>
+                        </tr>
+                        <tr>
+                            <td class="etiq aEsq">Data abastecimento:</td>
+                            <td class="etiq aEsq"></td>
+                            <td class="etiq aEsq"></td>
+                        </tr>
+
+                        <tr>
+                            <!-- on change nas datas com o datepicker trava a máquina -->
+                            <td style="text-align: right; padding-top 5px;">
+                                <input type="text" id="dataAbastec" width="150" onclick="$datepicker.open();" onchange="insGalao();" style="height: 30px; text-align: center; border: 1px solid; border-radius: 5px;" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('volumeAbast');return false;}"/>
+                            </td>
+                            <td class="aEsq">
+                                <label class="etiqAzul">Volume:</label>
+                                <input type="text" id="volumeAbast" maxlength="10" title="Insira o volume em litros do galão de água." onchange="modif();" placeholder="Volume" style="height: 30px; width: 60px; text-align: center; border: 1px solid; border-radius: 5px;">
+                                <label class="etiqAzul">litros</label>
+                            </td>
+                            <td class="etiq aEsq"></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" id="mensagemAbastec" style="color: red; font-weight: bold; text-align: center;"></td>
+                        </tr>
+                        <tr>
+                            <td style="border-bottom: 1px solid gray;"><button id="botApagaAbast" class="botpadrred" style="font-size: 60%; padding-left: 2px; padding-right: 2px;" onclick="apagarAbastec();">Apagar</button></td>
+                            <td colspan="2" style="border-bottom: 1px solid gray; text-align: center; padding: 5px;">
+                                <button id="botSalvaInsAbastec" class="botpadrblue" onclick="salvarAbastec();">Salvar</button>
+                                <button id="botSalvaEditaAbastec" class="botpadrblue" onclick="salvarEditaAbastec();">Salvar</button>
+                            </td>
+                        </tr>
+
+                    </table>
+                    <br>
+                    </div>
+            </div>
+        </div> <!-- Fim Modal-->
+
+        <!-- div modal para escolher imprimir em pdf  -->
+        <div id="relacImprBebed" class="relacmodal">
+            <div class="modal-content-escImprBebed corPreta">
+                <span class="close" onclick="fechaImprChaves();">&times;</span>
+                <h5 style="text-align: center;color: #666;">Controle de Bebedouros</h5>
+                <h6 style="text-align: center; padding-bottom: 18px; color: #666;">Gerar PDF</h6>
+                <div style="border: 2px solid; border-radius: 10px; padding: 10px; text-align: center;">
+                    <input type="button" id="imprRelBebed" class="resetbot fundoAzul2" style="font-size: 80%;" value="Relação dos Bebedouros">
+                </div>
+                <div style="margin-top: 5px; border: 2px solid; border-radius: 10px; padding: 10px;">
+                    <div style="text-align: center; color: #666;">Relação Consumo</div>
+                    <table style="margin: 0 auto; width: 95%;">
+                        <tr>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Mensal - Selecione o Mês/Ano: </label></td>
+                            <td>
+                                <select id="selecMesAno" style="font-size: 1rem; width: 90px;" title="Selecione o período.">
+                                    <option value=""></option>
+                                    <?php 
+                                    if($OpcoesEscMes){
+                                        while ($Opcoes = pg_fetch_row($OpcoesEscMes)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: right;"><label style="font-size: 80%;">Anual - Selecione o Ano: </label></td>
+                            <td>
+                                <select id="selecAno" style="font-size: 1rem; width: 90px;" title="Selecione o Ano.">
+                                    <option value=""></option>
+                                    <?php 
+                                    if($OpcoesEscAno){
+                                        while ($Opcoes = pg_fetch_row($OpcoesEscAno)){ ?>
+                                            <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[0]; ?></option>
+                                        <?php 
+                                        }
+                                    }
+                                    ?>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div style="padding-bottom: 20px;"></div>
+           </div>
+        </div> <!-- Fim Modal Impr -->
+
 
         <div id="carregaTema"></div> <!-- carrega a pág modulos/config/carTema.php - onde está a função mudaTema() -->
 

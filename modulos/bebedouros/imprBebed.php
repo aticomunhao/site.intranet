@@ -33,7 +33,7 @@ if(isset($_REQUEST["acao"])){
     $pdf->AddPage("L", "A4");
     $pdf->SetLeftMargin(20);
     $pdf->SetFont('Arial', '' , 12); 
-    $pdf->SetTitle('Filtros', $isUTF8=TRUE);
+    $pdf->SetTitle('Bebedouros', $isUTF8=TRUE);
     if($Dom != "" && $Dom != "NULL"){
         if(file_exists('../../imagens/'.$Dom)){
             if(getimagesize('../../imagens/'.$Dom)!=0){
@@ -50,7 +50,7 @@ if(isset($_REQUEST["acao"])){
     $pdf->Cell(0, 5, $Cabec3, 0, 2, 'C');
     $pdf->SetFont('Arial', '' , 10);
     $pdf->SetTextColor(25, 25, 112);
-    $pdf->MultiCell(0, 3, "Relação de Filtros e Purificadores", 0, 'C', false);
+    $pdf->MultiCell(0, 3, "Relação de Bebedouros", 0, 'C', false);
 
     $pdf->SetTextColor(0, 0, 0);
     $pdf->SetFont('Arial', '', 6);
@@ -59,11 +59,12 @@ if(isset($_REQUEST["acao"])){
     $pdf->Line(10, $lin, 290, $lin);
     $pdf->SetDrawColor(200); // cinza claro  
 
-    if($Acao == "listaFiltros"){
-        $rs0 = pg_query($Conec, "SELECT ".$xProj.".filtros.id, numapar, descmarca, desctipo, TO_CHAR(datatroca, 'DD/MM/YYYY'), TO_CHAR(datatroca, 'YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'YYYY'), localinst, modelo, ".$xProj.".filtros.observ, 
-            CASE WHEN datavencim <= CURRENT_DATE AND notific = 1 THEN 'vencido' END
-            FROM ".$xProj.".filtros_tipos INNER JOIN (".$xProj.".filtros INNER JOIN ".$xProj.".filtros_marcas ON ".$xProj.".filtros.codmarca = ".$xProj.".filtros_marcas.id) ON ".$xProj.".filtros.tipofiltro =  ".$xProj.".filtros_tipos.id 
-            WHERE ".$xProj.".filtros.ativo = 1 ORDER BY numapar ");
+    if($Acao == "listaBebed"){
+        $rs0 = pg_query($Conec, "SELECT ".$xProj.".bebed.id, numapar, descmarca, desctipo, TO_CHAR(datatroca, 'DD/MM/YYYY'), TO_CHAR(datatroca, 'YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'YYYY'), localinst, modelo, ".$xProj.".bebed.observ, 
+        CASE WHEN datavencim <= CURRENT_DATE AND notific = 1 THEN 'vencido' END
+        FROM ".$xProj.".bebed_tipos INNER JOIN (".$xProj.".bebed INNER JOIN ".$xProj.".bebed_marcas ON ".$xProj.".bebed.codmarca = ".$xProj.".bebed_marcas.id) ON ".$xProj.".bebed.codtipo =  ".$xProj.".bebed_tipos.id 
+        WHERE ".$xProj.".bebed.ativo = 1 ORDER BY numapar ");
+
         $row0 = pg_num_rows($rs0);
         $pdf->ln(5);
         if($row0 > 0){
@@ -73,8 +74,8 @@ if(isset($_REQUEST["acao"])){
             $pdf->Cell(25, 3, "Marca", 0, 0, 'L');
             $pdf->Cell(35, 3, "Modelo", 0, 0, 'L');
             $pdf->Cell(28, 3, "Tipo", 0, 0, 'L');
-            $pdf->Cell(20, 3, "Data Troca", 0, 0, 'L');
-            $pdf->Cell(20, 3, "Data Venc", 0, 0, 'L');
+            $pdf->Cell(20, 3, "Base Limpa", 0, 0, 'L');
+            $pdf->Cell(20, 3, "Próx Limpeza", 0, 0, 'L');
             $pdf->Cell(65, 3, "Local", 0, 0, 'L');
             $pdf->Cell(35, 3, "Observações", 0, 1, 'L');
             $lin = $pdf->GetY();

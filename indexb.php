@@ -320,7 +320,7 @@
 
             function mostraMsg(Msg){
                 $.confirm({
-                    title: 'Evento do Calendário',
+                    title: "<img src='imagens/Logo1.png' height='40px;'> Evento do Calendário",
                     content: Msg,
                     buttons: {
                         notificUser: {

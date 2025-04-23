@@ -27,6 +27,13 @@
 			//Provisório
 			if(strtotime('2025/04/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
+				//105
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS bebed smallint NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS bebed_fisc smallint NOT NULL DEFAULT 0 ");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET bebed = 1 WHERE pessoas_id = 3");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET bebed = 1 WHERE pessoas_id = 83");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET bebed = 1 WHERE pessoas_id = 22");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET bebed = 1 WHERE pessoas_id = 37");
 				//0103
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".usulog ALTER COLUMN datalogout SET DEFAULT '3000-12-31 00:00:00' ");
 				pg_query($Conec, "UPDATE ".$xProj.".usulog SET ativo = 0 WHERE datalogout = datalogin");
@@ -38,10 +45,9 @@
 				pg_query($Conec, "UPDATE ".$xProj.".poslog SET clav_edit2 = fisc_clav2 WHERE fisc_clav2 = 1");
 				pg_query($Conec, "UPDATE ".$xProj.".poslog SET clav_edit3 = fisc_clav3 WHERE fisc_clav3 = 1");
 
-//				pg_query($Conec, "DROP TABLE IF EXISTS ".$xPes.".chavesprov");
-
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".extintores ADD COLUMN IF NOT EXISTS ext_compl VARCHAR(10) ");
 				pg_query($Conec, "UPDATE ".$xProj.".poslog SET extsen = 0 WHERE pessoas_id = 30");
+				pg_query($Conec, "DROP TABLE IF EXISTS ".$xPes.".chavesprov");
 			
 			} // fim data limite
         ?>

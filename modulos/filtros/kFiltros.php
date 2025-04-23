@@ -14,7 +14,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         </script>
     </head>
     <body>
-        <div  style="text-align: center;"><label class="titRelat">Agenda<label></div>
+        <div style="text-align: center; border: 1px solid; border-radius: 15px; min-height: 500px;">Agenda
         <?php
 
         $PrazoNotif = 40; 
@@ -32,7 +32,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 $Marca = $tbl1[2];
                 $Tipo = $tbl1[3];
                 ?>
-                <div style="margin-bottom: 8px; padding-top: 3px; border: 1px solid gray; border-radius: 10px">
+                <div style="margin: 8px; padding-top: 3px; border: 1px solid gray; border-radius: 10px">
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>
                             <td style="font-size: 120%; font-weight: bold; width: 15%; text-align: center;"><div style="border: 1px solid; border-radius: 10px;"> <?php echo str_pad($Num, 3, 0, STR_PAD_LEFT); ?> </div></td>
@@ -53,15 +53,16 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             }
         }else{
             ?>
-            <div style="border: 1px solid; border-radius: 10px">
+            <div>
                 <table style="margin: 0 auto; width: 95%;">
                     <tr>
-                        <td colspan="4" style="padding-bottom: 2px; text-align: center;">Tudo em Ordem</td>
+                        <td colspan="4" style="padding-bottom: 2px; text-align: center;"><div style="margin: 5px; border: 1px solid; border-radius: 10px;">Tudo em Ordem</div></td>
                     </tr>
                 </table>
             </div>
             <?php
         }
         ?>
+        </div>
     </body>
 </html>

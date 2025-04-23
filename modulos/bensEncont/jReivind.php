@@ -34,7 +34,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     </head>
     <body>
         <?php
-        $TempoAviso  = parAdm("aviso_extint", $Conec, $xProj); // dias de antecedência para aviso
+        $Bens = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]);
+        $SoInsBens = parEsc("soinsbens", $Conec, $xProj, $_SESSION["usuarioID"]); // só para registrar na portaria
         $Condic = "ativo = 1";
          if(isset($_REQUEST["acao"])){
             $Acao = $_REQUEST["acao"];
@@ -43,9 +44,15 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             $CompDesc = "";
         }
 
+        $Condic = "ativo = 1";
+        if($Bens == 0 && $SoInsBens == 1){ // só para registrar (portaria nos fins de semana) - Só mostra os do dia
+            $Condic = "ativo = 1 And datareiv = CURRENT_DATE ";
+        }
+
         $rs0 = pg_query($Conec, "SELECT id, processoreiv, nome, email, descdobemperdeu, localperdeu, observ, TO_CHAR(datareiv, 'DD/MM/YYYY'), TO_CHAR(dataperdeu, 'DD/MM/YYYY'), encontrado, entregue 
         FROM ".$xProj.".bensreivind 
         WHERE $Condic ORDER BY datareiv DESC, processoreiv DESC");
+        
         $row0 = pg_num_rows($rs0);
         ?>
         <div style="color: black; margin-top: 5px; padding: 5px; border-top: 2px solid blue; border-radius: 10px;">

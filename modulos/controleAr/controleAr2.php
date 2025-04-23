@@ -85,6 +85,15 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             $(document).ready(function(){
+                var nHora = new Date(); 
+                var hora = nHora.getHours();
+                document.getElementById("faixaMensagem").innerHTML = "Bom Dia!<br>Usuário não cadastrado. <br>O acesso é proporcionado pela DAF/ATI.";
+                if(hora >= 12){
+                    document.getElementById("faixaMensagem").innerHTML = "Boa Tarde!<br>Usuário não cadastrado. <br>O acesso é proporcionado pela DAF/ATI.";
+                }
+                if(hora >= 18){
+                    document.getElementById("faixaMensagem").innerHTML = "Boa Noite!<br>Usuário não cadastrado. <br>O acesso é proporcionado pela DAF/ATI.";
+                }
                 document.getElementById("selectAno").disabled = true;
                 document.getElementById("botinserir").disabled = true;
                 document.getElementById("botimpr").disabled = true;
@@ -738,7 +747,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <img src="imagens/settings.png" height="20px;" style="cursor: pointer; padding-right: 30px;" onclick="carregaConfig();" title="Configurar empresas de manutenção">
                 <input type="button" id="botinserir" class="resetbot fundoAmareloCl" style="font-size: 80%;" value="Inserir Novo Aparelho" onclick="insAparelho();">
             </div>
-            <div id="tricoluna2" class="box" style="position: relative; float: left; width: 33%; text-align: center; border: 2px solid #C0C0C0; border-radius: 10px;">
+            <div id="tricoluna2" class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <h6>Controle da Manutenção dos Condicionadores de Ar</h6>
                 <div style="text-align: center;"><?php echo $Menu5; ?></div>
             </div>
