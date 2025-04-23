@@ -13,6 +13,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     <body>
         <div style="text-align: center; border: 1px solid; border-radius: 15px; min-height: 500px;">Agenda
         <?php
+            $Bebed = parEsc("bebed", $Conec, $xProj, $_SESSION["usuarioID"]);
+            $FiscBebed = parEsc("bebed_fisc", $Conec, $xProj, $_SESSION["usuarioID"]);
 
         $rs1 = pg_query($Conec, "SELECT ".$xProj.".bebed.id, numapar, descmarca, desctipo, localinst, TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'YYYY'), 
         CASE WHEN dataaviso <= CURRENT_DATE AND notific = 1 THEN 'aviso' END
@@ -55,7 +57,15 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         </tr>
                         <tr>
                             <td style="padding-bottom: 2px; text-align: center; border-top: 1px solid gray; font-size: 70%;"><?php echo "Cons: ".number_format($TotalAno, 0, ",",".")." litros"; ?></td>
-                            <td style="padding-bottom: 2px; text-align: center; border-top: 1px solid gray; width: 80px;"><button class="botpadrblue" style="font-size: 70%; padding-left: 2px; padding-right: 2px;" onclick="insAbastec(<?php echo $Cod; ?>, '<?php echo $NumFormat; ?>');">Abastec</button></td>
+                            <td style="padding-bottom: 2px; text-align: center; border-top: 1px solid gray; width: 80px;">
+                                <?php
+                                if($Bebed == 1 || $_SESSION["AdmUsu"] > 6){
+                                ?>
+                                    <button class="botpadrblue" style="font-size: 70%; padding-left: 2px; padding-right: 2px;" onclick="insAbastec(<?php echo $Cod; ?>, '<?php echo $NumFormat; ?>');">Abastec</button>
+                                <?php
+                                }
+                                ?>
+                            </td>
                         </tr>
                         </tr>
                         <tr>

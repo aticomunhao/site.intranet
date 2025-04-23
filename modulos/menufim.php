@@ -202,7 +202,9 @@
 					</li>
 
 					<?php
-					if($_SESSION["usuarioID"] == 3){
+					$Bebed = parEsc("bebed", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
+					$FiscBebed = parEsc("bebed_fisc", $Conec, $xProj, $_SESSION["usuarioID"]); // edita, modifica
+					if($Bebed == 1 || $FiscBebed == 1 || $_SESSION["AdmUsu"] > 6){
 						echo "<li>";
 							echo "<a href='#' onclick='openhref(96);'>Bebedouros</a>";
 						echo "</li>";
