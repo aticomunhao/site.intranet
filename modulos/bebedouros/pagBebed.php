@@ -92,8 +92,8 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 50%;
-                max-width: 900px;
+                width: 40%;
+                max-width: 500px;
             }
         </style>
         <script>
@@ -187,7 +187,9 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#configMarcas").load("modulos/bebedouros/jMarcas.php");
                 $("#configTipos").load("modulos/bebedouros/jTipos.php");
                 $("#configEmpr").load("modulos/bebedouros/jEmpr.php");
-                $("#configAdmin").load("modulos/bebedouros/admBebed.php");
+                if(parseInt(document.getElementById("UsuAdm").value) > 6){
+                    $("#configAdmin").load("modulos/bebedouros/admBebed.php");
+                }
                 document.getElementById("relacmodalConfig").style.display = "block";
             }
             function fechaConfig(){
@@ -202,8 +204,8 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("selecMarca").value = 1;
                 document.getElementById("selecTipo").value = 1;
                 document.getElementById("modeloBebedouro").value = "";
-                document.getElementById("selecPrazo").value = "1";
-                document.getElementById("diasAnteced").value = "10";
+                document.getElementById("selecPrazo").value = "3";
+                document.getElementById("diasAnteced").value = "30";
                 document.getElementById("notifica1").checked = true;
                 document.getElementById("pararaviso").checked = false;
                 document.getElementById("dataManut").value = document.getElementById("guardaHoje").value;
@@ -766,7 +768,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("botSalvaEditaAbastec").style.visibility = "hidden";
                 document.getElementById("titEditInsEquipamAbast").innerHTML = "Abastecer Bebedouro";
                 document.getElementById("guardaIdCtl").value = 0;
-                document.getElementById("dataAbastec").value = "";
+                document.getElementById("dataAbastec").value = document.getElementById("guardaHoje").value; //"";
                 document.getElementById("volumeAbast").value = "";
                 document.getElementById("editaAbastec").style.display = "block";
             }
@@ -1277,7 +1279,7 @@ if(!isset($_SESSION["usuarioID"])){
         <!-- div três colunas -->
         <div id="tricoluna0" class="corClara" style="margin: 5px; padding: 10px; border: 2px solid blue; border-radius: 10px; min-height: 50px;">
             <div id="tricoluna1" class="box corClara" style="position: relative; float: left; width: 33%;">
-                <img src="imagens/settings.png" height="20px;" id="imgConfig" style="cursor: pointer; padding-right: 20px;" onclick="carregaConfig();" title="Configurar o acesso ao controle dos bebedouros">
+                <img src="imagens/settings.png" height="20px;" id="imgConfig" style="cursor: pointer; padding-right: 20px;" onclick="carregaConfig();" title="Configurar parâmetros.">
                 <input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Inserir" onclick="insereEquip();" title="Inserir um novo bebedouro.">
             </div>
             <div id="tricoluna2" class="box corClara" style="position: relative; float: left; width: 33%; text-align: center;">
@@ -1530,25 +1532,23 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="5" style="text-align: center; padding-top: 10px;"></td>
                         </tr>
                         <tr>
-                            <td class="etiq aCentro"></td>
-                            <td class="etiq aCentro"></td>
-                            <td class="etiq aCentro"></td>
-                            <td colspan="2" class="etiq aCentro" style="border-inline: 1px solid; border-top: 1px solid;">Limpeza da Base do Bebedouro</td>
+                            <td colspan="3" class="etiq aCentro">Limpeza da Base do Bebedouro</td>
+                            <td colspan="2" class="etiq aCentro" style="border-inline: 1px solid; border-top: 1px solid;">Notificação</td>
                         </tr>
                         <tr>
-                            <td class="etiq aEsq">Data da limpeza:</td>
+                            <td class="etiq aEsq">Data da última limpeza:</td>
                             <td class="etiq aEsq">Intervalo:</td>
                             <td class="etiq aEsq">Próxima Limpeza:</td>
-                            <td class="etiq aCentro" style="border-left: 1px solid;">Notificação?</td>
+                            <td class="etiq aCentro" style="border-left: 1px solid;">Avisar?</td>
                             <td class="etiq aCentro" style="border-right: 1px solid;">Antecedência</td>
                         </tr>
 
                         <tr>
                             <!-- on change nas datas com o datepicker trava a máquina -->
                             <td style="text-align: center;">
-                                <input type="text" id="dataManut" width="150" onclick="$datepicker.open();" onchange="calcVenc();" style="text-align: center; border: 1px solid; border-radius: 5px;" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('dataVencim');return false;}"/>
+                                <input type="text" id="dataManut" width="150" onclick="$datepicker.open();" onchange="calcVenc();" style="height: 30px; text-align: center; border: 1px solid; border-radius: 5px;" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('dataVencim');return false;}"/>
                             </td>
-                            <td>
+                            <td style="vertical-align: top;">
                                 <select id="selecPrazo" style="min-width: 50px;" onchange="calcPrazo();" title="Selecione um prazo para a limpeza do bebedouro.">
                                     <option value=""></option>
                                     <option value="1"> 1 mês</option>
@@ -1581,12 +1581,12 @@ if(!isset($_SESSION["usuarioID"])){
                                 </select>
                             </td>
                             <!-- on change nas datas com o datepicker trava a máquina -->
-                            <td style="text-align: center;"><input type="text" id="dataVencim" style="text-align: center; border: 1px solid; border-radius: 5px; width: 100px;" onchange="calcAviso();" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('diasAnteced');return false;}" /></td>
-                            <td class="aCentro" style="border-left: 1px solid; border-color: #9C9C9C;">
+                            <td style="text-align: center; vertical-align: top;"><input type="text" id="dataVencim" style="text-align: center; border: 1px solid; border-radius: 5px; width: 100px;" onchange="calcAviso();" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('diasAnteced');return false;}" /></td>
+                            <td class="aCentro" style="border-left: 1px solid; border-color: #9C9C9C; vertical-align: top;">
                                 <input type="radio" name="notifica" id="notifica1" value="1" CHECKED title="Emite notificação?" onclick="abreNotific(value);"><label for="notifica1" class="etiqAzul" style="padding-left: 3px;"> Sim</label>
                                 <input type="radio" name="notifica" id="notifica2" value="0" title="Emite notificação?" onclick="abreNotific(value);"><label for="notifica2" class="etiqAzul" style="padding-left: 3px;"> Não</label>
                             </td>
-                            <td style="text-align: center; border-right: 1px solid; border-color: #9C9C9C;">
+                            <td style="text-align: center; border-right: 1px solid; border-color: #9C9C9C; vertical-align: top;">
                                 <input type="text" id="diasAnteced" style="width: 60px; text-align: center; border: 1px solid; border-radius: 5px;" placeholder="Dias" onchange="calcAviso();" onkeypress="if(event.keyCode===13){javascript:foco('dataAviso');return false;}" title="Aviso emitido na página inicial ao longo desses dias."/>
                                 <label class="etiq"> dias</label>
                             </td>
@@ -1597,7 +1597,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 <input type="checkbox" id="pararaviso" title="Parar a emissão de aviso na página inicial sobre este aparelho." onclick="paraAviso(this);" >
                                 <label class="etiqAzul" id="etiqpararaviso" for="pararaviso" title="Parar a emissão de aviso na página inicial sobre este aparelho.">desativar aviso na página inicial</label>
                             </td>
-                            <td colspan="2" style="text-align: center; border-left: 1px solid; border-bottom: 1px solid; border-right: 1px solid; border-color: #9C9C9C;">
+                            <td colspan="2" style="text-align: center; border-left: 1px solid; border-bottom: 1px solid; border-right: 1px solid; border-color: #9C9C9C; vertical-align: top;">
                                 <label class="etiq">Dia aviso:</label>
                                 <input type="text" id="dataAviso" style="text-align: center; border: 1px solid; border-radius: 5px; width: 110px;" placeholder="Data Aviso" onkeypress="if(event.keyCode===13){javascript:foco('numequip');return false;}"/>
                             </td>
@@ -1669,7 +1669,7 @@ if(!isset($_SESSION["usuarioID"])){
                             <td style="text-align: right; padding-top 5px;">
                                 <input type="text" id="dataAbastec" width="150" onclick="$datepicker.open();" onchange="insGalao();" style="height: 30px; text-align: center; border: 1px solid; border-radius: 5px;" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('volumeAbast');return false;}"/>
                             </td>
-                            <td class="aEsq">
+                            <td class="aEsq" style="vertical-align: top;">
                                 <label class="etiqAzul">Volume:</label>
                                 <input type="text" id="volumeAbast" maxlength="10" title="Insira o volume em litros do galão de água." onchange="modif();" placeholder="Volume" style="height: 30px; width: 60px; text-align: center; border: 1px solid; border-radius: 5px;">
                                 <label class="etiqAzul">litros</label>

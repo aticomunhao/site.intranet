@@ -10,6 +10,7 @@
 <html lang="pt-br">
     <head>
         <meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title></title>
 		<script src="comp/js/eventos.js"></script>
         <script>
@@ -409,8 +410,20 @@
 					}
 				?>
 			</li>
-			<li>
+<!--		<li>
 				<a href="#" onclick="openhref(98);"><sup>Sair - Encerrar Sessão <div style="padding-top: 2px;"> <?php echo $Nome; ?></sup> <?php echo $Setor; ?></div></a>
+			</li> 
+-->
+			<li>
+				<table>
+					<tr>
+						<td rowspan="2" style="padding-right: 3px;"><a href="#" onclick="openhref(98);" style="padding: 0px; border: 0px;">Sair</a></td>
+						<td style="font-size: 70%; font-weight: bold; padding-top: 3px;"><a href="#" onclick="openhref(98);" style="padding: 0px; border: 0px;">Encerrar Sessão</a></td>
+					</tr>
+					<tr>
+						<td style="font-size: 70%; font-weight: bold;"><a href="#" onclick="openhref(98);" style="padding: 0px; border: 0px;"><?php echo $Nome." ".$Setor; ?></a></td>
+					</tr>
+				</table>
 			</li>
         </ul>
     </body>

@@ -1037,7 +1037,7 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                     ?>
                 </div> <!-- Central - espaçamento entre colunas  -->
-                <div id="tricoluna3" class="col" style="margin: 0 auto; text-align: right;">
+                <div id="tricoluna3" class="col" style="margin: 0 auto; text-align: center;">
                     <label id="etiqcorFundo" class="etiq" style="color: #6C7AB3; font-size: 80%; padding-left: 5px;">Tema: </label>
                     <input type="radio" name="corFundo" id="corFundo0" value="0" <?php if($Tema == 0){echo 'CHECKED';}; ?> title="Tema claro" onclick="mudaTema(0);" style="cursor: pointer;"><label for="corFundo0" class="etiq" style="cursor: pointer;">&nbsp;Claro</label>
                     <input type="radio" name="corFundo" id="corFundo1" value="1" <?php if($Tema == 1){echo 'CHECKED';}; ?> title="Tema escuro" onclick="mudaTema(1);" style="cursor: pointer;"><label for="corFundo1" class="etiq" style="cursor: pointer;">&nbsp;Escuro</label>
@@ -1046,9 +1046,9 @@ if(!isset($_SESSION["usuarioID"])){
                     <button class="botpadrred" style="font-size: 80%;" id="botimprTarefas" onclick="escImprTarefas();">Gerar PDF</button>
                     <label style="padding-left: 10px;"></label>
                     <button class="botpadr" id="botTransfIns" onclick="carregaTransf();" title="Transferir tarefas designadas para acompanhamento por outro usuário">Transferir</button>
-                    <label style="padding-left: 10x;"></label>
+                    <label style="padding-left: 5x;"></label>
                     <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpTarefas();" title="Guia rápido">
-                    <label style="padding-right: 15px;"></label>
+
                 </div> 
             </div>
         </div>
@@ -1260,7 +1260,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         <!-- div modal para imprimir em pdf  -->
         <div id="relacimprTarefas" class="relacmodal">
-            <div class="modal-content-imprLeitura">
+            <div class="modal-content-imprLeitura corPreta">
                 <span class="close" onclick="fechaModalImpr();">&times;</span>
                 <h5 id="titulomodal" style="text-align: center;color: #666;">Relatórios Tarefas</h5>
 

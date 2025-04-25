@@ -163,7 +163,9 @@ if(!isset($_SESSION['AdmUsu'])){
                 if($RelSubst != ""){
                     $pdf->SetFont('Arial', '', 7);
                     $pdf->SetX(80);
-                    $pdf->MultiCell(0, 4, "Observações: ".$RelSubst, 0, 'J', false); //relato
+                    $pdf->Cell(15, 3, "Observações: ", 0, 1, 'L');
+                    $pdf->SetX(90);
+                    $pdf->MultiCell(0, 3, $RelSubst, 0, 'J', false); //relato
                     $pdf->SetFont('Arial', '', 9);
                 }
             }else{
@@ -175,13 +177,16 @@ if(!isset($_SESSION['AdmUsu'])){
                 if($RelSubst != ""){
                     $pdf->SetFont('Arial', '', 7);
                     $pdf->SetX(80);
-                    $pdf->MultiCell(0, 4, "Observações: ".$RelSubst, 0, 'J', false); //relato
+                    $pdf->Cell(15, 3, "Observações: ", 0, 1, 'L');
+                    $pdf->SetX(90);
+                    $pdf->MultiCell(0, 3, $RelSubst, 0, 'J', false); //relato
                     $pdf->SetFont('Arial', '', 9);
                 }
                 $pdf->SetFont('Arial', '', 9);
             }
             $lin = $pdf->GetY();
             $pdf->Line(10, $lin, 200, $lin);
+            $pdf->ln(1);
         }
     }else{
         $pdf->SetFont('Arial', '', 10);

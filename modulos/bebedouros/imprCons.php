@@ -26,7 +26,7 @@ if(isset($_REQUEST["acao"])){
     $Acao = $_REQUEST["acao"];
     require_once('../../class/fpdf/fpdf.php'); // adaptado ao PHP 7.2 - 8.2
     define('FPDF_FONTPATH', '../../class/fpdf/font/');  
-    $Dom = "logo_comunhao_completa_cor_pos_150px.png";
+    $Dom = "Logo2.png";
 
     $rsCabec = pg_query($Conec, "SELECT cabec1, cabec2, cabec3 FROM ".$xProj.".setores WHERE codset = ".$_SESSION["CodSetorUsu"]." ");
     $rowCabec = pg_num_rows($rsCabec);
@@ -156,9 +156,8 @@ if(isset($_REQUEST["acao"])){
             $pdf->Line(10, $lin, 205, $lin);
             $pdf->ln(10);
         }else{
-            $pdf->SetFont('Arial', 'I', 11);
-            $pdf->SetX(50);
-            $pdf->Cell(40, 5, 'Nada foi encontrado.', 0, 1, 'L');
+            $pdf->SetFont('Arial', 'I', 12);
+            $pdf->MultiCell(0, 5, "Nada foi encontrado.", 0, 'C', false);
         }
     }
 
@@ -230,9 +229,8 @@ if(isset($_REQUEST["acao"])){
             $pdf->Line(10, $lin, 205, $lin);
             $pdf->ln(10);
         }else{
-            $pdf->SetFont('Arial', 'I', 11);
-            $pdf->SetX(50);
-            $pdf->Cell(40, 5, 'Nada foi encontrado.', 0, 1, 'L');
+            $pdf->SetFont('Arial', 'I', 12);
+            $pdf->MultiCell(0, 5, "Nada foi encontrado.", 0, 'C', false);
         }
     }
 
@@ -332,16 +330,14 @@ if(isset($_REQUEST["acao"])){
 
                 }
             }else{
-                $pdf->SetFont('Arial', 'I', 11);
-                $pdf->SetX(50);
+                $pdf->SetFont('Arial', 'I', 8);
+                $pdf->SetX(40);
                 $pdf->Cell(40, 5, 'Nenhum lançamento encontrado.', 0, 1, 'L');
             }
         }else{
-            $pdf->SetFont('Arial', 'I', 11);
-            $pdf->SetX(50);
-            $pdf->Cell(40, 5, 'Nada foi encontrado.', 0, 1, 'L');
+            $pdf->SetFont('Arial', 'I', 12);
+            $pdf->MultiCell(0, 5, "Nada foi encontrado.", 0, 'C', false);
         }
     }
-
  }
  $pdf->Output();

@@ -66,8 +66,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     </head>
     <body> 
         <?php
-            $Cod = (int) filter_input(INPUT_GET, 'codigo');
-
+//            $Cod = (int) filter_input(INPUT_GET, 'codigo');
             //numeração do dia da semana da função extract() (DOW) é diferente da função to_char() (D)
             //Função para Extract no postgres
             $Semana_Extract = array(
@@ -84,12 +83,14 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
          <!-- Apresenta os usuários do setor com o nível administrativo -->
         <div style="margin-top: 34px; padding: 10px; border-top: 1px solid gray; border-radius: 20px;">
             <?php
+            //mostrando 3 meses - os anterior podem ser vistos no PDF
             $rs0 = pg_query($Conec, "SELECT ".$xProj.".livroreg.id, to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY'), turno, descturno, numrelato, nomeusual, usuant, enviado, codusu, ocor, date_part('dow', dataocor), 
-            lidofisc, relatofisc 
+            lidofisc 
             FROM ".$xProj.".livroreg INNER JOIN ".$xProj.".poslog ON ".$xProj.".livroreg.codusu = ".$xProj.".poslog.pessoas_id
-            WHERE ".$xProj.".livroreg.ativo = 1 And AGE(".$xProj.".livroreg.dataocor, CURRENT_DATE) <= '1 YEAR' 
+            WHERE ".$xProj.".livroreg.ativo = 1 And (CURRENT_DATE-dataocor) <= 60 
             ORDER BY ".$xProj.".livroreg.dataocor DESC, ".$xProj.".livroreg.turno DESC, ".$xProj.".livroreg.numrelato DESC");
             $row0 = pg_num_rows($rs0);
+            // AGE(".$xProj.".livroreg.dataocor, CURRENT_DATE) <= '1 YEAR'
             ?>
             <table id="idTabela" class="display" style="width:85%;">
                 <caption><?php echo "Total ".$row0." registros"; ?></caption>
@@ -101,7 +102,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <th class="etiq">Sem</th>
                         <th class="etiq">Turno</th>
                         <th class="etiq" style="text-align: center;">Número</th>
-                        <th class="etiq" style="text-align: center;">Registrado</th>
+                        <th class="etiq" style="text-align: left;">Registrado</th>
                         <th class="etiq" style="display: none;"></th>
                         <th class="etiq" style="display: none;"></th>
                         <th class="etiq" style="text-align: center;" title="Houve ocorrências?">Ocor</th>
@@ -115,14 +116,22 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         $Data = $tbl0[1]; 
                         $Turno = $tbl0[2];
                         $Visto = $tbl0[11]; 
-                        if(is_null($tbl0[12]) || $tbl0[12] == ""){ // relato do fiscal 
+//                        if(is_null($tbl0[12]) || $tbl0[12] == ""){ // relato do fiscal 
+//                            $RelFiscal = 0;
+//                        }else{
+//                            $RelFiscal = 1;
+//                        }
+                        $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".livroreg WHERE to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY') = '$Data' And turno = $Turno And id != $Cod");
+                        $row1 = pg_num_rows($rs1);
+
+                        $rs2 = pg_query($Conec, "SELECT relatofisc FROM ".$xProj.".livroreg WHERE id = $Cod");
+                        $tbl2 = pg_fetch_row($rs2);
+                        if(is_null($tbl2[0]) || $tbl2[0] == ""){ // relato do fiscal 
                             $RelFiscal = 0;
                         }else{
                             $RelFiscal = 1;
                         }
-                        $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".livroreg WHERE to_char(".$xProj.".livroreg.dataocor, 'DD/MM/YYYY') = '$Data' And turno = $Turno And id != $Cod");
-                        $row1 = pg_num_rows($rs1);
-                    ?>
+                        ?>
                         <tr>
                             <td style="display: none;"></td>
                             <td style="display: none;"><?php echo $Cod; ?></td>
@@ -130,7 +139,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td style="font-size: 80%;" title="Dia da Semana"><?php echo $Semana_Extract[$tbl0[10]]; ?></td> <!-- dia semana data -->
                             <td style="<?php if($row1 > 0){echo 'color: red;'; } ?>" title="Turno" ><?php echo $tbl0[3]."<label style='color: gray; font-size: 70%; padding-left: 3px;'> (".$tbl0[2]."º)</label>"; ?></td> <!-- turno -->
                             <td style="text-align: center;" title="Número do Registro"><?php echo $tbl0[4]; ?></td> <!-- numocor -->
-                            <td style="text-align: center;" title="Nome Funcionário"><?php echo $tbl0[5]; ?></td> <!-- ususvc -->
+                            <td style="text-align: left;" title="Nome Funcionário"><?php echo $tbl0[5]; ?></td> <!-- ususvc -->
                             <td style="display: none;"><?php echo $tbl0[7]; ?></td> <!-- relato já enviado -->
                             <td style="display: none;"><?php echo $tbl0[8]; ?></td> <!-- codusu - quem inseriu o relato -->
                             <td style="font-size: 80%; text-align: center; <?php if($tbl0[9] == 1){echo "color: red; font-weight: bold;";}else{echo "font-weight: normal;";} ?>" title="Houve Ocorrência?"><?php if($tbl0[9] == 1){echo "Sim";}else{echo "Não";} ?></td>

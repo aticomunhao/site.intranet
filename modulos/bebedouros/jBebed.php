@@ -66,12 +66,12 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <tr>
                             <th style="display: none;"></th>
                             <th style="display: none;"></th>
-                            <th class="etiq" style="border-bottom: 1px solid gray; text-align: center;" title="Número de identificação na casa">Núm</th>
+                            <th class="etiq" style="border-bottom: 1px solid gray; text-align: center;" title="Número de identificação">Núm</th>
                             <th class="etiq" style="border-bottom: 1px solid gray; text-align: center;" title="Marca do equipamento">Marca</th>
                             <th class="etiq" style="border-bottom: 1px solid gray; text-align: center;" title="Modelo do equipamento">Modelo</th>
-                            <th class="etiq" style="border-bottom: 1px solid gray; text-align: center;" title="Tipo de elemento filtrante">Tipo</th>
-                            <th class="etiq" style="border-bottom: 1px solid gray; text-align: center;" title="Data da troca do elemento filtrante">Data Limpeza</th>
-                            <th class="etiq" style="border-bottom: 1px solid gray; text-align: center;" title="Data de vencimento do elemento filtrante">Próxima Limpeza</th>
+                            <th class="etiq" style="border-bottom: 1px solid gray; text-align: center;" title="Tipo do bebedouro">Tipo</th>
+                            <th class="etiq" style="border-bottom: 1px solid gray; text-align: center;" title="Data da limpeza da base">Data Limpeza</th>
+                            <th class="etiq" style="border-bottom: 1px solid gray; text-align: center;" title="Data para refazer a limpeza da base">Próxima Limpeza</th>
                             <th class="etiq" style="border-bottom: 1px solid gray; text-align: center;" title="Local de instalação do equipamento">Local Instalação</th>
                         </tr>
                     </thead>
@@ -93,12 +93,12 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <tr>
                                 <td style="display: none;"></td>
                                 <td style="display: none;"><?php echo $tbl0[0]; ?></td>
-                                <td style="border-bottom: 1px solid gray; text-align: center; font-weight: bold; padding-top: 25px; padding-bottom: 25px; <?php if($tbl0[7] == '3000'){echo 'color: red; font-weight: bold;';}else{echo 'font-weight: normal;';} ?>"><?php echo str_pad($tbl0[1], 3, 0, STR_PAD_LEFT); ?></td>
+                                <td style="border-bottom: 1px solid gray; text-align: center; font-weight: bold; padding-top: 25px; padding-bottom: 25px; <?php if($tbl0[7] == '3000'){echo 'color: red; font-weight: bold;';}else{echo 'font-weight: normal;';} ?>" title="Número de identificação"><?php echo str_pad($tbl0[1], 3, 0, STR_PAD_LEFT); ?></td>
                                 <td style="border-bottom: 1px solid gray; text-align: left;" title="Marca"><?php echo $tbl0[2]; ?></td>
                                 <td style="border-bottom: 1px solid gray; text-align: left;" title="Modelo"><?php echo $tbl0[11]; ?></td>
-                                <td style="border-bottom: 1px solid gray; text-align: left;" title="Tipo de elemento filtrante"><?php echo $tbl0[3]; ?></td>
-                                <td style="border-bottom: 1px solid gray; text-align: center;" title="Data troca"><?php echo $DataTroca; ?></td>
-                                <td style="border-bottom: 1px solid gray; text-align: center; <?php if($tbl0[12] == 'aviso'){echo 'color: red; font-weight: bold;';}else{echo 'font-weight: normal;';} ?>" title="Vencimento"><?php echo  $DataVenc; ?></td>
+                                <td style="border-bottom: 1px solid gray; text-align: left;" title="Tipo"><?php echo $tbl0[3]; ?></td>
+                                <td style="border-bottom: 1px solid gray; text-align: center;" title="Data limpeza"><?php echo $DataTroca; ?></td>
+                                <td style="border-bottom: 1px solid gray; text-align: center; <?php if($tbl0[12] == 'aviso'){echo 'color: red; font-weight: bold;';}else{echo 'font-weight: normal;';} ?>" title="Data para refazer a limpeza"><?php echo  $DataVenc; ?></td>
                                 <td style="border-bottom: 1px solid gray; text-align: left; font-size: 80%;" title="Local de instalação"><?php echo $tbl0[10]; ?></td>
                             </tr>
                         <?php

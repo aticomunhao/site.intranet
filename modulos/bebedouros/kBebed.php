@@ -61,7 +61,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                 <?php
                                 if($Bebed == 1 || $_SESSION["AdmUsu"] > 6){
                                 ?>
-                                    <button class="botpadrblue" style="font-size: 70%; padding-left: 2px; padding-right: 2px;" onclick="insAbastec(<?php echo $Cod; ?>, '<?php echo $NumFormat; ?>');">Abastec</button>
+                                    <button class="botpadrblue" style="font-size: 70%; padding-left: 2px; padding-right: 2px;" onclick="insAbastec(<?php echo $Cod; ?>, '<?php echo $NumFormat; ?>');" title="Inserir/editar abastecimento do bebedouro.">Abastec</button>
                                 <?php
                                 }
                                 ?>

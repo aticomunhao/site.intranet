@@ -95,41 +95,22 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("faixaMensagem").innerHTML = "Boa Noite!<br>Usuário não cadastrado. <br>O acesso é proporcionado pela DAF/ATI.";
                 }
 
-                ajaxIni();
-                if(ajax){
-                    ajax.open("POST", "modulos/lro/salvaReg.php?acao=AcessoLro", true);
-                    ajax.onreadystatechange = function(){
-                        if(ajax.readyState === 4 ){
-                            if(ajax.responseText){
-//alert(ajax.responseText);
-                                Resp = eval("(" + ajax.responseText + ")");
-                                if(parseInt(Resp.coderro) === 1){
-                                    alert("Houve um erro no servidor.")
-                                }else{
-                                    if(parseInt(Resp.lro) === 0 && parseInt(Resp.fisclro) === 0 && parseInt(document.getElementById("UsuAdm").value) < 7){
-                                        document.getElementById("faixaMensagem").style.display = "block";
-                                    }else{
-                                        $("#faixaCentral").load("modulos/lro/relReg.php");
-                                    }
-                                }
-                            }
-                        }
-                    };
-                    ajax.send(null);
-                }
-                $('#carregaTema').load('modulos/config/carTema.php?carpag=livroReg');
-
                 document.getElementById("botRedigirCompl").style.visibility = "hidden"; // para redigir um complemento
                 document.getElementById("botimprLRO").style.visibility = "hidden"; // botão de imprimir todo o LRO
                 document.getElementById("imgLROConfig").style.visibility = "hidden";
                 document.getElementById("etiqrubrica").style.visibility = "hidden";
                 document.getElementById("etiqcheckrubrica").style.visibility = "hidden";
                 document.getElementById("checkrubrica").style.visibility = "hidden";
-                if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) && parseInt(Resp.fiscalizaLro) === 1){
-                    document.getElementById("botimprLRO").style.visibility = "visible";
-                }
 
-                if(parseInt(document.getElementById("fiscalLRO").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // superusuário
+                if(parseInt(document.getElementById("acessoLRO").value) === 1 || parseInt(document.getElementById("fiscalLRO").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ 
+                    $("#faixaCentral").load("modulos/lro/relReg.php");
+                    document.getElementById("botimprLRO").style.visibility = "visible";
+                }else{
+                    document.getElementById("faixaMensagem").style.display = "block";
+                }
+                $('#carregaTema').load('modulos/config/carTema.php?carpag=livroReg');
+
+                if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) && parseInt(document.getElementById("fiscalLRO").value) === 1){
                     document.getElementById("botimprLRO").style.visibility = "visible";
                 }
 

@@ -1304,9 +1304,9 @@ if(!isset($_SESSION["usuarioID"])){
                         <tr>
                             <!-- on change nas datas com o datepicker trava a máquina -->
                             <td style="text-align: center;">
-                                <input type="text" id="dataTrocaFiltro" width="150" onclick="$datepicker.open();" onchange="calcVenc();" style="text-align: center; border: 1px solid; border-radius: 5px;" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('dataVencim');return false;}"/>
+                                <input type="text" id="dataTrocaFiltro" width="150" onclick="$datepicker.open();" onchange="calcVenc();" style="height: 30px; text-align: center; border: 1px solid; border-radius: 5px;" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('dataVencim');return false;}"/>
                             </td>
-                            <td>
+                            <td style="vertical-align: top;">
                             <select id="selecPrazo" style="min-width: 50px;" onchange="calcPrazo();" title="Selecione um prazo para a troca do elemento filtrante.">
                                     <option value=""></option>
                                     <option value="1"> 1 mês</option>
@@ -1339,12 +1339,12 @@ if(!isset($_SESSION["usuarioID"])){
                                 </select>
                             </td>
                             <!-- on change nas datas com o datepicker trava a máquina -->
-                            <td style="text-align: center;"><input type="text" id="dataVencim" style="text-align: center; border: 1px solid; border-radius: 5px; width: 100px;" onchange="calcAviso();" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('diasAnteced');return false;}" /></td>
-                            <td class="aCentro" style="border-left: 1px solid; border-color: #9C9C9C;">
+                            <td style="text-align: center; vertical-align: top;"><input type="text" id="dataVencim" style="text-align: center; border: 1px solid; border-radius: 5px; width: 100px;" onchange="calcAviso();" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('diasAnteced');return false;}" /></td>
+                            <td class="aCentro" style="border-left: 1px solid; border-color: #9C9C9C; vertical-align: top;">
                                 <input type="radio" name="notifica" id="notifica1" value="1" CHECKED title="Emite notificação?" onclick="abreNotific(value);"><label for="notifica1" class="etiqAzul" style="padding-left: 3px;"> Sim</label>
                                 <input type="radio" name="notifica" id="notifica2" value="0" title="Emite notificação?" onclick="abreNotific(value);"><label for="notifica2" class="etiqAzul" style="padding-left: 3px;"> Não</label>
                             </td>
-                            <td style="text-align: center; border-right: 1px solid; border-color: #9C9C9C;">
+                            <td style="text-align: center; border-right: 1px solid; border-color: #9C9C9C; vertical-align: top;">
                                 <input type="text" id="diasAnteced" style="width: 60px; text-align: center; border: 1px solid; border-radius: 5px;" placeholder="Dias" onchange="calcAviso();" onkeypress="if(event.keyCode===13){javascript:foco('dataAviso');return false;}" title="Aviso emitido na página inicial ao longo desses dias."/>
                                 <label class="etiq"> dias</label>
                             </td>

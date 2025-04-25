@@ -323,22 +323,25 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
       leitura2 double precision NOT NULL DEFAULT 0,
       dataleitura3 date DEFAULT CURRENT_TIMESTAMP,
       leitura3 double precision NOT NULL DEFAULT 0,
+      dataleitura4 date DEFAULT CURRENT_TIMESTAMP,
+      leitura4 double precision NOT NULL DEFAULT 0,
+      dataleitura5 date DEFAULT CURRENT_TIMESTAMP,
+      leitura5 double precision NOT NULL DEFAULT 0,
+      consdiario1 double precision NOT NULL DEFAULT 0,
+      consdiario2 double precision NOT NULL DEFAULT 0,
+      consdiario3 double precision NOT NULL DEFAULT 0,
+      consdiario5 double precision NOT NULL DEFAULT 0,
+      valorkwh double precision NOT NULL DEFAULT 1,
+      fator double precision NOT NULL DEFAULT 40,
       ativo smallint NOT NULL DEFAULT 1,
       usuins integer NOT NULL DEFAULT 0,
       datains timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
       usumodif integer NOT NULL DEFAULT 0,
-      datamodif timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-      dataleitura4 date DEFAULT CURRENT_TIMESTAMP,
-      leitura4 double precision NOT NULL DEFAULT 0,
-      fator double precision NOT NULL DEFAULT 40,
-      valorkwh double precision NOT NULL DEFAULT 1,
-      consdiario1 double precision NOT NULL DEFAULT 0,
-      consdiario2 double precision NOT NULL DEFAULT 0,
-      consdiario3 double precision NOT NULL DEFAULT 0 
+      datamodif timestamp without time zone DEFAULT CURRENT_TIMESTAMP
       ) ");
    echo "Tabela ".$xProj.".leitura_eletric. <br>";   
 
- 
+
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".arqsetor (
       codarq SERIAL PRIMARY KEY, 
       codsetor int NOT NULL DEFAULT 0,
@@ -883,9 +886,89 @@ echo "Tabela ".$xProj.".visitas_ar checada. <br>";
       datadel timestamp without time zone DEFAULT '3000-12-31 00:00:00'
       )
    ");
-   
-
    echo "Tabelas ".$xProj.".extintores checada. <br>";
+
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bebed (
+      id SERIAL PRIMARY KEY, 
+      numapar integer NOT NULL DEFAULT 0,
+      codmarca integer NOT NULL DEFAULT 1, 
+      modelo character varying(30), 
+      codtipo integer NOT NULL DEFAULT 1, 
+      localinst character varying(200), 
+      datatroca date DEFAULT '3000-12-31', 
+      datavencim date DEFAULT '3000-12-31', 
+      dataaviso date DEFAULT '3000-12-31',
+      notific smallint NOT NULL DEFAULT 1, 
+      pararaviso smallint NOT NULL DEFAULT 0,
+      prazotroca character varying(10), 
+      diasanteced character varying(10),  
+      observ text, 
+      codempr integer NOT NULL DEFAULT 1, 
+      consumo integer NOT NULL DEFAULT 0, 
+      ativo smallint DEFAULT 1 NOT NULL, 
+      usuins integer DEFAULT 0 NOT NULL,
+      datains timestamp without time zone DEFAULT '3000-12-31',
+      usuedit integer DEFAULT 0 NOT NULL,
+      dataedit timestamp without time zone DEFAULT '3000-12-31' 
+      ) 
+   ");
+
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bebed_ctl (
+      id SERIAL PRIMARY KEY, 
+      bebed_id integer DEFAULT 0 NOT NULL,
+      datatroca date DEFAULT '3000-12-31', 
+      volume integer DEFAULT 0 NOT NULL,
+      ativo smallint DEFAULT 1 NOT NULL, 
+      usuins integer DEFAULT 0 NOT NULL,
+      datains timestamp without time zone DEFAULT '3000-12-31',
+      usuedit integer DEFAULT 0 NOT NULL,
+      dataedit timestamp without time zone DEFAULT '3000-12-31' 
+      ) 
+   ");
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bebed_marcas (
+      id SERIAL PRIMARY KEY, 
+      descmarca character varying(30), 
+      ativo smallint DEFAULT 1 NOT NULL, 
+      usuins integer DEFAULT 0 NOT NULL,
+      datains timestamp without time zone DEFAULT '3000-12-31',
+      usuedit integer DEFAULT 0 NOT NULL,
+      dataedit timestamp without time zone DEFAULT '3000-12-31' 
+      ) 
+   ");
+
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bebed_tipos (
+      id SERIAL PRIMARY KEY, 
+      desctipo character varying(30), 
+      ativo smallint DEFAULT 1 NOT NULL, 
+      usuins integer DEFAULT 0 NOT NULL,
+      datains timestamp without time zone DEFAULT '3000-12-31',
+      usuedit integer DEFAULT 0 NOT NULL,
+      dataedit timestamp without time zone DEFAULT '3000-12-31' 
+      ) 
+   ");
+   pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bebed_empr (
+      id SERIAL PRIMARY KEY, 
+      descempresa character varying(30), 
+      ender VARCHAR(250), 
+      cep VARCHAR(15), 
+      cidade VARCHAR(50), 
+      uf VARCHAR(3), 
+      telefone VARCHAR(20), 
+      contato VARCHAR(50), 
+      cnpjempr VARCHAR(20), 
+      inscrempr VARCHAR(20), 
+      obsempr text, 
+      ativo smallint DEFAULT 1 NOT NULL, 
+      usuins integer DEFAULT 0 NOT NULL, 
+      datains timestamp without time zone DEFAULT '3000-12-31', 
+      usuedit integer DEFAULT 0 NOT NULL, 
+      dataedit timestamp without time zone DEFAULT '3000-12-31', 
+      usudel integer DEFAULT 0 NOT NULL, 
+      datadel timestamp without time zone DEFAULT '3000-12-31' 
+      ) 
+   ");
+
+   echo "Tabelas Bebedouros checada. <br>";
 
 
    $rs = pg_query($Conec, "SELECT prazodel FROM ".$xProj.".paramsis WHERE idpar = 1 ");
