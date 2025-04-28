@@ -175,12 +175,11 @@
 					?>
 					<li>
 						<a href='#' onclick='openhref(34);'>Água</a>
-<!--						<ul>
+						<ul>
 							<li><a href='#' onclick='openhref(96);'>Bebedouros</a></li>
 							<li><a href='#' onclick='openhref(94);'>Filtros de Água</a>
-							<li><a href='#' onclick='openhref(34);'>Leituras Hidrômetro</a></li>
+							<li><a href='#' onclick='openhref(34);'>Leitura Hidrômetro</a></li>
 						</ul>
--->
 					</li>
 					<li>
 						<a href='#'>Ar Condicionado</a>
@@ -203,13 +202,13 @@
 					</li>
 
 					<?php
-					$Bebed = parEsc("bebed", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
-					$FiscBebed = parEsc("bebed_fisc", $Conec, $xProj, $_SESSION["usuarioID"]); // edita, modifica
-					if($Bebed == 1 || $FiscBebed == 1 || $_SESSION["AdmUsu"] > 6){
-						echo "<li>";
-							echo "<a href='#' onclick='openhref(96);'>Bebedouros</a>";
-						echo "</li>";
-					}
+//					$Bebed = parEsc("bebed", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
+//					$FiscBebed = parEsc("bebed_fisc", $Conec, $xProj, $_SESSION["usuarioID"]); // edita, modifica
+//					if($Bebed == 1 || $FiscBebed == 1 || $_SESSION["AdmUsu"] > 6){
+//						echo "<li>";
+//							echo "<a href='#' onclick='openhref(96);'>Bebedouros</a>";
+//						echo "</li>";
+//					}
 					//Claviculário da DAF
 					$Clav2 = parEsc("clav2", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
 					$ClavEdit2 = parEsc("clav_edit2", $Conec, $xProj, $_SESSION["usuarioID"]); // edita, modifica
@@ -295,13 +294,11 @@
 								echo "<a href='#' onclick='openhref(91);'>Extintores</a>";
 							echo "</li>";
 						}
-
-						$Filtro = parEsc("filtros", $Conec, $xProj, $_SESSION["usuarioID"]);
-						$FiscFiltro = parEsc("fisc_filtros", $Conec, $xProj, $_SESSION["usuarioID"]);
-						if($Filtro == 1 || $FiscFiltro == 1 || $_SESSION["AdmUsu"] > 6){
-							echo "<li><a href='#' onclick='openhref(94);'>Filtros de Água</a></li>"; 
-						}
-
+//						$Filtro = parEsc("filtros", $Conec, $xProj, $_SESSION["usuarioID"]);
+//						$FiscFiltro = parEsc("fisc_filtros", $Conec, $xProj, $_SESSION["usuarioID"]);
+//						if($Filtro == 1 || $FiscFiltro == 1 || $_SESSION["AdmUsu"] > 6){
+//							echo "<li><a href='#' onclick='openhref(94);'>Filtros de Água</a></li>"; 
+//						}
 						$Viatura = parEsc("viatura", $Conec, $xProj, $_SESSION["usuarioID"]);// combustíveis
 						$FiscViat = parEsc("fisc_viat", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal
 						if($Viatura == 1 || $FiscViat == 1 || $_SESSION["AdmUsu"] > 6){

@@ -26,9 +26,12 @@
 				$diaSemana = 1;
 			}
 			//Provisório
-			if(strtotime('2025/04/30') > strtotime(date('Y/m/d'))){
+			if(strtotime('2025/05/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				
+				//0108
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensreivind ADD COLUMN IF NOT EXISTS processobens character varying(50);");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS usumodifdescbem bigint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS datamodifdescbem timestamp without time zone DEFAULT '3000-12-31'");
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

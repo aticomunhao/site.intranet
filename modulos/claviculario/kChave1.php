@@ -73,10 +73,11 @@
                                 $row1 = pg_num_rows($rs1);
                                 if($row1 > 0){
                                     $tbl1 = pg_fetch_row($rs1);
-                                    $Nome = $tbl1[1];
-                                    if(is_null($tbl1[1]) || $tbl1[1] == ""){
-                                        $Nome = $tbl1[0];
-                                    }
+//                                    $Nome = $tbl1[1];
+//                                    if(is_null($tbl1[1]) || $tbl1[1] == ""){
+//                                        $Nome = substr($tbl1[0], 0, 30);
+//                                    }
+                                    $Nome = $tbl1[0];
                                     $SiglaSetor = $tbl1[2];
                                 }else{
                                     $Nome = "";
@@ -85,7 +86,15 @@
                                 ?>
                                 <div class="quadrlista" style="text-align: left;"><label class="etiq">por: </label> <?php echo $Nome; ?></div>
                             </td>
-                            <td><div class="quadrlista" title="Sigla setor"><?php echo $SiglaSetor; ?></div></td>
+                            <td>
+                                <?php
+                                    if($SiglaSetor != ""){
+                                        ?>
+                                            <div class="quadrlista" title="Sigla setor"><?php echo $SiglaSetor; ?></div>
+                                        <?php
+                                    }
+                                ?>
+                            </td>
                         </tr>
                         <tr>
                             <td colspan="2"><div class="quadrlista"><label class="etiq">CPF: </label><?php echo Mask("###.###.###-##",$tbl[8]); ?></div><div class="quadrlista"><label class="etiq">Telef: </label><?php echo $tbl[9]; ?></div></td>

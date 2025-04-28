@@ -360,7 +360,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("botsalvareg").style.visibility = "visible"; 
                 document.getElementById("dataregistro").value = document.getElementById("guardahoje").value;
                 document.getElementById("dataachado").value = document.getElementById("guardahoje").value;
-//                document.getElementById("numprocesso").innerHTML = "";
+                document.getElementById("titulomodalRegistro").innerHTML = "Registro de Recebimento de Achados e Perdidos";
                 document.getElementById("descdobem").value = "";
                 document.getElementById("localachado").value = "";
                 document.getElementById("nomeachou").value = "";
@@ -460,7 +460,6 @@ if(!isset($_SESSION["usuarioID"])){
                     });
                     return false;
                 }
-
                 if(document.getElementById("dataregistro").value === ""){
                     let element = document.getElementById('dataregistro');
                     element.classList.add('destacaBorda');
@@ -584,7 +583,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("telefachou").value = Resp.telefachou;
                                     document.getElementById("numregistro").value = Resp.numprocesso;
                                     document.getElementById("guardaNumRelat").value = Resp.numprocesso;
-//                                    document.getElementById("numprocesso").innerHTML = "Registrado sob nº "+Resp.numprocesso;
+                                    document.getElementById("titulomodalRegistro").innerHTML = "Editando o Registro de Recebimento de Achados e Perdidos";
                                     document.getElementById("botsalvareg").innerHTML = "Salvar";
                                     document.getElementById("botApagaBem").style.visibility = "visible";
                                     document.getElementById("relacmodalRegistro").style.display = "block";
@@ -1259,9 +1258,10 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.")
                                 }else{
-                                    document.getElementById("numregistroReiv").value = Resp.numprocesso;
+                                    document.getElementById("numregistroReiv").innerHTML = Resp.numprocesso;
                                     document.getElementById("dataReivind").value = document.getElementById("guardahoje").value;
                                     document.getElementById("dataPerdido").value = document.getElementById("guardahoje").value;
+                                    document.getElementById("numregistroProcesso").value = "";
                                     document.getElementById("nomereclamante").value = "";
                                     document.getElementById("emailreclamante").value = "";
                                     document.getElementById("telefreclamante").value = "";
@@ -1296,7 +1296,8 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 1){
                                     alert("Houve um erro no servidor.")
                                 }else{
-                                    document.getElementById("numregistroReiv").value = Resp.processo;
+                                    document.getElementById("numregistroReiv").innerHTML = Resp.processo;
+                                    document.getElementById("numregistroProcesso").value = Resp.processobens;
                                     document.getElementById("dataReivind").value = Resp.datareiv;
                                     document.getElementById("dataPerdido").value = Resp.dataperdeu;
                                     document.getElementById("nomereclamante").value = Resp.nome;
@@ -1396,7 +1397,8 @@ if(!isset($_SESSION["usuarioID"])){
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=salvaReivind&codigo="+document.getElementById("guardaid").value
-                    +"&numregistro="+document.getElementById("numregistroReiv").value
+                    +"&numregistro="+document.getElementById("numregistroReiv").innerHTML
+                    +"&numprocesso="+document.getElementById("numregistroProcesso").value
                     +"&dataReivind="+document.getElementById("dataReivind").value
                     +"&dataPerdido="+document.getElementById("dataPerdido").value
                     +"&nomereclamante="+encodeURIComponent(document.getElementById("nomereclamante").value)
@@ -1768,9 +1770,9 @@ if(!isset($_SESSION["usuarioID"])){
                 <!-- div três colunas -->
                 <div class="container" style="margin: 0 auto;">
                     <div class="row">
-                        <div class="col quadro" style="margin: 0 auto;"><button class="botpadrred" id="botimprReg" style="font-size: 80%;" onclick="imprReg();">Gerar PDF</button></div>
-                        <div class="col quadro"><h6 id="titulomodal" style="color: #666;">Registro de Recebimento de Achados e Perdidos</h6></div> <!-- Central - espaçamento entre colunas  -->
-                        <div class="col quadro" style="margin: 0 auto; text-align: center;"><!-- <button class="botpadrred" onclick="enviaModalReg(1);">Enviar</button> --> </div> 
+                        <div class="quadro" style="width: 10%;"><button class="botpadrred" id="botimprReg" style="font-size: 80%;" onclick="imprReg();">Gerar PDF</button></div>
+                        <div class="quadro" style="width: 75%; text-align: center; padding-top: 10px;"><h6 id="titulomodalRegistro" style="color: #666; font-weight: bold;">Registro de Recebimento de Achados e Perdidos</h6></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="quadro" style="width: 10%;"></div> 
                     </div>
                 </div>
                 <div style="border: 2px solid blue; border-radius: 10px; padding: 10px;">
@@ -1779,10 +1781,9 @@ if(!isset($_SESSION["usuarioID"])){
                             <td class="etiqAzul" style="min-width: 150px;">Data do recebimento: </td>
                             <td>
                                 <input type="text" id="dataregistro" width="150" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;">
-<!--                                <label id="numprocesso" class="etiqAzul" style="padding-left: 30px; color: red;"></label>  -->
                             </td>
-                            <td class="etiqAzul">Número do Processo: </td>
-                            <td><input disabled type="text" id="numregistro" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="checaNumRegistro();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;"></td>
+                            <td class="etiqAzul" style="vertical-align: top;">Número do Processo: </td>
+                            <td style="vertical-align: top;"><input disabled type="text" id="numregistro" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="<?php echo $Hoje; ?>" onchange="checaNumRegistro();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;"></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Descrição do objeto encontrado: </td>
@@ -1959,7 +1960,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <div class="container" style="margin: 0 auto;">
                     <div class="row">
                         <div class="col quadro" style="margin: 0 auto;"></div>
-                        <div class="col quadro"><h5 id="titulomodal" style="color: #666;">Registro de Encaminhamento para SSV</h5></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col quadro"><h6 id="titulomodal" style="color: #666;">Registro de Encaminhamento para SSV</h6></div> <!-- Central - espaçamento entre colunas  -->
                         <div class="col quadro" style="margin: 0 auto; text-align: center;"><!-- <button class="botpadrred" onclick="enviaModalReg(1);">Enviar</button> --> </div> 
                     </div>
                 </div>
@@ -2328,8 +2329,8 @@ if(!isset($_SESSION["usuarioID"])){
         <div id="relacimprBens" class="relacmodal">
             <div class="modal-content-imprBens">
                 <span class="close" onclick="fechaImprBens();">&times;</span>
-                <h5 id="titulomodal" style="text-align: center;color: #666;">Controle de Achados e Perdidos</h5>
-                <h6 id="titulomodal" style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
+                <h5 style="text-align: center;color: #666;">Controle de Achados e Perdidos</h5>
+                <h6 style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
                 <div style="border: 2px solid #C6E2FF; border-radius: 10px;">
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>
@@ -2410,12 +2411,15 @@ if(!isset($_SESSION["usuarioID"])){
                 <div style="border: 2px solid blue; border-radius: 10px; padding: 10px;">
                     <table style="margin: 0 auto; width:85%;">
                         <tr>
-                            <td class="etiqAzul" style="min-width: 150px;">Data da reclamação: </td>
+                            <td class="etiqAzul" style="min-width: 150px; vertical-align: top;">Data da reclamação: </td>
                             <td>
-                                <input type="text" id="dataReivind" width="150" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;">
+                                <input type="text" id="dataReivind" width="150" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="height: 30px; font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;">
                             </td>
-                            <td class="etiqAzul">Número do Processo: </td>
-                            <td><input disabled type="text" id="numregistroReiv" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;"></td>
+                            <td class="etiqAzul" style="vertical-align: top;">Número do Processo: </td>
+                            <td style="vertical-align: top;"><input type="text" id="numregistroProcesso" value="" onchange="modif();" style="width: 100px; font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;">
+                            <label class="corPreta" style="font-size: 60%; font-style: italic;">Registro: </label>
+                            <label class="corPreta" style="font-size: 60%; font-style: italic;" id="numregistroReiv"></label>
+                            </td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Descrição do objeto perdido: </td>
@@ -2425,7 +2429,7 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <tr>
                             <td class="etiqAzul">Data em que foi perdido: </td>
-                            <td><input type="text" id="dataPerdido" width="150" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;"></td>
+                            <td><input type="text" id="dataPerdido" width="150" value="<?php echo $Hoje; ?>" onchange="modif();" placeholder="Data" style="height: 30px; font-size: .9em; text-align: center; border: 1px solid; border-radius: 3px;"></td>
                             <td></td>
                             <td></td>
                         </tr>
@@ -2461,7 +2465,6 @@ if(!isset($_SESSION["usuarioID"])){
                                     <label style="padding-left: 30px;"></label>
                                 <input type="checkbox" id="bemEntregue" onclick="modif();">
                                 <label for="bemEntregue" style="color: black;">Objeto entregue</label>
-
                             </td>
                         </tr>
                         <tr>

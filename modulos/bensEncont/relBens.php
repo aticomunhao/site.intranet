@@ -197,7 +197,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     if($Edit == 1 && $SobGuarda == 0 && $GuardaCSG == 0 && $Restit == 0 && $Arquivado == 0){
                                         echo "<button class='botTable fundoAmarelo' onclick='verRegistroRcb($tbl0[0]);' title='Editar o registro de recebimento'>Editar</button>";
                                     }else{
-                                        echo "<button disabled class='botTable fundoCinza corAzulClaro'>Editar</button>";
+                                        if($_SESSION["AdmUsu"] >= 6){ // Revisor ou Superusuário
+                                            echo "<button class='botTable fundoCinza corAzulClaro' onclick='verRegistroRcb($tbl0[0]);'>Editar</button>";
+                                        }else{
+                                            echo "<button disabled class='botTable fundoCinza corAzulClaro'>Editar</button>";
+                                        }
                                     }
                                     if($Edit == 1 && $Restit == 0 && $GuardaCSG == 0 && $Arquivado == 0 ){
                                         echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 3, $Restit);' title='Encaminhamento para guarda do Setor de Serviços'>SSV</button>";

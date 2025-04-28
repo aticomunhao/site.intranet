@@ -152,11 +152,12 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#voltatelef").mask("(61) 9 9999-9999");
                 $("#agendatelef").mask("(61) 9 9999-9999");
                 $("#agendadata").mask("99/99/9999");
-                $('#agendadata').datepicker({ uiLibrary: 'bootstrap4', locale: 'pt-br', format: 'dd/mm/yyyy' });
+                $('#agendadata').datepicker({ uiLibrary: 'bootstrap5', locale: 'pt-br', format: 'dd/mm/yyyy' });
 
                 $("#selecSolicitante").change(function(){
                     document.getElementById("cpfsolicitante").value = "";
                     document.getElementById("guardaCPF").value = "";
+                    document.getElementById("mensagemErro").style.display = "none";
                     document.getElementById("guardaPosCod").value = document.getElementById("selecSolicitante").value;
                     ajaxIni();
                     if(ajax){
@@ -199,9 +200,15 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("resultsetor").innerHTML = "";
                     document.getElementById("resulttelef").value = "";
                     document.getElementById("guardaPosCod").value = "";
+                    document.getElementById("mensagemErro").style.display = "none";
                 });
 
                 $("#cpfsolicitante").change(function(){
+                    if(!validaCPF(document.getElementById("cpfsolicitante").value)){
+                        document.getElementById("mensagemErro").innerHTML = "Verifique o CPF digitado.";
+                        document.getElementById("mensagemErro").style.display = "block";
+                        return false;
+                    }
                     document.getElementById("selecSolicitante").value = "";
                     document.getElementById("guardaCPF").value = "";
                     ajaxIni();
@@ -221,7 +228,9 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("selecSolicitante").value = Resp.PosCod;
                                     }
                                     if(parseInt(Resp.coderro) === 3){
-                                        document.getElementById("resultsolicitante").innerHTML = "Usuário não está autorizado a retirar chaves.";
+//                                        document.getElementById("resultsolicitante").innerHTML = "Usuário não autorizado.";
+                                        document.getElementById("mensagemErro").innerHTML = "Usuário não autorizado.";
+                                        document.getElementById("mensagemErro").style.display = "block";
                                         document.getElementById("cpfsolicitante").focus();
                                     }
                                     if(parseInt(Resp.coderro) === 2){
@@ -334,6 +343,7 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#agendaselecSolicitante").change(function(){
                     document.getElementById("agendacpfsolicitante").value = "";
                     document.getElementById("guardaCPF").value = "";
+                    document.getElementById("agendamensagemErro").style.display = "none";
                     document.getElementById("guardaPosCod").value = document.getElementById("agendaselecSolicitante").value;
                     ajaxIni();
                     if(ajax){
@@ -377,8 +387,14 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("agendasetor").innerHTML = "";
                     document.getElementById("agendatelef").value = "";
                     document.getElementById("guardaPosCod").value = "";
+                    document.getElementById("agendamensagemErro").style.display = "none";
                 });
                 $("#agendacpfsolicitante").change(function(){
+                    if(!validaCPF(document.getElementById("agendacpfsolicitante").value)){
+                        document.getElementById("agendamensagemErro").innerHTML = "Verifique o CPF digitado.";
+                        document.getElementById("agendamensagemErro").style.display = "block";
+                        return false;
+                    }
                     document.getElementById("agendaselecSolicitante").value = "";
                     document.getElementById("guardaCPF").value = "";
                     ajaxIni();
@@ -399,7 +415,9 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("agendaselecSolicitante").value = Resp.PosCod;
                                     }
                                     if(parseInt(Resp.coderro) === 3){
-                                        document.getElementById("agendasolicitante").innerHTML = "Usuário não está autorizado a retirar chaves.";
+//                                        document.getElementById("agendasolicitante").innerHTML = "Usuário não está autorizado a retirar chaves.";
+                                        document.getElementById("agendamensagemErro").innerHTML = "Usuário não autorizado.";
+                                        document.getElementById("agendamensagemErro").style.display = "block";
                                         document.getElementById("agendacpfsolicitante").focus();
                                     }
                                     if(parseInt(Resp.coderro) === 2){
@@ -734,6 +752,10 @@ if(!isset($_SESSION["usuarioID"])){
             function saidaChave(Cod){ // id de chaves
                 document.getElementById("guardaCod").value = Cod;
                 document.getElementById("CodidChave").value = Cod;
+                document.getElementById("mensagemErro").style.display = "none";
+                document.getElementById("agendamensagemErro").style.display = "none";
+                document.getElementById("cpfsolicitante").value = "";
+                document.getElementById("agendacpfsolicitante").value = "";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscaChave&codigo="+Cod, true);
@@ -1289,6 +1311,43 @@ if(!isset($_SESSION["usuarioID"])){
                   return cnpjCpf.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g, "\$1.\$2.\$3/\$4-\$5");
             }
 
+            function validaCPF(cpf) {
+                var Soma = 0
+                var Resto
+                var strCPF = String(cpf).replace(/[^\d]/g, '')
+                if (strCPF.length !== 11)
+                    return false
+                if ([
+                    '00000000000',
+                    '11111111111',
+                    '22222222222',
+                    '33333333333',
+                    '44444444444',
+                    '55555555555',
+                    '66666666666',
+                    '77777777777',
+                    '88888888888',
+                    '99999999999',
+                ].indexOf(strCPF) !== -1)
+                return false
+                for (i=1; i<=9; i++)
+                    Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (11 - i);
+                    Resto = (Soma * 10) % 11
+                    if ((Resto == 10) || (Resto == 11)) 
+                        Resto = 0
+                    if (Resto != parseInt(strCPF.substring(9, 10)) )
+                    return false
+                    Soma = 0
+                    for (i = 1; i <= 10; i++)
+                        Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (12 - i)
+                        Resto = (Soma * 10) % 11
+                        if ((Resto == 10) || (Resto == 11)) 
+                            Resto = 0
+                        if (Resto != parseInt(strCPF.substring(10, 11) ) )
+                            return false
+                return true
+            }
+
             /* Brazilian initialisation for the jQuery UI date picker plugin. */
             /* Written by Leonildo Costa Silva (leocsilva@gmail.com). */
             jQuery(function($){
@@ -1335,7 +1394,8 @@ if(!isset($_SESSION["usuarioID"])){
         pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".chaves (
             id SERIAL PRIMARY KEY, 
             chavenum integer NOT NULL DEFAULT 0,
-            chavenumcompl VARCHAR(5),
+            chavecompl character varying(10), 
+            chavenumcompl VARCHAR(50),
             chavelocal VARCHAR(100),
             chavesala VARCHAR(50),
             chaveobs text, 
@@ -1347,6 +1407,97 @@ if(!isset($_SESSION["usuarioID"])){
             dataedit timestamp without time zone DEFAULT '3000-12-31' 
             )
         ");
+
+        //tabela ruim
+        $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves WHERE ativo IS NULL ");
+        $row2 = pg_num_rows($rs2);
+        if($row2 > 0){
+            pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".chaves_prov");
+
+            pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".chaves_prov (
+                id SERIAL PRIMARY KEY, 
+                chavenum integer NOT NULL DEFAULT 0,
+                chavecompl character varying(10), 
+                chavenumcompl VARCHAR(50),
+                chavelocal VARCHAR(100),
+                chavesala VARCHAR(50),
+                chaveobs text, 
+                presente smallint NOT NULL DEFAULT 1, 
+                ativo smallint NOT NULL DEFAULT 1, 
+                usuins bigint NOT NULL DEFAULT 0,
+                datains timestamp without time zone DEFAULT '3000-12-31',
+                usuedit bigint NOT NULL DEFAULT 0,
+                dataedit timestamp without time zone DEFAULT '3000-12-31' 
+               )
+            ");
+
+            $rs1 = pg_query($Conec, "SELECT id, chavenum, chavecompl, chavenumcompl, chavelocal, chavesala, chaveobs, presente, usuins, datains, ativo FROM ".$xProj.".chaves WHERE ativo = 1");
+            $row1 = pg_num_rows($rs1);
+            if($row1 > 0){
+                while($tbl1 = pg_fetch_row($rs1)){
+                    $Num = $tbl1[1];
+                    $ComplNum = $tbl1[2];
+                    $Compl = $tbl1[3];
+                    $Local = $tbl1[4];
+                    $Sala = $tbl1[5];
+                    $Obs = $tbl1[6];
+                    $Pres = $tbl1[7];
+                    $UsuIns = $tbl1[8];
+                    $DataIns = $tbl1[9];
+                    $Ativo = $tbl1[10];
+
+                    $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves_prov");
+                    $tblCod = pg_fetch_row($rsCod);
+                    $CodigoNovo = $tblCod[0]+1;
+
+                    pg_query($Conec, "INSERT INTO ".$xProj.".chaves_prov (id, chavenum, chavecompl, chavenumcompl, chavelocal, chavesala, chaveobs, presente, usuins, datains, ativo) 
+                    VALUES ($CodigoNovo, $Num, '$ComplNum', '$Compl', '$Local', '$Sala', '$Obs', $Pres, $UsuIns, '$DataIns', $Ativo) ");
+                }
+            }
+            
+                pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".chaves");
+                pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".chaves (
+                    id SERIAL PRIMARY KEY, 
+                    chavenum integer NOT NULL DEFAULT 0,
+                    chavecompl character varying(10), 
+                    chavenumcompl VARCHAR(50),
+                    chavelocal VARCHAR(100),
+                    chavesala VARCHAR(50),
+                    chaveobs text, 
+                    presente smallint NOT NULL DEFAULT 1, 
+                    ativo smallint NOT NULL DEFAULT 1, 
+                    usuins bigint NOT NULL DEFAULT 0,
+                    datains timestamp without time zone DEFAULT '3000-12-31',
+                    usuedit bigint NOT NULL DEFAULT 0,
+                    dataedit timestamp without time zone DEFAULT '3000-12-31' 
+                )
+                ");
+
+            $rs1 = pg_query($Conec, "SELECT id, chavenum, chavecompl, chavenumcompl, chavelocal, chavesala, chaveobs, presente, usuins, datains, ativo FROM ".$xProj.".chaves_prov WHERE ativo = 1");
+            $row1 = pg_num_rows($rs1);
+            if($row1 > 0){
+                while($tbl1 = pg_fetch_row($rs1)){
+                    $Num = $tbl1[1];
+                    $ComplNum = $tbl1[2];
+                    $Compl = $tbl1[3];
+                    $Local = $tbl1[4];
+                    $Sala = $tbl1[5];
+                    $Obs = $tbl1[6];
+                    $Pres = $tbl1[7];
+                    $UsuIns = $tbl1[8];
+                    $DataIns = $tbl1[9];
+                    $Ativo = $tbl1[10];
+    
+                    $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves");
+                    $tblCod = pg_fetch_row($rsCod);
+                    $CodigoNovo = $tblCod[0]+1;
+    
+                    pg_query($Conec, "INSERT INTO ".$xProj.".chaves (id, chavenum, chavecompl, chavenumcompl, chavelocal, chavesala, chaveobs, presente, usuins, datains, ativo) 
+                    VALUES ($CodigoNovo, $Num, '$ComplNum', '$Compl', '$Local', '$Sala', '$Obs', $Pres, $UsuIns, '$DataIns', $Ativo) ");
+                }
+            }
+        }
+
 
 //        pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".chaves_ctl");
         pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".chaves_ctl (
@@ -1404,9 +1555,9 @@ if(!isset($_SESSION["usuarioID"])){
         $FiscClav = parEsc("fisc_clav", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
         $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
 
-        $OpUsuSolic = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave = 1 And ativo = 1 ORDER BY nomeusual, nomecompl");
-        $OpUsuAgenda = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave = 1 And ativo = 1 ORDER BY nomeusual, nomecompl");
-        $OpUsuEntreg = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave = 1 And ativo = 1 ORDER BY nomeusual, nomecompl");
+        $OpUsuSolic = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave = 1 And ativo = 1 ORDER BY nomecompl, nomeusual");
+        $OpUsuAgenda = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave = 1 And ativo = 1 ORDER BY nomecompl, nomeusual");
+        $OpUsuEntreg = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave = 1 And ativo = 1 ORDER BY nomecompl, nomeusual");
         $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
         $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(datasaida, 'MM'), '/', TO_CHAR(datasaida, 'YYYY')) 
         FROM ".$xProj.".chaves_ctl GROUP BY TO_CHAR(datasaida, 'MM'), TO_CHAR(datasaida, 'YYYY') ORDER BY TO_CHAR(datasaida, 'YYYY') DESC, TO_CHAR(datasaida, 'MM') DESC ");
@@ -1510,7 +1661,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <div style="border: 2px solid red; border-radius: 10px; background: linear-gradient(180deg, white, #fce8e7)">
                 <table style="margin: 0 auto; width: 85%;">
                     <tr>
-                        <td colspan="4" style="text-align: center; padding-top: 5px; font-weight: bold;">Registro de Retirada</td>
+                        <td colspan="4" style="text-align: center; padding-top: 5px; font-weight: bold;">Registro de Retirada de Chave na Portaria</td>
                     </tr>
                     <tr>
                         <td colspan="4" style="padding-top: 10px;"></td>
@@ -1593,8 +1744,15 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="4" style="text-align: center; font-weight: bold;">Solicitante</td>
                         </tr>
                         <tr>
+                            <td colspan="4" style="text-align: center; font-weight: bold;">
+                                <label id="mensagemErro" style="display: none; min-width: 20px; padding-left: 3px; font-size: 120%; color: red;"></label>
+                            </td>
+                        </tr>
+                        <tr>
                             <td class="etiqAzul" style="width: 150px;">Nome:</td>
-                            <td colspan="3" style="min-width: 200px;"><label id="resultsolicitante" style="min-width: 200px; padding-left: 3px; font-size: 120%;"></label></td>
+                            <td colspan="3" style="min-width: 200px;">
+                                <label id="resultsolicitante" style="min-width: 200px; padding-left: 3px; font-size: 120%;"></label>
+                            </td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">CPF:</td>
@@ -1746,7 +1904,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <div style="border: 2px solid blue; border-radius: 10px; background: linear-gradient(180deg, white, #FFFF00)">
                     <table style="margin: 0 auto; width: 85%;">
                         <tr>
-                            <td colspan="4" style="text-align: center; padding-top: 5px; font-weight: bold;">Agendamento de Retirada</td>
+                            <td colspan="4" style="text-align: center; padding-top: 5px; font-weight: bold;">Agendamento de Retirada de Chave na Portaria</td>
                         </tr>
                         <tr>
                             <td colspan="4" style="text-align: center; padding-top: 5px;"></td>
@@ -1825,6 +1983,11 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="6" style="text-align: center; font-weight: bold;">Solicitante</td>
                         </tr>
                         <tr>
+                            <td colspan="4" style="text-align: center; font-weight: bold;">
+                                <label id="agendamensagemErro" style="display: none; min-width: 20px; padding-left: 3px; font-size: 120%; color: red;"></label>
+                            </td>
+                        </tr>
+                        <tr>
                             <td class="etiqAzul">Nome:</td>
                             <td colspan="5"><label id="agendasolicitante" style="min-width: 200px; padding-left: 3px; font-size: 120%;"></label></td>
                         </tr>
@@ -1852,8 +2015,8 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="6" style="text-align: center; font-weight: bold;">Retirada</td>
                         </tr>
                         <tr>
-                            <td colspan="3" style="text-align: right;"><label class="etiqAzul">Autorizar entrega da chave em: </label></td>
-                            <td colspan="3" style="text-align: left;"><input type="text" style="text-align: center; border: 1px solid; border-radius: 5px;" id="agendadata" width="150" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('botsalvadata');return false;}"/></td>
+                            <td colspan="3" style="text-align: right; vertical-align: top;"><label class="etiqAzul">Autorizar entrega da chave em: </label></td>
+                            <td colspan="3" style="text-align: left;"><input type="text" id="agendadata" width="150" style="height: 30px; text-align: center; border: 1px solid; border-radius: 5px;" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('botsalvadata');return false;}"/></td>
                         </tr>
                         <tr>
                             <td colspan="6" style="text-align: center; padding-top: 10px;"></td>

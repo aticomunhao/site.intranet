@@ -40,6 +40,20 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         </style>
         <script>
            new DataTable('#idTabela', {
+                columnDefs: [
+                    {
+                        target: 2,
+                        orderable: false
+                    },
+                    {
+                        target: 3,
+                        orderable: false
+                    },
+                    {
+                        target: 4,
+                        orderable: false
+                    }
+                ],
                 lengthMenu: [
                     [200, 500, 1000, 2000],
                     [200, 500, 1000, 2000]
@@ -66,7 +80,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     </head>
     <body> 
         <?php
-//            $Cod = (int) filter_input(INPUT_GET, 'codigo');
             //numeração do dia da semana da função extract() (DOW) é diferente da função to_char() (D)
             //Função para Extract no postgres
             $Semana_Extract = array(

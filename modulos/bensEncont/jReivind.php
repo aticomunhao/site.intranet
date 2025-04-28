@@ -49,7 +49,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             $Condic = "ativo = 1 And datareiv = CURRENT_DATE ";
         }
 
-        $rs0 = pg_query($Conec, "SELECT id, processoreiv, nome, email, descdobemperdeu, localperdeu, observ, TO_CHAR(datareiv, 'DD/MM/YYYY'), TO_CHAR(dataperdeu, 'DD/MM/YYYY'), encontrado, entregue 
+        $rs0 = pg_query($Conec, "SELECT id, processoreiv, nome, email, descdobemperdeu, localperdeu, observ, TO_CHAR(datareiv, 'DD/MM/YYYY'), TO_CHAR(dataperdeu, 'DD/MM/YYYY'), encontrado, entregue, 
+        processobens 
         FROM ".$xProj.".bensreivind 
         WHERE $Condic ORDER BY datareiv DESC, processoreiv DESC");
         
@@ -76,6 +77,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     <tr>
                         <th style="display: none;"></th>
                         <th style="display: none;"></th>
+                        <th class="etiq" style="border-bottom: 1px solid gray; text-align: center;">Registro</th>
                         <th class="etiq" style="border-bottom: 1px solid gray; text-align: center;">Processo</th>
                         <th class="etiq" style="border-bottom: 1px solid gray;">Data</th>
                         <th class="etiq" style="border-bottom: 1px solid gray;">Nome</th>
@@ -96,11 +98,17 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         if($DataPerda == "31/12/3000"){
                             $DataPerda = "";
                         }
+                        if(is_null($tbl[11]) || $tbl[11] == ""){
+                            $Processo = "";
+                        }else{
+                            $Processo = str_pad($tbl[11], 3, 0, STR_PAD_LEFT);
+                        }
                         ?>
                         <tr>
                             <td style="display: none;"></td>
                             <td style="display: none;"><?php echo $tbl[0]; ?></td>
                             <td style="border-bottom: 1px solid gray; text-align: center;"><?php echo str_pad($tbl[1], 3, 0, STR_PAD_LEFT); ?></td>
+                            <td style="border-bottom: 1px solid gray; text-align: center;"><?php echo $Processo; ?></td>
                             <td style="border-bottom: 1px solid gray;"><?php echo $DataReiv; ?></td>
                             <td style="border-bottom: 1px solid gray;"><?php echo $tbl[2]; ?></td>
                             <td style="border-bottom: 1px solid gray;"><?php echo $tbl[4]; ?></td>

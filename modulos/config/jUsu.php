@@ -28,9 +28,6 @@ require_once("abrealas.php");
                 let data = tableUsu.row(this).data();
                 $id = data[2];//
                 document.getElementById("guardaid_click").value = $id;
-//                $Cpf = data[1];//
-//                $cpf1 = $Cpf.replace(".", "");
-//                document.getElementById("guardaid_cpf").value = $Cpf;
 
                 let PegaCpf = data[1]; // erro no linux atravessando cpf formatado
                 Cpf1 = PegaCpf.replace(".", ""); // replaceAll ainda não funciona no internet explorer
@@ -92,7 +89,7 @@ require_once("abrealas.php");
             }
             $rs0 = pg_query($Conec, "SELECT pessoas_id, cpf, nomeusual, nomecompl FROM ".$xProj.".poslog WHERE $Condic ORDER BY nomecompl"); 
             $row0 = pg_num_rows($rs0);
-//            $rs0 = pg_query($ConecPes, "SELECT ".$xPes.".pessoas.id, ".$xPes.".pessoas.cpf, ".$xPes.".pessoas.nome_completo FROM ".$xPes.".pessoas WHERE pessoas.id != 0 And nome_completo IS NOT NULL ORDER BY nome_completo");
+
             $rs1 = pg_query($Conec, "SELECT pico_dia, to_char(data_pico_dia, 'DD/MM/YYYY'), pico_online, to_char(data_pico_online, 'DD/MM/YYYY HH24:MI') FROM ".$xProj.".paramsis WHERE idpar = 1 ");
             $row1 = pg_num_rows($rs1);
             if($row1 > 0){
@@ -115,12 +112,12 @@ require_once("abrealas.php");
             $tbl3 = pg_fetch_row($rs3);
             $TotOnLine = $tbl3[0];
 
-        ?>
+            ?>
               <div class="box" style="position: relative; float: left; width: 33%; text-align: left;">
                 <table>
                     <tr>
                         <td style="font-size: 80%; color: green;">Total de Usuários:</td>
-                        <td style="font-size: 80%; color: green; text-align: right; min-width: 15px;"><?php echo $Total; ?></td>
+                        <td style="font-size: 80%; color: green; text-align: right; padding-left: 3px; min-width: 15px;"><?php echo $Total; ?></td>
                         <td style="font-size: 80%; color: #4682B4; text-align: right; padding-left: 10px;"></td>
                         <td style="font-size: 80%; color: #4682B4; text-align: right; min-width: 15px;"></td>
                         <td></td>

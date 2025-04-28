@@ -35,11 +35,6 @@ if($Acao=="salvaRegBem"){
 
     if($Codigo == 0){ // novo registro
         $CodSetor = $_SESSION['CodSetorUsu'];
-//        $rs0 = pg_query($Conec, "SELECT id FROM ".$xProj.".bensachados WHERE to_char(datareceb, 'YYYY') = '$y'");
-//        $row0 = pg_num_rows($rs0);
-//        $Num = str_pad(($row0+1), 4, "0", STR_PAD_LEFT);
-//        $NumRelat = $Num."/".$y;
-
         //Número do relato - reinicia a cada ano
         $rs0 = pg_query($Conec, "SELECT MAX(LEFT(numprocesso, 4)) FROM ".$xProj.".bensachados WHERE TO_CHAR(datareceb, 'YYYY') = '$y' ");
         $tbl0 = pg_fetch_row($rs0);
@@ -62,8 +57,15 @@ if($Acao=="salvaRegBem"){
             $Erro = 1;
         }
     }else{
-        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET datareceb = '$DataReg', dataachou = '$DataAchou', descdobem = '$DescBem', localachou = '$LocalAchou', nomeachou = '$NomeAchou', telefachou = '$TelefAchou', numprocesso = '$NumRelat', usumodif = $UsuIns, datamodif =  NOW() WHERE id = $Codigo ");
+        $rs = pg_query($Conec, "SELECT descdobem FROM ".$xProj.".bensachados WHERE id = $Codigo ");
+        $tbl = pg_fetch_row($rs);
+        $DescBemAnt = $tbl[0];
 
+        if($DescBem == $DescBemAnt){ // anotar quem modificou a descrião do bem
+            $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET datareceb = '$DataReg', dataachou = '$DataAchou', descdobem = '$DescBem', localachou = '$LocalAchou', nomeachou = '$NomeAchou', telefachou = '$TelefAchou', numprocesso = '$NumRelat', usumodif = $UsuIns, datamodif = NOW() WHERE id = $Codigo ");
+        }else{
+            $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET datareceb = '$DataReg', dataachou = '$DataAchou', descdobem = '$DescBem', localachou = '$LocalAchou', nomeachou = '$NomeAchou', telefachou = '$TelefAchou', numprocesso = '$NumRelat', usumodif = $UsuIns, datamodif = NOW(), usumodifdescbem = $UsuIns, datamodifdescbem = NOW() WHERE id = $Codigo ");
+        }
     }
     $var = array("coderro"=>$Erro, "codigonovo"=>$CodigoNovo, "numrelat"=>$NumRelat);
     $responseText = json_encode($var);
@@ -397,7 +399,8 @@ if($Acao=="encerraProcesso"){
 if($Acao=="buscaReivind"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Erro = 0;
-    $rs1 = pg_query($Conec, "SELECT to_char(datareiv, 'DD/MM/YYYY'), TO_CHAR(dataperdeu, 'DD/MM/YYYY'), nome, email, telef, localperdeu, descdobemperdeu, observ, processoreiv, encontrado, entregue 
+    $rs1 = pg_query($Conec, "SELECT to_char(datareiv, 'DD/MM/YYYY'), TO_CHAR(dataperdeu, 'DD/MM/YYYY'), nome, email, telef, localperdeu, descdobemperdeu, observ, processoreiv, encontrado, entregue, 
+    processobens 
     FROM ".$xProj.".bensreivind WHERE id = $Cod ");
     if(!$rs1){
         $Erro = 1;
@@ -419,7 +422,7 @@ if($Acao=="buscaReivind"){
         }else{
             $Obs = $tbl1[7];
         }
-        $var = array("coderro"=>$Erro, "datareiv"=>$tbl1[0], "dataperdeu"=>$tbl1[1], "nome"=>$tbl1[2], "email"=>$tbl1[3], "telef"=>$tbl1[4], "localperdeu"=>nl2br($Local), "descdobem"=>nl2br($Desc), "observ"=>nl2br($Obs), "processo"=>$tbl1[8], "encontrado"=>$tbl1[9], "entregue"=>$tbl1[10]);
+        $var = array("coderro"=>$Erro, "datareiv"=>$tbl1[0], "dataperdeu"=>$tbl1[1], "nome"=>$tbl1[2], "email"=>$tbl1[3], "telef"=>$tbl1[4], "localperdeu"=>nl2br($Local), "descdobem"=>nl2br($Desc), "observ"=>nl2br($Obs), "processo"=>$tbl1[8], "encontrado"=>$tbl1[9], "entregue"=>$tbl1[10], "processobens"=>$tbl1[11]);
     }
     $responseText = json_encode($var);
     echo $responseText;
@@ -429,7 +432,7 @@ if($Acao=="buscaProcReivind"){
     $Erro = 0;
     $Ano = date('Y');
     //Número do relato - reinicia a cada ano
-    $rs0 = pg_query($Conec, "SELECT MAX(LEFT(processoreiv, 3)) FROM ".$xProj.".bensreivind WHERE TO_CHAR(datareiv, 'YYYY') = '$Ano' ");
+    $rs0 = pg_query($Conec, "SELECT MAX(LEFT(processoreiv, 3)) FROM ".$xProj.".bensreivind WHERE ativo = 1 And TO_CHAR(datareiv, 'YYYY') = '$Ano' ");
     $tbl0 = pg_fetch_row($rs0);
     if(!$rs0){
         $Erro = 1;
@@ -446,6 +449,7 @@ if($Acao=="salvaReivind"){
     $Erro = 0;
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Registro = addslashes(filter_input(INPUT_GET, 'numregistro'));
+    $Processo = addslashes(filter_input(INPUT_GET, 'numprocesso'));
 
     $DataR = addslashes($_REQUEST['dataReivind']);
     $DataP = addslashes($_REQUEST['dataPerdido']);
@@ -463,15 +467,15 @@ if($Acao=="salvaReivind"){
     $Entreg = (int) filter_input(INPUT_GET, 'entregue');
 
     if($Cod > 0){ // salvar
-        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensreivind SET processoreiv = '$Registro', datareiv = '$DataReg', dataperdeu = '$DataPerdeu', nome = '$Nome', email = '$Email', telef = '$Telef', localperdeu = '$Local', descdobemperdeu = '$DescBem', observ = '$Obs', encontrado = $Encontr, entregue = $Entreg, ativo = 1, usuins = ".$_SESSION["usuarioID"].", datains = NOW() WHERE id = $Cod");
+        $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensreivind SET processoreiv = '$Registro', datareiv = '$DataReg', dataperdeu = '$DataPerdeu', nome = '$Nome', email = '$Email', telef = '$Telef', localperdeu = '$Local', descdobemperdeu = '$DescBem', observ = '$Obs', encontrado = $Encontr, entregue = $Entreg, processobens = '$Processo', ativo = 1, usuins = ".$_SESSION["usuarioID"].", datains = NOW() WHERE id = $Cod");
     }else{ // inserir novo
         //Cod novo para o BD
         $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".bensreivind");
         $tblCod = pg_fetch_row($rsCod);
         $Codigo = $tblCod[0];
         $CodigoNovo = $Codigo+1; 
-        $rs1 = pg_query($Conec, "INSERT INTO ".$xProj.".bensreivind (id, processoreiv, datareiv, dataperdeu, nome, email, telef, localperdeu, descdobemperdeu, observ, encontrado, entregue, ativo, usuins, datains) 
-        VALUES($CodigoNovo, '$Registro', '$DataReg', '$DataPerdeu', '$Nome', '$Email', '$Telef', '$Local', '$DescBem', '$Obs', $Encontr, $Entreg, 1, ".$_SESSION["usuarioID"].", NOW() )");
+        $rs1 = pg_query($Conec, "INSERT INTO ".$xProj.".bensreivind (id, processoreiv, datareiv, dataperdeu, nome, email, telef, localperdeu, descdobemperdeu, observ, encontrado, entregue, processobens, ativo, usuins, datains) 
+        VALUES($CodigoNovo, '$Registro', '$DataReg', '$DataPerdeu', '$Nome', '$Email', '$Telef', '$Local', '$DescBem', '$Obs', $Encontr, $Entreg, '$Processo', 1, ".$_SESSION["usuarioID"].", NOW() )");
         $Cod = $CodigoNovo; // mandar de volta para o botão salvar sem fechar
     }
     if(!$rs1){

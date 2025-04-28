@@ -6,6 +6,7 @@ if(!isset($_SESSION["usuarioID"])){
 require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 date_default_timezone_set('America/Sao_Paulo'); 
 $Hoje = date('Y/m/d');
+require_once(dirname(dirname(__FILE__))."/config/gUtils.php"); // Normatizar nomes próprios
 if(isset($_REQUEST["acao"])){
     $Acao = $_REQUEST["acao"];
     $UsuIns = $_SESSION['usuarioID'];
@@ -145,16 +146,26 @@ if(isset($_REQUEST["acao"])){
             }
         }
 
-         $rs1 = pg_query($Conec, "SELECT telef FROM ".$xProj.".chaves3_ctl WHERE usuretira = $Cod ORDER BY datasaida DESC");
-         $row1 = pg_num_rows($rs1);
-         if($row1 > 0){
+        $rs1 = pg_query($Conec, "SELECT telef FROM ".$xProj.".chaves3_ctl WHERE usuretira = $Cod ORDER BY datasaida DESC");
+        $row1 = pg_num_rows($rs1);
+        if($row1 > 0){
             $tbl1 = pg_fetch_row($rs1);
             $Telef = $tbl1[0];
-         }else{
+        }else{
             $Telef = "";
-         }
-         if($Telef == ""){
+        }
+        if($Telef == ""){
             $rs2 = pg_query($Conec, "SELECT telef FROM ".$xProj.".chaves3_ctl WHERE usudevolve = $Cod ORDER BY datavolta DESC");
+            $row2 = pg_num_rows($rs2);
+            if($row2 > 0){
+               $tbl2 = pg_fetch_row($rs2);
+               $Telef = $tbl2[0];
+            }else{
+                $Telef = "";
+            }
+        }
+        if($Telef == ""){
+            $rs2 = pg_query($Conec, "SELECT telef FROM ".$xProj.".chaves3_agd WHERE usuretira = $Cod ORDER BY datasaida DESC");
             $row2 = pg_num_rows($rs2);
             if($row2 > 0){
                 $tbl2 = pg_fetch_row($rs2);
@@ -162,8 +173,7 @@ if(isset($_REQUEST["acao"])){
              }else{
                 $Telef = "";
              }
-         }
-
+        }
         $var = array("coderro"=>$Erro, "nomecompl"=>$tbl[0], "nome"=>$tbl[1], "cpf"=>$tbl[2], "siglasetor"=>$tbl[3], "telef"=>$Telef );
         $responseText = json_encode($var);
         echo $responseText;
@@ -186,7 +196,7 @@ if(isset($_REQUEST["acao"])){
            $Telef = "";
         }
 
-        $rs = pg_query($Conec, "SELECT nomecompl, nomeusual, cpf, siglasetor, pessoas_id, chave 
+        $rs = pg_query($Conec, "SELECT nomecompl, nomeusual, cpf, siglasetor, pessoas_id, chave3 
         FROM ".$xProj.".poslog INNER JOIN ".$xProj.".setores ON ".$xProj.".poslog.codsetor = ".$xProj.".setores.codset 
         WHERE cpf = '$GuardaCpf' "); //And chave = 1
         $row = pg_num_rows($rs);
@@ -198,8 +208,30 @@ if(isset($_REQUEST["acao"])){
             }
             $var = array("coderro"=>$Erro, "nomecompl"=>$tbl[0], "nome"=>$tbl[1], "cpf"=>$tbl[2], "siglasetor"=>$tbl[3], "PosCod"=>$tbl[4], "telef"=>$Telef, "chave"=>$Chave);
         }else{
-            $Erro = 2;
-            $var = array("coderro"=>$Erro );
+            $rs2 = pg_query($ConecPes, "SELECT nome_completo, nome_resumido, cpf, id, TO_CHAR(dt_nascimento, 'DD/MM/YYYY'), TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') 
+            FROM ".$xPes.".pessoas 
+            WHERE ".$xPes.".pessoas.cpf = '$GuardaCpf' ");
+            $row2 = pg_num_rows($rs2);
+            if($row2 > 0){
+                $tbl2 = pg_fetch_row($rs2);
+
+                $NomeC = GUtils::normalizarNome($tbl2[0]);  // Normatizar nomes próprios
+                $NomeComp = addslashes($NomeC);
+                $NomeCompl = str_replace('"', "'", $NomeComp); // substitui aspas duplas por simples
+
+                if(!is_null($tbl2[1])){ // nome_resumido
+                    $NomeU = $tbl2[1];
+                    $NomeUs = GUtils::normalizarNome($NomeU);  // Normatizar nomes próprios
+                    $NomeUsu = addslashes($NomeUs);
+                    $NomeUsual = str_replace('"', "'", $NomeUsu); // substitui aspas duplas por simples
+                }else{
+                    $NomeUsual = "";
+                }
+                $var = array("coderro"=>$Erro, "nomecompl"=>$NomeCompl, "nome"=>$NomeUsual, "cpf"=>$tbl2[2], "siglasetor"=>'', "PosCod"=>$tbl2[3], "telef"=>'', "chave"=>'1');
+            }else{
+                $Erro = 2;
+                $var = array("coderro"=>$Erro );
+            }
         }
 
         $responseText = json_encode($var);
@@ -217,6 +249,54 @@ if(isset($_REQUEST["acao"])){
         $IdAgenda = (int) filter_input(INPUT_GET, 'idagenda'); 
         $Telef = addslashes(filter_input(INPUT_GET, 'celular')); 
         $DataAgenda = "";
+
+
+        $m = strtotime("-1 Hour");
+        $HoraAnt = date("Y-m-d H:i:s", $m); // para o recem cadastrado não aparecer on line
+
+        //Inserir usuário em poslog, se seu cpf não estiver lá
+        $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf'");
+        $row2 = pg_num_rows($rs2);
+        if($row2 == 1){
+            pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 1, chave3 = 1, logfim = '$HoraAnt' WHERE cpf = '$GuardaCpf'");
+        }
+        if($row2 == 0){ // inserir
+            $rs3 = pg_query($ConecPes, "SELECT id, nome_completo, nome_resumido, dt_nascimento, sexo FROM ".$xPes.".pessoas WHERE cpf = '$GuardaCpf'");
+            $tbl3 = pg_fetch_row($rs3);
+            $GuardaId = $tbl3[0];
+            $CodUsu = $tbl3[0];
+
+            $NomeC = GUtils::normalizarNome($tbl3[1]);  // Normatizar nomes próprios
+            $NomeComp = addslashes($NomeC);
+            $NomeCompl = str_replace('"', "'", $NomeComp); // substitui aspas duplas por simples
+
+            if(!is_null($tbl3[2])){ // nome_resumido
+                $NomeU = $tbl3[2];
+                $NomeUs = GUtils::normalizarNome($NomeU);  // Normatizar nomes próprios
+                $NomeUsu = addslashes($NomeUs);
+                $NomeUsual = str_replace('"', "'", $NomeUsu); // substitui aspas duplas por simples
+            }else{
+                $NomeUsual = "";
+            }
+
+            $DNasc = $tbl3[3];
+            if(is_null($DNasc)){
+                $DNasc = "1500-01-01";
+            }
+            $Sexo = $tbl3[4];
+            if(is_null($Sexo)){
+                $Sexo = 1;
+            }
+
+            $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".poslog");
+            $tblCod = pg_fetch_row($rsCod);
+            $Codigo = $tblCod[0];
+            $CodIns = ($Codigo+1); // para inserir em chaves_ctl
+            $Senha = password_hash($GuardaCpf, PASSWORD_DEFAULT);
+            pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, codsetor, adm, usuins, datains, cpf, nomecompl, nomeusual, datanasc, senha, ativo, chave3, logini, logfim) 
+            VALUES ($CodIns, $GuardaId, 1, 2, ".$_SESSION['usuarioID'].", NOW(), '$GuardaCpf', '$NomeCompl', '$NomeUsual', '$DNasc', '$Senha', 1,  1, '3000-12-31', '$HoraAnt' )");
+        }
+
 
         $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves3_ctl");
         $tblCod = pg_fetch_row($rsCod);
@@ -267,7 +347,53 @@ if(isset($_REQUEST["acao"])){
 
         $rs = pg_query($Conec, "INSERT INTO ".$xProj.".chaves3_agd (id, chaves_id, cpfretira, datasaida, usuretira, telef, usuins, datains) 
         VALUES ($CodigoNovo, $Cod, '$GuardaCpf', '$RevData', $CodUsu, '$Telef', ".$_SESSION['usuarioID'].", NOW() )");
-    
+
+
+        $m = strtotime("-1 Hour");
+        $HoraAnt = date("Y-m-d H:i:s", $m); // para o recem cadastrado não aparecer on line
+
+        //Inserir usuário em poslog, se seu cpf não estiver lá
+        $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf'");
+        $row2 = pg_num_rows($rs2);
+        if($row2 == 1){
+            pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 1, chave3 = 1, logfim = '$HoraAnt' WHERE cpf = '$GuardaCpf'");
+        }
+        if($row2 == 0){ // inserir
+            $rs3 = pg_query($ConecPes, "SELECT id, nome_completo, nome_resumido, dt_nascimento, sexo FROM ".$xPes.".pessoas WHERE cpf = '$GuardaCpf'");
+            $tbl3 = pg_fetch_row($rs3);
+            $GuardaId = $tbl3[0];
+
+            $NomeC = GUtils::normalizarNome($tbl3[1]);  // Normatizar nomes próprios
+            $NomeComp = addslashes($NomeC);
+            $NomeCompl = str_replace('"', "'", $NomeComp); // substitui aspas duplas por simples
+        
+            if(!is_null($tbl3[2])){ // nome_resumido
+                $NomeU = $tbl3[2];
+                $NomeUs = GUtils::normalizarNome($NomeU);  // Normatizar nomes próprios
+                $NomeUsu = addslashes($NomeUs);
+                $NomeUsual = str_replace('"', "'", $NomeUsu); // substitui aspas duplas por simples
+            }else{
+                $NomeUsual = "";
+            }
+        
+            $DNasc = $tbl3[3];
+            if(is_null($DNasc)){
+                $DNasc = "1500-01-01";
+            }
+            $Sexo = $tbl3[4];
+            if(is_null($Sexo)){
+                $Sexo = 1;
+            }
+        
+            $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".poslog");
+            $tblCod = pg_fetch_row($rsCod);
+            $Codigo = $tblCod[0];
+            $CodIns = ($Codigo+1); // para inserir em chaves_ctl
+            $Senha = password_hash($GuardaCpf, PASSWORD_DEFAULT);
+            pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, codsetor, adm, usuins, datains, cpf, nomecompl, nomeusual, datanasc, senha, ativo, chave3, logini, logfim) 
+            VALUES ($CodIns, $GuardaId, 1, 2, ".$_SESSION['usuarioID'].", NOW(), '$GuardaCpf', '$NomeCompl', '$NomeUsual', '$DNasc', '$Senha', 1,  1, '3000-12-31', '$HoraAnt' )");
+        }
+
         $var = array("coderro"=>$Erro);
         $responseText = json_encode($var);
         echo $responseText;
@@ -289,7 +415,7 @@ if(isset($_REQUEST["acao"])){
 
         $rs1 = pg_query($Conec, "SELECT ".$xProj.".chaves3_ctl.id 
         FROM ".$xProj.".chaves3 INNER JOIN ".$xProj.".chaves3_ctl ON ".$xProj.".chaves3.id = ".$xProj.".chaves3_ctl.chaves_id 
-        WHERE CONCAT(chavenum, chavecompl) = '$Chave' And presente = 0 And usudevolve = 0 ");
+        WHERE CONCAT(chavenum, chavecompl) = '$Chave' And ".$xProj.".chaves3_ctl.ativo = 1 And presente = 0 And usudevolve = 0 ");
         $row1 = pg_num_rows($rs1);
         if($row1 > 0){ 
             $tbl1=pg_fetch_row($rs1);

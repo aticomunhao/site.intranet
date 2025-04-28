@@ -12,7 +12,6 @@
     $Clav = parEsc("clav", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
     $Chave = parEsc("chave", $Conec, $xProj, $_SESSION["usuarioID"]); // pode pegar chaves
 	$FiscClav = parEsc("fisc_clav", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
-
     
     //formata CNPJ e CPF em máscaras.
     function Mask($mask,$str){
@@ -25,7 +24,7 @@
         return $mask;
     }
 
-?>
+    ?>
     <div style="text-align: center; margin: 5px;">
         <h5>Agenda</h5>
         <?php 
@@ -67,10 +66,11 @@
                                 $row1 = pg_num_rows($rs1);
                                 if($row1 > 0){
                                     $tbl1 = pg_fetch_row($rs1);
-                                    $Nome = $tbl1[1];
-                                    if(is_null($tbl1[1]) || $tbl1[1] == ""){
-                                        $Nome = $tbl1[0];
-                                    }
+//                                    $Nome = $tbl1[1];
+//                                    if(is_null($tbl1[1]) || $tbl1[1] == ""){
+//                                        $Nome = $tbl1[0];
+//                                    }
+                                    $Nome = $tbl1[0];
                                     $SiglaSetor = $tbl1[2];
                                 }else{
                                     $Nome = "";

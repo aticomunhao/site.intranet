@@ -152,11 +152,12 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#voltatelef").mask("(61) 9 9999-9999");
                 $("#agendatelef").mask("(61) 9 9999-9999");
                 $("#agendadata").mask("99/99/9999");
-                $('#agendadata').datepicker({ uiLibrary: 'bootstrap4', locale: 'pt-br', format: 'dd/mm/yyyy' });
+                $('#agendadata').datepicker({ uiLibrary: 'bootstrap5', locale: 'pt-br', format: 'dd/mm/yyyy' });
 
                 $("#selecSolicitante").change(function(){
                     document.getElementById("cpfsolicitante").value = "";
                     document.getElementById("guardaCPF").value = "";
+                    document.getElementById("mensagemErro").style.display = "none";
                     document.getElementById("guardaPosCod").value = document.getElementById("selecSolicitante").value;
                     ajaxIni();
                     if(ajax){
@@ -199,8 +200,14 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("resultsetor").innerHTML = "";
                     document.getElementById("resulttelef").value = "";
                     document.getElementById("guardaPosCod").value = "";
+                    document.getElementById("mensagemErro").style.display = "none";
                 });
                 $("#cpfsolicitante").change(function(){
+                    if(!validaCPF(document.getElementById("cpfsolicitante").value)){
+                        document.getElementById("mensagemErro").innerHTML = "Verifique o CPF digitado.";
+                        document.getElementById("mensagemErro").style.display = "block";
+                        return false;
+                    }
                     document.getElementById("selecSolicitante").value = "";
                     document.getElementById("guardaCPF").value = "";
                     ajaxIni();
@@ -220,7 +227,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("selecSolicitante").value = Resp.PosCod;
                                     }
                                     if(parseInt(Resp.coderro) === 3){
-                                        document.getElementById("resultsolicitante").innerHTML = "Usuário não está autorizado a retirar chaves.";
+                                        document.getElementById("resultsolicitante").innerHTML = "Usuário não autorizado.";
                                         document.getElementById("cpfsolicitante").focus();
                                     }
                                     if(parseInt(Resp.coderro) === 2){
@@ -333,6 +340,7 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#agendaselecSolicitante").change(function(){
                     document.getElementById("agendacpfsolicitante").value = "";
                     document.getElementById("guardaCPF").value = "";
+                    document.getElementById("agendamensagemErro").style.display = "none";
                     document.getElementById("guardaPosCod").value = document.getElementById("agendaselecSolicitante").value;
                     ajaxIni();
                     if(ajax){
@@ -376,8 +384,14 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("agendasetor").innerHTML = "";
                     document.getElementById("agendatelef").value = "";
                     document.getElementById("guardaPosCod").value = "";
+                    document.getElementById("agendamensagemErro").style.display = "none";
                 });
                 $("#agendacpfsolicitante").change(function(){
+                    if(!validaCPF(document.getElementById("agendacpfsolicitante").value)){
+                        document.getElementById("agendamensagemErro").innerHTML = "Verifique o CPF digitado.";
+                        document.getElementById("agendamensagemErro").style.display = "block";
+                        return false;
+                    }
                     document.getElementById("agendaselecSolicitante").value = "";
                     document.getElementById("guardaCPF").value = "";
                     ajaxIni();
@@ -398,7 +412,9 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("agendaselecSolicitante").value = Resp.PosCod;
                                     }
                                     if(parseInt(Resp.coderro) === 3){
-                                        document.getElementById("agendasolicitante").innerHTML = "Usuário não está autorizado a retirar chaves.";
+//                                        document.getElementById("agendasolicitante").innerHTML = "Usuário não está autorizado a retirar chaves.";
+                                        document.getElementById("agendamensagemErro").innerHTML = "Usuário não autorizado.";
+                                        document.getElementById("agendamensagemErro").style.display = "block";
                                         document.getElementById("agendacpfsolicitante").focus();
                                     }
                                     if(parseInt(Resp.coderro) === 2){
@@ -663,6 +679,10 @@ if(!isset($_SESSION["usuarioID"])){
             function saidaChave(Cod){ // id de chaves
                 document.getElementById("guardaCod").value = Cod;
                 document.getElementById("CodidChave").value = Cod;
+                document.getElementById("mensagemErro").style.display = "none";
+                document.getElementById("agendamensagemErro").style.display = "none";
+                document.getElementById("cpfsolicitante").value = "";
+                document.getElementById("agendacpfsolicitante").value = "";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/claviculario/salvaChave3.php?acao=buscaChave&codigo="+Cod, true);
@@ -702,7 +722,6 @@ if(!isset($_SESSION["usuarioID"])){
                                             }
                                         });
                                     }else{
-
                                         document.getElementById("sainumchave").value = Resp.chavenum;
                                         document.getElementById("saichavecomplem").value = Resp.chavecompl;
                                         document.getElementById("sailocalchave").value = Resp.chavelocal;
@@ -1219,6 +1238,43 @@ if(!isset($_SESSION["usuarioID"])){
                   return cnpjCpf.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g, "\$1.\$2.\$3/\$4-\$5");
             }
 
+            function validaCPF(cpf) {
+                var Soma = 0
+                var Resto
+                var strCPF = String(cpf).replace(/[^\d]/g, '')
+                if (strCPF.length !== 11)
+                    return false
+                if ([
+                    '00000000000',
+                    '11111111111',
+                    '22222222222',
+                    '33333333333',
+                    '44444444444',
+                    '55555555555',
+                    '66666666666',
+                    '77777777777',
+                    '88888888888',
+                    '99999999999',
+                ].indexOf(strCPF) !== -1)
+                return false
+                for (i=1; i<=9; i++)
+                    Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (11 - i);
+                    Resto = (Soma * 10) % 11
+                    if ((Resto == 10) || (Resto == 11)) 
+                        Resto = 0
+                    if (Resto != parseInt(strCPF.substring(9, 10)) )
+                    return false
+                    Soma = 0
+                    for (i = 1; i <= 10; i++)
+                        Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (12 - i)
+                        Resto = (Soma * 10) % 11
+                        if ((Resto == 10) || (Resto == 11)) 
+                            Resto = 0
+                        if (Resto != parseInt(strCPF.substring(10, 11) ) )
+                            return false
+                return true
+            }
+
             /* Brazilian initialisation for the jQuery UI date picker plugin. */
             /* Written by Leonildo Costa Silva (leocsilva@gmail.com). */
             jQuery(function($){
@@ -1337,9 +1393,9 @@ if(!isset($_SESSION["usuarioID"])){
         $FiscClav = parEsc("fisc_clav3", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
         $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
 
-        $OpUsuSolic = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave3 = 1 And ativo = 1 ORDER BY nomeusual, nomecompl");
-        $OpUsuAgenda = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave3 = 1 And ativo = 1 ORDER BY nomeusual, nomecompl");
-        $OpUsuEntreg = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave3 = 1 And ativo = 1 ORDER BY nomeusual, nomecompl");
+        $OpUsuSolic = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave3 = 1 And ativo = 1 ORDER BY nomecompl, nomeusual");
+        $OpUsuAgenda = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave3 = 1 And ativo = 1 ORDER BY nomecompl, nomeusual");
+        $OpUsuEntreg = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave3 = 1 And ativo = 1 ORDER BY nomecompl, nomeusual");
         $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
         $OpcoesEscMes = pg_query($Conec, "SELECT CONCAT(TO_CHAR(datasaida, 'MM'), '/', TO_CHAR(datasaida, 'YYYY')) 
         FROM ".$xProj.".chaves3_ctl GROUP BY TO_CHAR(datasaida, 'MM'), TO_CHAR(datasaida, 'YYYY') ORDER BY TO_CHAR(datasaida, 'YYYY') DESC, TO_CHAR(datasaida, 'MM') DESC ");
@@ -1442,7 +1498,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <div style="border: 2px solid red; border-radius: 10px; background: linear-gradient(180deg, white, #fce8e7)">
                 <table style="margin: 0 auto; width: 85%;">
                     <tr>
-                        <td colspan="4" style="text-align: center; padding-top: 5px; font-weight: bold;">Registro de Retirada</td>
+                        <td colspan="4" style="text-align: center; padding-top: 5px; font-weight: bold;">Registro de Retirada de Chave Lacrada</td>
                     </tr>
                     <tr>
                         <td colspan="4" style="padding-top: 10px;"></td>
@@ -1523,6 +1579,11 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <tr>
                             <td colspan="4" style="text-align: center; font-weight: bold;">Solicitante</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="text-align: center; font-weight: bold;">
+                                <label id="mensagemErro" style="display: none; min-width: 20px; padding-left: 3px; font-size: 120%; color: red;"></label>
+                            </td>
                         </tr>
                         <tr>
                             <td class="etiqAzul" style="width: 150px;">Nome:</td>
@@ -1714,7 +1775,6 @@ if(!isset($_SESSION["usuarioID"])){
                     </table>
                 </div>
 
-
                 <div style="border: 2px solid red; border-radius: 10px; margin-top: 10px; background: linear-gradient(180deg, white, #FFFF00)">
                     <table style="margin: 0 auto; width: 85%;">
                         <tr>
@@ -1749,7 +1809,6 @@ if(!isset($_SESSION["usuarioID"])){
                     </table>
                 </div>
 
-
                 <div style="border: 2px solid red; border-radius: 10px; margin-top: 10px; background: linear-gradient(180deg, white, #FFFF00)">
                     <table style="margin: 0 auto; width: 85%;">
                         <tr>
@@ -1757,6 +1816,11 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <tr>
                             <td colspan="6" style="text-align: center; font-weight: bold;">Solicitante</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="text-align: center; font-weight: bold;">
+                                <label id="agendamensagemErro" style="display: none; min-width: 20px; padding-left: 3px; font-size: 120%; color: red;"></label>
+                            </td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Nome:</td>
@@ -1786,8 +1850,8 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="6" style="text-align: center; font-weight: bold;">Retirada</td>
                         </tr>
                         <tr>
-                            <td colspan="3" style="text-align: right;"><label class="etiqAzul">Autorizar entrega da chave em: </label></td>
-                            <td colspan="3" style="text-align: left;"><input type="text" style="text-align: center; border: 1px solid; border-radius: 5px;" id="agendadata" width="150" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('botsalvadata');return false;}"/></td>
+                            <td colspan="3" style="text-align: right; vertical-align: top"><label class="etiqAzul">Autorizar entrega da chave em: </label></td>
+                            <td colspan="3" style="text-align: left;"><input type="text" id="agendadata" width="150" style="height: 30px; text-align: center; border: 1px solid; border-radius: 5px;" placeholder="Data" onkeypress="if(event.keyCode===13){javascript:foco('botsalvadata');return false;}"/></td>
                         </tr>
                         <tr>
                             <td colspan="6" style="text-align: center; padding-top: 10px;"></td>
@@ -1865,7 +1929,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td class="etiq" title="Inserir, modificar, editar a descrição das chaves do claviculário das Chaves Lacradas">Lacradas:</td>
                         <td colspan="4">
                             <input type="checkbox" id="editChaves" title="Gerenciar, inserir, modificar a descrição das chaves do claviculário das Chaves Lacradas" onchange="marcaChave(this, 'clav_edit3');" >
-                            <label for="editChaves" title="Inserir, modificar, editar a descrição das chaves do claviculário das Chaves Lacradas>inserir, editar e apagar Chaves Lacradas</label>
+                            <label for="editChaves" title="Inserir, modificar, editar a descrição das chaves do claviculário das Chaves Lacradas">inserir, editar e apagar Chaves Lacradas</label>
                         </td>
                     </tr>
 

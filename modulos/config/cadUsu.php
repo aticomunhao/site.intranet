@@ -23,7 +23,7 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 75%; /* acertar de acordo com a tela */
+                width: 80%; /* acertar de acordo com a tela */
                 max-width: 900px;
             }
         </style>
@@ -309,7 +309,6 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("fiscalizaLro").checked === true){
                     FiscLro = 1;
                 }
-
                 Bens = 0;
                 if(document.getElementById("preencheBens").checked === true){
                     Bens = 1;
@@ -322,7 +321,6 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("soPreencheBens").checked === true){
                     SoInsBens = 1;
                 }
-
                 Agua = 0;
                 if(document.getElementById("leituraAgua").checked === true){
                     Agua = 1;
@@ -331,7 +329,6 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("fisc_Agua").checked === true){
                     FiscAgua = 1;
                 }
-
                 Eletric = 0;
                 if(document.getElementById("leituraEletric").checked === true){
                     Eletric = 1;
@@ -349,7 +346,6 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("fisc_Eletric").checked === true){
                     FiscEletric = 1;
                 }
-
                 ArCond = 0;
                 if(document.getElementById("registroArCond").checked === true){
                     ArCond = 1;
@@ -362,12 +358,10 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("registroArCond3").checked === true){
                     ArCond3 = 1;
                 }
-
                 FiscAr = 0;
                 if(document.getElementById("fiscalArCond").checked === true){
                     FiscAr = 1;
                 }
-
                 Elev = 0;
                 if(document.getElementById("registroElev").checked === true){
                     Elev = 1;
@@ -376,7 +370,6 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("fiscalElev").checked === true){
                     FiscElev = 1;
                 }
-                
 //                Escala = 0;
 //                if(document.getElementById("escalaEft").checked === true){
 //                    Escala = 1;
@@ -405,7 +398,6 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("fiscalEscalas").checked === true){
                     FiscEscala = 1;
                 }
-
                 Clavic = 0;
                 if(document.getElementById("registroChaves").checked === true){
                     Clavic = 1;
@@ -438,7 +430,6 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("fiscalExtintor").checked === true){
                     FiscExtint = 1;
                 }
-                
                 if(parseInt(document.getElementById("mudou").value) === 1){
                     ajaxIni();
                     if(ajax){
@@ -1056,7 +1047,7 @@ if(!isset($_SESSION["usuarioID"])){
                     </tr>
                 </table>
 
-                <table style="margin: 0 auto; width: 90%">
+                <table style="margin: 0 auto; width: 95%">
                     <tr>
                         <td class="etiq" title="Pode registrar ocorrências no LRO">Preenchar o LRO:</td>
                         <td colspan="4">
@@ -1215,7 +1206,7 @@ if(!isset($_SESSION["usuarioID"])){
                             <label for="escalaEft" style="padding-right: 10px; padding-top: 5px;" title="Faz parte do efetivo da escala">Efetivo da Escala:</label>
  -->
                             <label style="padding-left: 10px; padding-right: 10px; padding-top: 5px;" title="Faz parte do efetivo da escala">Efetivo da Escala:</label>
-                            <select id="grupoEscala" style="font-size: 1rem; width: 200px;" title="Selecione um grupo." onchange="modif();">
+                            <select id="grupoEscala" style="font-size: 1rem; width: 180px;" title="Selecione um grupo." onchange="modif();">
                             <option value="0"></option>
                             <?php 
                             if($OpcoesEscala){
