@@ -22,6 +22,7 @@ if($Acao=="salvaRegBem"){
     $LocalAchou = addslashes($_REQUEST['localachado']);
     $NomeAchou = addslashes($_REQUEST['nomeachou']);
     $TelefAchou = addslashes($_REQUEST['telefachou']);
+    $Observ = str_replace("'","\"",$_REQUEST["observ"]); // substituir aspas simples por duplas
     $JaTem = 0;   //(int) filter_input(INPUT_GET, 'jatem');
     $NumRelat = addslashes($_REQUEST['numrelato']);
     $UsuIns = $_SESSION['usuarioID'];
@@ -51,8 +52,8 @@ if($Acao=="salvaRegBem"){
         $Codigo = $tblCod[0];
         $CodigoNovo = $Codigo+1; 
 
-        $rs1 = pg_query($Conec, "INSERT INTO ".$xProj.".bensachados (id, datareceb, dataachou, descdobem, localachou, nomeachou, telefachou, codusuins, datains, ativo, numprocesso) 
-        VALUES($CodigoNovo, '$DataReg', '$DataAchou', '$DescBem', '$LocalAchou', '$NomeAchou', '$TelefAchou', $UsuIns, NOW(), 1, '$NumRelat')");
+        $rs1 = pg_query($Conec, "INSERT INTO ".$xProj.".bensachados (id, datareceb, dataachou, descdobem, localachou, nomeachou, telefachou, codusuins, datains, ativo, numprocesso, observ) 
+        VALUES($CodigoNovo, '$DataReg', '$DataAchou', '$DescBem', '$LocalAchou', '$NomeAchou', '$TelefAchou', $UsuIns, NOW(), 1, '$NumRelat', '$Observ')");
         if(!$rs1){
             $Erro = 1;
         }
@@ -62,9 +63,9 @@ if($Acao=="salvaRegBem"){
         $DescBemAnt = $tbl[0];
 
         if($DescBem == $DescBemAnt){ // anotar quem modificou a descrião do bem
-            $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET datareceb = '$DataReg', dataachou = '$DataAchou', descdobem = '$DescBem', localachou = '$LocalAchou', nomeachou = '$NomeAchou', telefachou = '$TelefAchou', numprocesso = '$NumRelat', usumodif = $UsuIns, datamodif = NOW() WHERE id = $Codigo ");
+            $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET datareceb = '$DataReg', dataachou = '$DataAchou', descdobem = '$DescBem', localachou = '$LocalAchou', nomeachou = '$NomeAchou', telefachou = '$TelefAchou', numprocesso = '$NumRelat', observ = '$Observ', usumodif = $UsuIns, datamodif = NOW() WHERE id = $Codigo ");
         }else{
-            $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET datareceb = '$DataReg', dataachou = '$DataAchou', descdobem = '$DescBem', localachou = '$LocalAchou', nomeachou = '$NomeAchou', telefachou = '$TelefAchou', numprocesso = '$NumRelat', usumodif = $UsuIns, datamodif = NOW(), usumodifdescbem = $UsuIns, datamodifdescbem = NOW() WHERE id = $Codigo ");
+            $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET datareceb = '$DataReg', dataachou = '$DataAchou', descdobem = '$DescBem', localachou = '$LocalAchou', nomeachou = '$NomeAchou', telefachou = '$TelefAchou', numprocesso = '$NumRelat', observ = '$Observ' , usumodif = $UsuIns, datamodif = NOW(), usumodifdescbem = $UsuIns, datamodifdescbem = NOW(), descdobemant = '$DescBemAnt' WHERE id = $Codigo ");
         }
     }
     $var = array("coderro"=>$Erro, "codigonovo"=>$CodigoNovo, "numrelat"=>$NumRelat);
@@ -79,7 +80,7 @@ if($Acao=="buscaBem"){
 
     $rs1 = pg_query($Conec, "SELECT to_char(datareceb, 'DD/MM/YYYY'), TO_CHAR(dataachou, 'DD/MM/YYYY'), descdobem, localachou, nomeachou, telefachou, numprocesso, codusuins, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, destinonodestino, setordestino, 
     nomerecebeudestino, nomepropriet, cpfpropriet, telefpropriet, usurestit, descencdestino, descencprocesso, codencdestino, codencprocesso, usudestino, 
-    usuencdestino FROM ".$xProj.".bensachados WHERE id = $Codigo ");
+    usuencdestino, observ FROM ".$xProj.".bensachados WHERE id = $Codigo ");
     //TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo  - procura o intervalo de 3 meses entre o recebimento e hoje
     if(!$rs1){
         $Erro = 1;
@@ -96,6 +97,12 @@ if($Acao=="buscaBem"){
         }else{
             $EncDest = "";
         }
+        if(!is_null($tbl1[22])){
+            $Observ = $tbl1[22];
+        }else{
+            $Observ = "";
+        }
+
         $UsuDestino = $tbl1[20];
         $rs6 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $UsuDestino"); // usuário que inseriu no sistema
         $tbl6 = pg_fetch_row($rs6);
@@ -136,7 +143,7 @@ if($Acao=="buscaBem"){
         $tbl4 = pg_fetch_row($rs4);
         $DescDest = $tbl4[0];
 
-        $var = array("coderro"=>$Erro, "datareg"=>$tbl1[0], "dataachou"=>$tbl1[1], "descdobem"=>nl2br($tbl1[2]), "localachou"=>$tbl1[3], "nomeachou"=>$tbl1[4], "telefachou"=>$tbl1[5], "numprocesso"=>$tbl1[6], "codusuins"=>$CodUsuIns, "nomeusuins"=>$NomeUsuIns, "intervalo"=>$tbl1[8], "destino"=>$tbl1[9], "setordestino"=>$tbl1[10], "nomerecebeu"=>$tbl1[11], "nomepropriet"=>$tbl1[12], "cpfpropriet"=>$tbl1[13], "telefpropriet"=>$tbl1[14], "nomeusurestit"=>$NomeUsuRest, "codusurestit"=>$CodUsuRestit, "setorrecebeu"=>$DescDest, "codSetorDestino"=>$CodDestino, "DescDest"=>$EncDest, "codProcesso"=>$CodProcesso, "DescProcesso"=>$EncProcesso, "UsuEncProcesso"=>$UsuEncProcesso, "NomeEncProcesso"=>$NomeEncProcesso, "UsuDestino"=>$UsuDestino, "NomeUsuDestino"=>$NomeUsuDestino);
+        $var = array("coderro"=>$Erro, "datareg"=>$tbl1[0], "dataachou"=>$tbl1[1], "descdobem"=>nl2br($tbl1[2]), "localachou"=>$tbl1[3], "nomeachou"=>$tbl1[4], "telefachou"=>$tbl1[5], "numprocesso"=>$tbl1[6], "codusuins"=>$CodUsuIns, "nomeusuins"=>$NomeUsuIns, "intervalo"=>$tbl1[8], "destino"=>$tbl1[9], "setordestino"=>$tbl1[10], "nomerecebeu"=>$tbl1[11], "nomepropriet"=>$tbl1[12], "cpfpropriet"=>$tbl1[13], "telefpropriet"=>$tbl1[14], "nomeusurestit"=>$NomeUsuRest, "codusurestit"=>$CodUsuRestit, "setorrecebeu"=>$DescDest, "codSetorDestino"=>$CodDestino, "DescDest"=>$EncDest, "codProcesso"=>$CodProcesso, "DescProcesso"=>$EncProcesso, "UsuEncProcesso"=>$UsuEncProcesso, "NomeEncProcesso"=>$NomeEncProcesso, "UsuDestino"=>$UsuDestino, "NomeUsuDestino"=>$NomeUsuDestino, "observ"=>nl2br($Observ));
     }
     $responseText = json_encode($var);
     echo $responseText;
@@ -422,7 +429,7 @@ if($Acao=="buscaReivind"){
         }else{
             $Obs = $tbl1[7];
         }
-        $var = array("coderro"=>$Erro, "datareiv"=>$tbl1[0], "dataperdeu"=>$tbl1[1], "nome"=>$tbl1[2], "email"=>$tbl1[3], "telef"=>$tbl1[4], "localperdeu"=>nl2br($Local), "descdobem"=>nl2br($Desc), "observ"=>nl2br($Obs), "processo"=>$tbl1[8], "encontrado"=>$tbl1[9], "entregue"=>$tbl1[10], "processobens"=>$tbl1[11]);
+        $var = array("coderro"=>$Erro, "datareiv"=>$tbl1[0], "dataperdeu"=>$tbl1[1], "nome"=>$tbl1[2], "email"=>$tbl1[3], "telef"=>$tbl1[4], "localperdeu"=>nl2br($Local), "descdobem"=>nl2br($Desc), "observperdeu"=>nl2br($Obs), "processo"=>$tbl1[8], "encontrado"=>$tbl1[9], "entregue"=>$tbl1[10], "processobens"=>$tbl1[11]);
     }
     $responseText = json_encode($var);
     echo $responseText;

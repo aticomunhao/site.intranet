@@ -39,7 +39,7 @@ if(!isset($_SESSION["usuarioID"])){
                 }else{
                     document.getElementById("faixaMensagem").style.display = "block";
                 }
-                $('#carregaTema').load('modulos/config/carTema.php?carpag=clavic1');
+                $('#carregaTema').load('modulos/config/carTema.php?carpag=estatUsu');
 
             });
             function abreGrafico(){
@@ -99,17 +99,20 @@ if(!isset($_SESSION["usuarioID"])){
         </div>
 
         <!-- Relação Data/Hora Logins -->
-        <div style="position: relative; float: left; width: 50%; margin: 5px; min-height: 550px; border: 2px solid blue; border-radius: 15px;">
+        <div style="position: relative; float: left; width: 45%; margin: 5px; min-height: 550px; border: 2px solid blue; border-radius: 15px;">
             <?php 
+            //corrigir anteriores
+            pg_query($Conec, "UPDATE ".$xProj.".usulog SET ativo = 0 WHERE datalogin < (CURRENT_DATE - 1) And DATE_PART('YEAR', datalogout) = '3000' ");
+
             $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".usulog WHERE ativo = 1 And AGE(datalogin, CURRENT_DATE) <= '3 MONTH' ");
             $row1 = pg_num_rows($rs1);
-            $rs2 = pg_query($Conec, "SELECT TO_CHAR(datalogin::date, 'DD/MM/YYYY'), date_part('dow', datalogin::date) FROM ".$xProj.".usulog WHERE AGE(datalogin, CURRENT_DATE) <= '3 MONTH' GROUP BY datalogin::date ORDER BY datalogin::date DESC");
+            $rs2 = pg_query($Conec, "SELECT TO_CHAR(datalogin::date, 'DD/MM/YYYY'), date_part('dow', datalogin::date) FROM ".$xProj.".usulog WHERE ativo = 1 And AGE(datalogin, CURRENT_DATE) <= '3 MONTH' GROUP BY datalogin::date ORDER BY datalogin::date DESC");
             $row2 = pg_num_rows($rs2);
             if($row2 > 0){
                 ?>
                 <div style="position: relative; float: right; padding-right: 5px;"><label style="font-size: 80%;"><?php echo $row2." dias - ".$row1." registros "; ?></label></div>
-                <table style="margin: 0 auto; margin-top: 30px; width: 85%;">
-                    <td colspan="5" style="text-align: center; border-bottom: 1px solid gray;" title="Relação dos últimos 3 meses. Início em 01/03/2025.">Data/Hora/Duração Logins</td>
+                <table style="margin: 0 auto; margin-top: 30px; width: 90%;">
+                    <td colspan="5" style="text-align: center; border-bottom: 1px solid gray;" title="Relação dos últimos 3 meses.">Data/Hora/Duração Logins</td>
                     <?php 
                     while($tbl2 = pg_fetch_row($rs2)){
                         $Data = $tbl2[0];
@@ -125,7 +128,7 @@ if(!isset($_SESSION["usuarioID"])){
 
                         $rs3 = pg_query($Conec, "SELECT nomeusual, nomecompl, numacessos, TO_CHAR(datalogin, 'HH24:MI'), TO_CHAR(datalogout, 'HH24:MI'), TO_CHAR((datalogout-datalogin), 'HH24:MI'), navegador, TO_CHAR((datalogout), 'YYYY') 
                         FROM ".$xProj.".usulog INNER JOIN ".$xProj.".poslog ON ".$xProj.".usulog.pessoas_id = ".$xProj.".poslog.pessoas_id 
-                        WHERE TO_CHAR(datalogin, 'DD/MM/YYYY') = '$Data'
+                        WHERE TO_CHAR(datalogin, 'DD/MM/YYYY') = '$Data' And ".$xProj.".usulog.ativo = 1
                         ORDER BY nomeusual, datalogin DESC");
                         $row3 = pg_num_rows($rs3);
                         if($row3 > 0){
@@ -149,7 +152,7 @@ if(!isset($_SESSION["usuarioID"])){
             ?>
         </div>
 
-        <div style="position: relative; float: left; width: 17%; margin: 5px; min-height: 550px; border: 2px solid blue; border-radius: 15px;">
+        <div style="position: relative; float: left; width: 19%; margin: 5px; min-height: 550px; border: 2px solid blue; border-radius: 15px;">
             <?php 
             $rs2 = pg_query($Conec, "SELECT nomeusual, TO_CHAR(SUM((datalogout-datalogin)), 'HH24:MI') 
             FROM ".$xProj.".usulog INNER JOIN ".$xProj.".poslog ON ".$xProj.".usulog.pessoas_id = ".$xProj.".poslog.pessoas_id 
@@ -158,18 +161,18 @@ if(!isset($_SESSION["usuarioID"])){
             $row2 = pg_num_rows($rs2);
             if($row2 > 0){
                 ?>
-                <table style="margin: 0 auto; width: 85%;">
-                    <td colspan="2" style="text-align: center;" title="Tempo logado em horas/minutos. Últimos 3 meses.">Tempo Total Logado</td>
+                <table style="margin: 0 auto; width: 90%;">
+                    <td colspan="2" style="text-align: center;" title="Tempo logado em horas/minutos nos últimos 3 meses.">Tempo Total Logado</td>
                     <tr>
                         <td class="etiq" style="text-align: left; border-bottom: 1px solid gray;">Nome</td>
-                        <td class="etiq" style="text-align: right; border-bottom: 1px solid gray;" title="Tempo logado em horas/minutos. Início: 01/03/2025">Tempo</td>
+                        <td class="etiq" style="text-align: right; border-bottom: 1px solid gray;" title="Tempo logado em horas/minutos nos últimos três meses.">Tempo</td>
                     </tr>
                     <?php 
                     while($tbl2 = pg_fetch_row($rs2)){
                     ?>
                         <tr>
                             <td style="text-align: left; border-bottom: 1px solid gray;"><?php echo $tbl2[0]; ?></td>
-                            <td style="text-align: right; border-bottom: 1px solid gray;" title="Tempo logado em horas:minutos. Início: 01/03/2025"><?php echo $tbl2[1]; ?></td>
+                            <td style="text-align: right; border-bottom: 1px solid gray;" title="Tempo logado em horas:minutos nos últimos três meses."><?php echo $tbl2[1]; ?></td>
                         </tr>
                     <?php
                     }
@@ -180,7 +183,7 @@ if(!isset($_SESSION["usuarioID"])){
             ?>
         </div>
 
-        <div style="position: relative; float: left; width: 17%; margin: 5px; min-height: 550px; border: 2px solid blue; border-radius: 15px;">
+        <div style="position: relative; float: left; width: 19%; margin: 5px; min-height: 550px; border: 2px solid blue; border-radius: 15px;">
             <?php 
             $rs2 = pg_query($Conec, "SELECT nomeusual, TO_CHAR(SUM((datalogout-datalogin)), 'HH24:MI') 
             FROM ".$xProj.".usulog INNER JOIN ".$xProj.".poslog ON ".$xProj.".usulog.pessoas_id = ".$xProj.".poslog.pessoas_id 
@@ -189,18 +192,18 @@ if(!isset($_SESSION["usuarioID"])){
             $row2 = pg_num_rows($rs2);
             if($row2 > 0){
                 ?>
-                <table style="margin: 0 auto; width: 85%;">
-                    <td colspan="2" style="text-align: center;" title="Tempo logado em horas/minutos. Últimos 3 meses.">Tempo Total Logado</td>
+                <table style="margin: 0 auto; width: 90%;">
+                    <td colspan="2" style="text-align: center;" title="Tempo logado em horas/minutos nos últimos 3 meses.">Tempo Total Logado</td>
                     <tr>
                         <td class="etiq" style="text-align: left; border-bottom: 1px solid gray;">Nome</td>
-                        <td class="etiq" style="text-align: right; border-bottom: 1px solid gray;" title="Tempo logado em horas/minutos.">Tempo</td>
+                        <td class="etiq" style="text-align: right; border-bottom: 1px solid gray;" title="Tempo logado em horas/minutos nos últimos três meses.">Tempo</td>
                     </tr>
                     <?php 
                     while($tbl2 = pg_fetch_row($rs2)){
                     ?>
                         <tr>
                             <td style="text-align: left; border-bottom: 1px solid gray;"><?php echo $tbl2[0]; ?></td>
-                            <td style="text-align: right; border-bottom: 1px solid gray;" title="Tempo logado em horas:minutos. Início: 01/03/2025"><?php echo $tbl2[1]; ?></td>
+                            <td style="text-align: right; border-bottom: 1px solid gray;" title="Tempo logado em horas:minutos nos últimos três meses."><?php echo $tbl2[1]; ?></td>
                         </tr>
                     <?php
                     }
@@ -211,8 +214,8 @@ if(!isset($_SESSION["usuarioID"])){
             ?>
         </div>
 
-        <div style="position: relative; float: left; width: 11%; margin: 5px; min-height: 550px; border: 2px solid blue; border-radius: 15px;">
-            <table style="margin: 0 auto; margin-top: 30px; width: 85%;">
+        <div style="position: relative; float: left; width: 12%; margin: 5px; min-height: 550px; border: 2px solid blue; border-radius: 15px;">
+            <table style="margin: 0 auto; margin-top: 30px; width: 90%;">
                 <td colspan="2" style="text-align: center; border-bottom: 1px solid gray; width: 50px">Navegador</td>
                 <?php
                 $rsBr = pg_query($Conec, "SELECT id FROM ".$xProj.".usulog WHERE ativo = 1 ");

@@ -365,6 +365,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("localachado").value = "";
                 document.getElementById("nomeachou").value = "";
                 document.getElementById("telefachou").value = "";
+                document.getElementById("observdobem").value = "";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=buscanum&dataregistro="+encodeURIComponent(document.getElementById("dataregistro").value), true);
@@ -537,7 +538,8 @@ if(!isset($_SESSION["usuarioID"])){
                     "&localachado="+encodeURIComponent(document.getElementById("localachado").value)+
                     "&nomeachou="+encodeURIComponent(document.getElementById("nomeachou").value)+
                     "&numrelato="+encodeURIComponent(document.getElementById("numregistro").value)+
-                    "&telefachou="+encodeURIComponent(document.getElementById("telefachou").value)
+                    "&telefachou="+encodeURIComponent(document.getElementById("telefachou").value)+
+                    "&observ="+encodeURIComponent(document.getElementById("observdobem").value)
                     , true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
@@ -583,6 +585,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("telefachou").value = Resp.telefachou;
                                     document.getElementById("numregistro").value = Resp.numprocesso;
                                     document.getElementById("guardaNumRelat").value = Resp.numprocesso;
+                                    document.getElementById("observdobem").value = Resp.observ;
                                     document.getElementById("titulomodalRegistro").innerHTML = "Editando o Registro de Recebimento de Achados e Perdidos";
                                     document.getElementById("botsalvareg").innerHTML = "Salvar";
                                     document.getElementById("botApagaBem").style.visibility = "visible";
@@ -636,6 +639,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("numprocessoRest").innerHTML = Resp.numprocesso;
                                         document.getElementById("etiqprocessoRest").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
                                         document.getElementById("descdobemRest").innerHTML = Resp.descdobem;
+                                        document.getElementById("observdobemRest").innerHTML = Resp.observ;
                                         document.getElementById('nomeproprietario').value = Resp.nomepropriet;
                                         document.getElementById('cpfproprietario').value = Resp.cpfpropriet;
                                         document.getElementById('telefproprietario').value = Resp.telefpropriet;
@@ -656,6 +660,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById("numprocessoEncam").innerHTML = Resp.numprocesso;
                                             document.getElementById("etiqprocessoEncam").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
                                             document.getElementById("descdobemEncam").innerHTML = Resp.descdobem;
+                                            document.getElementById("observdobemEncam").innerHTML = Resp.observ;
                                             document.getElementById("relacmodalEncam").style.display = "block";
                                         }
                                     }
@@ -664,6 +669,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById("numprocessoDest").innerHTML = Resp.numprocesso;
                                             document.getElementById("etiqprocessoDest").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
                                             document.getElementById("descdobemDest").innerHTML = Resp.descdobem;
+                                            document.getElementById("observdobemDest").innerHTML = Resp.observ;
                                             document.getElementById('nomeproprietario').value = Resp.nomepropriet;
                                             document.getElementById('cpfproprietario').value = Resp.cpfpropriet;
                                             document.getElementById('telefproprietario').value = Resp.telefpropriet;
@@ -689,6 +695,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("numprocessoReceb").innerHTML = Resp.numprocesso;
                                         document.getElementById("etiqprocessoReceb").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
                                         document.getElementById("descdobemReceb").innerHTML = Resp.descdobem;
+                                        document.getElementById("observdobemReceb").innerHTML = Resp.observ;
                                         document.getElementById("descdestino").innerHTML = Resp.DescDest;
                                         document.getElementById("descprocesso").innerHTML = Resp.DescProcesso;
                                         document.getElementById("codusureceb").value = 0; //document.getElementById("usuarioID").value;
@@ -711,6 +718,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("numprocessoReceb").innerHTML = Resp.numprocesso;
                                         document.getElementById("etiqprocessoReceb").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
                                         document.getElementById("descdobemReceb").innerHTML = Resp.descdobem;
+                                        document.getElementById("observdobemReceb").innerHTML = Resp.observ;
                                         document.getElementById("descdestino").innerHTML = Resp.DescDest;
                                         document.getElementById("descprocesso").innerHTML = Resp.DescProcesso+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
                                         document.getElementById("codusureceb").value = Resp.UsuEncProcesso;
@@ -728,6 +736,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("numprocessoDest").innerHTML = Resp.numprocesso;
                                         document.getElementById("etiqprocessoDest").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
                                         document.getElementById("descdobemDest").innerHTML = Resp.descdobem;
+                                        document.getElementById("observdobemDest").innerHTML = Resp.observ;
                                         document.getElementById("selecdestino").value = Resp.codSetorDestino;
                                         document.getElementById('nomeproprietario').value = Resp.nomepropriet;
                                         document.getElementById('cpfproprietario').value = Resp.cpfpropriet;
@@ -1305,7 +1314,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("telefreclamante").value = Resp.telef;
                                     document.getElementById("localperdeu").value = Resp.localperdeu;
                                     document.getElementById("descdobemPerdeu").value = Resp.descdobem;
-                                    document.getElementById("obsperdeu").value = Resp.observ;
+                                    document.getElementById("obsperdeu").value = Resp.observperdeu;
                                     if(parseInt(Resp.encontrado) === 0){
                                         document.getElementById("bemEncontrado").checked = false;    
                                     }else{
@@ -1810,6 +1819,12 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="3"><input type="text" id="telefachou" onmousedown="tiraBorda(id);" onkeydown="tiraBorda(id);" value="" onchange="modif();" placeholder="Telefone do colaborador que encontrou" style="font-size: .9em; width: 90%;"></td>
                         </tr>
                         <tr>
+                            <td class="etiqAzul">Observações: </td>
+                            <td colspan="3">
+                                <textarea style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="3" cols="60" id="observdobem" onchange="modif();"></textarea>
+                            </td>
+                        </tr>
+                        <tr>
                             <td class="etiqAzul"></td>
                             <td colspan="3"></td>
                         </tr>
@@ -1913,6 +1928,12 @@ if(!isset($_SESSION["usuarioID"])){
                             </td>
                         </tr>
                         <tr>
+                            <td class="etiqAzul" style="font-size: 70%;">Observações: </td>
+                            <td>
+                                <div id="observdobemRest" style="min-height: 20px; border: 1px solid blue; border-radius: 10px; padding: 3px; font-size: 80%;"></div>
+                            </td>
+                        </tr>
+                        <tr>
                             <td colspan="2"><hr></td>
                         </tr>
                         <tr>
@@ -1980,6 +2001,12 @@ if(!isset($_SESSION["usuarioID"])){
                             </td>
                         </tr>
                         <tr>
+                            <td class="etiqAzul" style="font-size: 70%;">Observações: </td>
+                            <td>
+                                <div id="observdobemEncam" style="min-height: 20px; border: 1px solid blue; border-radius: 10px; padding: 3px; font-size: 80%;"></div>
+                            </td>
+                        </tr>
+                        <tr>
                             <td colspan="2"><hr></td>
                         </tr>
                         <tr>
@@ -2036,6 +2063,12 @@ if(!isset($_SESSION["usuarioID"])){
                             <td class="etiqAzul">Descrição: </td>
                             <td>
                                 <div id="descdobemDest" style="border: 1px solid blue; border-radius: 10px; padding: 3px;"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul" style="font-size: 70%;">Observações: </td>
+                            <td>
+                                <div id="observdobemDest" style="min-height: 20px; border: 1px solid blue; border-radius: 10px; padding: 3px; font-size: 80%;"></div>
                             </td>
                         </tr>
                         <tr>
@@ -2114,6 +2147,12 @@ if(!isset($_SESSION["usuarioID"])){
                             <td class="etiqAzul">Descrição: </td>
                             <td>
                                 <div id="descdobemReceb" style="border: 1px solid blue; border-radius: 10px; padding: 3px;"></div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul" style="font-size: 70%;">Observações: </td>
+                            <td>
+                                <div id="observdobemReceb" style="min-height: 20px; border: 1px solid blue; border-radius: 10px; padding: 3px; font-size: 80%;"></div>
                             </td>
                         </tr>
                         <tr>

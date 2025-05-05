@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"> 
         <meta name="mobile-web-app-capable" content="yes">
         <title>Login</title>
-            <link rel="stylesheet" type="text/css" media="screen" href="comp/css/relacmod.css" />
+        <link rel="stylesheet" type="text/css" media="screen" href="comp/css/relacmod.css" />
         <style>
             body{ font: 14px sans-serif; }
             .caixalog{
@@ -36,18 +36,30 @@
             $(document).ready(function(){
                 document.getElementById('olhoSecaoSenha').addEventListener('mousedown', function(){
                   document.getElementById('senha').type = 'text';
-               });
-               document.getElementById('olhoSecaoSenha').addEventListener('mouseup', function(){
+                });
+                document.getElementById('olhoSecaoSenha').addEventListener('mouseup', function(){
                   document.getElementById('senha').type = 'password';
-               });
-               // Para que o password não fique exposto após mover a imagem.
-               document.getElementById('olhoSecaoSenha').addEventListener('mousemove', function(){
+                });
+                // Para que o password não fique exposto após mover a imagem.
+                document.getElementById('olhoSecaoSenha').addEventListener('mousemove', function(){
                   document.getElementById('senha').type = 'password';
-               });
+                });
 
-               $("#usuario").change(function(){
+                document.getElementById('usuario').addEventListener('keyup', function(){
+                    LenUsu = document.getElementById("usuario").value;
+                    if(LenUsu.length === 11){
+                        document.getElementById("senha").focus();
+                    }                  
+                });
+
+
+                $("#usuario").click(function(){
+                    $("#usuario").removeClass('eBold');
+                });
+
+                $("#usuario").change(function(){
                     ajaxIni();
-                        if(ajax){
+                    if(ajax){
                         ajax.open("POST", "modulos/config/registr.php?acao=logbuscaTamsen&usuario="+encodeURIComponent(document.getElementById("usuario").value), true);
                         ajax.onreadystatechange = function(){ // loglog = dbname=pessoal
                             if(ajax.readyState === 4 ){
@@ -55,6 +67,10 @@
 //alert(ajax.responseText);
                                     Resp = eval("(" + ajax.responseText + ")");
                                     document.getElementById("guardaleng").value = Resp.tamanho;
+                                    if(validaCPF(document.getElementById("usuario").value)){ // formata indicando que é válido
+                                        document.getElementById("usuario").value = format_CnpjCpf(document.getElementById("usuario").value);
+                                        $("#usuario").addClass('eBold');
+                                    }
                                 }
                             }
                         };
@@ -62,74 +78,23 @@
                     }
                 });
 
-
             });
 
             function fechaModalLog(){
                 document.getElementById("relacmodalLog").style.display = "none";
             }
+
             function logModal0(Valor){
                 if(Valor.length >= 6){ // porque pode ser 0
                     if(parseInt(document.getElementById("guardaleng").value) > 0){
                         if(parseInt(Valor.length) >= parseInt(document.getElementById("guardaleng").value)){
-                            logModal1(); // para evitar contar 2 acessos quanto o usuário aciona enter ativando o botão Entrar (logModal())
+                            logModal(); // se atingir o tamanho da senha
                         }
                     }
                 }
             }
-            function logModal1(){
-                document.getElementById("entradaLog0").value = 1; // entrou pela verif do tamanho da senha - logModal0()
-                if(document.getElementById("usuario").value === ""){
-                    $('#mensagem').fadeIn("slow");
-                    document.getElementById("mensagem").innerHTML = "Preencha o campo <u>USUÁRIO</u>";
-                    document.getElementById("usuario").focus();
-                    $('#mensagem').fadeOut(3000);
-                    return false;
-                }
-                if(document.getElementById("senha").value === ""){
-                    $('#mensagem').fadeIn("slow");
-                    document.getElementById("mensagem").innerHTML = "Preencha o campo <u>Senha</u>";
-                    document.getElementById("senha").focus();
-                    $('#mensagem').fadeOut(3000);
-                    return false;
-                }
-                ajaxIni();
-                if(ajax){
-                    ajax.open("POST", "modulos/config/registr.php?acao=loglog&usuario="+encodeURIComponent(document.getElementById("usuario").value)+"&senha="+encodeURIComponent(document.getElementById("senha").value), true);
-                    ajax.onreadystatechange = function(){ // loglog = dbname=pessoal
-                        if(ajax.readyState === 4 ){
-                            if(ajax.responseText){
-//alert(ajax.responseText);
-                                Resp = eval("(" + ajax.responseText + ")");
-                                if(parseInt(Resp.coderro) > 0 && parseInt(Resp.coderro) < 5){
-                                    $('#mensagem').fadeIn("slow");
-                                    document.getElementById("mensagem").innerHTML = Resp.msg;
-                                    $('#mensagem').fadeOut(3000);
-                                    return false;
-                                }else if(parseInt(Resp.coderro) === 5){
-                                    document.getElementById("relacmodalLog").style.display = "none";
-                                    document.getElementById("relactrocaSenha").style.display = "block";
-                                    document.getElementById("novasenha").focus();
-                                }else if(parseInt(Resp.coderro) === 6){
-                                    $('#mensagem').fadeIn("slow");
-                                    document.getElementById("mensagem").innerHTML = Resp.msg;
-                                    $('#mensagem').fadeOut(3000);
-                                    return false;                                    
-                                }else{
-                                  document.getElementById("relacmodalLog").style.display = "none";
-                                  location.replace("indexb.php"); // location.replace(-> abre na mesma aba
-                                }
-//                                document.getElementById("entradaLog0").value = "0"; // para voltar ao original
-                            }
-                        }
-                    };
-                    ajax.send(null);
-                }
-            }
+
             function logModal(){
-                if(parseInt(document.getElementById("entradaLog0").value) === 1){
-                    return false; // entrou pelo logModal0()
-                }
                 if(document.getElementById("usuario").value === ""){
                     $('#mensagem').fadeIn("slow");
                     document.getElementById("mensagem").innerHTML = "Preencha o campo <u>USUÁRIO</u>";
@@ -207,7 +172,7 @@
                                     document.getElementById("textoMsg").innerHTML = "Senha modificada com sucesso.";
                                     document.getElementById("relacmensagem").style.display = "block"; // está em modais.php
                                     document.getElementById("relactrocaSenha").style.display = "none";
-                                    setTimeout(function(){                                        
+                                    setTimeout(function(){
                                         document.getElementById("relacmensagem").style.display = "none";
                                         location.replace("indexb.php"); // location.replace(-> abre na mesma aba
                                     }, 3000);
@@ -249,6 +214,51 @@
             function foco(id){
                 document.getElementById(id).focus();
             }
+            function validaCPF(cpf){
+                var Soma = 0
+                var Resto
+                var strCPF = String(cpf).replace(/[^\d]/g, '')
+                if (strCPF.length !== 11)
+                    return false
+                if ([
+                    '00000000000',
+                    '11111111111',
+                    '22222222222',
+                    '33333333333',
+                    '44444444444',
+                    '55555555555',
+                    '66666666666',
+                    '77777777777',
+                    '88888888888',
+                    '99999999999',
+                ].indexOf(strCPF) !== -1)
+                return false
+                for (i=1; i<=9; i++)
+                    Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (11 - i);
+                    Resto = (Soma * 10) % 11
+                    if ((Resto == 10) || (Resto == 11)) 
+                        Resto = 0
+                    if (Resto != parseInt(strCPF.substring(9, 10)) )
+                    return false
+                    Soma = 0
+                    for (i = 1; i <= 10; i++)
+                        Soma = Soma + parseInt(strCPF.substring(i-1, i)) * (12 - i)
+                        Resto = (Soma * 10) % 11
+                        if ((Resto == 10) || (Resto == 11)) 
+                            Resto = 0
+                        if (Resto != parseInt(strCPF.substring(10, 11) ) )
+                            return false
+                return true
+            }
+            function format_CnpjCpf(value){
+                //https://gist.github.com/davidalves1/3c98ef866bad4aba3987e7671e404c1e
+                const CPF_LENGTH = 11;
+                const cnpjCpf = value.replace(/\D/g, '');
+                if (cnpjCpf.length === CPF_LENGTH) {
+                    return cnpjCpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/g, "\$1.\$2.\$3-\$4");
+                } 
+                  return cnpjCpf.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/g, "\$1.\$2.\$3/\$4-\$5");
+            }
         </script>
     </head>
     <body>
@@ -256,26 +266,25 @@
         require_once("modais.php");
         ?>
         <input type="hidden" id="guardaleng" value = "0" />
-        <input type="hidden" id="entradaLog0" value = "0" />
         <div id="relacmodalLog" class="relacmodal">  <!-- ("close")[0] -->
             <div class="modal-content-Login">
                 <span class="close" style="padding-right: 10px;" onclick="fechaModalLog();">&times;</span>
-                <div class="caixalog">
-                    <h2><img src="imagens/Logo1.png" height="40px;"> Login</h2>
+                <div class="caixalog" title="Se o preenchimento for válido, prossegue automaticamente para a próxima etapa.">
+                    <h2><img src="imagens/Logo1.png" height="40px;"> Login <label style="font-size: 14px; color: #036; font-style: italic; padding-left: 10px;">Foco Condicionado</label></h2>
                     <p>Por favor, preencha os campos abaixo.</p>
                     <div class="mb-3">
-                        <label>Usuário</label>
-                        <input type="text" id="usuario" class="form-control" value="" onkeypress="if(event.keyCode===13){javascript:foco('senha');return false;}">
+                        <label>Usuário:</label>
+                        <input type="text" id="usuario" class="form-control" value="" placeholder="&rarr;" onkeypress="if(event.keyCode===13){javascript:foco('senha');return false;}">
                     </div>
                     <table style="margin: 0 auto; width: 100%">
                         <tr style="padding-top: 5px;">
-                            <td><label>Senha</label></td>
+                            <td><label>Senha:</label></td>
                             <td></td>
                         </tr>
                         <tr>
 <!--                            <td><input type="password" id="senha" class="form-control" value="" title="Termine com Enter" onkeypress="if(event.keyCode===13){logModal();}"></td> -->
 <!--                            <td><input type="password" id="senha" class="form-control" value="" onkeyup="if(event.keyCode !== 13){logModal0(value);};" onkeypress="if(event.keyCode===13){logModal();}"></td> -->
-                            <td><input type="password" id="senha" class="form-control" value="" onkeyup="if(event.keyCode !== 13){logModal0(value);};" onkeypress="if(event.keyCode===13){javascript:foco('entrar');return false;}"></td>
+                            <td><input type="password" id="senha" class="form-control" value="" placeholder="&rarr;" onkeyup="if(event.keyCode !== 13){logModal0(value);};" onkeypress="if(event.keyCode===13){javascript:foco('entrar');return false;}"></td>
                             <td style="text-align: center;"><img id="olhoSecaoSenha" style="cursor: pointer;" title="Mantenha clicado para visualizar a senha inserida." src="imagens/olhosenha.png" alt="" width="25" height="15" draggable="false"></td>
                         </tr>
                         <tr>

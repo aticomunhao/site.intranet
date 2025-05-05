@@ -345,7 +345,6 @@
 //						if($Efet == 1){
 //							$NumGrupo = parEsc("esc_grupo", $Conec, $xProj, $_SESSION["usuarioID"]); // procurar a que grupo de escala pertence
 //						}  // Essas variáveis foram para o Quadro Horário
-
 //						if($_SESSION["AdmUsu"] > 6){ // superusuário
 //							if($NumGrupo > 0 || $FiscEscala > 0 || $Escalante > 0){
 //								echo "<li>";
@@ -407,10 +406,6 @@
 					}
 				?>
 			</li>
-<!--		<li>
-				<a href="#" onclick="openhref(98);"><sup>Sair - Encerrar Sessão <div style="padding-top: 2px;"> <?php echo $Nome; ?></sup> <?php echo $Setor; ?></div></a>
-			</li> 
--->
 			<li>
 				<table>
 					<tr>

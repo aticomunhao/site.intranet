@@ -12,10 +12,10 @@ session_start();
             $AnoIni = date("Y"); 
             echo $AnoIni;
             ?>
-            ATI <label style="font-size: 90%;">a0108 </label>  <!-- 28/Abr/2025 -->
+            ATI <label style="font-size: 90%;">a0109 </label>  <!-- 05/Mai/2025 -->
             <label style="padding-left: 70px; font-size: 90%;">Este site não usa cookies</label>
         </div>
-        <div style="padding-right: 20px; position: relative; float: right;">
+        <div style="padding-right: 20px; position: relative; float: right; font-size: .8rem;">
             Comunhão Espírita de Brasília
         </div>
     </body>

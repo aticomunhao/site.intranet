@@ -165,14 +165,14 @@ if(isset($_REQUEST["acao"])){
                 $rowTot = pg_num_rows($rsTot);
 
                 if($Acao == "listamesChaves"){
-                    $rs1 = pg_query($Conec, "SELECT TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datavolta, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datasaida, 'YYYY'), TO_CHAR(datavolta, 'YYYY'), usuretira, usudevolve, TO_CHAR(datavolta - datasaida, 'DD HH24:MI'), TO_CHAR(datavolta - datasaida, 'DD'), TO_CHAR(CURRENT_DATE - datasaida, 'DD'), telef 
+                    $rs1 = pg_query($Conec, "SELECT TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datavolta, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datasaida, 'YYYY'), TO_CHAR(datavolta, 'YYYY'), usuretira, usudevolve, TO_CHAR(datavolta - datasaida, 'DD HH24:MI'), TO_CHAR(datavolta - datasaida, 'DD'), TO_CHAR(CURRENT_DATE - datasaida, 'DD'), telef, nomedevolve 
                     FROM ".$xProj.".chaves_ctl 
                     WHERE chaves_id = $Cod And ativo = 1 And DATE_PART('MONTH', datasaida) = '$Mes' And DATE_PART('YEAR', datasaida) = '$Ano' ORDER BY datasaida DESC");
                     $rsCont = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_ctl WHERE ativo = 1 And chaves_id = $Cod And DATE_PART('MONTH', datasaida) = '$Mes' And DATE_PART('YEAR', datasaida) = '$Ano' And ativo = 1");
                     $rowCont = pg_num_rows($rsCont);
                 }
                 if($Acao == "listaanoChaves"){
-                    $rs1 = pg_query($Conec, "SELECT TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datavolta, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datasaida, 'YYYY'), TO_CHAR(datavolta, 'YYYY'), usuretira, usudevolve, TO_CHAR(datavolta - datasaida, 'DD HH24:MI'), TO_CHAR(datavolta - datasaida, 'DD'), TO_CHAR(CURRENT_DATE - datasaida, 'DD'), telef 
+                    $rs1 = pg_query($Conec, "SELECT TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datavolta, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datasaida, 'YYYY'), TO_CHAR(datavolta, 'YYYY'), usuretira, usudevolve, TO_CHAR(datavolta - datasaida, 'DD HH24:MI'), TO_CHAR(datavolta - datasaida, 'DD'), TO_CHAR(CURRENT_DATE - datasaida, 'DD'), telef, nomedevolve 
                     FROM ".$xProj.".chaves_ctl 
                     WHERE chaves_id = $Cod And ativo = 1 And DATE_PART('YEAR', datasaida) = '$Ano' ORDER BY datasaida DESC ");
                     $rsCont = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_ctl WHERE ativo = 1 And chaves_id = $Cod And DATE_PART('YEAR', datasaida) = '$Ano' And ativo = 1");
@@ -217,13 +217,17 @@ if(isset($_REQUEST["acao"])){
                             $pdf->Cell(70, 5, "", 0, 0, 'L');
                         }
 
-                        $rs3 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $tbl1[5] ");
-                        $row3 = pg_num_rows($rs3);
-                        if($row3 > 0){
-                            $tbl3 = pg_fetch_row($rs3);
-                            $pdf->Cell(70, 5, $tbl3[0], 0, 0, 'L');
+                        if($tbl1[5] > 0){
+                            $rs3 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $tbl1[5] ");
+                            $row3 = pg_num_rows($rs3);
+                            if($row3 > 0){
+                                $tbl3 = pg_fetch_row($rs3);
+                                $pdf->Cell(70, 5, $tbl3[0], 0, 0, 'L');
+                            }else{
+                                $pdf->Cell(70, 5, "", 0, 0, 'L');
+                            }
                         }else{
-                            $pdf->Cell(70, 5, "", 0, 0, 'L');
+                            $pdf->Cell(70, 5, $tbl1[10], 0, 0, 'L');
                         }
                         if($tbl1[3] != '3000'){
                             if($tbl1[7] > 0){
@@ -450,7 +454,7 @@ if(isset($_REQUEST["acao"])){
                 $rowTot = pg_num_rows($rsTot);
 
                 if($Acao == "listamesChavesSoMovimentados"){
-                    $rs1 = pg_query($Conec, "SELECT TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datavolta, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datasaida, 'YYYY'), TO_CHAR(datavolta, 'YYYY'), usuretira, usudevolve, TO_CHAR(datavolta - datasaida, 'DD HH24:MI'), TO_CHAR(datavolta - datasaida, 'DD'), TO_CHAR(CURRENT_DATE - datasaida, 'DD'), telef 
+                    $rs1 = pg_query($Conec, "SELECT TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datavolta, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datasaida, 'YYYY'), TO_CHAR(datavolta, 'YYYY'), usuretira, usudevolve, TO_CHAR(datavolta - datasaida, 'DD HH24:MI'), TO_CHAR(datavolta - datasaida, 'DD'), TO_CHAR(CURRENT_DATE - datasaida, 'DD'), telef, nomedevolve 
                     FROM ".$xProj.".chaves_ctl 
                     WHERE chaves_id = $Cod And ativo = 1 And DATE_PART('MONTH', datasaida) = '$Mes' And DATE_PART('YEAR', datasaida) = '$Ano' ORDER BY datasaida DESC");
                     //Conta quantas vezes foi usada no mês
@@ -458,7 +462,7 @@ if(isset($_REQUEST["acao"])){
                     $rowCont = pg_num_rows($rsCont);
                 }
                 if($Acao == "listaanoChavesSoMovimentados"){
-                    $rs1 = pg_query($Conec, "SELECT TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datavolta, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datasaida, 'YYYY'), TO_CHAR(datavolta, 'YYYY'), usuretira, usudevolve, TO_CHAR(datavolta - datasaida, 'DD HH24:MI'), TO_CHAR(datavolta - datasaida, 'DD'), TO_CHAR(CURRENT_DATE - datasaida, 'DD'), telef 
+                    $rs1 = pg_query($Conec, "SELECT TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datavolta, 'DD/MM/YYYY HH24:MI'), TO_CHAR(datasaida, 'YYYY'), TO_CHAR(datavolta, 'YYYY'), usuretira, usudevolve, TO_CHAR(datavolta - datasaida, 'DD HH24:MI'), TO_CHAR(datavolta - datasaida, 'DD'), TO_CHAR(CURRENT_DATE - datasaida, 'DD'), telef, nomedevolve 
                     FROM ".$xProj.".chaves_ctl 
                     WHERE chaves_id = $Cod And ativo = 1 And DATE_PART('YEAR', datasaida) = '$Ano' ORDER BY datasaida DESC ");
                     //Conta quantas vezes foi usada no ano
@@ -504,14 +508,19 @@ if(isset($_REQUEST["acao"])){
                             $pdf->Cell(70, 5, "", 0, 0, 'L');
                         }
 
-                        $rs3 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $tbl1[5] ");
-                        $row3 = pg_num_rows($rs3);
-                        if($row3 > 0){
-                            $tbl3 = pg_fetch_row($rs3);
-                            $pdf->Cell(70, 5, $tbl3[0], 0, 0, 'L');
+                        if($tbl1[5] > 0){
+                            $rs3 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $tbl1[5] ");
+                            $row3 = pg_num_rows($rs3);
+                            if($row3 > 0){
+                                $tbl3 = pg_fetch_row($rs3);
+                                $pdf->Cell(70, 5, $tbl3[0], 0, 0, 'L');
+                            }else{
+                                $pdf->Cell(70, 5, "", 0, 0, 'L');
+                            }
                         }else{
-                            $pdf->Cell(70, 5, "", 0, 0, 'L');
+                            $pdf->Cell(70, 5, $tbl1[10], 0, 0, 'L');
                         }
+                        
                         if($tbl1[3] != '3000'){
                             if($tbl1[7] > 0){
                                 $pdf->SetTextColor(255, 0, 0); // vermelho

@@ -28,10 +28,21 @@
 			//Provisório
 			if(strtotime('2025/05/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//0108
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensreivind ADD COLUMN IF NOT EXISTS processobens character varying(50);");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS usumodifdescbem bigint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS datamodifdescbem timestamp without time zone DEFAULT '3000-12-31'");
+				//0109
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS descdobemant text;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS observ text;");	
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS esc_chaves1 smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS esc_chaves2 smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS esc_chaves3 smallint NOT NULL DEFAULT 0;");
+
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves_ctl ADD COLUMN IF NOT EXISTS nomedevolve VARCHAR(200);");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves2_ctl ADD COLUMN IF NOT EXISTS nomedevolve VARCHAR(200);");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves3_ctl ADD COLUMN IF NOT EXISTS nomedevolve VARCHAR(200);");
+
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves_ctl ADD COLUMN IF NOT EXISTS telefdevolve VARCHAR(20);");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves2_ctl ADD COLUMN IF NOT EXISTS telefdevolve VARCHAR(20);");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves3_ctl ADD COLUMN IF NOT EXISTS telefdevolve VARCHAR(20);");
+
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

@@ -481,7 +481,7 @@
                         }
                     ?>
                     <!-- tarja vermelha aviso de tarefa  -->
-                    <div id="tarefa" class="blink" onclick="carregaPag();" style="display: none; font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 10px; color: red; font-size: 1.5em; font-weigth: bold; text-align: center; padding: 10px; border-radius: 10px;">TAREFA</div>
+                    <div id="tarefa" class="blink" onclick="carregaPag();" style="display: none; font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 10px; color: red; font-size: 1.5em; font-weight: bold; text-align: center; padding: 10px; border-radius: 10px;">TAREFA</div>
                     <div id="temTarefa" class="divTemTarefa" onclick="carregaPag();"></div>
                     <div id="TemRecado" class="divTemTarefa" onclick="carregaMsgTar();"></div>
                     <div id="temBens" class="divTemBens" onclick="carregaBens('Guardar');"></div>

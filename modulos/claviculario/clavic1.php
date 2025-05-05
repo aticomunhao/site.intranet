@@ -49,6 +49,15 @@ if(!isset($_SESSION["usuarioID"])){
                 width: 60%; /* acertar de acordo com a tela */
                 max-width: 900px;
             }
+            .modal-content-Chaves{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 15% auto; 
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 50%;
+                max-width: 900px;
+            }
             .quadrinho {
                 font-size: 90%;
                 min-height: 23px;
@@ -123,6 +132,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("botagenda1").style.visibility = "hidden";
                 document.getElementById("botagenda2").style.visibility = "hidden";
                 document.getElementById("imgChavesconfig").style.visibility = "hidden";
+                document.getElementById("botaoChaves").style.visibility = "hidden"; // vincular chaves ao usuário
 
                 if(parseInt(document.getElementById("guardaEditaChaves").value) === 1 || parseInt(document.getElementById("guardaEntregaChaves").value) === 1 || parseInt(document.getElementById("guardaFiscChaves").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
                     $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
@@ -161,7 +171,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("guardaPosCod").value = document.getElementById("selecSolicitante").value;
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscalog&codigo="+document.getElementById("selecSolicitante").value, true);
+                        ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscalog&codigo="+document.getElementById("selecSolicitante").value+"&codChave="+document.getElementById("guardaCod").value, true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -174,6 +184,11 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("cpfsolicitante").value = format_CnpjCpf(Resp.cpf);
                                         document.getElementById("resultsetor").innerHTML = Resp.siglasetor;
                                         document.getElementById("resulttelef").value = Resp.telef;
+                                        if(parseInt(Resp.chaveautorizada) === 0){
+                                            document.getElementById("msgInfo2").innerHTML = "Usuário não vinculado a essa chave";
+                                            document.getElementById("msgInfo3").innerHTML = "O vínculo é feito pela DAF/ATI.";
+                                            document.getElementById("modalInfo").style.display = "block";
+                                        }
                                     }else{
                                         document.getElementById("selecSolicitante").value = "";
                                         document.getElementById("resultsolicitante").innerHTML = "";
@@ -204,16 +219,20 @@ if(!isset($_SESSION["usuarioID"])){
                 });
 
                 $("#cpfsolicitante").change(function(){
+                    if(document.getElementById("cpfsolicitante").value == ""){
+                        return false;
+                    }
                     if(!validaCPF(document.getElementById("cpfsolicitante").value)){
                         document.getElementById("mensagemErro").innerHTML = "Verifique o CPF digitado.";
                         document.getElementById("mensagemErro").style.display = "block";
                         return false;
                     }
+
                     document.getElementById("selecSolicitante").value = "";
                     document.getElementById("guardaCPF").value = "";
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscacpf&cpf="+encodeURIComponent(document.getElementById("cpfsolicitante").value), true);
+                        ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscacpf&cpf="+encodeURIComponent(document.getElementById("cpfsolicitante").value)+"&codChave="+document.getElementById("guardaCod").value, true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -226,9 +245,13 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("resultsetor").innerHTML = Resp.siglasetor;
                                         document.getElementById("guardaPosCod").value = Resp.PosCod;
                                         document.getElementById("selecSolicitante").value = Resp.PosCod;
+                                        if(parseInt(Resp.chaveautorizada) === 0){
+                                            document.getElementById("msgInfo2").innerHTML = "Usuário não vinculado a essa chave";
+                                            document.getElementById("msgInfo3").innerHTML = "O vínculo é feito pela DAF/ATI.";
+                                            document.getElementById("modalInfo").style.display = "block";
+                                        }
                                     }
                                     if(parseInt(Resp.coderro) === 3){
-//                                        document.getElementById("resultsolicitante").innerHTML = "Usuário não autorizado.";
                                         document.getElementById("mensagemErro").innerHTML = "Usuário não autorizado.";
                                         document.getElementById("mensagemErro").style.display = "block";
                                         document.getElementById("cpfsolicitante").focus();
@@ -260,7 +283,7 @@ if(!isset($_SESSION["usuarioID"])){
 //alert(ajax.responseText);
                                     Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                     if(parseInt(Resp.coderro) === 0){
-                                        document.getElementById("voltasolicitante").innerHTML = Resp.nomecompl;
+                                        document.getElementById("voltasolicitante").value = Resp.nomecompl;
                                         document.getElementById("guardaCPF").value = Resp.cpf;
                                         document.getElementById("voltacpf").innerHTML = format_CnpjCpf(Resp.cpf);
                                         document.getElementById("cpfentregador").value = format_CnpjCpf(Resp.cpf);
@@ -269,7 +292,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("selecEntregador").value = "";
                                         document.getElementById("guardaPosCod").value = "";
-                                        document.getElementById("voltasolicitante").innerHTML = "";
+                                        document.getElementById("voltasolicitante").value = "";
                                         document.getElementById("guardaCPF").value = "";
                                         document.getElementById("voltacpf").innerHTML = "";
                                         document.getElementById("voltasetor").innerHTML = "";
@@ -283,7 +306,7 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
                 $("#cpfentregador").click(function(){
-                    document.getElementById("voltasolicitante").innerHTML = "";
+                    document.getElementById("voltasolicitante").value = "";
                     document.getElementById("selecEntregador").value = "";
                     document.getElementById("cpfentregador").value = "";
                     document.getElementById("guardaCPF").value = "";
@@ -291,37 +314,39 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("voltasetor").innerHTML = "";
                     document.getElementById("voltatelef").value = "";
                     document.getElementById("guardaPosCod").value = "";
+                    document.getElementById("voltasolicitante").disabled = false;
                 });
                 $("#cpfentregador").change(function(){
                     document.getElementById("selecEntregador").value = "";
                     document.getElementById("guardaCPF").value = "";
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscacpf&cpf="+encodeURIComponent(document.getElementById("cpfentregador").value), true);
+                        ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscacpfentregador&cpf="+encodeURIComponent(document.getElementById("cpfentregador").value), true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
 //alert(ajax.responseText);
                                     Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                     if(parseInt(Resp.coderro) === 0){
-                                        document.getElementById("voltasolicitante").innerHTML = Resp.nomecompl;
+                                        document.getElementById("voltasolicitante").value = Resp.nomecompl;
                                         document.getElementById("guardaCPF").value = Resp.cpf;
                                         document.getElementById("voltacpf").innerHTML = format_CnpjCpf(Resp.cpf);
-                                        document.getElementById("selecEntregador").value = Resp.PosCod;
                                         document.getElementById("voltasetor").innerHTML = Resp.siglasetor;
                                         document.getElementById("voltatelef").value = Resp.telef;
                                         document.getElementById("guardaPosCod").value = Resp.PosCod;
+                                        document.getElementById("selecEntregador").value = Resp.PosCod;
                                     }
-                                    if(parseInt(Resp.coderro) === 3){
-                                        document.getElementById("voltasolicitante").innerHTML = "Usuário não está autorizado a retirar chaves.";
-                                        document.getElementById("guardaCPF").value = "";
-                                        document.getElementById("voltasetor").innerHTML = "";
-                                        document.getElementById("voltatelef").value = "";
-                                        document.getElementById("guardaPosCod").value = ""
-                                        document.getElementById("cpfentregador").focus();
+                                    if(parseInt(Resp.coderro) === 3){ // está em poslog mas não está autorizado a retirar chaves
+                                        document.getElementById("voltasolicitante").value = Resp.nomecompl;
+                                        document.getElementById("guardaCPF").value = Resp.cpf;
+                                        document.getElementById("voltacpf").innerHTML = format_CnpjCpf(Resp.cpf);
+                                        document.getElementById("voltasetor").innerHTML = Resp.siglasetor;
+                                        document.getElementById("voltatelef").value = Resp.telef;
+                                        document.getElementById("guardaPosCod").value = Resp.PosCod;
+                                        document.getElementById("selecEntregador").value = Resp.PosCod;
                                     }
                                     if(parseInt(Resp.coderro) === 2){
-                                        document.getElementById("voltasolicitante").innerHTML = "Nada foi encontrado";
+                                        document.getElementById("voltasolicitante").value = "Nada foi encontrado";
                                         document.getElementById("guardaCPF").value = "";
                                         document.getElementById("voltasetor").innerHTML = "";
                                         document.getElementById("voltatelef").value = "";
@@ -347,7 +372,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("guardaPosCod").value = document.getElementById("agendaselecSolicitante").value;
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscalog&codigo="+document.getElementById("agendaselecSolicitante").value, true);
+                        ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscalog&codigo="+document.getElementById("agendaselecSolicitante").value+"&codChave="+document.getElementById("guardaCod").value, true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -360,6 +385,11 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("agendacpfsolicitante").value = format_CnpjCpf(Resp.cpf);
                                         document.getElementById("agendasetor").innerHTML = Resp.siglasetor;
                                         document.getElementById("agendatelef").value = Resp.telef;
+                                        if(parseInt(Resp.chaveautorizada) === 0){
+                                            document.getElementById("msgInfo2").innerHTML = "Usuário não vinculado a essa chave";
+                                            document.getElementById("msgInfo3").innerHTML = "O vínculo é feito pela DAF/ATI.";
+                                            document.getElementById("modalInfo").style.display = "block";
+                                        }
                                     }else{
                                         document.getElementById("agendaselecSolicitante").value = "";
                                         document.getElementById("guardaPosCod").value = "";
@@ -399,7 +429,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("guardaCPF").value = "";
                     ajaxIni();
                     if(ajax){
-                        ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscacpf&cpf="+encodeURIComponent(document.getElementById("agendacpfsolicitante").value), true);
+                        ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscacpf&cpf="+encodeURIComponent(document.getElementById("agendacpfsolicitante").value)+"&codChave="+document.getElementById("guardaCod").value, true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
@@ -413,6 +443,11 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("agendatelef").value = Resp.telef;
                                         document.getElementById("guardaPosCod").value = Resp.PosCod;
                                         document.getElementById("agendaselecSolicitante").value = Resp.PosCod;
+                                        if(parseInt(Resp.chaveautorizada) === 0){
+                                            document.getElementById("msgInfo2").innerHTML = "Usuário não vinculado a essa chave";
+                                            document.getElementById("msgInfo3").innerHTML = "O vínculo é feito pela DAF/ATI.";
+                                            document.getElementById("modalInfo").style.display = "block";
+                                        }
                                     }
                                     if(parseInt(Resp.coderro) === 3){
 //                                        document.getElementById("agendasolicitante").innerHTML = "Usuário não está autorizado a retirar chaves.";
@@ -460,8 +495,15 @@ if(!isset($_SESSION["usuarioID"])){
                                         }
                                         if(parseInt(Resp.pegachave) === 1){
                                             document.getElementById("retiraChave").checked = true;
+                                            document.getElementById("nomeUsuChaves").innerHTML = "Definir chaves autorizadas para: "+Resp.nomeusual; // para a escolha de chaves
+//                                            if(parseInt(document.getElementById("guardaEscolheChaves").value) === 1){ // escolha ativada - Campo esc_chaves1=1 em paramsis
+                                               document.getElementById("botaoChaves").style.visibility = "visible";
+//                                            }else{
+//                                                document.getElementById("botaoChaves").style.visibility = "hidden";
+//                                            }
                                         }else{
                                             document.getElementById("retiraChave").checked = false;
+                                            document.getElementById("botaoChaves").style.visibility = "hidden";
                                         }
                                         if(parseInt(Resp.fiscchaves) === 1){
                                             document.getElementById("fiscalChaves").checked = true;
@@ -490,6 +532,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("retiraChave").checked = false;
                     document.getElementById("fiscalChaves").checked = false;
                     document.getElementById("editChaves").checked = false;
+                    document.getElementById("botaoChaves").style.visibility = "hidden";
                 });
                 $("#configcpfsolicitante").change(function(){
                     document.getElementById("configselecSolicitante").value = "";
@@ -510,8 +553,15 @@ if(!isset($_SESSION["usuarioID"])){
                                         }
                                         if(parseInt(Resp.pegachave) === 1){
                                             document.getElementById("retiraChave").checked = true;
+                                            document.getElementById("nomeUsuChaves").innerHTML = "Definir chaves autorizadas para: "+Resp.nomeusual; // para a escolha de chaves
+//                                            if(parseInt(document.getElementById("guardaEscolheChaves").value) === 1){ // escolha ativada - Campo esc_chaves1=1 em paramsis
+                                                document.getElementById("botaoChaves").style.visibility = "visible";
+//                                            }else{
+//                                                document.getElementById("botaoChaves").style.visibility = "hidden";
+//                                            }
                                         }else{
                                             document.getElementById("retiraChave").checked = false;
+                                            document.getElementById("botaoChaves").style.visibility = "hidden";
                                         }
                                         if(parseInt(Resp.fiscchaves) === 1){
                                             document.getElementById("fiscalChaves").checked = true;
@@ -756,6 +806,8 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("agendamensagemErro").style.display = "none";
                 document.getElementById("cpfsolicitante").value = "";
                 document.getElementById("agendacpfsolicitante").value = "";
+                document.getElementById("selecSolicitante").disabled = false;
+                document.getElementById("cpfsolicitante").disabled = false;
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscaChave&codigo="+Cod, true);
@@ -1013,6 +1065,8 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("guardaCPF").value = Resp.cpf;
                                     document.getElementById("resultcpf").innerHTML = format_CnpjCpf(Resp.cpf);
                                     document.getElementById("resultsetor").innerHTML = Resp.siglasetor;
+                                    document.getElementById("selecSolicitante").disabled = true;
+                                    document.getElementById("cpfsolicitante").disabled = true;
                                     }
                                 }
                             }
@@ -1042,7 +1096,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("voltalocalchave").value = Resp.chavelocal;
                                     document.getElementById("voltasalachave").value = Resp.chavesala;
                                     document.getElementById("voltatelef").value = Resp.telef;
-                                    document.getElementById("voltasolicitante").innerHTML = Resp.nomecompl;
+                                    document.getElementById("voltasolicitante").value = Resp.nomecompl;
                                     document.getElementById("guardaPosCod").value = Resp.codusuretirou;
                                     document.getElementById("voltacpf").innerHTML = format_CnpjCpf(Resp.cpfretirou);
                                     document.getElementById("registroRetornoChave").style.display = "block";
@@ -1075,7 +1129,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("voltalocalchave").value = Resp.chavelocal;
                                     document.getElementById("voltasalachave").value = Resp.chavesala;
                                     document.getElementById("voltatelef").value = Resp.telef;
-                                    document.getElementById("voltasolicitante").innerHTML = Resp.nomecompl;
+                                    document.getElementById("voltasolicitante").value = Resp.nomecompl;
                                     document.getElementById("guardaPosCod").value = Resp.codusuretirou;
                                     document.getElementById("voltacpf").innerHTML = format_CnpjCpf(Resp.cpfretirou);
                                     document.getElementById("registroRetornoChave").style.display = "block";
@@ -1090,7 +1144,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function devolveChave(){
-                if(document.getElementById("guardaPosCod").value == ""){
+                if(document.getElementById("voltasolicitante").value == "" || document.getElementById("voltasolicitante").value == "Nada foi encontrado"){
                     return false;
                 }
                 if(document.getElementById("guardaCod").value == ""){
@@ -1100,15 +1154,20 @@ if(!isset($_SESSION["usuarioID"])){
                 if(ajax){
                     ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=devolveChave&codigo="+document.getElementById("guardaCod").value 
                     +"&cpfdevolve="+encodeURIComponent(document.getElementById("voltacpf").innerHTML)
-                    +"&codusudevolve="+document.getElementById("guardaPosCod").value, true);
+                    +"&codusudevolve="+document.getElementById("guardaPosCod").value
+                    +"&nomedevolve="+encodeURIComponent(document.getElementById("voltasolicitante").value)
+                    +"&telefdevolve="+encodeURIComponent(document.getElementById("voltatelef").value), true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
                             if(ajax.responseText){
 //alert(ajax.responseText);
                                 Resp2 = eval("(" + ajax.responseText + ")");  //Lê o array que vem
-                                if(parseInt(Resp.coderro) === 0){
+                                if(parseInt(Resp2.coderro) === 0){
                                     document.getElementById("registroRetornoChave").style.display = "none";
                                     document.getElementById("msgdevolv").innerHTML = "Chave "+Resp2.numchave+" DEVOLVIDA";
+                                    if(Resp2.nome != ""){
+                                        document.getElementById("msgUsuDevolv").innerHTML = "por "+Resp2.nome;
+                                    }
                                     document.getElementById("modalDevolvida").style.display = "block";
                                     $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
                                     $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");
@@ -1126,8 +1185,22 @@ if(!isset($_SESSION["usuarioID"])){
             function marcaChave(obj, Campo){
                 if(obj.checked === true){
                     Valor = 1;
+//                    if(parseInt(document.getElementById("guardaEscolheChaves").value) === 1){ // escolha ativada - Campo esc_chaves1=1 em paramsis
+                        if(document.getElementById("configselecSolicitante").value != ""){
+                            if(Campo == "chave"){
+                                document.getElementById("botaoChaves").style.visibility = "visible";
+                            }
+                        }
+//                    }
                 }else{
                     Valor = 0;
+//                    if(parseInt(document.getElementById("guardaEscolheChaves").value) === 1){ // escolha ativada - Campo esc_chaves1=1 em paramsis
+                        if(document.getElementById("configselecSolicitante").value != ""){
+                            if(Campo == "chave"){
+                                document.getElementById("botaoChaves").style.visibility = "hidden";
+                            }
+                        }
+//                    }
                 }
                 if(document.getElementById("configselecSolicitante").value == ""){
                     if(obj.checked === true){
@@ -1177,6 +1250,88 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 }
             }
+
+            function AbreModalChaves(){
+                document.getElementById("relacmodalChaves").style.display = "block";
+                $("#faixachaves").load("modulos/claviculario/escChave1.php?usuario="+document.getElementById("configselecSolicitante").value);
+            }
+            function fechaModalChaves(){
+                document.getElementById("relacmodalChaves").style.display = "none";
+            }
+            function marcaChaveInd(Obj, Cod){
+                if(Obj.checked === true){
+                    Valor = 1;
+                }else{
+                    Valor = 0;
+                }
+                if(ajax){
+                    ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=marcaChaveUsuario&param="+Valor+"&codigo="+Cod+"&usuario="+document.getElementById("configselecSolicitante").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.")
+                                }else{
+                                    document.getElementById("chavesmarcadas").innerHTML = "Marcadas: "+Resp.marcadas;
+                                    if(parseInt(Resp.todas) === 1){
+                                        document.getElementById("checkGeral").checked = true;
+                                    }else{
+                                        document.getElementById("checkGeral").checked = false;
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                } 
+            }
+
+            function marcaChaveTodas(Obj){
+                if(Obj.checked === true){
+                    Valor = 1;
+                    Texto = "Confirma marcar todas as chaves?"
+                }else{
+                    Valor = 0;
+                    Texto = "Confirma DESMARCAR todas as chaves?"
+                }
+                $.confirm({
+                    title: 'Confirmação!',
+                    content: Texto,
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=marcaChaveTodas&param="+Valor+"&usuario="+document.getElementById("configselecSolicitante").value, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro no servidor.")
+                                            }
+                                            $("#faixachaves").load("modulos/claviculario/escChave1.php?usuario="+document.getElementById("configselecSolicitante").value);
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                            if(Obj.checked === true){
+                                Obj.checked = false;
+                            }else{
+                                Obj.checked = true;
+                            }
+                        }
+                    }
+                });
+            }
+
 
             function apagaAgendaChaves(Cod){ // põe ativo = 2
                 $.confirm({
@@ -1282,6 +1437,23 @@ if(!isset($_SESSION["usuarioID"])){
             }
             function fechaAlerta(){
                 document.getElementById("modalAlerta").style.display = "none";
+            }
+            function fechaInfo(){
+                document.getElementById("modalInfo").style.display = "none";
+                document.getElementById("selecSolicitante").value = "";
+                document.getElementById("guardaPosCod").value = 0;
+                document.getElementById("resultsolicitante").innerHTML = "";
+                document.getElementById("guardaCPF").value = "";
+                document.getElementById("resultcpf").innerHTML = "";
+                document.getElementById("cpfsolicitante").value = "";
+                document.getElementById("resultsetor").innerHTML = "";
+
+                document.getElementById("agendacpfsolicitante").value = "";
+                document.getElementById("agendasolicitante").innerHTML = "";
+                document.getElementById("agendacpf").innerHTML = "";
+                document.getElementById("agendasetor").innerHTML = "";
+                document.getElementById("agendatelef").value = "";
+                document.getElementById("agendaselecSolicitante").value = "";
             }
             function modif(){
                 document.getElementById("mudou").value = "1";
@@ -1408,97 +1580,6 @@ if(!isset($_SESSION["usuarioID"])){
             )
         ");
 
-        //tabela ruim
-        $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves WHERE ativo IS NULL ");
-        $row2 = pg_num_rows($rs2);
-        if($row2 > 0){
-            pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".chaves_prov");
-
-            pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".chaves_prov (
-                id SERIAL PRIMARY KEY, 
-                chavenum integer NOT NULL DEFAULT 0,
-                chavecompl character varying(10), 
-                chavenumcompl VARCHAR(50),
-                chavelocal VARCHAR(100),
-                chavesala VARCHAR(50),
-                chaveobs text, 
-                presente smallint NOT NULL DEFAULT 1, 
-                ativo smallint NOT NULL DEFAULT 1, 
-                usuins bigint NOT NULL DEFAULT 0,
-                datains timestamp without time zone DEFAULT '3000-12-31',
-                usuedit bigint NOT NULL DEFAULT 0,
-                dataedit timestamp without time zone DEFAULT '3000-12-31' 
-               )
-            ");
-
-            $rs1 = pg_query($Conec, "SELECT id, chavenum, chavecompl, chavenumcompl, chavelocal, chavesala, chaveobs, presente, usuins, datains, ativo FROM ".$xProj.".chaves WHERE ativo = 1");
-            $row1 = pg_num_rows($rs1);
-            if($row1 > 0){
-                while($tbl1 = pg_fetch_row($rs1)){
-                    $Num = $tbl1[1];
-                    $ComplNum = $tbl1[2];
-                    $Compl = $tbl1[3];
-                    $Local = $tbl1[4];
-                    $Sala = $tbl1[5];
-                    $Obs = $tbl1[6];
-                    $Pres = $tbl1[7];
-                    $UsuIns = $tbl1[8];
-                    $DataIns = $tbl1[9];
-                    $Ativo = $tbl1[10];
-
-                    $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves_prov");
-                    $tblCod = pg_fetch_row($rsCod);
-                    $CodigoNovo = $tblCod[0]+1;
-
-                    pg_query($Conec, "INSERT INTO ".$xProj.".chaves_prov (id, chavenum, chavecompl, chavenumcompl, chavelocal, chavesala, chaveobs, presente, usuins, datains, ativo) 
-                    VALUES ($CodigoNovo, $Num, '$ComplNum', '$Compl', '$Local', '$Sala', '$Obs', $Pres, $UsuIns, '$DataIns', $Ativo) ");
-                }
-            }
-            
-                pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".chaves");
-                pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".chaves (
-                    id SERIAL PRIMARY KEY, 
-                    chavenum integer NOT NULL DEFAULT 0,
-                    chavecompl character varying(10), 
-                    chavenumcompl VARCHAR(50),
-                    chavelocal VARCHAR(100),
-                    chavesala VARCHAR(50),
-                    chaveobs text, 
-                    presente smallint NOT NULL DEFAULT 1, 
-                    ativo smallint NOT NULL DEFAULT 1, 
-                    usuins bigint NOT NULL DEFAULT 0,
-                    datains timestamp without time zone DEFAULT '3000-12-31',
-                    usuedit bigint NOT NULL DEFAULT 0,
-                    dataedit timestamp without time zone DEFAULT '3000-12-31' 
-                )
-                ");
-
-            $rs1 = pg_query($Conec, "SELECT id, chavenum, chavecompl, chavenumcompl, chavelocal, chavesala, chaveobs, presente, usuins, datains, ativo FROM ".$xProj.".chaves_prov WHERE ativo = 1");
-            $row1 = pg_num_rows($rs1);
-            if($row1 > 0){
-                while($tbl1 = pg_fetch_row($rs1)){
-                    $Num = $tbl1[1];
-                    $ComplNum = $tbl1[2];
-                    $Compl = $tbl1[3];
-                    $Local = $tbl1[4];
-                    $Sala = $tbl1[5];
-                    $Obs = $tbl1[6];
-                    $Pres = $tbl1[7];
-                    $UsuIns = $tbl1[8];
-                    $DataIns = $tbl1[9];
-                    $Ativo = $tbl1[10];
-    
-                    $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves");
-                    $tblCod = pg_fetch_row($rsCod);
-                    $CodigoNovo = $tblCod[0]+1;
-    
-                    pg_query($Conec, "INSERT INTO ".$xProj.".chaves (id, chavenum, chavecompl, chavenumcompl, chavelocal, chavesala, chaveobs, presente, usuins, datains, ativo) 
-                    VALUES ($CodigoNovo, $Num, '$ComplNum', '$Compl', '$Local', '$Sala', '$Obs', $Pres, $UsuIns, '$DataIns', $Ativo) ");
-                }
-            }
-        }
-
-
 //        pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".chaves_ctl");
         pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".chaves_ctl (
             id SERIAL PRIMARY KEY, 
@@ -1512,6 +1593,8 @@ if(!isset($_SESSION["usuarioID"])){
             cpfretira VARCHAR(20),
             cpfdevolve VARCHAR(20),
             telef VARCHAR(20),
+            nomedevolve VARCHAR(200), 
+            telefdevolve VARCHAR(20), 
             ativo smallint NOT NULL DEFAULT 1, 
             usuins bigint NOT NULL DEFAULT 0,
             datains timestamp without time zone DEFAULT '3000-12-31',
@@ -1534,7 +1617,7 @@ if(!isset($_SESSION["usuarioID"])){
             )
         ");
 
-        $rs = pg_query($Conec, "SELECT chavenum FROM ".$xProj.".chaves LIMIT 3 ");
+        $rs = pg_query($Conec, "SELECT chavenum FROM ".$xProj.".chaves LIMIT 1 ");
         $row = pg_num_rows($rs);
         if($row == 0){
             //Insere as primeiras 10 chaves
@@ -1547,6 +1630,20 @@ if(!isset($_SESSION["usuarioID"])){
             }
         }
 
+//        pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".chaves_aut");
+        pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".chaves_aut (
+            id SERIAL PRIMARY KEY, 
+            chaves_id integer NOT NULL DEFAULT 0,
+            pessoas_id bigint NOT NULL DEFAULT 0,
+            ativo smallint NOT NULL DEFAULT 1, 
+            usuins bigint NOT NULL DEFAULT 0,
+            datains timestamp without time zone DEFAULT '3000-12-31',
+            usuedit bigint NOT NULL DEFAULT 0,
+            dataedit timestamp without time zone DEFAULT '3000-12-31'
+            )"
+        );
+
+
 //______________________
 
         $Clav = parEsc("clav", $Conec, $xProj, $_SESSION["usuarioID"]); // entrega e devolução
@@ -1554,6 +1651,7 @@ if(!isset($_SESSION["usuarioID"])){
         $Chave = parEsc("chave", $Conec, $xProj, $_SESSION["usuarioID"]); // pode pegar chaves
         $FiscClav = parEsc("fisc_clav", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
         $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
+        $EscChave = parAdm("esc_chaves1", $Conec, $xProj); // marca para aparecer/ocultar escolha de chaves a retirar por usuário 
 
         $OpUsuSolic = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave = 1 And ativo = 1 ORDER BY nomecompl, nomeusual");
         $OpUsuAgenda = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave = 1 And ativo = 1 ORDER BY nomecompl, nomeusual");
@@ -1611,6 +1709,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardaEditaChaves" value="<?php echo $ClavEdit; ?>" />
         <input type="hidden" id="guardaEntregaChaves" value="<?php echo $Clav; ?>" />
         <input type="hidden" id="codagenda" value="0" />
+        <input type="hidden" id="guardaEscolheChaves" value="<?php echo $EscChave; ?>" />
         
         <div id="editaModalChave" class="relacmodal">
             <div class="modal-content-relacChave corPreta">
@@ -1834,17 +1933,20 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <tr>
                             <td class="etiqAzul">Nome:</td>
-                            <td colspan="3"><label id="voltasolicitante" style="min-width: 200px; padding-left: 3px; font-size: 120%;"></label></td>
+                            <td colspan="3">
+<!--                                <label id="voltasolicitante" style="min-width: 200px; padding-left: 3px; font-size: 120%;"></label> -->
+                                <input disabled type="text" id="voltasolicitante" style="min-width: 350px; padding-left: 3px; border: 1px solid #666; border-radius: 5px;" onkeypress="if(event.keyCode===13){javascript:foco('voltatelef');return false;}" />
+                            </td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">CPF:</td>
-                            <td><label id="voltacpf" style="padding-left: 3px;"></label></td>
+                            <td><label id="voltacpf" style="padding-left: 3px; min-width: 120px;"></label></td>
                             <td class="etiqAzul">Setor:</td>
                             <td><label id="voltasetor" style="padding-left: 3px;"></label></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Telefone Celular:</td>
-                            <td colspan="3"><input type="text" id="voltatelef" style="width: 200px; text-align: center; border: 1px solid #666; border-radius: 5px;" onchange="modif();" /></td>
+                            <td colspan="3"><input type="text" id="voltatelef" style="width: 200px; text-align: center; border: 1px solid #666; border-radius: 5px;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('voltasolicitante');return false;}" /></td>
                         </tr>
                         <tr>
                             <td colspan="4" style="text-align: center; padding-top: 10px;"></td>
@@ -1853,7 +1955,6 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="2" style="text-align: left; padding-top: 10px;"><button class="botpadramarelo" id="botagenda2" style="font-size: 80%;" onclick="abreAgendaChave2();">Agendar retirada desta Chave</button></td>
                             <td colspan="2" style="text-align: center; padding-top: 10px;"><button class="botpadrred" style="font-size: 80%;" onclick="devolveChave();">Registrar Retorno</button></td>
                         </tr>
-
                         <tr>
                             <td colspan="4" style="text-align: center; padding-top: 5px;"></td>
                         </tr>
@@ -1885,7 +1986,7 @@ if(!isset($_SESSION["usuarioID"])){
                             </td>
                             <td class="etiqAzul"><label class="etiqAzul">ou CPF:</label></td>
                             <td>
-                                <input type="text" id="cpfentregador" style="width: 130px; text-align: center; border: 1px solid #666; border-radius: 5px;" onkeypress="if(event.keyCode===13){javascript:foco('selecEntregador');return false;}" title="Procura por CPF. Digite o CPF do entregador."/>
+                                <input type="text" id="cpfentregador" style="width: 130px; text-align: center; border: 1px solid #666; border-radius: 5px;" onkeypress="if(event.keyCode===13){javascript:foco('voltasolicitante');return false;}" title="Procura por CPF. Digite o CPF do entregador. Enter em branco para digitar um nome."/>
                             </td>
                         </tr>
                         <tr>
@@ -2110,6 +2211,9 @@ if(!isset($_SESSION["usuarioID"])){
                         <td colspan="4" style="border-bottom: 1px solid; padding-left: 20px;">
                             <input type="checkbox" id="retiraChave" title="Autorizado a retirar chaves do claviculário da Portaria" onchange="marcaChave(this, 'chave');" >
                             <label for="retiraChave" title="Autorizado a retirar chaves do claviculário da Portaria">usuário autorizado a retirar chaves do claviculário da Portaria</label>
+                            <label style="padding-left: 5px;"></label>
+                            <!-- Há um gatilho em paramsis para requerer ou interromper a exigência de determinar qual chave um usuário pode pegar -->
+                            <button id="botaoChaves" <?php if($EscChave == 1){echo "class='botpadrTijolo'";}else{echo "class='botpadrblue'";} ?> style="font-size: 70%;" onclick="AbreModalChaves();" <?php if($EscChave == 1){echo "title='Vínculo ligado - Definir quais chaves este usuário pode pegar.'";}else{echo "title='Vínculo desligado - Definir quais chaves este usuário pode pegar.'";} ?> >Chaves</button>
                         </td>
                     </tr>
                         <tr>
@@ -2212,6 +2316,7 @@ if(!isset($_SESSION["usuarioID"])){
             <div class="modal-content-tarjaAzul">
                 <span class="close" onclick="fechaDevolv();">&times;</span>
                 <div id="msgdevolv" style="color: white; font-size: 300%; text-align: center;">Chave DEVOLVIDA</div>
+                <div id="msgUsuDevolv" style="color: white; font-size: 110%; text-align: center;"></div>
             </div>
         </div> <!-- Fim Modal-->
 
@@ -2222,6 +2327,25 @@ if(!isset($_SESSION["usuarioID"])){
                 <div id="msgAlerta2" style="color: white; font-size: 150%; text-align: center;"></div>
                 <div id="msgAlerta3" style="color: white; font-size: 150%; text-align: center;"></div>
                 <div id="msgAlerta4" style="color: white; font-size: 150%; text-align: center;"></div>
+            </div>
+        </div> <!-- Fim Modal-->
+
+        <div id="modalInfo" class="relacmodal">
+            <div class="modal-content-tarjaAzul">
+                <span class="close" onclick="fechaInfo();">&times;</span>
+                <div id="msgInfo1" style="color: white; font-size: 300%; text-align: center;">Sem Vínculo</div>
+                <div id="msgInfo2" style="color: white; font-size: 150%; text-align: center;"></div>
+                <div id="msgInfo3" style="color: white; text-align: center;"></div>
+            </div>
+        </div> <!-- Fim Modal-->
+
+        <!-- div modal para escolher chaves por usuário  -->
+        <div id="relacmodalChaves" class="relacmodal"> 
+            <div class="modal-content-Chaves corPreta">
+                <span class="close" onclick="fechaModalChaves();">&times;</span>
+                <div style="text-align: center;"><h6>Claviculário da Portaria</h6></div>
+                <div id="nomeUsuChaves" style="text-align: center;"></div>
+                <div id="faixachaves"></div>
             </div>
         </div> <!-- Fim Modal-->
 

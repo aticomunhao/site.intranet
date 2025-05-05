@@ -13,7 +13,7 @@ if(!isset($_SESSION["usuarioID"])){
         <link rel="stylesheet" type="text/css" media="screen" href="class/dataTable/datatables.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
         <link rel="stylesheet" type="text/css" media="screen" href="comp/css/relacmod.css" />
-        <script src="class/superfish/js/jquery.js"></script><!-- versão 1.12.1 veio com o superfish - tem que usar esta, a versão 3.6 não recarrega a página-->
+        <script src="class/superfish/js/jquery.js"></script>  <!-- versão 1.12.1 veio com o superfish - tem que usar esta, a versão 3.6 não recarrega a página-->
         <script src="class/dataTable/datatables.min.js"></script>
         <script src="comp/js/jquery-confirm.min.js"></script> 
         <style>
@@ -26,9 +26,17 @@ if(!isset($_SESSION["usuarioID"])){
                 width: 80%; /* acertar de acordo com a tela */
                 max-width: 900px;
             }
+            .modal-content-Chaves{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 15% auto; 
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 50%;
+                max-width: 900px;
+            }
         </style>
         <script>
-
             function ajaxIni(){
                 try{
                 ajax = new ActiveXObject("Microsoft.XMLHTTP");}
@@ -95,6 +103,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     }
                                     document.getElementById("usulogin").value = format_CnpjCpf(Resp.usuario);
                                     document.getElementById("usuarioNome").value = Resp.usuarioNome;
+                                    document.getElementById("nomeUsuChaves").innerHTML = "Definir chaves autorizadas para: "+Resp.usuarioNome; // para a escolha de chaves
                                     document.getElementById("nomecompl").value = Resp.nomecompl;
                                     document.getElementById("diaAniv").value = Resp.diaAniv;
                                     document.getElementById("mesAniv").value = Resp.mesAniv;
@@ -227,10 +236,15 @@ if(!isset($_SESSION["usuarioID"])){
                                     }
                                     if(parseInt(Resp.pegachave) === 1){
                                         document.getElementById("retiraChave").checked = true;
+//                                        if(parseInt(document.getElementById("guardaEscolheChaves").value) === 1){ // escolha ativada - Campo esc_chaves1=1 em paramsis
+                                            document.getElementById("botaoChaves").style.visibility = "visible";
+//                                        }else{
+//                                            document.getElementById("botaoChaves").style.visibility = "hidden";
+//                                        }
                                     }else{
                                         document.getElementById("retiraChave").checked = false;
+                                        document.getElementById("botaoChaves").style.visibility = "hidden";
                                     }
-
                                     if(parseInt(Resp.fiscchaves) === 1){
                                         document.getElementById("fiscalChaves").checked = true;
                                     }else{
@@ -650,9 +664,104 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
+            function mostraBotChave(Obj, Cod){
+                document.getElementById("mudou").value = "1";
+//                if(parseInt(Cod) === 1){
+                    if(Obj.checked === true){
+                        document.getElementById("botaoChaves").style.visibility = "visible";
+                    }else{
+                        document.getElementById("botaoChaves").style.visibility = "hidden";
+                    }
+//                }else{
+//                    document.getElementById("botaoChaves").style.visibility = "hidden";
+//                }
+            }
+
+            function marcaChaveInd(Obj, Cod){
+                if(Obj.checked === true){
+                    Valor = 1;
+                }else{
+                    Valor = 0;
+                }
+                if(ajax){
+                    ajax.open("POST", "modulos/config/registr.php?acao=marcaChaveUsuario&param="+Valor+"&codigo="+Cod+"&usuario="+document.getElementById("guardaid_click").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.")
+                                }else{
+                                    document.getElementById("chavesmarcadas").innerHTML = "Marcadas: "+Resp.marcadas;
+                                    if(parseInt(Resp.todas) === 1){
+                                        document.getElementById("checkGeral").checked = true;
+                                    }else{
+                                        document.getElementById("checkGeral").checked = false;
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                } 
+            }
+
+            function marcaChaveTodas(Obj){
+                if(Obj.checked === true){
+                    Valor = 1;
+                    Texto = "Confirma marcar todas as chaves?"
+                }else{
+                    Valor = 0;
+                    Texto = "Confirma DESMARCAR todas as chaves?"
+                }
+                $.confirm({
+                    title: 'Confirmação!',
+                    content: Texto,
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/config/registr.php?acao=marcaChaveTodas&param="+Valor+"&usuario="+document.getElementById("guardaid_click").value, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro no servidor.")
+                                            }
+                                            $("#faixachaves").load("modulos/config/jChaves.php?usuario="+document.getElementById("guardaid_click").value);
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                            if(Obj.checked === true){
+                                Obj.checked = false;
+                            }else{
+                                Obj.checked = true;
+                            }
+                        }
+                    }
+                });
+            }
+
+            function AbreModalChaves(){
+                document.getElementById("relacmodalChaves").style.display = "block";
+                $("#faixachaves").load("modulos/config/jChaves.php?usuario="+document.getElementById("guardaid_click").value);
+            }
+
             function fechaModal(){
                 document.getElementById("guardaid_click").value = 0;
                 document.getElementById("relacmodalUsu").style.display = "none";
+            }
+            function fechaModalChaves(){
+                document.getElementById("relacmodalChaves").style.display = "none";
             }
             function foco(id){
                 document.getElementById(id).focus();
@@ -926,6 +1035,8 @@ if(!isset($_SESSION["usuarioID"])){
             $OpcoesSetor = pg_query($Conec, "SELECT CodSet, siglasetor FROM ".$xProj.".setores ORDER BY siglasetor");
             $OpcoesEscala = pg_query($Conec, "SELECT id, siglagrupo FROM ".$xProj.".escalas_gr ORDER BY siglagrupo");
             $OpExecTarefa = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl");
+
+            $EscChave = parAdm("esc_chaves1", $Conec, $xProj); // marca para aparecer/ocultar escolha de chaves a retirar por usuário 
         ?>
 
         <input type="hidden" id="UsuAdm" value="<?php echo $_SESSION["AdmUsu"] ?>" />
@@ -940,6 +1051,8 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardaAtiv" value="1" />
         <input type="hidden" id="guardaLro" value="0" />
         <input type="hidden" id="guardaBens" value="0" />
+        <input type="hidden" id="guardaEscolheChaves" value="<?php echo $EscChave; ?>" />
+        
 
         <div style="margin: 20px; border: 2px solid blue; border-radius: 15px; padding: 20px; min-height: 200px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
@@ -1253,8 +1366,11 @@ if(!isset($_SESSION["usuarioID"])){
                     <tr>
                         <td class="etiq" style="border-bottom: 1px solid;" title="Autorizado a retirar chaves do claviculário da Portaria">Claviculário Portaria:</td>
                         <td colspan="4" style="padding-left: 20px; border-bottom: 1px solid;">
-                            <input type="checkbox" id="retiraChave" title="Autorizado a retirar chaves do claviculário da Portaria" onchange="modif();" >
+                            <input type="checkbox" id="retiraChave" title="Autorizado a retirar chaves do claviculário da Portaria" onchange="mostraBotChave(this, <?php echo $EscChave; ?>);" >
                             <label for="retiraChave" title="Autorizado a retirar chaves do claviculário da Portaria">usuário autorizado a retirar chaves do claviculário da Portaria</label>
+                            <label style="padding-left: 5px;"></label>
+                            <!-- Há um gatilho em paramsis para requerer ou interromper a exigência de determinar qual chave um usuário pode pegar -->
+                            <button id="botaoChaves" class="botpadrblue" style="font-size: 70%;" onclick="AbreModalChaves();" title="Definir quais chaves este usuário pode pegar.">Chaves</button>
                         </td>
                         <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(12);" title="Guia rápido"></td>
                     </tr>
@@ -1321,7 +1437,6 @@ if(!isset($_SESSION["usuarioID"])){
                         <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(19);" title="Guia rápido"></td>
                     </tr>
 
-
                     <tr>
                         <td colspan="6"><hr style="margin: 3px; padding: 2px;"></td>
                     </tr>
@@ -1339,5 +1454,16 @@ if(!isset($_SESSION["usuarioID"])){
                 </table>
            </div>
         </div> <!-- Fim Modal-->
+
+        <!-- div modal para escolher chaves por usuário  -->
+        <div id="relacmodalChaves" class="relacmodal"> 
+            <div class="modal-content-Chaves">
+                <span class="close" onclick="fechaModalChaves();">&times;</span>
+                <div style="text-align: center;"><h6>Claviculário da Portaria</h6></div>
+                <div id="nomeUsuChaves" style="text-align: center;"></div>
+                <div id="faixachaves"></div>
+            </div>
+        </div> <!-- Fim Modal-->
+
     </body>
 </html>

@@ -84,13 +84,21 @@ if(isset($_REQUEST["acao"])){
         $Erro = 0;
         $Cod = (int) filter_input(INPUT_GET, 'codigo');  // id de chaves_tll
         $CodUsu = (int) filter_input(INPUT_GET, 'codusudevolve');
+        $NomeDevolve = addslashes(filter_input(INPUT_GET, 'nomedevolve'));
+        $TelefDevolve = addslashes(filter_input(INPUT_GET, 'telefdevolve'));
 
         $Cpf = filter_input(INPUT_GET, 'cpfdevolve'); 
         $Cpf1 = addslashes($Cpf);
         $Cpf2 = str_replace(".", "", $Cpf1);
         $GuardaCpf = str_replace("-", "", $Cpf2);
 
-        $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves3_ctl SET datavolta = NOW(), funcrecebe = ". $_SESSION['usuarioID'].", cpfdevolve = '$GuardaCpf', usudevolve = $CodUsu, usuedit = ". $_SESSION['usuarioID'].", dataedit = NOW() WHERE id = $Cod");
+        $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE pessoas_id = $CodUsu");
+        $row2 = pg_num_rows($rs2);
+        if($row2 > 0){
+           $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves3_ctl SET datavolta = NOW(), funcrecebe = ". $_SESSION['usuarioID'].", cpfdevolve = '$GuardaCpf', usudevolve = $CodUsu, usuedit = ". $_SESSION['usuarioID'].", dataedit = NOW() WHERE id = $Cod");
+        }else{
+           $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves3_ctl SET nomedevolve = '$NomeDevolve', telefdevolve = '$TelefDevolve', datavolta = NOW(), funcrecebe = ". $_SESSION['usuarioID'].", cpfdevolve = '$GuardaCpf', usudevolve = $CodUsu, usuedit = ". $_SESSION['usuarioID'].", dataedit = NOW() WHERE id = $Cod");
+        } 
 
         $rs = pg_query($Conec, "SELECT chaves_id, ".$xProj.".chaves3.chavenum, ".$xProj.".chaves3.chavenumcompl 
         FROM ".$xProj.".chaves3_ctl INNER JOIN ".$xProj.".chaves3 ON ".$xProj.".chaves3_ctl.chaves_id = ".$xProj.".chaves3.id 
@@ -99,15 +107,23 @@ if(isset($_REQUEST["acao"])){
         if($row > 0){
             $tbl = pg_fetch_row($rs);
             $CodChave = $tbl[0];
-//            $ChaveNum = str_pad($tbl[1], 3, 0, STR_PAD_LEFT).$tbl[2];
             $ChaveNum = str_pad($tbl[1], 3, 0, STR_PAD_LEFT);
             pg_query($Conec, "UPDATE ".$xProj.".chaves3 SET presente = 1 WHERE id = $CodChave");
         }
         if(!$rs){
             $Erro = 1;
         }
+        //retorna o nome de quem devolveu a chave
+        $rs1 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $CodUsu");
+        $row1 = pg_num_rows($rs1);
+        if($row1 > 0){
+            $tbl1 = pg_fetch_row($rs1);
+            $Nome = $tbl1[0];
+        }else{
+            $Nome = "";
+        }
 
-        $var = array("coderro"=>$Erro, "numchave"=>$ChaveNum);
+        $var = array("coderro"=>$Erro, "numchave"=>$ChaveNum, "nome"=>$Nome);
         $responseText = json_encode($var);
         echo $responseText;
     }
@@ -127,6 +143,7 @@ if(isset($_REQUEST["acao"])){
     if($Acao == "buscalog"){
         $Erro = 0;
         $Cod = (int) filter_input(INPUT_GET, 'codigo'); 
+        $CodChave = (int) filter_input(INPUT_GET, 'codChave'); 
 
         $rs = pg_query($Conec, "SELECT nomecompl, nomeusual, cpf, siglasetor 
         FROM ".$xProj.".poslog INNER JOIN ".$xProj.".setores ON ".$xProj.".poslog.codsetor = ".$xProj.".setores.codset 
@@ -174,7 +191,16 @@ if(isset($_REQUEST["acao"])){
                 $Telef = "";
              }
         }
-        $var = array("coderro"=>$Erro, "nomecompl"=>$tbl[0], "nome"=>$tbl[1], "cpf"=>$tbl[2], "siglasetor"=>$tbl[3], "telef"=>$Telef );
+        //Verifica se usuário $Cod pode pegar a chave $CodChave
+        $EscChave = parAdm("esc_chaves3", $Conec, $xProj); // marca para ligar/desligar chaves autorizadas a retirar por usuário - arq paramsis
+        if($EscChave == 1){ // ligado
+            $rs3 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves3_aut WHERE pessoas_id = $Cod And chaves_id = $CodChave And ativo = 1");
+            $Autoriz = pg_num_rows($rs3);
+        }else{ // desligado
+            $Autoriz = 1; // todos autorizados
+        }
+
+        $var = array("coderro"=>$Erro, "nomecompl"=>$tbl[0], "nome"=>$tbl[1], "cpf"=>$tbl[2], "siglasetor"=>$tbl[3], "telef"=>$Telef, "chaveautorizada"=>$Autoriz );
         $responseText = json_encode($var);
         echo $responseText;
     }
@@ -185,6 +211,9 @@ if(isset($_REQUEST["acao"])){
         $Cpf1 = addslashes($Cpf);
         $Cpf2 = str_replace(".", "", $Cpf1);
         $GuardaCpf = str_replace("-", "", $Cpf2);
+        $CodChave = (int) filter_input(INPUT_GET, 'codChave'); 
+
+        $EscChave = parAdm("esc_chaves3", $Conec, $xProj); // marca para ligar/desligar chaves autorizadas a retirar por usuário - arq paramsis
 
         //pega o último número de telefone informado
         $rs1 = pg_query($Conec, "SELECT telef FROM ".$xProj.".chaves3_ctl WHERE cpfretira = '$GuardaCpf' ORDER BY datasaida DESC");
@@ -200,34 +229,49 @@ if(isset($_REQUEST["acao"])){
         FROM ".$xProj.".poslog INNER JOIN ".$xProj.".setores ON ".$xProj.".poslog.codsetor = ".$xProj.".setores.codset 
         WHERE cpf = '$GuardaCpf' "); //And chave = 1
         $row = pg_num_rows($rs);
-        if($row > 0){
+        if($row > 0){ // está no site em poslog
             $tbl = pg_fetch_row($rs);
             $Chave = $tbl[5]; // 1 = está autorizado a retirar chaves
+            $Cod = $tbl[4]; // cod do usuário para procurar o vínculo com a chave
             if($Chave == 0){
                 $Erro = 3;    
             }
-            $var = array("coderro"=>$Erro, "nomecompl"=>$tbl[0], "nome"=>$tbl[1], "cpf"=>$tbl[2], "siglasetor"=>$tbl[3], "PosCod"=>$tbl[4], "telef"=>$Telef, "chave"=>$Chave);
-        }else{
-            $rs2 = pg_query($ConecPes, "SELECT nome_completo, nome_resumido, cpf, id, TO_CHAR(dt_nascimento, 'DD/MM/YYYY'), TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') 
-            FROM ".$xPes.".pessoas 
-            WHERE ".$xPes.".pessoas.cpf = '$GuardaCpf' ");
-            $row2 = pg_num_rows($rs2);
-            if($row2 > 0){
-                $tbl2 = pg_fetch_row($rs2);
 
-                $NomeC = GUtils::normalizarNome($tbl2[0]);  // Normatizar nomes próprios
-                $NomeComp = addslashes($NomeC);
-                $NomeCompl = str_replace('"', "'", $NomeComp); // substitui aspas duplas por simples
+            //Verifica se usuário $Cod pode pegar a chave $CodChave
+            if($EscChave == 1){ // ligado
+                $rs3 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_aut WHERE pessoas_id = $Cod And chaves_id = $CodChave And ativo = 1");
+                $Autoriz = pg_num_rows($rs3);
+            }else{ // desligado
+                $Autoriz = 1; // todos autorizados
+            }
 
-                if(!is_null($tbl2[1])){ // nome_resumido
-                    $NomeU = $tbl2[1];
-                    $NomeUs = GUtils::normalizarNome($NomeU);  // Normatizar nomes próprios
-                    $NomeUsu = addslashes($NomeUs);
-                    $NomeUsual = str_replace('"', "'", $NomeUsu); // substitui aspas duplas por simples
+            $var = array("coderro"=>$Erro, "nomecompl"=>$tbl[0], "nome"=>$tbl[1], "cpf"=>$tbl[2], "siglasetor"=>$tbl[3], "PosCod"=>$tbl[4], "telef"=>$Telef, "chave"=>$Chave, "chaveautorizada"=>$Autoriz);
+        }else{ // vai procurar no arquivo pessoas
+            if($EscChave == 0){ // desligado     
+                $rs2 = pg_query($ConecPes, "SELECT nome_completo, nome_resumido, cpf, id, TO_CHAR(dt_nascimento, 'DD/MM/YYYY'), TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') 
+                FROM ".$xPes.".pessoas 
+                WHERE ".$xPes.".pessoas.cpf = '$GuardaCpf' ");
+                $row2 = pg_num_rows($rs2);
+                if($row2 > 0){
+                    $tbl2 = pg_fetch_row($rs2);
+
+                    $NomeC = GUtils::normalizarNome($tbl2[0]);  // Normatizar nomes próprios
+                    $NomeComp = addslashes($NomeC);
+                    $NomeCompl = str_replace('"', "'", $NomeComp); // substitui aspas duplas por simples
+
+                    if(!is_null($tbl2[1])){ // nome_resumido
+                        $NomeU = $tbl2[1];
+                        $NomeUs = GUtils::normalizarNome($NomeU);  // Normatizar nomes próprios
+                        $NomeUsu = addslashes($NomeUs);
+                        $NomeUsual = str_replace('"', "'", $NomeUsu); // substitui aspas duplas por simples
+                    }else{
+                        $NomeUsual = "";
+                    }
+                    $var = array("coderro"=>$Erro, "nomecompl"=>$NomeCompl, "nome"=>$NomeUsual, "cpf"=>$tbl2[2], "siglasetor"=>'', "PosCod"=>$tbl2[3], "telef"=>'', "chave"=>'1', "chaveautorizada"=>'1');
                 }else{
-                    $NomeUsual = "";
+                    $Erro = 2;
+                    $var = array("coderro"=>$Erro );
                 }
-                $var = array("coderro"=>$Erro, "nomecompl"=>$NomeCompl, "nome"=>$NomeUsual, "cpf"=>$tbl2[2], "siglasetor"=>'', "PosCod"=>$tbl2[3], "telef"=>'', "chave"=>'1');
             }else{
                 $Erro = 2;
                 $var = array("coderro"=>$Erro );
@@ -563,11 +607,11 @@ if(isset($_REQUEST["acao"])){
         $Erro = 0;
         $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de polog
 
-        $rs1 = pg_query($Conec, "SELECT clav3, chave3, fisc_clav3, cpf, clav_edit3 FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
+        $rs1 = pg_query($Conec, "SELECT clav3, chave3, fisc_clav3, cpf, clav_edit3, nomeusual FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
         $row1 = pg_num_rows($rs1);
         if($row1 > 0){
             $tbl1 = pg_fetch_row($rs1);
-            $var = array("coderro"=>$Erro, "claviculario"=>$tbl1[0], "pegachave"=>$tbl1[1], "fiscchaves"=>$tbl1[2], "cpf"=>$tbl1[3], "editachave"=>$tbl1[4]);
+            $var = array("coderro"=>$Erro, "claviculario"=>$tbl1[0], "pegachave"=>$tbl1[1], "fiscchaves"=>$tbl1[2], "cpf"=>$tbl1[3], "editachave"=>$tbl1[4], "nomeusual"=>$tbl1[5]);
         }else{
             $Erro = 1;
             $var = array("coderro"=>$Erro);
@@ -583,7 +627,7 @@ if(isset($_REQUEST["acao"])){
         $Cpf2 = str_replace(".", "", $Cpf1);
         $GuardaCpf = str_replace("-", "", $Cpf2);
 
-        $rs1 = pg_query($Conec, "SELECT clav3, chave3, fisc_clav3, cpf, pessoas_id, clav_edit3 FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf'");
+        $rs1 = pg_query($Conec, "SELECT clav3, chave3, fisc_clav3, cpf, pessoas_id, clav_edit3, nomeusual FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf'");
         if(!$rs1){
             $Erro = 1;
             $var = array("coderro"=>$Erro);
@@ -591,7 +635,7 @@ if(isset($_REQUEST["acao"])){
         $row1 = pg_num_rows($rs1);
         if($row1 > 0){
             $tbl1 = pg_fetch_row($rs1);
-            $var = array("coderro"=>$Erro, "claviculario"=>$tbl1[0], "pegachave"=>$tbl1[1], "fiscchaves"=>$tbl1[2], "cpf"=>$tbl1[3], "PosCod"=>$tbl1[4], "editachave"=>$tbl1[5]);
+            $var = array("coderro"=>$Erro, "claviculario"=>$tbl1[0], "pegachave"=>$tbl1[1], "fiscchaves"=>$tbl1[2], "cpf"=>$tbl1[3], "PosCod"=>$tbl1[4], "editachave"=>$tbl1[5], "nomeusual"=>$tbl1[6]);
         }else{
             $Erro = 2;
             $var = array("coderro"=>$Erro);
@@ -683,6 +727,82 @@ if(isset($_REQUEST["acao"])){
         $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves3_ctl SET ativo = 0 WHERE chaves_id = $Cod And usudevolve = 0 ");
         $rs1 = pg_query($Conec, "UPDATE ".$xProj.".chaves3 SET ativo = 0 WHERE id = $Cod");
         if(!$rs1){
+            $Erro = 1;
+        }
+        $var = array("coderro"=>$Erro);
+        $responseText = json_encode($var);
+        echo $responseText;
+    }
+
+    if($Acao =="marcaChaveUsuario"){
+        $CodChave = (int) filter_input(INPUT_GET, 'codigo'); // id de Chaves
+        $Param = (int) filter_input(INPUT_GET, 'param');
+        $Usu = (int) filter_input(INPUT_GET, 'usuario');
+        $Erro = 0;
+        $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves3_aut WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
+        $row = pg_num_rows($rs);
+        if($row > 0){
+            if($Param == 1 ){
+                $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves3_aut SET ativo = 1, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
+            }else{
+                $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves3_aut SET ativo = 0, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
+            }
+        }else{ // inserir
+            $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves3_aut");
+            $tblCod = pg_fetch_row($rsCod);
+            $Codigo = $tblCod[0];
+            $CodigoNovo = ($Codigo+1); 
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".chaves3_aut (id, chaves_id, pessoas_id, ativo, usuins, datains) 
+            VALUES ( $CodigoNovo, $CodChave, $Usu, 1, ".$_SESSION["usuarioID"].", NOW())");
+        }
+        if(!$rs){
+            $Erro = 1;
+        }
+        //Conta as chaves marcadas
+        $rsCont = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves3_aut WHERE pessoas_id = $Usu And ativo = 1");
+        $rowCont = pg_num_rows($rsCont);
+        //Conta o total de chaves
+        $rsT = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves WHERE ativo = 1 ");
+        $rowT = pg_num_rows($rsT);
+    
+        $Todos = 0;
+        if($rowCont == $rowT){
+            $Todos = 1;
+        }
+    
+        $var = array("coderro"=>$Erro, "marcadas"=>$rowCont, "todas"=>$Todos);
+        $responseText = json_encode($var);
+        echo $responseText;
+    }
+
+    if($Acao =="marcaChaveTodas"){
+        $Param = (int) filter_input(INPUT_GET, 'param');
+        $Usu = (int) filter_input(INPUT_GET, 'usuario');
+        $Erro = 0;
+    
+        if($Param == 0){ // desmarcar todas
+            $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves3_aut SET ativo = 0, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE pessoas_id = $Usu "); 
+        }else{ // marcar todas
+            pg_query($Conec, "UPDATE ".$xProj.".chaves3_aut SET ativo = 1 WHERE pessoas_id = $Usu"); // se tiver marca
+            $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves WHERE ativo = 1 ORDER BY chavenum, chavenumcompl ");
+            $row = pg_num_rows($rs);
+            if($row > 0){
+                while($tbl = pg_fetch_row($rs)){
+                    $CodChave = $tbl[0];
+                    $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves3_aut WHERE chaves_id = $CodChave And pessoas_id = $Usu");
+                    $row1 = pg_num_rows($rs1);
+                    if($row1 == 0){
+                        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves3_aut");
+                        $tblCod = pg_fetch_row($rsCod);
+                        $Codigo = $tblCod[0];
+                        $CodigoNovo = ($Codigo+1); 
+                        pg_query($Conec, "INSERT INTO ".$xProj.".chaves3_aut (id, chaves_id, pessoas_id, ativo, usuins, datains) 
+                        VALUES ( $CodigoNovo, $CodChave, $Usu, 1, ".$_SESSION["usuarioID"].", NOW())");
+                    }
+                }
+            }
+        }
+        if(!$rs){
             $Erro = 1;
         }
         $var = array("coderro"=>$Erro);

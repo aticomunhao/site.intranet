@@ -112,13 +112,16 @@ if($Acao =="loglog"){
                     // Aumenta número de acessos e grava data hora do login  - logfim = now() para mostrar on line  - extsen tamanho da senha para o login sem enter
                     pg_query($Conec, "UPDATE ".$xProj.".poslog SET numacessos = (numacessos + 1), logini = NOW(), logfim = NOW(), extsen = $TamSen WHERE pessoas_id = $id "); 
 
-                    $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".usulog"); // guarda login e logout
-                    $tblCod = pg_fetch_row($rsCod);
-                    $Codigo = $tblCod[0];
-                    $CodigoNovo = ($Codigo+1);
-                    $Naveg = Navegador();
-                    pg_query($Conec, "INSERT INTO ".$xProj.".usulog (id, pessoas_id, datalogin, navegador) VALUES ($CodigoNovo, $id, NOW(), '$Naveg') "); //grava data login
-                    $_SESSION["CodUsuLog"] = $CodigoNovo;
+                    //Para evitar dois lançamentos
+                    if(!isset($_SESSION["CodUsuLog"])){
+                        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".usulog"); // guarda login e logout
+                        $tblCod = pg_fetch_row($rsCod);
+                        $Codigo = $tblCod[0];
+                        $CodigoNovo = ($Codigo+1);
+                        $Naveg = Navegador();
+                        pg_query($Conec, "INSERT INTO ".$xProj.".usulog (id, pessoas_id, datalogin, navegador) VALUES ($CodigoNovo, $id, NOW(), '$Naveg') "); //grava data login
+                        $_SESSION["CodUsuLog"] = $CodigoNovo;
+                    }
 
                     $_SESSION["AdmBens"] = parEsc("bens", $Conec, $xProj, $_SESSION["usuarioID"]); // ver se está marcado para administrar bens encontrados
                     $_SESSION["FiscBens"] = parEsc("fiscbens", $Conec, $xProj, $_SESSION["usuarioID"]); // ver se está marcado para ver bens encontrados
@@ -1205,7 +1208,6 @@ if($Acao =="logbuscaTamsen"){ // pega o tamanho da senha para entrar ao acabar d
     $responseText = json_encode($var);
     echo $responseText;
 }
-
 if($Acao =="salvaTema"){
     $Valor = (int) filter_input(INPUT_GET, 'valor');
     $Erro = 0;
@@ -1217,6 +1219,82 @@ if($Acao =="salvaTema"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
+if($Acao =="marcaChaveUsuario"){
+    $CodChave = (int) filter_input(INPUT_GET, 'codigo'); // id de Chaves
+    $Param = (int) filter_input(INPUT_GET, 'param');
+    $Usu = (int) filter_input(INPUT_GET, 'usuario');
+    $Erro = 0;
+    $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_aut WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
+    $row = pg_num_rows($rs);
+    if($row > 0){
+        if($Param == 1 ){
+            $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 1, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
+        }else{
+            $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 0, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
+        }
+    }else{ // inserir
+        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves_aut");
+        $tblCod = pg_fetch_row($rsCod);
+        $Codigo = $tblCod[0];
+        $CodigoNovo = ($Codigo+1); 
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".chaves_aut (id, chaves_id, pessoas_id, ativo, usuins, datains) 
+        VALUES ( $CodigoNovo, $CodChave, $Usu, 1, ".$_SESSION["usuarioID"].", NOW())");
+    }
+    if(!$rs){
+        $Erro = 1;
+    }
+    //Conta as chaves marcadas
+    $rsCont = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_aut WHERE pessoas_id = $Usu And ativo = 1");
+    $rowCont = pg_num_rows($rsCont);
+    //Conta o total de chaves
+    $rsT = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves WHERE ativo = 1 ");
+    $rowT = pg_num_rows($rsT);
+
+    $Todos = 0;
+    if($rowCont == $rowT){
+        $Todos = 1;
+    }
+
+    $var = array("coderro"=>$Erro, "marcadas"=>$rowCont, "todas"=>$Todos);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+if($Acao =="marcaChaveTodas"){
+    $Param = (int) filter_input(INPUT_GET, 'param');
+    $Usu = (int) filter_input(INPUT_GET, 'usuario');
+    $Erro = 0;
+
+    if($Param == 0){ // desmarcar todas
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 0, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE pessoas_id = $Usu "); 
+    }else{ // marcar todas
+        pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 1 WHERE pessoas_id = $Usu"); // se tiver marca
+        $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves WHERE ativo = 1 ORDER BY chavenum, chavenumcompl ");
+        $row = pg_num_rows($rs);
+        if($row > 0){
+            while($tbl = pg_fetch_row($rs)){
+                $CodChave = $tbl[0];
+                $rs1 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_aut WHERE chaves_id = $CodChave And pessoas_id = $Usu");
+                $row1 = pg_num_rows($rs1);
+                if($row1 == 0){
+                    $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves_aut");
+                    $tblCod = pg_fetch_row($rsCod);
+                    $Codigo = $tblCod[0];
+                    $CodigoNovo = ($Codigo+1); 
+                    pg_query($Conec, "INSERT INTO ".$xProj.".chaves_aut (id, chaves_id, pessoas_id, ativo, usuins, datains) 
+                    VALUES ( $CodigoNovo, $CodChave, $Usu, 1, ".$_SESSION["usuarioID"].", NOW())");
+                }
+            }
+        }
+    }
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
 
 
 function removeInj($VemDePost){  // função para remover injeções SQL

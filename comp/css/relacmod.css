@@ -30,7 +30,15 @@
   .eItalic{
     font-style: italic;
   }
-
+  .eBold{
+    font-weight: bold;
+  }
+  .eNorm{
+    font-weight: normal;
+  }
+  .bordaInf{
+    border-bottom: 1px solid gray;
+  }
  .relacmodal{
      display: none; /* oculto default */
      position: fixed;
@@ -333,7 +341,7 @@
     padding-right: 5px; 
     border-radius: 5px;
     color: white;
-    font-weight: bold;;
+    font-weight: bold;
     background-color: red;
  }
  .resetbotazul{

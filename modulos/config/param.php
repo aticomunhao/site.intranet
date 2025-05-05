@@ -1007,6 +1007,9 @@
                     $DescInat = "06 horas";
                     break;
             }
+            $EscChave1 = parAdm("esc_chaves1", $Conec, $xProj); // marca para aparecer/ocultar escolha de chaves a retirar por usuário 
+            $EscChave2 = parAdm("esc_chaves2", $Conec, $xProj);
+            $EscChave3 = parAdm("esc_chaves3", $Conec, $xProj);
         ?>
         <input type="hidden" id="guardacod" value="0" /> <!-- id ocorrência -->
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
@@ -1123,6 +1126,41 @@
                     </tr>
                 </table>
             </div>
+
+
+<!-- Claviculários  -->
+        <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
+                - <b>Claviculários</b>:<br>
+            <table style="margin: 0 auto;">
+                <tr>
+                    <td colspan="2" style="font-weight: bold; padding-top: 5px;">- Vincula o usuário ao número da Chave no Claviculário -</td>
+                </tr>
+                <tr>
+                    <td style="font-size: 80%; padding-top: 5px; text-align: right;">Claviculário Portaria:</td>
+                    <td style="text-align: left; padding-top: 3px; padding-left: 10px;">
+                        <input type="radio" name="defineChaves" id="defineChaves11" value="1" <?php if($EscChave1 == 1){echo "CHECKED";} ?> title="Exige definição de chaves autorizadas por usuário" onclick="salvaParam(value, 'esc_chaves1');"><label for="defineChaves11" style="font-size: 12px; padding-left: 3px;"> Ligado</label>
+                        <input type="radio" name="defineChaves" id="defineChaves12" value="0" <?php if($EscChave1 == 0){echo "CHECKED";} ?> title="Usuários podem pegar quqlquer chave" onclick="salvaParam(value, 'esc_chaves1');"><label for="defineChaves12" style="font-size: 12px; padding-left: 3px;"> Desligado</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size: 80%; padding-top: 5px; text-align: right;">Claviculário DAF:</td>
+                    <td style="text-align: left; padding-top: 3px; padding-left: 10px;">
+                        <input type="radio" name="defineChaves2" id="defineChaves21" value="1" <?php if($EscChave2 == 1){echo "CHECKED";} ?> title="Exige definição de chaves autorizadas por usuário" onclick="salvaParam(value, 'esc_chaves2');"><label for="defineChaves21" style="font-size: 12px; padding-left: 3px;"> Ligado</label>
+                        <input type="radio" name="defineChaves2" id="defineChaves22" value="0" <?php if($EscChave2 == 0){echo "CHECKED";} ?> title="Usuários podem pegar quqlquer chave" onclick="salvaParam(value, 'esc_chaves2');"><label for="defineChaves22" style="font-size: 12px; padding-left: 3px;"> Desligado</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size: 80%; padding-top: 5px; text-align: right;">Claviculário Lacradas:</td>
+                    <td style="text-align: left; padding-top: 3px; padding-left: 10px;">
+                        <input type="radio" name="defineChaves3" id="defineChaves31" value="1" <?php if($EscChave3 == 1){echo "CHECKED";} ?> title="Exige definição de chaves autorizadas por usuário" onclick="salvaParam(value, 'esc_chaves3');"><label for="defineChaves31" style="font-size: 12px; padding-left: 3px;"> Ligado</label>
+                        <input type="radio" name="defineChaves3" id="defineChaves32" value="0" <?php if($EscChave3 == 0){echo "CHECKED";} ?> title="Usuários podem pegar quqlquer chave" onclick="salvaParam(value, 'esc_chaves3');"><label for="defineChaves32" style="font-size: 12px; padding-left: 3px;"> Desligado</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="font-size: 70%; padding-top: 5px;">Quando ligado restringe um usuário a determinadas chaves. Escolha das chaves no cadastro de cada usuário.</td>
+                </tr>
+            </table>
+        </div>
 
 <!-- Leitura Hidrômetro  -->
             <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
@@ -1301,7 +1339,6 @@
                             </select>
                         </td>
                     </tr>
-
                     <tr>
                         <td style="font-size: 80%; padding-top: 5px;">Quem pode ver os arquivos carregados:</td>
                         <td style="text-align: right; padding-top: 5px;">

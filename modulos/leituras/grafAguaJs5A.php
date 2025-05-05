@@ -183,10 +183,10 @@ if(!isset($_SESSION["usuarioID"])){
                     echo "{x: xArray1, y: yArray1, mode:'lines+markers', name: $AnoAtual,},";
                 }
                 if($row2 > 0){
-                    echo "{x: xArray2, y: yArray2, mode:'lines+markers', name: ($AnoAtual-1),}";
+                    echo "{x: xArray2, y: yArray2, mode:'lines+markers', name: ($AnoAtual-1),},";
                 }
                 if($row3 > 0){
-                    echo "{x: xArray3, y: yArray3, mode:'lines+markers', name: ($AnoAtual-2),}";
+                    echo "{x: xArray3, y: yArray3, mode:'lines+markers', name: ($AnoAtual-2),},";
                 }
                 if($row4 > 0){
                     echo "{x: xArray4, y: yArray4, mode:'lines+markers', name: ($AnoAtual-3),},";
