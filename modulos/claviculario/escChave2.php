@@ -20,7 +20,7 @@
     $rowMarc = pg_num_rows($rsMarc); // conta chaves marcadas
 
     $rs = pg_query($Conec, "SELECT id, chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente, chavecompl 
-    FROM ".$xProj.".chaves WHERE ativo = 1 ORDER BY chavenum, chavenumcompl ");
+    FROM ".$xProj.".chaves2 WHERE ativo = 1 ORDER BY chavenum, chavenumcompl ");
     $row = pg_num_rows($rs);
 
     $Todas = 0;

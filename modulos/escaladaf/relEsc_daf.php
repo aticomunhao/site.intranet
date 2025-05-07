@@ -242,6 +242,20 @@
                                 $CorFundo = "#EEEEE0; opacity: 1; color: black;"; //Marfim
                             }
                         }
+                        if($CorListas == 5){
+                            if($Tema == 1){ //escuro
+                                $CorFundo = "white; opacity: 0.5; color: black;";
+                            }else{
+                                $CorFundo = "#BEBEBE; opacity: 1; color: black;"; //Cinza
+                            }
+                        }
+                        if($CorListas == 6){ // sem uso
+                            if($Tema == 1){ //escuro
+                                $CorFundo = "white; opacity: 0.5; color: black;";
+                            }else{
+                                $CorFundo = "#FF00FF; opacity: 1; color: black;"; //Magenta
+                            }
+                        }
                     }
                     if(is_null($tbl2[2]) || $tbl2[2] == ""){
                         $Nome = substr($tbl2[1], 0, $Quant); //nome completo

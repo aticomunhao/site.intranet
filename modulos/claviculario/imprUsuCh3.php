@@ -31,6 +31,8 @@ if(isset($_REQUEST["acao"])){
     $Cabec2 = $tblCabec[1];
     $Cabec3 = $tblCabec[2];
 
+    $EscChave = parAdm("esc_chaves3", $Conec, $xProj); // marca para aparecer/ocultar escolha de chaves a retirar por usuário 
+
      class PDF extends FPDF{
         function Footer(){
            // Vai para 1.5 cm da parte inferior
@@ -239,16 +241,14 @@ if(isset($_REQUEST["acao"])){
             $pdf->ln(4);
             $lin = $pdf->GetY();
             $pdf->Line(20, $lin, 200, $lin);
-            $pdf->SetFont('Arial', '', 10);
 
             while($tbl0 = pg_fetch_row($rs0)){
                 $Cod = $tbl0[0];
                 $pdf->SetX(20);   //substr('abcdef', 1, 3); // bcd
-                $pdf->Cell(30, 5, substr($tbl0[2], 0, 17), 0, 0, 'L');
-                $pdf->Cell(65, 5, substr($tbl0[1], 0, 40), 0, 0, 'L');
+                $pdf->Cell(30, 4, substr($tbl0[2], 0, 17), 0, 0, 'L');
+                $pdf->Cell(65, 4, substr($tbl0[1], 0, 40), 0, 0, 'L');
                 $pdf->SetFont('Arial', '', 8);
-                $pdf->Cell(25, 5, Mask("###.###.###-##",$tbl0[3]), 0, 0, 'L');
-                $pdf->SetFont('Arial', '', 10);
+                $pdf->Cell(25, 4, Mask("###.###.###-##",$tbl0[3]), 0, 0, 'L');
 
                 //Procura telefones fornecidos ao retirar chaves
                 $rs2 = pg_query($Conec, "SELECT telef FROM ".$xProj.".chaves3_ctl WHERE usuretira = $Cod ORDER BY datasaida DESC");
@@ -260,21 +260,48 @@ if(isset($_REQUEST["acao"])){
                     $Telef = "";
                 }
                 $pdf->SetFont('Arial', '', 8);
-                $pdf->Cell(35, 5, substr($Telef, 0, 40), 0, 0, 'L');
-                $pdf->SetFont('Arial', '', 10);
+                $pdf->Cell(35, 4, substr($Telef, 0, 40), 0, 0, 'L');
 
                 //Conta quantas retiradas de chave
                 $rs2 = pg_query($Conec, "SELECT COUNT(usuretira) FROM ".$xProj.".chaves3_ctl WHERE usuretira = $Cod And ativo = 1");
                 $tbl2 = pg_fetch_row($rs2);
+                $pdf->Cell(20, 4, $tbl2[0], 0, 1, 'R');
 
-                $pdf->Cell(20, 5, $tbl2[0], 0, 1, 'R');
+                if($EscChave == 1){
+                    $rs3 = pg_query($Conec, "SELECT chavenum, chavecompl, chaves_id FROM ".$xProj.".chaves3 INNER JOIN ".$xProj.".chaves3_aut ON ".$xProj.".chaves3.id = ".$xProj.".chaves3_aut.chaves_id 
+                    WHERE pessoas_id = $Cod And ".$xProj.".chaves3_aut.ativo = 1 ORDER BY chavenum, chavecompl");
+                    $row3 = pg_num_rows($rs3);
+                    if($row3 > 0){
+                        $pdf->SetFont('Arial', 'I', 8);
+                        $pdf->SetX(70);
+                        $pdf->Cell(20, 3, "Chaves vinculadas: ", 0, 0, 'R');
+                        while($tbl3 = pg_fetch_row($rs3)){
+                            $CodChave = $tbl3[2];
+                            //Conta quantas retiradas de chave
+                            $rs4 = pg_query($Conec, "SELECT COUNT(usuretira) FROM ".$xProj.".chaves3_ctl WHERE usuretira = $Cod And ativo = 1 And chaves_id = $CodChave");
+                            $tbl4 = pg_fetch_row($rs4);
+                            $pdf->SetX(90);
+                            $pdf->Cell(15, 3, str_pad($tbl3[0], 3, 0, STR_PAD_LEFT)." ".$tbl3[1], 0, 0, 'L');
+                            $pdf->Cell(15, 3, "Retiradas: ", 0, 0, 'R');
+                            $pdf->Cell(10, 3, $tbl4[0], 0, 1, 'R');
+
+                            $lin = $pdf->GetY();
+                            $pdf->Line(90, $lin, 130, $lin);
+                        }
+                    }else{
+                        $pdf->SetFont('Arial', 'I', 8);
+                        $pdf->SetX(80);
+                        $pdf->Cell(20, 3, "Chaves vinculadas: Nenhuma", 0, 1, 'R');
+                    }
+                }
+                $pdf->ln(2);
                 $lin = $pdf->GetY();
                 $pdf->Line(20, $lin, 200, $lin);
             }
 
-            $pdf->SetX(50);
+            $pdf->SetX(20);
             $pdf->SetFont('Arial', 'I', 8);
-            $pdf->Cell(150, 5, "Total: ".$row0, 0, 1, 'L');
+            $pdf->Cell(150, 5, "Total: ".$row0." Usuários", 0, 1, 'L');
             $pdf->SetFont('Arial', '', 10);
             $lin = $pdf->GetY();               
             $pdf->Line(20, $lin, 200, $lin);

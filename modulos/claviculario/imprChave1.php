@@ -184,7 +184,8 @@ if(isset($_REQUEST["acao"])){
                     $pdf->ln(1);
                     $pdf->SetX(25);
                     $pdf->SetFont('Arial', 'I', 6);
-                    $pdf->Cell(25, 5, "Ret: ".$rowCont."/".$rowTot, 0, 0, 'L'); // núm de retiradas de cada chave, mensal ou anual
+//                    $pdf->Cell(25, 5, "Ret: ".$rowCont."/".$rowTot, 0, 0, 'L'); // núm de retiradas de cada chave, mensal ou anual
+                    $pdf->Cell(25, 5, "", 0, 0, 'L');
 
                     $pdf->SetFont('Arial', 'I', 8);
                     $pdf->Cell(30, 3, "Retirada", 0, 0, 'C');
@@ -392,7 +393,9 @@ if(isset($_REQUEST["acao"])){
        
         $rs0 = pg_query($Conec, "SELECT ".$xProj.".chaves.id, chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente, chavecompl 
         FROM ".$xProj.".chaves INNER JOIN ".$xProj.".chaves_ctl on ".$xProj.".chaves.id = ".$xProj.".chaves_ctl.chaves_id 
-        WHERE ".$xProj.".chaves.ativo = 1 And chavenum != 0 And ".$xProj.".chaves_ctl.ativo = 1 ORDER BY chavenum");
+        WHERE ".$xProj.".chaves.ativo = 1 And chavenum != 0 And ".$xProj.".chaves_ctl.ativo = 1 
+        GROUP BY ".$xProj.".chaves.id ORDER BY chavenum");
+  
         $row0 = pg_num_rows($rs0);
         $pdf->SetFont('Arial', 'I', 14);
         if($Acao == "listamesChavesSoMovimentados"){
@@ -475,7 +478,8 @@ if(isset($_REQUEST["acao"])){
                     $pdf->ln(1);
                     $pdf->SetX(25);
                     $pdf->SetFont('Arial', 'I', 6);
-                    $pdf->Cell(25, 5, "Ret: ".$rowCont."/".$rowTot, 0, 0, 'L');// núm de retiradas de cada chave, mensal ou anual
+//                    $pdf->Cell(25, 5, "Ret: ".$rowCont."/".$rowTot, 0, 0, 'L');// núm de retiradas de cada chave, mensal ou anual
+                    $pdf->Cell(25, 5, "", 0, 0, 'L');
 
                     $pdf->SetFont('Arial', 'I', 8);
                     $pdf->Cell(30, 3, "Retirada", 0, 0, 'C');

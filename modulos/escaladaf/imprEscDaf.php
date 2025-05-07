@@ -166,6 +166,18 @@ if(!isset($_SESSION['AdmUsu'])){
             $CorFundo2 = 238;
             $CorFundo3 = 224;
         }
+        if($CorListas == 5){
+            $CorFundo1 = 190;  // Cinza
+            $CorFundo2 = 190;
+            $CorFundo3 = 190;
+        }
+        if($CorListas == 6){ // sem uso
+            $CorFundo1 = 255; // Magenta
+            $CorFundo2 = 0;
+            $CorFundo3 = 255;
+        }
+
+
 
         $rsEft = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ");
         $rowEft = pg_num_rows($rsEft);
@@ -254,7 +266,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         $Cargo = "";
                     }
 
-                    //Nummeração do efetivo
+                    //Numeração do efetivo
                     $pdf->SetTextColor(152, 152, 152);
                     $pdf->SetFont('Arial', '' , 7);
                     $pdf->Cell(3, 5, $Cont, 0, 0, 'C', true);

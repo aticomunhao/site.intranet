@@ -2556,12 +2556,15 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                     </tr>
                     <tr>
                         <td colspan="5" style="text-align: center;">
-                            <label class="etiqAzul" title="Cor das listas na tela e na impressão do PDF">Cor das Listas (Tema: Claro): </label>
+                            <label class="etiqAzul" title="Cor das listas na tela (Tema: Claro) e na impressão do PDF">Cor das Listas: </label>
                             <input type="radio" name="corlistas" id="corlista0" value="0" <?php if($CorListas == 0){echo "CHECKED";} ?> title="Branco" onclick="salvaCor(0);"><label for="corlista0"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #FFFFFF; font-size: 70%;">Branco</div></label>
                             <input type="radio" name="corlistas" id="corlista1" value="1" <?php if($CorListas == 1){echo "CHECKED";} ?> title="Cornsilk" onclick="salvaCor(1);"><label for="corlista1"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #FFF8DC; font-size: 70%;">Cornsilk</div></label>
                             <input type="radio" name="corlistas" id="corlista2" value="1" <?php if($CorListas == 2){echo "CHECKED";} ?> title="Azure" onclick="salvaCor(2);"><label for="corlista2"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #F0FFFF; font-size: 70%;">Azure</div></label>
                             <input type="radio" name="corlistas" id="corlista3" value="1" <?php if($CorListas == 3){echo "CHECKED";} ?> title="Lavanda" onclick="salvaCor(3);"><label for="corlista3"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #E6E6FA; font-size: 70%;">Lavanda</div></label>
                             <input type="radio" name="corlistas" id="corlista4" value="1" <?php if($CorListas == 4){echo "CHECKED";} ?> title="Marfim" onclick="salvaCor(4);"><label for="corlista4"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #EEEEE0; font-size: 70%;">Marfim</div></label>
+                            <input type="radio" name="corlistas" id="corlista5" value="1" <?php if($CorListas == 5){echo "CHECKED";} ?> title="Cinza" onclick="salvaCor(5);"><label for="corlista5"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #BEBEBE; font-size: 70%;">Cinza</div></label>
+<!--                            <input type="radio" name="corlistas" id="corlista6" value="1" <?php if($CorListas == 6){echo "CHECKED";} ?> title="Magenta" onclick="salvaCor(6);"><label for="corlista6"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #FF00FF; font-size: 70%;">Magenta</div></label> -->
+
                         </td>
                     </tr>
                     <tr>

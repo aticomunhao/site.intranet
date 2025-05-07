@@ -44,16 +44,16 @@
                                     <?php
                                 }else{
                                     ?>
-                                    <div class="quadrinho"> <?php echo str_pad($tbl[1], 3, 0, STR_PAD_LEFT); ?></div>
+                                    <div class="quadrinho" title="Número da chave"> <?php echo str_pad($tbl[1], 3, 0, STR_PAD_LEFT); ?></div>
                                     <?php
                                 }
                                 ?>
                             </td>
                             <td><div class="quadrinho" title="Complemento ao número da chave"> <?php echo $tbl[7]; ?></div></td>
-                            <td><div class="quadrinho"> <?php echo $tbl[4]; ?></div></td>
-                            <td><div class="quadrinho" style="font-size: 80%; text-align: left;"> <?php echo $tbl[2]; ?></div></td>
-                            <td><div class="quadrinho" style="font-size: 80%; text-align: left;"> <?php echo $tbl[3]; ?></div></td>
-                            <td><div class="quadrinho" style="font-size: 80%; text-align: left;"> <?php echo $tbl[5]; ?></div></td>
+                            <td><div class="quadrinho" title="Sala"> <?php echo $tbl[4]; ?></div></td>
+                            <td><div class="quadrinho" style="font-size: 80%; text-align: left;" title="Nome da Sala"> <?php echo $tbl[2]; ?></div></td>
+                            <td><div class="quadrinho" style="font-size: 80%; text-align: left;" title="Local"> <?php echo $tbl[3]; ?></div></td>
+                            <td><div class="quadrinho" style="font-size: 80%; text-align: left;" title="Observações"> <?php echo $tbl[5]; ?></div></td>
                             <td class="etiq aCentro">
                                 <?php
                                 if($Presente == 1){

@@ -107,6 +107,14 @@ if(!isset($_SESSION["usuarioID"])){
                 padding-right: 2px;
                 text-align: left;
             }
+            .modalMsg-content{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 10% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 60%; 
+            }
         </style>
         <script>
              function ajaxIni(){
@@ -158,9 +166,9 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#cpfentregador").mask("999.999.999-99");
                 $("#agendacpfsolicitante").mask("999.999.999-99");
                 $("#configcpfsolicitante").mask("999.999.999-99");
-                $("#resulttelef").mask("(61) 9 9999-9999");
-                $("#voltatelef").mask("(61) 9 9999-9999");
-                $("#agendatelef").mask("(61) 9 9999-9999");
+                $("#resulttelef").mask("(99) 9 9999-9999");
+                $("#voltatelef").mask("(99) 9 9999-9999");
+                $("#agendatelef").mask("(99) 9 9999-9999");
                 $("#agendadata").mask("99/99/9999");
                 $('#agendadata').datepicker({ uiLibrary: 'bootstrap5', locale: 'pt-br', format: 'dd/mm/yyyy' });
 
@@ -1400,7 +1408,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function resumoUsuChaves(){
-                window.open("modulos/claviculario/imprUsuCh1.php?acao=listaUsuarios", "ChavesUsu");
+                window.open("modulos/claviculario/imprUsuCh1.php?acao=listaUsuarios", "ChavesUsu1");
             }
             function abreChavesConfig(){
                 document.getElementById("registroChaves").checked = false;
@@ -1410,6 +1418,9 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("configcpfsolicitante").value = "";
                 document.getElementById("configselecSolicitante").value = "";
                 document.getElementById("modalChavesConfig").style.display = "block";
+            }
+            function carregaHelp(){
+                document.getElementById("relacHelp").style.display = "block";
             }
             function fechaModalConfig(){
                 document.getElementById("modalChavesConfig").style.display = "none";
@@ -1455,10 +1466,13 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("agendatelef").value = "";
                 document.getElementById("agendaselecSolicitante").value = "";
             }
+            function fechaHelp(){
+                document.getElementById("relacHelp").style.display = "none";
+            }
+
             function modif(){
                 document.getElementById("mudou").value = "1";
             }
-
             function foco(id){
                 document.getElementById(id).focus();
             }
@@ -1684,6 +1698,8 @@ if(!isset($_SESSION["usuarioID"])){
                 </div>
                 <label style="padding-left: 20px;"></label>
                 <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="abreImprChaves();">PDF</button>
+                <label style="padding-left: 10px;"></label>
+                <img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelp();" title="Guia rápido">
             </div>
 
             <div id="faixaMensagem" style="display: none; position: relative; margin: 70px; padding: 20px; text-align: center;">
@@ -2186,21 +2202,21 @@ if(!isset($_SESSION["usuarioID"])){
 
                 <table style="margin: 0 auto; width: 85%;">
                     <tr>
-                        <td class="etiq" title="Registrar a entrega e devolução das chaves do claviculário da Portaria">Portaria: </td>
+                        <td class="etiqAzul" title="Registrar a entrega e devolução das chaves do claviculário da Portaria">Portaria: </td>
                         <td colspan="4">
                             <input type="checkbox" id="registroChaves" title="Registrar a entrega e devolução das chaves do claviculário da Portaria" onchange="marcaChave(this, 'clav');" >
                             <label for="registroChaves" title="Registrar a entrega e devolução das chaves do claviculário da Portaria">registrar a entrega e devolução das chaves do claviculário na Portaria</label>
                         </td>
                     </tr>
                     <tr>
-                        <td class="etiq" title="Inserir, modificar, editar a descrição das chaves do claviculário da Portaria">DAF:</td>
+                        <td class="etiqAzul" title="Inserir, modificar, editar a descrição das chaves do claviculário da Portaria">DAF:</td>
                         <td colspan="4">
                             <input type="checkbox" id="editChaves" title="Gerenciar, inserir, modificar a descrição das chaves do claviculário da Portaria" onchange="marcaChave(this, 'clav_edit');" >
                             <label for="editChaves" title="Inserir, modificar, editar a descrição das chaves do claviculário da Portaria">inserir, editar e apagar chaves do claviculário da Portaria</label>
                         </td>
                     </tr>
                     <tr>
-                        <td class="etiq" title="Apenas fiscalizar o funcionamento do claviculário da Portaria">DAF: </td>
+                        <td class="etiqAzul" title="Apenas fiscalizar o funcionamento do claviculário da Portaria">DAF: </td>
                         <td colspan="4">
                             <input type="checkbox" id="fiscalChaves" title="Apenas fiscalizar o funcionamento do claviculário da Portaria" onchange="marcaChave(this, 'fisc_clav');" >
                             <label for="fiscalChaves" title="Apenas fiscalizar o funcionamento do claviculário da Portaria">fiscalizar o funcionamento do claviculário da Portaria</label>
@@ -2348,6 +2364,44 @@ if(!isset($_SESSION["usuarioID"])){
                 <div id="faixachaves"></div>
             </div>
         </div> <!-- Fim Modal-->
+
+        <!-- div modal para instruções -->
+        <div id="relacHelp" class="relacmodal">
+            <div class="modalMsg-content">
+                <span class="close" onclick="fechaHelp();">&times;</span>
+                <h4 style="text-align: center; color: #666;">Informações</h4>
+                <h5 style="text-align: center; color: #666;">Claviculário da Portaria</h5>
+                <div style="color: #000000; border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
+                    Regras inseridas:
+                    <ul>
+                        <li>01 - Este módulo pretende melhorar o controle da movimentação das chaves no claviculário da portaria.</li>
+                        <li>02 - As chaves disponíveis no claviculário já estão listadas na coluna central da página. As chaves que estão no claviculário são representadas por uma chave azul. As chaves ausentes são representadas por uma chave vermelha.</li>
+                            <div style="text-align: center;"><img src="modulos/claviculario/imgHelp01.jpg" height="150px;" style="padding-right: 30px;" title="Claviculário"></div>
+                        <li>03 - Na hora de entregar uma chave a um usuário, localize o número da chave solicitada e clique na chave azul.</li>
+                        <li>04 - Na janela modal que aparece, procure na lista suspensa o nome da pessoa que vai retirar a chave ou digite o cpf dessa pessoa no espaço ao lado da lista.</li>
+                            <div style="text-align: center;"><img src="modulos/claviculario/imgHelp02.jpg" height="150px;" style="padding-right: 30px;" title="Entrega de chave"></div>
+                        <li>05 - O nome, CPF e telefone do usuário aparecerão na caixa logo abaixo.</li>
+                        <li>06 - Se já não estiver anotado, digite o número do telefone celular do usuário (ramal interno não serve). Ele será registrado para as próximas retiradas. Digite só os números. Comece com o DDD, com dois dígitos, e depois os nove números do telefone celular.  Confira sempre com o usuário se o número do telefone permanece o mesmo.</li>
+                        <li>07 - Clique em <b>Registrar Saída</b> e uma anotação aparecerá na coluna da direita com os dados da chave e do usuário.</li>
+                        <li>08 - O agendamento da retirada de chave (para os administradores) segue o mesmo processo com um campo adicional para inserir a data prevista para a retirada. A anotação nesse caso aparecerá na coluna da esquerda.</li>
+                            <div style="text-align: center;"><img src="modulos/claviculario/imgHelp03.jpg" height="150px;" style="padding-right: 30px;" title="Agendamento"></div>
+                        <li>09 - O agendamento só vale para o dia marcado. Se a chave não for retirada no dia marcado, um administrador pode apagar o agendamento.</li>
+                        <li>10 - Para proceder à devolução da chave ao claviculário, procure na coluna da direita o número da chave que está sendo devolvida e clique no botão <b>Retorno</b> ou localize o número da chave na coluna central e clique na imagem da chave vermelha.</li>
+                        <li>11 - Na janela modal que aparece, o nome do usuário que retirou já está colocado no lugar do usuário que está devolvendo.</li>
+                            <div style="text-align: center;"><img src="modulos/claviculario/imgHelp04.jpg" height="150px;" style="padding-right: 30px;" title="Agendamento"></div>
+                        <li>12 - Se for uma outra pessoa que está devolvendo a chave, selecione o nome dessa pessoa na lista suspensa do quadro logo abaixo ou digite o CPF dela no espaço ao lado da lista.</li>
+                        <li>13 - Se o nome da pessoa que devolve a chave não estiver na lista e não aparecer ao digitar o CPF, clique nessa procura por CPF e dê um enter sem digitar nada. O espaço destinado ao nome do entregador se tornará editável. Escreva o nome de quem está entregando a chave. Anote também o telefone, se possível.  </li>
+                        <li>14 - Quando a vinculação usuário/chave estiver ligada, o sistema informará se porventura um usuário não puder retirar determinada chave.</li>
+                        <?php if($EscChave == 1){
+                            echo "<li>15 - A vinculação está ligada.</li>";    
+                        }else{
+                            echo "<li>15 - No momento a vinculação está desligada.</li>";    
+                        }
+                        ?>
+                    </ul>
+                </div>
+            </div>
+        </div>  <!-- Fim Modal Help-->
 
         <div id="carregaTema"></div> <!-- carrega a pág modulos/config/carTema.php - onde está a função mudaTema() -->
 

@@ -158,9 +158,9 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#cpfentregador").mask("999.999.999-99");
                 $("#agendacpfsolicitante").mask("999.999.999-99");
                 $("#configcpfsolicitante").mask("999.999.999-99");
-                $("#resulttelef").mask("(61) 9 9999-9999");
-                $("#voltatelef").mask("(61) 9 9999-9999");
-                $("#agendatelef").mask("(61) 9 9999-9999");
+                $("#resulttelef").mask("(99) 9 9999-9999");
+                $("#voltatelef").mask("(99) 9 9999-9999");
+                $("#agendatelef").mask("(99) 9 9999-9999");
                 $("#agendadata").mask("99/99/9999");
                 $('#agendadata').datepicker({ uiLibrary: 'bootstrap5', locale: 'pt-br', format: 'dd/mm/yyyy' });
 
@@ -1324,7 +1324,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function resumoUsuChaves(){
-                window.open("modulos/claviculario/imprUsuCh3.php?acao=listaUsuarios", "ChavesUsu");
+                window.open("modulos/claviculario/imprUsuCh3.php?acao=listaUsuarios", "ChavesUsu3");
             }
             function abreChavesConfig(){
                 document.getElementById("registroChaves").checked = false;
@@ -2105,14 +2105,14 @@ if(!isset($_SESSION["usuarioID"])){
 
                 <table style="margin: 0 auto; width: 85%;">
                     <tr>
-                        <td class="etiq" title="Registrar a entrega e devolução das chaves do claviculário de Chaves Lacradas">Lacradas: </td>
+                        <td class="etiqAzul" title="Registrar a entrega e devolução das chaves do claviculário de Chaves Lacradas">Lacradas: </td>
                         <td colspan="4">
                             <input type="checkbox" id="registroChaves" title="Registrar a entrega e devolução das chaves do claviculário de Chaves Lacradas" onchange="marcaChave(this, 'clav3');" >
                             <label for="registroChaves" title="Registrar a entrega e devolução das chaves do claviculário de Chaves Lacradas">registrar a entrega e devolução das Chaves Lacradas</label>
                         </td>
                     </tr>
                     <tr>
-                        <td class="etiq" title="Inserir, modificar, editar a descrição das chaves do claviculário das Chaves Lacradas">Lacradas:</td>
+                        <td class="etiqAzul" title="Inserir, modificar, editar a descrição das chaves do claviculário das Chaves Lacradas">Lacradas:</td>
                         <td colspan="4">
                             <input type="checkbox" id="editChaves" title="Gerenciar, inserir, modificar a descrição das chaves do claviculário das Chaves Lacradas" onchange="marcaChave(this, 'clav_edit3');" >
                             <label for="editChaves" title="Inserir, modificar, editar a descrição das chaves do claviculário das Chaves Lacradas">inserir, editar e apagar Chaves Lacradas</label>
@@ -2120,7 +2120,7 @@ if(!isset($_SESSION["usuarioID"])){
                     </tr>
 
                     <tr>
-                        <td class="etiq" title="Apenas fiscalizar o funcionamento do claviculário das Chaves Lacradas">Lacradas: </td>
+                        <td class="etiqAzul" title="Apenas fiscalizar o funcionamento do claviculário das Chaves Lacradas">Lacradas: </td>
                         <td colspan="4">
                             <input type="checkbox" id="fiscalChaves" title="Apenas fiscalizar o funcionamento do claviculário das Chaves Lacradas" onchange="marcaChave(this, 'fisc_clav3');" >
                             <label for="fiscalChaves" title="Apenas fiscalizar o funcionamento do claviculário das Chaves Lacradas">fiscalizar o funcionamento do claviculário das Chaves Lacradas</label>
