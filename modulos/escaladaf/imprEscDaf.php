@@ -171,13 +171,26 @@ if(!isset($_SESSION['AdmUsu'])){
             $CorFundo2 = 190;
             $CorFundo3 = 190;
         }
-        if($CorListas == 6){ // sem uso
+        if($CorListas == 6){ 
             $CorFundo1 = 255; // Magenta
             $CorFundo2 = 0;
             $CorFundo3 = 255;
         }
-
-
+        if($CorListas == 7){ 
+            $CorFundo1 = 238; // Violeta
+            $CorFundo2 = 130;
+            $CorFundo3 = 238;
+        }
+        if($CorListas == 8){ 
+            $CorFundo1 = 255; // Laranja
+            $CorFundo2 = 165;
+            $CorFundo3 = 0;
+        }
+        if($CorListas == 9){ 
+            $CorFundo1 = 0; // Ciano
+            $CorFundo2 = 238;
+            $CorFundo3 = 238;
+        }
 
         $rsEft = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ");
         $rowEft = pg_num_rows($rsEft);

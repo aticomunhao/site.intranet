@@ -22,11 +22,11 @@
             <tr>
                 <td style="display: none;"></td>
                 <td class="etiq aCentro" title="Número da chave">Chave</td>
-                <td class="etiq aCentro" title="Complemento ao número da chave">Compl</td>
                 <td class="etiq aCentro">Sala</td>
                 <td class="etiq aCentro">Nome Sala</td>
                 <td class="etiq aCentro">Local</td>
                 <td class="etiq aCentro">Obs</td>
+                <td class="etiq aCentro" title="Número lacre">Codigo</td>
                 <td class="etiq aCentro"></td>
             </tr>
             <?php
@@ -50,11 +50,11 @@
                                 }
                                 ?>
                             </td>
-                            <td><div class="quadrinho" title="Complemento ao número da chave"> <?php echo $tbl[7]; ?></div></td>
                             <td><div class="quadrinho" title="Sala"> <?php echo $tbl[4]; ?></div></td>
                             <td><div class="quadrinho" style="font-size: 80%; text-align: left;" title="Nome da Sala"> <?php echo $tbl[2]; ?></div></td>
                             <td><div class="quadrinho" style="font-size: 80%; text-align: left;" title="Local"> <?php echo $tbl[3]; ?></div></td>
                             <td><div class="quadrinho" style="font-size: 80%; text-align: left;" title="Observações"> <?php echo $tbl[5]; ?></div></td>
+                            <td><div class="quadrinho" title="Complemento ao número da chave"> <?php echo $tbl[7]; ?></div></td>
                             <td class="etiq aCentro">
                                 <?php
                                 if($Presente == 1){

@@ -117,6 +117,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     ?>
                                 </select>
                             </td>
+                            <td>
+                                <label style="font-size: 80%; color: blue; cursor: pointer; text-decoration: underline;" onclick="abreAnot(<?php echo $Cod; ?>);">Nota</label>
+                            </td>
                         </tr>
                     <?php
                     }

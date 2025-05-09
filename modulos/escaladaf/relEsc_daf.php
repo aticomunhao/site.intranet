@@ -249,11 +249,32 @@
                                 $CorFundo = "#BEBEBE; opacity: 1; color: black;"; //Cinza
                             }
                         }
-                        if($CorListas == 6){ // sem uso
+                        if($CorListas == 6){ 
                             if($Tema == 1){ //escuro
                                 $CorFundo = "white; opacity: 0.5; color: black;";
                             }else{
                                 $CorFundo = "#FF00FF; opacity: 1; color: black;"; //Magenta
+                            }
+                        }
+                        if($CorListas == 7){ 
+                            if($Tema == 1){ //escuro
+                                $CorFundo = "white; opacity: 0.5; color: black;";
+                            }else{
+                                $CorFundo = "#EE82EE; opacity: 1; color: black;"; //Violeta
+                            }
+                        }
+                        if($CorListas == 8){ 
+                            if($Tema == 1){ //escuro
+                                $CorFundo = "white; opacity: 0.5; color: black;";
+                            }else{
+                                $CorFundo = "#FFA500; opacity: 1; color: black;"; //Laranja
+                            }
+                        }
+                        if($CorListas == 9){ 
+                            if($Tema == 1){ //escuro
+                                $CorFundo = "white; opacity: 0.5; color: black;";
+                            }else{
+                                $CorFundo = "#00EEEE; opacity: 1; color: black;"; //Ciano
                             }
                         }
                     }

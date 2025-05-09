@@ -124,6 +124,15 @@ if(!isset($_SESSION["usuarioID"])){
                 border-radius: 15px;
                 width: 40%;
             }
+            .modal-content-AnotFunc{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 15% auto; 
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 50%;
+                max-width: 900px;
+            }
             .quadrodia {
                 font-size: 90%;
                 min-width: 30px;
@@ -1928,6 +1937,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function carregaMes(){ // sem uso
+                ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=carregames&numgrupo="+document.getElementById("selecGrupo").value, true);
                     ajax.onreadystatechange = function(){
@@ -1950,6 +1960,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function renumeraLetras(){
+                ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=renumeraletras&numgrupo="+document.getElementById("selecGrupo").value, true);
                     ajax.onreadystatechange = function(){
@@ -1971,6 +1982,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function salvaCor(Valor){
+                ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaCorListas&valor="+Valor, true);
                     ajax.onreadystatechange = function(){
@@ -1990,6 +2002,113 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
+            function abreAnot(Cod){
+                document.getElementById("guardaCodFunc").value = Cod;
+                document.getElementById("dataFuncEscala").innerHTML = document.getElementById("titulomodal").innerHTML;
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=buscaNome&codigo="+Cod+"&data="+document.getElementById("titulomodal").innerHTML, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    document.getElementById("nomeEscalado").innerHTML = Resp.nomecompl;
+                                    document.getElementById("letraFuncEscala").innerHTML = Resp.letra;
+                                    document.getElementById("turnoFuncEscala").innerHTML = Resp.turno;
+                                    document.getElementById("letraFuncEscala").innerHTML = Resp.letra;
+                                    document.getElementById("guardaGrupo").value = Resp.grupo;
+                                    document.getElementById("guardaIdEscalaIns").value = Resp.idescalains;
+                                    document.getElementById("observEscalado").value = Resp.observ;
+                                    if(Resp.observ == ""){
+                                        document.getElementById("apagarNotaFunc").style.visibility = "hidden";
+                                        }else{
+                                            document.getElementById("apagarNotaFunc").style.visibility = "visible";
+                                    }
+                                    document.getElementById("relacmodalAnotFunc").style.display = "block";
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function salvaNotaFunc(){
+                if(document.getElementById("mudou").value == "0"){
+                    document.getElementById("relacmodalAnotFunc").style.display = "none";
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaNotaFunc&codigo="+document.getElementById("guardaCodFunc").value
+                    +"&data="+document.getElementById("titulomodal").innerHTML
+                    +"&letra="+document.getElementById("letraFuncEscala").innerHTML
+                    +"&turno="+document.getElementById("turnoFuncEscala").innerHTML
+                    +"&grupo="+document.getElementById("guardaGrupo").value
+                    +"&idEscalaIns="+document.getElementById("guardaIdEscalaIns").value
+                    +"&observ="+encodeURIComponent(document.getElementById("observEscalado").value), true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    document.getElementById("relacmodalAnotFunc").style.display = "none";
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function apagaNotaFunc(){
+                $.confirm({
+                    title: 'Apagar nota.',
+                    content: 'Confirma apagar essa nota?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=apagaNotaFunc&codigo="+document.getElementById("guardaCodFunc").value
+                                +"&data="+document.getElementById("titulomodal").innerHTML, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro no servidor.");
+                                            }else{
+                                                document.getElementById("relacmodalAnotFunc").style.display = "none";
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                        }
+                    }
+                });
+            }
+            
+            function imprNotasFunc(){
+                window.open("modulos/escaladaf/imprNotas.php?acao=imprNotas&mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value)+"&numgrupo="+document.getElementById("selecGrupo").value, "NotasFunc");
+            }
+
+            function fechaModalAnot(){
+                document.getElementById("relacmodalAnotFunc").style.display = "none";
+            }
             function fechaQuadroTurnos(){
                 document.getElementById("relacQuadroTurnos").style.display = "none";
             }
@@ -2073,6 +2192,25 @@ if(!isset($_SESSION["usuarioID"])){
       dataedit timestamp without time zone DEFAULT '3000-12-31' 
       ) 
   ");
+
+//   pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_func");
+    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_func (
+        id SERIAL PRIMARY KEY, 
+        poslog_id integer NOT NULL DEFAULT 0, 
+        dataescala date DEFAULT '3000-12-31',
+        letra character varying(3),
+        turno character varying(30),
+        observ text, 
+        escaladafins_id integer NOT NULL DEFAULT 0, 
+        grupo_id integer NOT NULL DEFAULT 0,
+        ativo smallint DEFAULT 1 NOT NULL, 
+        usuins integer DEFAULT 0 NOT NULL,
+        datains timestamp without time zone DEFAULT '3000-12-31',
+        usuedit integer DEFAULT 0 NOT NULL,
+        dataedit timestamp without time zone DEFAULT '3000-12-31' 
+        ) 
+    ");
+
 
 //  dataescala_troca date DEFAULT '3000-12-31',
 //  letra_troca character varying(3),
@@ -2242,7 +2380,9 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
         <input type="hidden" id="quantGruposEsc" value="<?php echo $rowGr; ?>" />
         <input type="hidden" id="guardaAno" value="<?php echo $Ano; ?>" />
         <input type="hidden" id="guardaCorListas" value="<?php echo $CorListas; ?>" />
-        <input type="hidden" id="guardaEscalaId" value = "0" />
+        <input type="hidden" id="guardaCodFunc" value = "0" />
+        <input type="hidden" id="guardaGrupo" value = "0" />
+        <input type="hidden" id="guardaIdEscalaIns" value = "0" />
         <input type="hidden" id="guardaTema" value = "<?php echo $Tema; ?>" />
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
@@ -2555,16 +2695,19 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                         <td colspan="5"><hr style="margin: 0; padding: 2px;"></td>
                     </tr>
                     <tr>
-                        <td colspan="5" style="text-align: center;">
-                            <label class="etiqAzul" title="Cor das listas na tela (Tema: Claro) e na impressão do PDF">Cor das Listas: </label>
-                            <input type="radio" name="corlistas" id="corlista0" value="0" <?php if($CorListas == 0){echo "CHECKED";} ?> title="Branco" onclick="salvaCor(0);"><label for="corlista0"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #FFFFFF; font-size: 70%;">Branco</div></label>
-                            <input type="radio" name="corlistas" id="corlista1" value="1" <?php if($CorListas == 1){echo "CHECKED";} ?> title="Cornsilk" onclick="salvaCor(1);"><label for="corlista1"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #FFF8DC; font-size: 70%;">Cornsilk</div></label>
-                            <input type="radio" name="corlistas" id="corlista2" value="1" <?php if($CorListas == 2){echo "CHECKED";} ?> title="Azure" onclick="salvaCor(2);"><label for="corlista2"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #F0FFFF; font-size: 70%;">Azure</div></label>
-                            <input type="radio" name="corlistas" id="corlista3" value="1" <?php if($CorListas == 3){echo "CHECKED";} ?> title="Lavanda" onclick="salvaCor(3);"><label for="corlista3"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #E6E6FA; font-size: 70%;">Lavanda</div></label>
-                            <input type="radio" name="corlistas" id="corlista4" value="1" <?php if($CorListas == 4){echo "CHECKED";} ?> title="Marfim" onclick="salvaCor(4);"><label for="corlista4"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #EEEEE0; font-size: 70%;">Marfim</div></label>
-                            <input type="radio" name="corlistas" id="corlista5" value="1" <?php if($CorListas == 5){echo "CHECKED";} ?> title="Cinza" onclick="salvaCor(5);"><label for="corlista5"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #BEBEBE; font-size: 70%;">Cinza</div></label>
-<!--                            <input type="radio" name="corlistas" id="corlista6" value="1" <?php if($CorListas == 6){echo "CHECKED";} ?> title="Magenta" onclick="salvaCor(6);"><label for="corlista6"><div style="width: 60px; height: 15px; border-radius: 5px; color: black; background: #FF00FF; font-size: 70%;">Magenta</div></label> -->
-
+                        <td class="etiqAzul eItalic" title="Cor das listas na tela (Tema: Claro) e na impressão do PDF">Cor das Listas:</td>
+                        <td colspan="4" style="text-align: left;">
+                            <input type="radio" name="corlistas" id="corlista0" value="0" <?php if($CorListas == 0){echo "CHECKED";} ?> title="Branco" onclick="salvaCor(0);"><label for="corlista0"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #FFFFFF; font-size: 70%;">Branco</div></label>
+                            <input type="radio" name="corlistas" id="corlista1" value="1" <?php if($CorListas == 1){echo "CHECKED";} ?> title="Cornsilk" onclick="salvaCor(1);"><label for="corlista1"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #FFF8DC; font-size: 70%;">Cornsilk</div></label>
+                            <input type="radio" name="corlistas" id="corlista2" value="1" <?php if($CorListas == 2){echo "CHECKED";} ?> title="Azure" onclick="salvaCor(2);"><label for="corlista2"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #F0FFFF; font-size: 70%;">Azure</div></label>
+                            <input type="radio" name="corlistas" id="corlista3" value="1" <?php if($CorListas == 3){echo "CHECKED";} ?> title="Lavanda" onclick="salvaCor(3);"><label for="corlista3"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #E6E6FA; font-size: 70%;">Lavanda</div></label>
+                            <input type="radio" name="corlistas" id="corlista4" value="1" <?php if($CorListas == 4){echo "CHECKED";} ?> title="Marfim" onclick="salvaCor(4);"><label for="corlista4"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #EEEEE0; font-size: 70%;">Marfim</div></label>
+                            <br>
+                            <input type="radio" name="corlistas" id="corlista5" value="1" <?php if($CorListas == 5){echo "CHECKED";} ?> title="Cinza" onclick="salvaCor(5);"><label for="corlista5"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #BEBEBE; font-size: 70%;">Cinza</div></label>
+                            <input type="radio" name="corlistas" id="corlista6" value="1" <?php if($CorListas == 6){echo "CHECKED";} ?> title="Magenta" onclick="salvaCor(6);"><label for="corlista6"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #FF00FF; font-size: 70%;">Magenta</div></label>
+                            <input type="radio" name="corlistas" id="corlista7" value="1" <?php if($CorListas == 7){echo "CHECKED";} ?> title="Violeta" onclick="salvaCor(7);"><label for="corlista7"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #EE82EE; font-size: 70%;">Violeta</div></label>
+                            <input type="radio" name="corlistas" id="corlista8" value="1" <?php if($CorListas == 8){echo "CHECKED";} ?> title="Laranja" onclick="salvaCor(8);"><label for="corlista8"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #FFA500; font-size: 70%;">Laranja</div></label>
+                            <input type="radio" name="corlistas" id="corlista9" value="1" <?php if($CorListas == 9){echo "CHECKED";} ?> title="Ciano" onclick="salvaCor(9);"><label for="corlista9"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #00EEEE; font-size: 70%;">Ciano</div></label>
                         </td>
                     </tr>
                     <tr>
@@ -2792,6 +2935,41 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                         </tr>
                     </table>
                 </div>
+            </div>
+        </div> <!-- Fim Modal-->
+
+        <!-- div modal para anotações individuais   -->
+        <div id="relacmodalAnotFunc" class="relacmodal"> 
+            <div class="modal-content-AnotFunc corPreta">
+                <span class="close" onclick="fechaModalAnot();">&times;</span>
+                <div style="text-align: center;"><h6>Anotações da Escala</h6></div>
+                <table style="margin: 0 auto;">
+                    <tr>
+                        <td class="etiqAzul">Data:</td>
+                        <td><label id="dataFuncEscala" style="border: 1px solid #666; border-radius: 5px; padding-left: 5px; padding-right: 5px;"></label>
+                            <label style="padding-left: 5px; padding-right: 5px;">Letra:</label>
+                            <label id="letraFuncEscala" style="border: 1px solid #666; border-radius: 5px; padding-left: 5px; padding-right: 5px;"></label>
+                            <label style="padding-left: 5px; padding-right: 5px;">Turno:</label>
+                            <label id="turnoFuncEscala" style="border: 1px solid #666; border-radius: 5px; padding-left: 5px; padding-right: 5px;"></label>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="etiqAzul">Nome: </td>
+                        <td><label id="nomeEscalado" style="border: 1px solid #666; border-radius: 5px; padding-left: 5px; padding-right: 5px;"></label></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td class="etiqAzul">Observações: </td>
+                        <td><textarea class="form-control" id="observEscalado" style="resize: both; margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 4px;" rows="6" cols="70" title="Texto da nota" onchange="modif();"></textarea></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center; padding-top: 10px;"><button class="botpadrred" id="apagarNotaFunc" style="font-size: 60%; padding-left: 3px; padding-right: 3px;" onclick="apagaNotaFunc();">Apagar</button></td>
+                        <td style="text-align: center; padding-top: 10px;"><button class="botpadrblue" onclick="salvaNotaFunc();">Salvar</button></td>
+                        <td></td>
+                    </tr>
+                </table>
             </div>
         </div> <!-- Fim Modal-->
 

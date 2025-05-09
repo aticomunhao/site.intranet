@@ -341,6 +341,17 @@ if(isset($_REQUEST["acao"])){
             VALUES ($CodIns, $GuardaId, 1, 2, ".$_SESSION['usuarioID'].", NOW(), '$GuardaCpf', '$NomeCompl', '$NomeUsual', '$DNasc', '$Senha', 1,  1, '3000-12-31', '$HoraAnt' )");
         }
 
+        //Verifica se já está vinculado a esta chave - Vincula se não estiver
+        $rs4 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves3_aut WHERE chaves_id = $Cod And pessoas_id = $CodUsu");
+        $row4 = pg_num_rows($rs4);
+        if($row4 > 0){
+            pg_query($Conec, "UPDATE ".$xProj.".chaves3_aut SET ativo = 1 WHERE chaves_id = $Cod And pessoas_id = $CodUsu ");
+        }else{
+            $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves3_aut");
+            $tblCod = pg_fetch_row($rsCod);
+            $CodigoNovo = $tblCod[0]+1;
+            pg_query($Conec, "INSERT INTO ".$xProj.".chaves3_aut (chaves_id, pessoas_id, ativo, usuins, datains) VALUES($Cod, $CodUsu, 1, ".$_SESSION['usuarioID'].", NOW())");
+        }
 
         $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves3_ctl");
         $tblCod = pg_fetch_row($rsCod);

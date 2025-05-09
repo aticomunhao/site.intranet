@@ -260,11 +260,13 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
                 <div class="col" style="margin: 0 auto; text-align: center;">
                     <?php
-                        if($EscalanteDAF == 1 && $MeuGrupo == $NumGrupo || $rowGr > 1 || $_SESSION["usuarioID"] == 83){ // Provisório Wil
+                        if($EscalanteDAF == 1 && $MeuGrupo == $NumGrupo || $rowGr > 1 || $_SESSION["usuarioID"] == 83 || $_SESSION["usuarioID"] == 8){ // Provisório Wil e Luzinólia
                             ?>
-                            <div class='bContainer corFundo' onclick='abreEditHorario()'> Editar </div>
-                            <label style="padding-top: 5px;">&nbsp;</label>
-                            <div class='bContainer corFundo' onclick='abreEditDescanso()' title="Escala para descanso."> Descanso </div>
+                            <div class='bContainer corFundo' style="margin-top: 5px;" onclick='abreEditHorario()'> Editar </div>
+                            <br>
+                            <div class='bContainer corFundo' style="margin-top: 15px;" onclick='abreEditDescanso()' title="Escala para descanso."> Descanso </div>
+                            <br>
+                            <div class='bContainer corFundo' style="margin-top: 25px;" onclick='imprNotasFunc()' title="Gera PDF com as anotações diárias nos turnos."> Anotações </div>
                             <?php
                         }
                     ?>

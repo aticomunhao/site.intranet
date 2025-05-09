@@ -247,7 +247,7 @@ if(isset($_REQUEST["acao"])){
 
             $var = array("coderro"=>$Erro, "nomecompl"=>$tbl[0], "nome"=>$tbl[1], "cpf"=>$tbl[2], "siglasetor"=>$tbl[3], "PosCod"=>$tbl[4], "telef"=>$Telef, "chave"=>$Chave, "chaveautorizada"=>$Autoriz);
         }else{ // vai procurar no arquivo pessoas
-            if($EscChave == 0){ // desligado
+//            if($EscChave == 0){ // desligado
                 $rs2 = pg_query($ConecPes, "SELECT nome_completo, nome_resumido, cpf, id, TO_CHAR(dt_nascimento, 'DD/MM/YYYY'), TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') 
                 FROM ".$xPes.".pessoas 
                 WHERE ".$xPes.".pessoas.cpf = '$GuardaCpf' ");
@@ -272,10 +272,10 @@ if(isset($_REQUEST["acao"])){
                     $Erro = 2;
                     $var = array("coderro"=>$Erro );
                 }
-            }else{
-                $Erro = 2;
-                $var = array("coderro"=>$Erro );
-            }
+//            }else{
+//                $Erro = 2;
+//                $var = array("coderro"=>$Erro );
+//            }
         }
         $responseText = json_encode($var);
         echo $responseText;
@@ -356,7 +356,6 @@ if(isset($_REQUEST["acao"])){
         $Telef = addslashes(filter_input(INPUT_GET, 'celular')); 
         $DataAgenda = "";
 
-        
         $m = strtotime("-1 Hour");
         $HoraAnt = date("Y-m-d H:i:s", $m); // para o recem cadastrado não aparecer on line
 
@@ -401,6 +400,18 @@ if(isset($_REQUEST["acao"])){
             $Senha = password_hash($GuardaCpf, PASSWORD_DEFAULT);
             pg_query($Conec, "INSERT INTO ".$xProj.".poslog (id, pessoas_id, codsetor, adm, usuins, datains, cpf, nomecompl, nomeusual, datanasc, senha, ativo, chave, logini, logfim, sexo) 
             VALUES ($CodIns, $GuardaId, 1, 2, ".$_SESSION['usuarioID'].", NOW(), '$GuardaCpf', '$NomeCompl', '$NomeUsual', '$DNasc', '$Senha', 1,  1, '3000-12-31', '$HoraAnt', $Sexo )");
+        }
+
+        //Verifica se já está vinculado a esta chave - Vincula se não estiver
+        $rs4 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_aut WHERE chaves_id = $Cod And pessoas_id = $CodUsu");
+        $row4 = pg_num_rows($rs4);
+        if($row4 > 0){
+            pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 1 WHERE chaves_id = $Cod And pessoas_id = $CodUsu ");
+        }else{
+            $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves_aut");
+            $tblCod = pg_fetch_row($rsCod);
+            $CodigoNovo = $tblCod[0]+1;
+            pg_query($Conec, "INSERT INTO ".$xProj.".chaves_aut (chaves_id, pessoas_id, ativo, usuins, datains) VALUES($Cod, $CodUsu, 1, ".$_SESSION['usuarioID'].", NOW())");
         }
 
         $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves_ctl");

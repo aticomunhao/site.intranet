@@ -661,7 +661,7 @@ if($Acao =="salvanota"){
         $Codigo = $tblCod[0];
         $CodigoNovo = ($Codigo+1);
         $rs = pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_notas (id, grupo_notas, numnota, textonota, usuins, datains) 
-        VALUES($CodigoNovo, , $NumGrupo, $Num, '$Texto', $UsuIns, NOW() )");
+        VALUES($CodigoNovo, $NumGrupo, $Num, '$Texto', $UsuIns, NOW() )");
     }
     if(!$rs){
         $Erro = 1;
@@ -854,8 +854,11 @@ if($Acao =="transfmesano"){
     FROM ".$xProj.".escaladaf 
     WHERE TO_CHAR(dataescala, 'MM') = '$MesFrom' And TO_CHAR(dataescala, 'YYYY') = '$AnoFrom' And TO_CHAR(dataescala, 'DD') = '$UltDia' And grupo_id = $NumGrupo ");
     $tblIni = pg_fetch_row($rsIni);
-    $DiaSemanaIni = ($tblIni[0]+1);  // 0, 1, 2...  Soma um dia na semana para iniciar a sequência no mês seguinte
-
+    if($tblIni[0] == 6){
+        $DiaSemanaIni = 6;
+    }else{
+        $DiaSemanaIni = ($tblIni[0]+1);  // 0, 1, 2...  Soma um dia na semana para iniciar a sequência no mês seguinte
+    }
     //Procura o dia do mês para iniciar
     $rsIni = pg_query($Conec, "SELECT TO_CHAR(dataescala, 'DD') FROM ".$xProj.".escaladaf 
     WHERE TO_CHAR(dataescala, 'MM') = '$MesFrom' And TO_CHAR(dataescala, 'YYYY') = '$AnoFrom' And date_part('dow', dataescala) = '$DiaSemanaIni' And grupo_id = $NumGrupo ORDER BY dataescala ");
@@ -1455,6 +1458,96 @@ if($Acao =="salvaCorListas"){
     $Cor = (int) filter_input(INPUT_GET, 'valor');
     $Erro = 0;
     $rs = pg_query($Conec, "UPDATE ".$xProj.".poslog SET corlistas_daf = $Cor WHERE pessoas_id = ".$_SESSION["usuarioID"]." And ativo = 1");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao == "buscaNome"){
+    $Erro = 0;
+    $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de poslog
+    $Data = filter_input(INPUT_GET, 'data');
+    $RevData = implode("/", array_reverse(explode("/", $Data)));
+
+    $rs1 = pg_query($Conec, "SELECT nomecompl, esc_grupo FROM ".$xProj.".poslog WHERE pessoas_id = $Cod");
+    $row1 = pg_num_rows($rs1);
+    if($row1 > 0){
+        $tbl1 = pg_fetch_row($rs1);
+        $Nome = $tbl1[0];
+        $Grupo = $tbl1[1];
+    }else{
+        $Nome = "";
+        $Grupo = "";
+    }
+
+    $rs2 = pg_query($Conec, "SELECT letra, turno, observ, escaladafins_id FROM ".$xProj.".escaladaf_func WHERE poslog_id = $Cod And dataescala = '$RevData' And ativo = 1");
+    $row2 = pg_num_rows($rs2);
+    if($row2 > 0){
+        $tbl2 = pg_fetch_row($rs2);
+        $Letra = $tbl2[0];
+        $Turno = $tbl2[1];
+        $Observ = $tbl2[2];
+        $Ins_id = $tbl2[3];
+    }else{
+        $Observ = "";
+        $rs3 = pg_query($Conec, "SELECT letraturno, turnoturno, id FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And dataescalains = '$RevData'");
+        $row3 = pg_num_rows($rs3);
+        if($row3 > 0){
+            $tbl3 = pg_fetch_row($rs3);
+            $Letra = $tbl3[0];
+            $Turno = $tbl3[1];
+            $Ins_id = $tbl3[2];
+        }else{
+            $Letra = "";
+            $Turno = "";
+            $Ins_id = 0;
+        }
+    }
+    $var = array("coderro"=>$Erro, "nomecompl"=>$Nome, "letra"=>$Letra, "turno"=>$Turno, "observ"=>$Observ, "grupo"=>$Grupo, "idescalains"=>$Ins_id);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao == "salvaNotaFunc"){
+    $Erro = 0;
+    $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de poslog
+    $Data = filter_input(INPUT_GET, 'data');
+    $RevData = implode("/", array_reverse(explode("/", $Data)));
+    $Observ = addslashes(filter_input(INPUT_GET, 'observ'));
+    $Letra = addslashes(filter_input(INPUT_GET, 'letra'));
+    $Turno = addslashes(filter_input(INPUT_GET, 'turno'));
+    $Grupo = (int) filter_input(INPUT_GET, 'grupo');
+    $IdEscalaIns = (int) filter_input(INPUT_GET, 'idEscalaIns');
+
+    $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_func WHERE poslog_id = $Cod And dataescala = '$RevData' And ativo = 1");
+    $row2 = pg_num_rows($rs2);
+    if($row2 > 0){
+        $rs3 = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_func SET observ = '$Observ', grupo_id = $Grupo, escaladafins_id = $IdEscalaIns, usuedit = $UsuIns, dataedit = NOW() WHERE poslog_id = $Cod And dataescala = '$RevData' And ativo = 1");
+    }else{
+        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_func");
+        $tblCod = pg_fetch_row($rsCod);
+        $Codigo = $tblCod[0];
+        $CodigoNovo = ($Codigo+1);
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_func (id, poslog_id, dataescala, observ, letra, turno, grupo_id, escaladafins_id, usuins, datains) 
+        VALUES($CodigoNovo, $Cod, '$RevData', '$Observ', '$Letra', '$Turno', $Grupo, $IdEscalaIns, $UsuIns, NOW() )");
+        if(!$rs){
+            $Erro = 1;
+        }
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
+if($Acao =="apagaNotaFunc"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Data = filter_input(INPUT_GET, 'data');
+    $RevData = implode("/", array_reverse(explode("/", $Data)));
+    $Erro = 0;
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_func SET ativo = 0 WHERE poslog_id = $Cod And dataescala = '$RevData' And ativo = 1");
     if(!$rs){
         $Erro = 1;
     }
