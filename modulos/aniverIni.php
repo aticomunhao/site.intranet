@@ -54,6 +54,7 @@
     }
     $NiverHoje = 0;
     echo "<div style='text-align: center;'>";
+        echo "<span style='font-weight: bold;'>Aniversariantes</span>";
         echo "<table style='margin: 0 auto;'>";
             echo "<tr>";
                 echo "<td><td>";

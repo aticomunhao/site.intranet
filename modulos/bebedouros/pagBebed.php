@@ -1037,7 +1037,7 @@ if(!isset($_SESSION["usuarioID"])){
             function abreEscImprBebed(){
                 document.getElementById("relacImprBebed").style.display = "block";
             }
-            function fechaImprChaves(){
+            function fechaImprBebed(){
                 document.getElementById("relacImprBebed").style.display = "none";
             }
             function calcVenc(){
@@ -1696,7 +1696,7 @@ if(!isset($_SESSION["usuarioID"])){
         <!-- div modal para escolher imprimir em pdf  -->
         <div id="relacImprBebed" class="relacmodal">
             <div class="modal-content-escImprBebed corPreta">
-                <span class="close" onclick="fechaImprChaves();">&times;</span>
+                <span class="close" onclick="fechaImprBebed();">&times;</span>
                 <h5 style="text-align: center;color: #666;">Controle de Bebedouros</h5>
                 <h6 style="text-align: center; padding-bottom: 18px; color: #666;">Gerar PDF</h6>
                 <div style="border: 2px solid; border-radius: 10px; padding: 10px; text-align: center;">
@@ -1739,11 +1739,9 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                     </table>
                 </div>
-
                 <div style="padding-bottom: 20px;"></div>
            </div>
         </div> <!-- Fim Modal Impr -->
-
 
         <div id="carregaTema"></div> <!-- carrega a pág modulos/config/carTema.php - onde está a função mudaTema() -->
 

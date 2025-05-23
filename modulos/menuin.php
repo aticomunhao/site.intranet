@@ -6,6 +6,11 @@
         <title></title>
 		<style>
             body{ font: 16px sans-serif; }
+			@media (max-width: 742px){
+				.MenuEstend{
+					width: 100%;
+				}
+			}
         </style>
         <script>
             $(document).ready(function(){
@@ -28,6 +33,11 @@
 			//Provisório
 			if(strtotime('2025/05/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
+				//0112
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_func ADD COLUMN IF NOT EXISTS id_ocor smallint NOT NULL DEFAULT 1 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_func ADD COLUMN IF NOT EXISTS id_mot smallint NOT NULL DEFAULT 1 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_func ADD COLUMN IF NOT EXISTS id_stat smallint NOT NULL DEFAULT 1 ");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_func ADD COLUMN IF NOT EXISTS id_adm smallint NOT NULL DEFAULT 1 ");
 
 			} // fim data limite
         ?>

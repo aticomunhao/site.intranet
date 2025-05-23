@@ -6,7 +6,7 @@
      }
 ?>
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,6 +26,65 @@
         <script src="comp/js/jquery-confirm.min.js"></script>   <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
         <script src="comp/js/eventos.js"></script>
         <style>
+            .bContainer{ 
+                position: absolute; 
+                right: 30px;
+                margin-top: -20px; 
+                border: 1px solid blue;
+                background-color: blue;
+                color: white;
+                cursor: pointer;
+                border-radius: 10px; 
+                padding-left: 10px; 
+                padding-right: 10px; 
+            }
+            .divTemTarefa{
+                display: none; 
+                margin-bottom: 20px; 
+                color: white; font-weight: bold; 
+                background-color: #DC143C; 
+                text-align: center; padding: 10px; border-radius: 10px;
+                cursor: pointer;
+            }
+            .divTemBens{
+                display: none; 
+                margin-bottom: 0px; 
+                color: white; font-weight: bold; 
+                background-color: #A52A2A; 
+                text-align: center; padding: 10px; border-radius: 10px;
+                cursor: pointer;
+            }
+            .divTemBensPrazo{
+                display: none; 
+                margin-bottom: 20px; 
+                color: white; font-weight: bold; 
+                background-color: red; text-align: center; padding: 10px; border-radius: 10px;
+                cursor: pointer;
+            }
+            .divTemContrato{
+                display: none; 
+                margin-bottom: 0px; 
+                color: white; font-weight: bold; 
+                background-color: #363636; /* grey21 */
+                text-align: center; padding: 10px; border: 2px solid; border-radius: 10px;
+                cursor: pointer;
+            }
+            .divTemExtintor{
+                display: none; 
+                margin-bottom: 0px; 
+                color: white; font-weight: bold; 
+                background-color:rgb(182, 9, 9);
+                text-align: center; padding: 10px; border: 2px solid; border-radius: 10px;
+                cursor: pointer;
+            }
+            .divTemFiltro{
+                display: none; 
+                margin-bottom: 0px; 
+                color: white; font-weight: bold; 
+                background-color:rgb(9, 182, 93);
+                text-align: center; padding: 10px; border: 2px solid; border-radius: 10px;
+                cursor: pointer;
+            }
             .blink{
                 animation: blink 1.2s infinite;
             }
@@ -38,30 +97,7 @@
                     color: blue;
                 }
             }
-
-            .tricol0{
-                margin: 10px; padding: 20px; min-height: 300px;
-            }
-
-			@media (max-width: 742px){
-                .divAniver{
-                    border: 0;
-                }
-                #CorouselPagIni{
-                    display: none;
-                }
-                #tricoluna0{
-                    margin-top: 100px;
-                }
-                .modal-content-EditPagIni{
-                    width: 80%;
-                }
-                .divTemTarefa, .divTemBens, .divTemBensPrazo, .divTemContrato, .divTemExtintor, .divTemFiltro{
-                    margin-left: 30px;
-                    margin-right: 30px;
-                }
-			}
-        </style>
+            </style>
         <script>
             function ajaxIni(){
                 try{
@@ -424,42 +460,43 @@
         <div id="container0" class="container-fluid"> <!-- página toda -->
             <div id="container1" class="container-fluid corFundo"></div> <!-- cabec.php banner superior dividido em 3 -->
             <div id="container2" class="container-fluid fontSiteFamily corFundoMenu-dia<?php echo $diaSemana; ?>"></div> <!-- Menu -->
-
+            <section style="height: 95vh;">
             <div id="container3" class="container-fluid corFundo"> <!-- corpo da página -->
-                <div id="CorouselPagIni" class="carousel slide carousel-fade" data-bs-ride="carousel" style="text-align: center;"></div> <!-- Carrosel  -->
+                <!-- Carrosel  -->
+                <div id="CorouselPagIni" class="carousel slide carousel-fade" data-bs-ride="carousel" style="text-align: center;"></div>
 
-                <div id="tricoluna0" class="tricol0">
-                    <div id="tricoluna1" class="box" style="position: relative; float: left; width: 30%;;">
-                        <div class="divAniver">
-                            <?php
-                                require_once("modulos/aniverIni.php");
-                            ?>
-                        </div>
-                    </div>
-                    <div id="tricoluna2" class="box" style="position: relative; float: left; width: 2%; text-align: center;"></div> <!-- Separador -->
-                    <div id="tricoluna3" class="box" style="position: relative; float: right; width: 68%; text-align: right;">
+                <div id="container5" style="width: 25%;"> <!--  containers 5 e 6 dentro do container 3 -->
+                    <div class='divaniv' style="text-align: center; border: 2px solid blue; border-radius: 10px; padding: 10px; font-family: tahoma, arial, cursive, sans-serif;">
+                        <span style="font-weight: bold;">Aniversariantes</span>
                         <?php
-                            if($_SESSION["AdmUsu"] >= $admEdit){ // botão editar página
-                                echo "<div class='divbotR' onclick='abreEdit()'> Editar </div>";
-                            }
+                            require_once("modulos/aniverIni.php");
                         ?>
-                        <!-- tarja vermelha aviso de tarefa  -->
-                        <div id="tarefa" class="blink" onclick="carregaPag();" style="display: none; font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 10px; color: red; font-size: 1.5em; font-weight: bold; text-align: center; padding: 10px; border-radius: 10px;">TAREFA</div>
-                        <div id="temTarefa" class="divTemTarefa" onclick="carregaPag();"></div>
-                        <div id="TemRecado" class="divTemTarefa" onclick="carregaMsgTar();"></div>
-                        <div id="temBens" class="divTemBens" onclick="carregaBens('Guardar');"></div>
-                        <div id="temBensPrazo" class="divTemBensPrazo" onclick="carregaBens('Destinar');"></div>
-                        <div id="temContrato" class="divTemContrato" onclick="carregaContrato(document.getElementById('guardaContrato').value);"></div>
-                        <div id="temExtintor" class="divTemExtintor" onclick="carregaExtintor('Vencido');"></div>
-                        <div id="temFiltro" class="divTemFiltro" onclick="carregaFiltro('Vencido');"></div>
-
-                        <div id="container7" style="padding-left: 1px; padding-right: 1px;"></div> <!-- Carrega pag inicial -->
-
-                    </div>  <!-- Texto pág inicial -->
+                    </div>
                 </div>
-                <!-- Rodapé -->
-                <div id="container4" class="container-fluid corFundoMenu-dia<?php echo $diaSemana; ?>"></div>
+
+                <div id="container6" style="width: 70%; padding-left: 80px; padding-right: 100px; text-align: center;">
+                    <?php
+                        if($_SESSION["AdmUsu"] >= $admEdit){ // botão editar página
+                            echo "<div class='bContainer corFundo' onclick='abreEdit()'> Editar </div>";
+                        }
+                    ?>
+                    <!-- tarja vermelha aviso de tarefa  -->
+                    <div id="tarefa" class="blink" onclick="carregaPag();" style="display: none; font-family: Trebuchet MS, Verdana, sans-serif; letter-spacing: 10px; color: red; font-size: 1.5em; font-weight: bold; text-align: center; padding: 10px; border-radius: 10px;">TAREFA</div>
+                    <div id="temTarefa" class="divTemTarefa" onclick="carregaPag();"></div>
+                    <div id="TemRecado" class="divTemTarefa" onclick="carregaMsgTar();"></div>
+                    <div id="temBens" class="divTemBens" onclick="carregaBens('Guardar');"></div>
+                    <div id="temBensPrazo" class="divTemBensPrazo" onclick="carregaBens('Destinar');"></div>
+                    <div id="temContrato" class="divTemContrato" onclick="carregaContrato(document.getElementById('guardaContrato').value);"></div>
+                    <div id="temExtintor" class="divTemExtintor" onclick="carregaExtintor('Vencido');"></div>
+                    <div id="temFiltro" class="divTemFiltro" onclick="carregaFiltro('Vencido');"></div>
+
+                    <!-- texto da página inicial  -->
+                    <div id="container7" style="padding-left: 10px; padding-right: 10px;"></div>
+                </div>
             </div>
+            </section>
+            <!-- Rodapé -->
+            <div id="container4" class="container-fluid corFundoMenu-dia<?php echo $diaSemana; ?>"></div>
 
             <!-- div modal para edição da página inicial -->
             <div id="modalEditPagIni" class="relacmodal">
@@ -469,7 +506,7 @@
                     <div style="border: 2px solid blue; border-radius: 10px;">
                         <table style="margin: 0 auto;">
                             <tr>
-                                <td style="width: 1500px;"><textarea class="form-control" id="textopaginaini" style="resize: both; margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 4px;"><?php echo $TextoPag; ?></textarea></td>
+                                <td style="width: 1500px;"><textarea id="textopaginaini"><?php echo $TextoPag; ?></textarea></td>
                             </tr>
                             <tr>
                                 <td style="text-align: center;"><div id="mensagem" style="color: red; font-weight: bold;"></div></td>
@@ -491,7 +528,6 @@
                     <img src="comp/css/images/palmas.gif" width="60" height="60" draggable="false"/>
                 </div>
             </div> <!-- Fim Modal-->
-
         </div>
     </body>
 </html>

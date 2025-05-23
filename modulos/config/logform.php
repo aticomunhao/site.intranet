@@ -12,8 +12,10 @@
                 padding: 20px; 
                 margin: 0 auto; border: 2px solid red; border-radius: 10px;
             }            
-            .resetbot{
-                border-radius: 5px;
+            @media (max-width: 742px){
+                .modal-content-Login{
+                    width: 80%;
+                }
             }
         </style>
         <script>
@@ -290,7 +292,7 @@
                         <tr>
                             <td colspan="2" style="text-align: center; padding-top: 5px;"><div id="mensagem" style="color: red; font-weight: bold;"></div></td>
                         <tr>
-                            <td colspan="2" style="text-align: center; padding-top: 10px;"><input type="button" class="btn btn-primary resetbot" id="entrar" value="Entrar" onclick="logModal();"></td>
+                            <td colspan="2" style="text-align: center; padding-top: 10px;"><input type="button" class="btn btn-primary radius5" id="entrar" value="Entrar" onclick="logModal();"></td>
                         </tr>
                     </table>
                 </div>
@@ -321,7 +323,7 @@
                         <tr>
                             <td style="text-align: center; padding-top: 5px;"><div id="mensagemTroca" style="color: red; font-weight: bold;"></div></td>
                         <tr>
-                            <td style="text-align: center; padding-top: 10px;"><input type="button" class="btn btn-primary resetbot" id="salvar" value="Salvar" onclick="salvaTrocaSenha();"></td>
+                            <td style="text-align: center; padding-top: 10px;"><input type="button" class="btn btn-primary radius5" id="salvar" value="Salvar" onclick="salvaTrocaSenha();"></td>
                         </tr>
                     </table>
                 </div>

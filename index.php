@@ -14,6 +14,24 @@
         <script src="class/superfish/js/superfish.js"></script>
         <script src="class/bootstrap/js/bootstrap.min.js"></script>
         <script src="comp/js/eventos.js"></script>
+        <style>
+            .tricol0{
+                margin: 10px; padding: 20px; min-height: 300px;
+            }
+			@media (max-width: 742px){
+                .divAniver{
+                    border: 0;
+                    margin-top: 90px;
+                }
+                #CorouselPagIni{
+                    display: none;
+                }
+                #tricoluna3{
+                    margin-top: 90px;
+                }
+
+			}
+        </style>
         <script>
             $(document).ready(function(){
                 //Carga inicial
@@ -21,7 +39,7 @@
                 $('#container2').load('modulos/menuin.php?diasemana='+document.getElementById('guardadiasemana').value);
                 $('#container4').load('modulos/rodape.php');
                 $('#CorouselPagIni').load('modulos/carousel.php');
-                $('#container7').load('modulos/conteudo/carPagIni.php');
+                $('#tricoluna3').load('modulos/conteudo/carPagIni.php');
             });
         </script>
     </head>
@@ -36,28 +54,28 @@
         <input type="hidden" id="guardadiasemana" value="<?php echo $diaSemana; ?>"/>
         <div id="container0" class="container-fluid"> <!-- página toda -->
             <div id="container1" class="container-fluid corFundo"></div> <!-- cabec.php banner superior dividido em 3 -->
-                <div id="container2" class="container-fluid fontSiteFamily corFundoMenu-dia<?php echo $diaSemana; ?>"></div> <!-- Menu -->
-                <section style="height: 95vh;">
-                    <div id="container3" class="container-fluid corFundo"> <!-- corpo da página -->
-                        <!-- Carrosel  -->
-                        <div id="CorouselPagIni" class="carousel slide carousel-fade" data-bs-ride="carousel" style="text-align: center;"></div>
-                        <div id="container5" style="width: 25%;"> <!--  containers 5 e 6 dentro do container 3 -->
-                            <div style="text-align: center; border: 2px solid blue; border-radius: 10px; padding: 10px; font-family: tahoma, arial, cursive, sans-serif;">
-                            <span style="font-weight: bold;">Aniversariantes</span>
+            <div id="container2" class="container-fluid fontSiteFamily corFundoMenu-dia<?php echo $diaSemana; ?>"></div> <!-- Menu -->
+            <div id="container3" class="container-fluid corFundo"> <!-- corpo da página -->
+                <div id="CorouselPagIni" class="carousel slide carousel-fade" data-bs-ride="carousel" style="text-align: center;"></div> <!-- Carrosel  -->
+
+                <div id="tricoluna0" class="tricol0">
+                    <div id="tricoluna1" class="box" style="position: relative; float: left; width: 30%;;">
+                        <div class="divAniver"> <!-- Aniversário -->
                             <?php
                                 require_once("modulos/aniverIni.php");
                             ?>
                         </div>
                     </div>
-                    <div id="container6" style="width: 70%; padding-left: 80px; padding-right: 100px;">
-                        <div id="container7" style="width: 95%; padding-left: 20px; padding-right: 20px;"></div>
-                    </div>
+                    <div id="tricoluna2" class="box" style="position: relative; float: left; width: 2%; text-align: center;"></div> <!-- Separador -->
+                    <div id="tricoluna3" class="box" style="position: relative; float: left; width: 68%; text-align: left;"></div>  <!-- Texto pág inicial -->
                 </div>
-            </section>
-            <!-- Rodapé -->
-            <div>
-                <div id="container4" class="container-fluid corFundoMenu-dia<?php echo $diaSemana; ?>"></div>
+
+                <!-- Rodapé -->
+                <div>
+                    <div id="container4" class="container-fluid corFundoMenu-dia<?php echo $diaSemana; ?>"></div>
+                </div>
             </div>
         </div>
+
     </body>
 </html>

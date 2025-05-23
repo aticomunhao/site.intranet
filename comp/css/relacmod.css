@@ -1,44 +1,85 @@
 /* Ludinir Set 2023 
 */
- .etiq{
-    text-align: right; color: #9C9C9C; font-size: 70%; font-weight: bold; padding-right: 2px; padding-bottom: 1px;
-  }
-  .etiqNorm{
-    text-align: right; color: #000000; font-size: 1em; padding-right: 2px; padding-bottom: 1px;
-  }
-  .etiq80{
-    text-align: right; color: #9C9C9C; font-size: 80%; padding-right: 1px; padding-bottom: 1px;
-  }
-  .etiq60{
-    text-align: right; color: #9C9C9C; font-size: 60%; font-weight: bold;
-  }
-  .etiqAzul{
-    text-align: right; color: #036; font-style: italic; font-size: 80%; padding-right: 1px; padding-bottom: 1px;
-  }
-  .etiqRoxa{
-    text-align: right; color: #6C7AB3; font-style: italic; font-size: 85%; padding-right: 1px; padding-bottom: 1px;
-  }
-  .aDir{
-    text-align: right;
-  }
-  .aEsq{
-    text-align: left;
-  }
-  .aCentro{
-    text-align: center;
-  }
-  .eItalic{
-    font-style: italic;
-  }
-  .eBold{
-    font-weight: bold;
-  }
-  .eNorm{
-    font-weight: normal;
-  }
-  .bordaInf{
-    border-bottom: 1px solid gray;
-  }
+    .etiq{
+        text-align: right; color: #9C9C9C; font-size: 70%; font-weight: bold; padding-right: 2px; padding-bottom: 1px;
+    }
+    .etiqNorm{
+        text-align: right; color: #000000; font-size: 1em; padding-right: 2px; padding-bottom: 1px;
+    }
+    .etiqDir{
+        text-align: right; color: #036; font-size: 80%; font-weight: bold; padding-right: 1px; padding-bottom: 1px;
+    }
+    .etiq80{
+        text-align: right; color: #9C9C9C; font-size: 80%; padding-right: 1px; padding-bottom: 1px;
+    }
+    .etiq60{
+        text-align: right; color: #9C9C9C; font-size: 60%; font-weight: bold;
+    }
+    .etiqAzul{
+        text-align: right; color: #036; font-style: italic; font-size: 80%; padding-right: 1px; padding-bottom: 1px;
+    }
+    .etiqRoxa{
+        text-align: right; color: #6C7AB3; font-style: italic; font-size: 85%; padding-right: 1px; padding-bottom: 1px;
+    }
+    .aDir{
+        text-align: right;
+    }
+    .aEsq{
+        text-align: left;
+    }
+    .aCentro{
+        text-align: center;
+    }
+    .eItalic{
+        font-style: italic;
+    }
+    .eBold{
+        font-weight: bold;
+    }
+    .eNorm{
+        font-weight: normal;
+    }
+    .bordaInf{
+        border-bottom: 1px solid gray;
+    }
+    .radius5{
+        border-radius: 5px;
+    }
+
+    .fundoAmarelo{
+        background-color: #FFD700;
+    }
+    .fundoAmareloCl{
+        background-color: #FFFFCC;
+    }
+    .fundoAzul{
+        background-color: #87CEFA;
+    }
+    .fundoAzul2{
+        background-color: #66CCFF;
+    }
+    .fundoVerde{
+        background-color: #66FFCC;
+    }
+    .fundoCinza{
+        background-color: #EFF5FB;
+    }
+    .corAzulClaro{
+        color: #81BEF7;
+    }
+    .corBranca{
+        color: #fcfdfe;
+    }
+    .corPreta{
+        color: #101418;
+    }
+    .corCinza{
+        color:gray;
+    }
+    .corVerm{
+        color: red;
+    }
+
  .relacmodal{
      display: none; /* oculto default */
      position: fixed;
@@ -430,6 +471,7 @@
  .resetbot:hover, .botpadr:hover, .botpadrred:hover, .botpadrblue:hover, .botpadrTijolo:hover, .botpadramarelo:hover {
     border-radius: 10px;
 }
+
 .divbot{
     position: relative; 
     float: left;
@@ -442,6 +484,20 @@
     padding-left: 10px; 
     padding-right: 10px;
     font-size: 80%;
+}
+.divbotR{
+    position: relative; 
+    float: right;
+    margin-top: -20px; 
+    border: 1px solid blue;
+    background-color: blue;
+    color: white;
+    cursor: pointer;
+    border-radius: 10px; 
+    padding-left: 10px; 
+    padding-right: 10px;
+    font-size: 80%;
+    font-weight: bold;
 }
 .botpadrGr{
     text-align: center;
@@ -503,39 +559,7 @@
     padding-left: 10px; 
     padding-right: 10px; 
 }
-.fundoAmarelo{
-    background-color: #FFD700;
-}
-.fundoAmareloCl{
-    background-color: #FFFFCC;
-}
-.fundoAzul{
-    background-color: #87CEFA;
-}
-.fundoAzul2{
-    background-color: #66CCFF;
-}
-.fundoVerde{
-    background-color: #66FFCC;
-}
-.fundoCinza{
-    background-color: #EFF5FB;
-}
-.corAzulClaro{
-    color: #81BEF7;
-}
-.corBranca{
-    color: #fcfdfe;
-}
-.corPreta{
-    color: #101418;
-}
-.corCinza{
-    color:gray;
-}
-.corVerm{
-    color: red;
-}
+
 .destacaBorda{
     border: 2px solid red;
     border-radius: 3px;
@@ -546,6 +570,67 @@
 .divaniv:hover{
     opacity: .5;
 }
+
+    .divTemTarefa{
+        display: none; 
+        margin-left: 70px;
+        margin-right: 70px;
+        margin-bottom: 20px; 
+        color: white; font-weight: bold; 
+        background-color: #DC143C; 
+        text-align: center; padding: 10px; border-radius: 10px;
+        cursor: pointer;
+    }
+    .divTemBens{
+        display: none; 
+        margin-left: 70px;
+        margin-right: 70px;
+        margin-bottom: 0px; 
+        color: white; font-weight: bold; 
+        background-color: #A52A2A; 
+        text-align: center; padding: 10px; border-radius: 10px;
+        cursor: pointer;
+    }
+    .divTemBensPrazo{
+        display: none; 
+        margin-left: 70px;
+        margin-right: 70px;
+        margin-bottom: 20px; 
+        color: white; font-weight: bold; 
+        background-color: red; text-align: center; padding: 10px; border-radius: 10px;
+        cursor: pointer;
+    }
+    .divTemContrato{
+        display: none; 
+        margin-left: 70px;
+        margin-right: 70px;
+        margin-bottom: 0px; 
+        color: white; font-weight: bold; 
+        background-color: #363636; /* grey21 */
+        text-align: center; padding: 10px; border: 2px solid; border-radius: 10px;
+        cursor: pointer;
+    }
+    .divTemExtintor{
+        display: none; 
+        margin-left: 70px;
+        margin-right: 70px;
+        margin-bottom: 0px; 
+        color: white; font-weight: bold; 
+        background-color:rgb(182, 9, 9);
+        text-align: center; padding: 10px; border: 2px solid; border-radius: 10px;
+        cursor: pointer;
+    }
+    .divTemFiltro{
+        display: none; 
+        margin-left: 70px;
+        margin-right: 70px;
+        margin-bottom: 0px; 
+        color: white; font-weight: bold; 
+        background-color:rgb(9, 182, 93);
+        text-align: center; padding: 10px; border: 2px solid; border-radius: 10px;
+        cursor: pointer;
+    }
+
 
 /* Botão fechar */
 .close{

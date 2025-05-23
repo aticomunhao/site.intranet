@@ -1797,7 +1797,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <tr>
                             <td class="etiqAzul">Descrição do objeto encontrado: </td>
                             <td colspan="3">
-                                <textarea style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="3" cols="60" id="descdobem" onchange="modif();"></textarea>
+                                <textarea class="form-control" style="border: 1px solid blue; border-radius: 10px; padding: 3px;" id="descdobem" onchange="modif();"></textarea>
                             </td>
                         </tr>
                         <tr>
@@ -1808,7 +1808,7 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <tr>
                             <td class="etiqAzul">Local em que foi encontrado: </td>
-                            <td colspan="3"><textarea style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="2" cols="60" id="localachado" onchange="modif();"></textarea></td>
+                            <td colspan="3"><textarea class="form-control" style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="2" cols="60" id="localachado" onchange="modif();"></textarea></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Nome de quem encontrou: </td>
@@ -1821,7 +1821,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <tr>
                             <td class="etiqAzul">Observações: </td>
                             <td colspan="3">
-                                <textarea style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="3" cols="60" id="observdobem" onchange="modif();"></textarea>
+                                <textarea class="form-control" style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="3" cols="60" id="observdobem" onchange="modif();"></textarea>
                             </td>
                         </tr>
                         <tr>
@@ -2463,7 +2463,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <tr>
                             <td class="etiqAzul">Descrição do objeto perdido: </td>
                             <td colspan="3">
-                                <textarea id="descdobemPerdeu" style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="3" cols="60" onchange="modif();" placeholder="Descrição"></textarea>
+                                <textarea id="descdobemPerdeu" class="form-control" style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="3" cols="60" onchange="modif();" placeholder="Descrição"></textarea>
                             </td>
                         </tr>
                         <tr>
@@ -2474,7 +2474,7 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <tr>
                             <td class="etiqAzul">Local em que foi perdido: </td>
-                            <td colspan="3"><textarea id="localperdeu" style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="2" cols="60" onchange="modif();" placeholder="Local"></textarea></td>
+                            <td colspan="3"><textarea id="localperdeu" class="form-control" style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="2" cols="60" onchange="modif();" placeholder="Local"></textarea></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Nome do reclamante: </td>
@@ -2490,7 +2490,7 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <tr>
                             <td class="etiqAzul">Observações: </td>
-                            <td colspan="3"><textarea id="obsperdeu" style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="2" cols="60" onchange="modif();"></textarea></td>
+                            <td colspan="3"><textarea id="obsperdeu" class="form-control" style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="2" cols="60" onchange="modif();"></textarea></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul"></td>

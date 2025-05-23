@@ -267,7 +267,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <div style="border: 2px solid blue; border-radius: 10px;">
                     <table style="margin: 0 auto;">
                         <tr>
-                        <td><textarea id="textotroca" name="textotroca" style="width: 800px;" ></textarea></td>
+                        <td><textarea id="textotroca" class="form-control" style="width: 800px;" ></textarea></td>
                         </tr>
                         <tr>
                             <td style="text-align: center;"><div id="mensagem" style="color: red; font-weight: bold;"></div></td>

@@ -78,7 +78,7 @@ if(!isset($_SESSION["usuarioID"])){
             .modal-content-escalaControle{
                 background: linear-gradient(180deg, white, #86c1eb);
                 margin: 10% auto;
-                padding: 20px;
+                padding: 10px;
                 border: 1px solid #888;
                 border-radius: 15px;
                 width: 70%;
@@ -130,7 +130,7 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 50%;
+                width: 70%;
                 max-width: 900px;
             }
             .quadrodia {
@@ -223,6 +223,24 @@ if(!isset($_SESSION["usuarioID"])){
                 border: 1px solid #888;
                 border-radius: 15px;
                 width: 40%;
+            }
+            .modal-content-escImprNotas{
+                background: linear-gradient(180deg, white, #0099FF);
+                margin: 10% auto; 
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 40%;
+                max-width: 500px;
+            }
+            .modal-content-InsTipo{
+                background: linear-gradient(180deg, white, #0099FF);
+                margin: 10% auto; 
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 40%;
+                max-width: 500px;
             }
         </style>
         <script>
@@ -1632,6 +1650,11 @@ if(!isset($_SESSION["usuarioID"])){
                                     }
 
                                     document.getElementById("modalEscalaConfig").style.display = "block";
+                                    $("#configOcorrencias").load("modulos/escaladaf/edNotaOcor.php");
+                                    $("#configMotivos").load("modulos/escaladaf/edNotaMot.php");
+                                    $("#configStat").load("modulos/escaladaf/edNotaStat.php");
+                                    $("#configAdm").load("modulos/escaladaf/edNotaAdm.php");
+
                                }
                             }
                         }
@@ -2021,6 +2044,10 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("turnoFuncEscala").innerHTML = Resp.turno;
                                     document.getElementById("letraFuncEscala").innerHTML = Resp.letra;
                                     document.getElementById("guardaGrupo").value = Resp.grupo;
+                                    document.getElementById("selecOcor").value = Resp.idOcor;
+                                    document.getElementById("selecMotivo").value = Resp.idMot;
+                                    document.getElementById("selecStatus").value = Resp.idStat;
+                                    document.getElementById("selecAcaoAdm").value = Resp.idAdm;
                                     document.getElementById("guardaIdEscalaIns").value = Resp.idescalains;
                                     document.getElementById("observEscalado").value = Resp.observ;
                                     if(Resp.observ == ""){
@@ -2050,6 +2077,10 @@ if(!isset($_SESSION["usuarioID"])){
                     +"&turno="+document.getElementById("turnoFuncEscala").innerHTML
                     +"&grupo="+document.getElementById("guardaGrupo").value
                     +"&idEscalaIns="+document.getElementById("guardaIdEscalaIns").value
+                    +"&selecOcor="+document.getElementById("selecOcor").value
+                    +"&selecMotivo="+document.getElementById("selecMotivo").value
+                    +"&selecStatus="+document.getElementById("selecStatus").value
+                    +"&selecAcaoAdm="+document.getElementById("selecAcaoAdm").value
                     +"&observ="+encodeURIComponent(document.getElementById("observEscalado").value), true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
@@ -2101,11 +2132,339 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
             }
-            
+
+            function abreImprNotasFunc(){
+                $("#notasCentrais").load("modulos/escaladaf/quadroImpr.php?numgrupo="+document.getElementById("guardanumgrupo").value+"&mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value));
+                document.getElementById("relacImprNotas").style.display = "block";
+            }
             function imprNotasFunc(){
-                window.open("modulos/escaladaf/imprNotas.php?acao=imprNotas&mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value)+"&numgrupo="+document.getElementById("selecGrupo").value, "NotasFunc");
+                window.open("modulos/escaladaf/imprNotas.php?acao=imprNotasGrupo&mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value)+"&numgrupo="+document.getElementById("selecGrupo").value+"&codigo=0", "NotasFunc");
+                document.getElementById("selectNotasIndiv").value = "";
+            }
+            function imprNotasIndiv(Cod){
+                if(Cod != ""){
+                    window.open("modulos/escaladaf/imprNotas.php?acao=imprNotasIndiv&mesano="+encodeURIComponent(document.getElementById("selecMesAnoEsc").value)+"&numgrupo="+document.getElementById("selecGrupo").value+"&codigo="+Cod, "NotasFuncIndiv");
+                    document.getElementById("selectNotasIndiv").value = "";
+                }
+            }
+            function fechaImprNotas(){
+                document.getElementById("relacImprNotas").style.display = "none";
+            }
+            function insOcor(){
+                document.getElementById("guardaCodEdit").value = 0;
+                document.getElementById("editNomeTipo").value = "";
+                document.getElementById("relacEditTipo").style.display = "block";
+            }
+            function insMotivo(){
+                document.getElementById("guardaCodEdit").value = 0;
+                document.getElementById("editNomeMot").value = "";
+                document.getElementById("relacEditMotivo").style.display = "block";
+            }
+            function insStat(){
+                document.getElementById("guardaCodEdit").value = 0;
+                document.getElementById("editNomeStat").value = "";
+                document.getElementById("relacEditStat").style.display = "block";
+            }
+            function insAdm(){
+                document.getElementById("guardaCodEdit").value = 0;
+                document.getElementById("editNomeAdm").value = "";
+                document.getElementById("relacEditAdm").style.display = "block";
             }
 
+            function editaOcor(Cod){
+                document.getElementById("guardaCodEdit").value = Cod;
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=editOcor&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    document.getElementById("editNomeTipo").value = Resp.desc;
+                                    document.getElementById("relacEditTipo").style.display = "block";
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+            function editaMotivo(Cod){
+                document.getElementById("guardaCodEdit").value = Cod;
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=editMotivo&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    document.getElementById("editNomeMot").value = Resp.desc;
+                                    document.getElementById("relacEditMotivo").style.display = "block";
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+            function editaStat(Cod){
+                document.getElementById("guardaCodEdit").value = Cod;
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=editStat&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    document.getElementById("editNomeStat").value = Resp.desc;
+                                    document.getElementById("relacEditStat").style.display = "block";
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+            function editaAdm(Cod){
+                document.getElementById("guardaCodEdit").value = Cod;
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=editAdm&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    document.getElementById("editNomeAdm").value = Resp.desc;
+                                    document.getElementById("relacEditAdm").style.display = "block";
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+
+            function salvaEditTipo(){
+                if(document.getElementById("editNomeTipo").value == ""){
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaOcor&codigo="+document.getElementById("guardaCodEdit").value
+                    +"&texto="+document.getElementById("editNomeTipo").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    $("#configOcorrencias").load("modulos/escaladaf/edNotaOcor.php");
+                                    document.getElementById("relacEditTipo").style.display = "none";
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+            function salvaEditMot(){
+                if(document.getElementById("editNomeMot").value == ""){
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaMotivo&codigo="+document.getElementById("guardaCodEdit").value
+                    +"&texto="+document.getElementById("editNomeMot").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    $("#configMotivos").load("modulos/escaladaf/edNotaMot.php");
+                                    document.getElementById("relacEditMotivo").style.display = "none";
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+            function salvaEditStat(){
+                if(document.getElementById("editNomeStat").value == ""){
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaStat&codigo="+document.getElementById("guardaCodEdit").value
+                    +"&texto="+document.getElementById("editNomeStat").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    $("#configStat").load("modulos/escaladaf/edNotaStat.php");
+                                    document.getElementById("relacEditStat").style.display = "none";
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+            function salvaEditAdm(){
+                if(document.getElementById("editNomeAdm").value == ""){
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaAdm&codigo="+document.getElementById("guardaCodEdit").value
+                    +"&texto="+document.getElementById("editNomeAdm").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    $("#configAdm").load("modulos/escaladaf/edNotaAdm.php");
+                                    document.getElementById("relacEditAdm").style.display = "none";
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function apagaTipo(){
+                if(document.getElementById("editNomeTipo").value == ""){
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=apagaOcor&codigo="+document.getElementById("guardaCodEdit").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    $("#configOcorrencias").load("modulos/escaladaf/edNotaOcor.php");
+                                    document.getElementById("relacEditTipo").style.display = "none";
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+            function apagaMot(){
+                if(document.getElementById("editNomeMot").value == ""){
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=apagaMotivo&codigo="+document.getElementById("guardaCodEdit").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    $("#configMotivo").load("modulos/escaladaf/edNotaMot.php");
+                                    document.getElementById("relacEditMotivo").style.display = "none";
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+            function apagaStat(){
+                if(document.getElementById("editNomeStat").value == ""){
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=apagaStat&codigo="+document.getElementById("guardaCodEdit").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    $("#configStat").load("modulos/escaladaf/edNotaStat.php");
+                                    document.getElementById("relacEditStat").style.display = "none";
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+            function apagaAdm(){
+                if(document.getElementById("editNomeAdm").value == ""){
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=apagaAdm&codigo="+document.getElementById("guardaCodEdit").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    $("#configAdm").load("modulos/escaladaf/edNotaAdm.php");
+                                    document.getElementById("relacEditAdm").style.display = "none";
+                                }else{
+                                    alert("Houve um erro no servidor.")
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function fechaEditTipo(){
+                document.getElementById("relacEditTipo").style.display = "none";
+                document.getElementById("relacEditMotivo").style.display = "none";
+                document.getElementById("relacEditStat").style.display = "none";
+                document.getElementById("relacEditAdm").style.display = "none";
+            }
             function fechaModalAnot(){
                 document.getElementById("relacmodalAnotFunc").style.display = "none";
             }
@@ -2124,7 +2483,7 @@ if(!isset($_SESSION["usuarioID"])){
 
             jQuery(function($){
                 $("#relacParticip").draggable();
-                $("#modalEscalaConfig").draggable();
+//                $("#modalEscalaConfig").draggable();
             });
 
         </script>
@@ -2210,6 +2569,101 @@ if(!isset($_SESSION["usuarioID"])){
         dataedit timestamp without time zone DEFAULT '3000-12-31' 
         ) 
     ");
+
+
+    //   pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_funcoc"); // ocorrência
+    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_funcoc (
+        id SERIAL PRIMARY KEY, 
+        descocor character varying(100),
+        ativo smallint DEFAULT 1 NOT NULL, 
+        usuins integer DEFAULT 0 NOT NULL,
+        datains timestamp without time zone DEFAULT '3000-12-31',
+        usuedit integer DEFAULT 0 NOT NULL,
+        dataedit timestamp without time zone DEFAULT '3000-12-31' 
+        ) 
+    ");
+    $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_funcoc LIMIT 2");
+    $row = pg_num_rows($rs);
+    if($row == 0){
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcoc (id, descocor)  VALUES (1, '')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcoc (id, descocor)  VALUES (2, 'Falta')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcoc (id, descocor)  VALUES (3, 'Atraso')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcoc (id, descocor)  VALUES (4, 'Hora Extra')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcoc (id, descocor)  VALUES (5, 'Saida Antecipada')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcoc (id, descocor)  VALUES (6, 'Suspensão')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcoc (id, descocor)  VALUES (7, 'Registro Ponto Entrada')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcoc (id, descocor)  VALUES (8, 'Registro Ponto Intervalo')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcoc (id, descocor)  VALUES (9, 'Registro Ponto Saída')");
+    }
+
+    //   pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_funcmot"); // motivo
+    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_funcmot (
+        id SERIAL PRIMARY KEY, 
+        descmot character varying(100),
+        ativo smallint DEFAULT 1 NOT NULL, 
+        usuins integer DEFAULT 0 NOT NULL,
+        datains timestamp without time zone DEFAULT '3000-12-31',
+        usuedit integer DEFAULT 0 NOT NULL,
+        dataedit timestamp without time zone DEFAULT '3000-12-31' 
+        ) 
+    ");
+    $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_funcmot LIMIT 2");
+    $row = pg_num_rows($rs);
+    if($row == 0){
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcmot (id, descmot)  VALUES (1, '')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcmot (id, descmot)  VALUES (2, 'Atestado Médico')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcmot (id, descmot)  VALUES (3, 'Atestado Comparec')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcmot (id, descmot)  VALUES (4, 'Transporte')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcmot (id, descmot)  VALUES (5, 'Trabalho Externo')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcmot (id, descmot)  VALUES (6, 'Trabalho Interno')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcmot (id, descmot)  VALUES (7, 'Esquecimento')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcmot (id, descmot)  VALUES (8, 'Falta Energia')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcmot (id, descmot)  VALUES (9, 'RPE Inoperante')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcmot (id, descmot)  VALUES (10, 'Particular')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcmot (id, descmot)  VALUES (11, 'Outros')");
+    }
+
+    //   pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_funcstat"); // status
+    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_funcstat (
+        id SERIAL PRIMARY KEY, 
+        descstat character varying(100),
+        ativo smallint DEFAULT 1 NOT NULL, 
+        usuins integer DEFAULT 0 NOT NULL,
+        datains timestamp without time zone DEFAULT '3000-12-31',
+        usuedit integer DEFAULT 0 NOT NULL,
+        dataedit timestamp without time zone DEFAULT '3000-12-31' 
+        ) 
+    ");
+    $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_funcstat LIMIT 2");
+    $row = pg_num_rows($rs);
+    if($row == 0){
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcstat (id, descstat)  VALUES (1, '')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcstat (id, descstat)  VALUES (2, 'Autorizado')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcstat (id, descstat)  VALUES (3, 'Não Autorizado')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcstat (id, descstat)  VALUES (4, 'Justificado')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcstat (id, descstat)  VALUES (5, 'Não Justificado')");
+    }
+
+    //   pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_funcadm"); // status
+    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_funcadm (
+        id SERIAL PRIMARY KEY, 
+        descadm character varying(100),
+        ativo smallint DEFAULT 1 NOT NULL, 
+        usuins integer DEFAULT 0 NOT NULL,
+        datains timestamp without time zone DEFAULT '3000-12-31',
+        usuedit integer DEFAULT 0 NOT NULL,
+        dataedit timestamp without time zone DEFAULT '3000-12-31' 
+        ) 
+    ");
+    $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_funcadm LIMIT 2");
+    $row = pg_num_rows($rs);
+    if($row == 0){
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcadm (id, descadm)  VALUES (1, '')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcadm (id, descadm)  VALUES (2, 'Banco de Horas')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcadm (id, descadm)  VALUES (3, 'Desconto Salário')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcadm (id, descadm)  VALUES (4, 'Abonar')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcadm (id, descadm)  VALUES (5, 'Pagar Hora Extra')");
+    }
 
 
 //  dataescala_troca date DEFAULT '3000-12-31',
@@ -2384,6 +2838,8 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
         <input type="hidden" id="guardaGrupo" value = "0" />
         <input type="hidden" id="guardaIdEscalaIns" value = "0" />
         <input type="hidden" id="guardaTema" value = "<?php echo $Tema; ?>" />
+        <input type="hidden" id="guardaCodEdit" value = "0" />
+        
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div id="tricoluna0" class="row" style="margin: 0 auto;"> <!-- botões Inserir e Imprimir-->
@@ -2572,8 +3028,8 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
 
 
          <!-- Modal configuração-->
-         <div id="modalEscalaConfig" class="relacmodalMovel">
-            <div class="modal-content-escalaControleMovel">
+         <div id="modalEscalaConfig" class="relacmodal">
+            <div class="modal-content-escalaControle">
                 <span class="close" onclick="fechaEscalaConfig();">&times;</span>
                 <!-- div três colunas -->
                 <div class="container" style="margin: 0 auto;">
@@ -2716,10 +3172,50 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                     <tr>
                         <td colspan="5"><hr style="margin: 0; padding: 2px;"></td>
                     </tr>
-                    <tr>
-                        <td colspan="5" style="padding-top: 3px; padding-bottom: 3px;"></td>
-                    </tr>
                 </table>
+
+                <?php
+                if($_SESSION["AdmUsu"] > 6){
+                ?>
+                <hr>
+                <div style="margin-top: 5px; padding-top: 10px; border-top: 2px solid;">
+                    <label class="corPreta" style="padding-bottom: 10px;">Configurações: parâmetros para anotações na escala</label>
+                    <table>
+                        <tr style="vertical-align: top;">
+                            <td>
+                                <div style="margin: 10px; min-width: 200px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px; background: linear-gradient(180deg, white, #86c1eb);">
+                                    <div class='divbot corFundo' onclick='insOcor()' title="Adicionar tipo de ocorrência"> Adicionar </div>
+                                    <div id="configOcorrencias" style="text-align: center; color: black;"></div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div style="margin: 10px; min-width: 200px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px; background: linear-gradient(180deg, white, #86c1eb);">
+                                    <div class='divbot corFundo' onclick='insMotivo()' title="Adicionar motivo"> Adicionar </div>
+                                    <div id="configMotivos" style="text-align: center; color: black;"></div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div style="margin: 10px; min-width: 180px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px; background: linear-gradient(180deg, white, #86c1eb);">
+                                    <div class='divbot corFundo' onclick='insStat()' title="Adicionar status"> Adicionar </div>
+                                    <div id="configStat" style="text-align: center; color: black;"></div>
+                                </div>
+                            </td>
+
+                            <td>
+                                <div style="margin: 10px; min-width: 180px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px; background: linear-gradient(180deg, white, #86c1eb);">
+                                    <div class='divbot corFundo' onclick='insAdm()' title="Adicionar ação administrativa"> Adicionar </div>
+                                    <div id="configAdm" style="text-align: center; color: black;"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <?php
+                    
+                }
+                ?>
             </div>
         </div> <!-- Fim Modal-->
 
@@ -2960,6 +3456,61 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                         <td></td>
                     </tr>
                     <tr>
+                        <td colspan="3" style="text-align: center;">
+                            <label class="etiqAzul">Ocorrência: </label>
+                            <select id="selecOcor" style="font-size: .8rem; width: 130px;" onchange="modif();" title="Selecione a ocorrência.">
+                            <?php 
+                                $OpcoesOcor = pg_query($Conec, "SELECT id, descocor FROM ".$xProj.".escaladaf_funcoc WHERE ativo = 1 ORDER BY descocor");
+                                if($OpcoesOcor){
+                                    while ($Opcoes = pg_fetch_row($OpcoesOcor)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                    <?php 
+                                }
+                            }
+                            ?>
+                            </select>
+                            <label class="etiqAzul">Motivo: </label>
+                            <select id="selecMotivo" style="font-size: .8rem; width: 120px;" onchange="modif();" title="Selecione o motivo.">
+                            <?php 
+                                $OpcoesMot = pg_query($Conec, "SELECT id, descmot FROM ".$xProj.".escaladaf_funcmot WHERE ativo = 1 ORDER BY descmot");
+                                if($OpcoesMot){
+                                    while ($Opcoes = pg_fetch_row($OpcoesMot)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                    <?php 
+                                }
+                            }
+                            ?>
+                            </select>
+
+                            <label class="etiqAzul">Status: </label>
+                            <select id="selecStatus" style="font-size: .8rem; width: 120px;" onchange="modif();" title="Selecione o status.">
+                            <?php 
+                                $OpcoesStat = pg_query($Conec, "SELECT id, descstat FROM ".$xProj.".escaladaf_funcstat WHERE ativo = 1 ORDER BY descstat");
+                                if($OpcoesStat){
+                                    while ($Opcoes = pg_fetch_row($OpcoesStat)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                    <?php 
+                                }
+                            }
+                            ?>
+                            </select>
+
+                            <label class="etiqAzul">Ação Adm: </label>
+                            <select id="selecAcaoAdm" style="font-size: .8rem; width: 120px;" onchange="modif();" title="Selecione a ação da administração.">
+                            <?php 
+                                $OpcoesAdm = pg_query($Conec, "SELECT id, descadm FROM ".$xProj.".escaladaf_funcadm WHERE ativo = 1 ORDER BY descadm");
+                                if($OpcoesAdm){
+                                    while ($Opcoes = pg_fetch_row($OpcoesAdm)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                    <?php 
+                                }
+                            }
+                            ?>
+                            </select>
+                        </td>
+                        <td></td>
+                    </tr>
+                    <tr>
                         <td class="etiqAzul">Observações: </td>
                         <td><textarea class="form-control" id="observEscalado" style="resize: both; margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 4px;" rows="6" cols="70" title="Texto da nota" onchange="modif();"></textarea></td>
                         <td></td>
@@ -2970,6 +3521,110 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                         <td></td>
                     </tr>
                 </table>
+            </div>
+        </div> <!-- Fim Modal-->
+
+        <!-- div modal para escolher imprimir em pdf  -->
+        <div id="relacImprNotas" class="relacmodal">
+            <div class="modal-content-escImprNotas corPreta">
+                <span class="close" onclick="fechaImprNotas();">&times;</span>
+                <h5 style="text-align: center;color: #666;">Anotações da Escala</h5>
+                <h6 style="text-align: center; padding-bottom: 8px; color: #666;">Gerar PDF</h6>
+                <div id="notasCentrais" style="border: 2px solid; border-radius: 10px; padding: 10px; text-align: center;"></div>
+                <div style="padding-bottom: 20px;"></div>
+           </div>
+        </div> <!-- Fim Modal Impr -->
+
+
+        <!-- div modal para editar Ocorr em Notas na escala  -->
+        <div id="relacEditTipo" class="relacmodal">
+            <div class="modal-content-InsTipo">
+                <span class="close" onclick="fechaEditTipo();">&times;</span>
+                <h5 style="text-align: center; color: #666;">Ocorrência</h5>
+                    <table style="margin: 0 auto; width: 90%">
+                        <tr>
+                            <td class="etiq aDir">Texto: </td>
+                            <td><input type="text" id="editNomeTipo" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 90%;"></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                    <br>
+                    <div style="text-align: center;">
+                        <button id="botApagaEditTipo" class="resetbotred" style="font-size: .8rem;" onclick="apagaTipo();">Apagar</button>
+                        <label style="padding-left: 50%;"></label>
+                        <button id="botSalvarEditTipo" class="resetbot" style="font-size: .9rem;" onclick="salvaEditTipo();">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- Fim Modal-->
+
+        <!-- div modal para editar Ocorr em Notas na escala  -->
+        <div id="relacEditMotivo" class="relacmodal">
+            <div class="modal-content-InsTipo">
+                <span class="close" onclick="fechaEditTipo();">&times;</span>
+                <h5 style="text-align: center; color: #666;">Motivo</h5>
+                    <table style="margin: 0 auto; width: 90%">
+                        <tr>
+                            <td class="etiq aDir">Texto: </td>
+                            <td><input type="text" id="editNomeMot" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 90%;"></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                    <br>
+                    <div style="text-align: center;">
+                        <button id="botApagaEditMot" class="resetbotred" style="font-size: .8rem;" onclick="apagaMot();">Apagar</button>
+                        <label style="padding-left: 50%;"></label>
+                        <button id="botSalvarEditMot" class="resetbot" style="font-size: .9rem;" onclick="salvaEditMot();">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- Fim Modal-->
+
+        <!-- div modal para editar Ocorr em Notas na escala  -->
+        <div id="relacEditStat" class="relacmodal">
+            <div class="modal-content-InsTipo">
+                <span class="close" onclick="fechaEditTipo();">&times;</span>
+                <h5 style="text-align: center; color: #666;">Status</h5>
+                    <table style="margin: 0 auto; width: 90%">
+                        <tr>
+                            <td class="etiq aDir">Texto: </td>
+                            <td><input type="text" id="editNomeStat" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 90%;"></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                    <br>
+                    <div style="text-align: center;">
+                        <button id="botApagaEditStat" class="resetbotred" style="font-size: .8rem;" onclick="apagaStat();">Apagar</button>
+                        <label style="padding-left: 50%;"></label>
+                        <button id="botSalvarEditStat" class="resetbot" style="font-size: .9rem;" onclick="salvaEditStat();">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- Fim Modal-->
+
+        <!-- div modal para editar Ocorr em Notas na escala  -->
+        <div id="relacEditAdm" class="relacmodal">
+            <div class="modal-content-InsTipo">
+                <span class="close" onclick="fechaEditTipo();">&times;</span>
+                <h5 style="text-align: center; color: #666;">Ação</h5>
+                    <table style="margin: 0 auto; width: 90%">
+                        <tr>
+                            <td class="etiq aDir">Texto: </td>
+                            <td><input type="text" id="editNomeAdm" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 90%;"></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                    <br>
+                    <div style="text-align: center;">
+                        <button id="botApagaEditAdm" class="resetbotred" style="font-size: .8rem;" onclick="apagaAdm();">Apagar</button>
+                        <label style="padding-left: 50%;"></label>
+                        <button id="botSalvarEditAdm" class="resetbot" style="font-size: .9rem;" onclick="salvaEditAdm();">Salvar</button>
+                    </div>
+                </div>
             </div>
         </div> <!-- Fim Modal-->
 

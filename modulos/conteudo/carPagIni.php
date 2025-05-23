@@ -5,13 +5,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <title></title>
-        <style type="text/css">
-
-        </style>
-        <script type="text/javascript">
-
-
-        </script>
     </head>
     <body>
         <?php
@@ -25,6 +18,6 @@
                 $TextoPag = "";
             }
         ?>
-        <div id="contentPagIni" style="margin: 30px;"> <?php echo $TextoPag; ?> </div>
+        <div id="contentPagIni" style="margin: 30px; margin-top: 10px;"> <?php echo $TextoPag; ?> </div>
     </body>
 </html>

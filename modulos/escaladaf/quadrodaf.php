@@ -266,7 +266,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <br>
                             <div class='bContainer corFundo' style="margin-top: 15px;" onclick='abreEditDescanso()' title="Escala para descanso."> Descanso </div>
                             <br>
-                            <div class='bContainer corFundo' style="margin-top: 25px;" onclick='imprNotasFunc()' title="Gera PDF com as anotações diárias nos turnos."> Anotações </div>
+                            <div class='bContainer corFundo' style="margin-top: 25px;" onclick='abreImprNotasFunc()' title="Gera PDF com as anotações diárias nos turnos."> Anotações </div>
                             <?php
                         }
                     ?>
