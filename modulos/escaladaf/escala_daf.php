@@ -2154,21 +2154,25 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("guardaCodEdit").value = 0;
                 document.getElementById("editNomeTipo").value = "";
                 document.getElementById("relacEditTipo").style.display = "block";
+                document.getElementById("editNomeTipo").focus();
             }
             function insMotivo(){
                 document.getElementById("guardaCodEdit").value = 0;
                 document.getElementById("editNomeMot").value = "";
                 document.getElementById("relacEditMotivo").style.display = "block";
+                document.getElementById("editNomeMot").focus();
             }
             function insStat(){
                 document.getElementById("guardaCodEdit").value = 0;
                 document.getElementById("editNomeStat").value = "";
                 document.getElementById("relacEditStat").style.display = "block";
+                document.getElementById("editNomeStat").focus();
             }
             function insAdm(){
                 document.getElementById("guardaCodEdit").value = 0;
                 document.getElementById("editNomeAdm").value = "";
                 document.getElementById("relacEditAdm").style.display = "block";
+                document.getElementById("editNomeAdm").focus();
             }
 
             function editaOcor(Cod){
@@ -2184,6 +2188,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 0){
                                     document.getElementById("editNomeTipo").value = Resp.desc;
                                     document.getElementById("relacEditTipo").style.display = "block";
+                                    document.getElementById("editNomeTipo").focus();
                                 }else{
                                     alert("Houve um erro no servidor.")
                                 }
@@ -2206,6 +2211,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 0){
                                     document.getElementById("editNomeMot").value = Resp.desc;
                                     document.getElementById("relacEditMotivo").style.display = "block";
+                                    document.getElementById("editNomeMot").focus();
                                 }else{
                                     alert("Houve um erro no servidor.")
                                 }
@@ -2228,6 +2234,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 0){
                                     document.getElementById("editNomeStat").value = Resp.desc;
                                     document.getElementById("relacEditStat").style.display = "block";
+                                    document.getElementById("editNomeStat").focus();
                                 }else{
                                     alert("Houve um erro no servidor.")
                                 }
@@ -2250,6 +2257,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 if(parseInt(Resp.coderro) === 0){
                                     document.getElementById("editNomeAdm").value = Resp.desc;
                                     document.getElementById("relacEditAdm").style.display = "block";
+                                    document.getElementById("editNomeAdm").focus();
                                 }else{
                                     alert("Houve um erro no servidor.")
                                 }
@@ -2399,7 +2407,7 @@ if(!isset($_SESSION["usuarioID"])){
 //alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 if(parseInt(Resp.coderro) === 0){
-                                    $("#configMotivo").load("modulos/escaladaf/edNotaMot.php");
+                                    $("#configMotivos").load("modulos/escaladaf/edNotaMot.php");
                                     document.getElementById("relacEditMotivo").style.display = "none";
                                 }else{
                                     alert("Houve um erro no servidor.")
@@ -3176,44 +3184,41 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
 
                 <?php
                 if($_SESSION["AdmUsu"] > 6){
-                ?>
-                <hr>
-                <div style="margin-top: 5px; padding-top: 10px; border-top: 2px solid;">
-                    <label class="corPreta" style="padding-bottom: 10px;">Configurações: parâmetros para anotações na escala</label>
-                    <table>
-                        <tr style="vertical-align: top;">
-                            <td>
-                                <div style="margin: 10px; min-width: 200px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px; background: linear-gradient(180deg, white, #86c1eb);">
-                                    <div class='divbot corFundo' onclick='insOcor()' title="Adicionar tipo de ocorrência"> Adicionar </div>
-                                    <div id="configOcorrencias" style="text-align: center; color: black;"></div>
-                                </div>
-                            </td>
-
-                            <td>
-                                <div style="margin: 10px; min-width: 200px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px; background: linear-gradient(180deg, white, #86c1eb);">
-                                    <div class='divbot corFundo' onclick='insMotivo()' title="Adicionar motivo"> Adicionar </div>
-                                    <div id="configMotivos" style="text-align: center; color: black;"></div>
-                                </div>
-                            </td>
-
-                            <td>
-                                <div style="margin: 10px; min-width: 180px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px; background: linear-gradient(180deg, white, #86c1eb);">
-                                    <div class='divbot corFundo' onclick='insStat()' title="Adicionar status"> Adicionar </div>
-                                    <div id="configStat" style="text-align: center; color: black;"></div>
-                                </div>
-                            </td>
-
-                            <td>
-                                <div style="margin: 10px; min-width: 180px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px; background: linear-gradient(180deg, white, #86c1eb);">
-                                    <div class='divbot corFundo' onclick='insAdm()' title="Adicionar ação administrativa"> Adicionar </div>
-                                    <div id="configAdm" style="text-align: center; color: black;"></div>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
+                    ?>
+                    <hr>
+                    <div style="margin-top: 5px; padding-top: 10px; border-top: 2px solid;">
+                        <div style="position: relative; float: right; font-size: 70%; color: black; padding-right: 15px;">Superusuários</div>
+                        <label class="corPreta" style="padding-bottom: 10px;">Configurações: edita parâmetros para anotações na escala:</label>
+                        <table>
+                            <tr style="vertical-align: top;">
+                                <td>
+                                    <div style="margin: 10px; min-width: 200px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px; background: linear-gradient(180deg, white, #86c1eb);">
+                                        <div class='divbot corFundo' onclick='insOcor()' title="Adicionar tipo de ocorrência"> Adicionar </div>
+                                        <div id="configOcorrencias" style="text-align: center; color: black;"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="margin: 10px; min-width: 200px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px; background: linear-gradient(180deg, white, #86c1eb);">
+                                        <div class='divbot corFundo' onclick='insMotivo()' title="Adicionar motivo"> Adicionar </div>
+                                        <div id="configMotivos" style="text-align: center; color: black;"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="margin: 10px; min-width: 180px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px; background: linear-gradient(180deg, white, #86c1eb);">
+                                        <div class='divbot corFundo' onclick='insStat()' title="Adicionar status"> Adicionar </div>
+                                        <div id="configStat" style="text-align: center; color: black;"></div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="margin: 10px; min-width: 180px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px; background: linear-gradient(180deg, white, #86c1eb);">
+                                        <div class='divbot corFundo' onclick='insAdm()' title="Adicionar ação administrativa"> Adicionar </div>
+                                        <div id="configAdm" style="text-align: center; color: black;"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                 <?php
-                    
                 }
                 ?>
             </div>
