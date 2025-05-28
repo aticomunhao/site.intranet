@@ -220,7 +220,8 @@ if(!isset($_SESSION['AdmUsu'])){
                 }
 
                 if($tbl[2] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                    $pdf->SetFillColor(232, 232, 232); // fundo cinza
+//                    $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                    $pdf->SetFillColor(181, 181, 181); // fundo cinza - modificado 28/05/2025 a pedido
                 }else{
                     $pdf->SetFillColor(255, 255, 255); // fundo branco
                 }
@@ -253,7 +254,7 @@ if(!isset($_SESSION['AdmUsu'])){
                     $diaFer = 1;
                 }
                 if($tbl1[1] == 0 || $diaFer == 1){ // Domingo ou Feridado
-                    $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                    $pdf->SetFillColor(181, 181, 181); // fundo cinza
                 }else{
                     $pdf->SetFillColor(255, 255, 255); // fundo branco
                 }
@@ -313,7 +314,7 @@ if(!isset($_SESSION['AdmUsu'])){
                         }
 
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -357,7 +358,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -380,7 +381,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -423,7 +424,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -446,7 +447,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -489,7 +490,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -512,7 +513,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -554,7 +555,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -577,7 +578,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -619,7 +620,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -642,7 +643,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -684,7 +685,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -707,7 +708,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -749,7 +750,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -772,7 +773,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -814,7 +815,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -837,7 +838,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -880,7 +881,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -903,7 +904,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -946,7 +947,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -969,7 +970,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -1012,7 +1013,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -1035,7 +1036,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -1078,7 +1079,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -1101,7 +1102,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -1144,7 +1145,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -1167,7 +1168,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -1210,7 +1211,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -1233,7 +1234,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -1276,7 +1277,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -1299,7 +1300,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -1342,7 +1343,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -1365,7 +1366,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -1408,7 +1409,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -1431,7 +1432,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -1474,7 +1475,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -1497,7 +1498,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -1540,7 +1541,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -1563,7 +1564,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -1606,7 +1607,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -1629,7 +1630,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -1672,7 +1673,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -1695,7 +1696,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -1738,7 +1739,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -1761,7 +1762,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -1804,7 +1805,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -1827,7 +1828,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -1870,7 +1871,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -1893,7 +1894,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -1936,7 +1937,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -1959,7 +1960,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -2002,7 +2003,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -2025,7 +2026,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -2068,7 +2069,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -2091,7 +2092,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                         }else{
                             if($Cont % 2 == 0){ // linhas pares
                                 $pdf->SetFillColor(255, 255, 255); // branco
@@ -2134,7 +2135,7 @@ if(!isset($_SESSION['AdmUsu'])){
                             $diaFer = 1;
                         }
                         if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                            $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                            $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                             $pdf->SetFillColor(255, 255, 255);
                         }else{
@@ -2158,7 +2159,7 @@ if(!isset($_SESSION['AdmUsu'])){
                                 $diaFer = 1;
                             }
                             if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                                $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                                $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             }else{
                                 if($Cont % 2 == 0){ // linhas pares
                                     $pdf->SetFillColor(255, 255, 255); // branco
@@ -2201,7 +2202,7 @@ if(!isset($_SESSION['AdmUsu'])){
                                 $diaFer = 1;
                             }
                             if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                                $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                                $pdf->SetFillColor(181, 181, 181); // fundo cinza
                                 $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                                 $pdf->SetFillColor(255, 255, 255);
                             }else{
@@ -2225,7 +2226,7 @@ if(!isset($_SESSION['AdmUsu'])){
                                 $diaFer = 1;
                             }
                             if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                                $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                                $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             }else{
                                 if($Cont % 2 == 0){ // linhas pares
                                     $pdf->SetFillColor(255, 255, 255); // branco
@@ -2268,7 +2269,7 @@ if(!isset($_SESSION['AdmUsu'])){
                                 $diaFer = 1;
                             }
                             if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                                $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                                $pdf->SetFillColor(181, 181, 181); // fundo cinza
                                 $pdf->Cell(7, 5, "", 1, 0, 'C', true);
                                 $pdf->SetFillColor(255, 255, 255);
                             }else{
@@ -2293,7 +2294,7 @@ if(!isset($_SESSION['AdmUsu'])){
                                 $diaFer = 1;
                             }
                             if($tbl2[1] == 0 || $diaFer == 1){ // Domingo ou Feriado
-                                $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                                $pdf->SetFillColor(181, 181, 181); // fundo cinza
                             }else{
                                 if($Cont % 2 == 0){ // linhas pares
                                     $pdf->SetFillColor(255, 255, 255); // branco
@@ -2336,7 +2337,7 @@ if(!isset($_SESSION['AdmUsu'])){
                                 $diaFer = 1;
                             }
                             if($tbl3[1] == 0 || $diaFer == 1){  // Domingo ou Feriado
-                                $pdf->SetFillColor(232, 232, 232); // fundo cinza
+                                $pdf->SetFillColor(181, 181, 181); // fundo cinza
                                 $pdf->SetFillColor(255, 255, 255);
                             }else{
                                 $pdf->Cell(7, 5, "", 1, 0, 'C'); // montar só os quadrinhos

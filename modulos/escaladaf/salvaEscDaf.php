@@ -959,19 +959,21 @@ if($Acao =="procChefeDiv"){
     if(!$rs){
         $Erro = 1;
     }
-    $rs1 = pg_query($Conec, "SELECT visucargo_daf, primcargo_daF, seminifim_daf FROM ".$xProj.".paramsis WHERE idpar = 1");
+    $rs1 = pg_query($Conec, "SELECT visucargo_daf, primcargo_daF, seminifim_daf, corlistas_Daf FROM ".$xProj.".paramsis WHERE idpar = 1");
     if($rs1){
         $tbl1 = pg_fetch_row($rs1);
         $VisuCargo = $tbl1[0];
         $PrimCargo = $tbl1[1];
         $SemaIniFim = $tbl1[2];
+        $CorListas = $tbl1[3];
     }else{
         $VisuCargo = 0;
         $PrimCargo = 0;
         $SemaIniFim = 0;
+        $CorListas = 0;
     }
 
-    $var = array("coderro"=>$Erro, "chefe"=>$tbl[0], "encarreg"=>$tbl[1], "visucargo"=>$VisuCargo, "primcargo"=>$PrimCargo, "siglagrupo"=>$SiglaGrupo, "semanaIniFim"=>$SemaIniFim);
+    $var = array("coderro"=>$Erro, "chefe"=>$tbl[0], "encarreg"=>$tbl[1], "visucargo"=>$VisuCargo, "primcargo"=>$PrimCargo, "siglagrupo"=>$SiglaGrupo, "semanaIniFim"=>$SemaIniFim, "escolhaCorListas"=>$CorListas);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -1747,6 +1749,17 @@ if($Acao =="apagaAdm"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Erro = 0;
     $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_funcadm SET ativo = 0 WHERE id = $Cod ");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+if($Acao =="marcaEscolhaCorListas"){
+    $Erro = 0;
+    $Valor = filter_input(INPUT_GET, 'valor');
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".paramsis SET corlistas_Daf = $Valor WHERE idpar = 1");
     if(!$rs){
         $Erro = 1;
     }

@@ -39,7 +39,7 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 50%;
+                width: 60%;
                 max-width: 900px;
             }
             .modal-content-imprChaves2{
@@ -1238,6 +1238,9 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function AbreModalChaves(){
+                if(document.getElementById("configselecSolicitante").value == ""){
+                    return false;
+                }
                 document.getElementById("relacmodalChaves").style.display = "block";
                 $("#faixachaves").load("modulos/claviculario/escChave2.php?usuario="+document.getElementById("configselecSolicitante").value);
             }
@@ -1394,6 +1397,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("editChaves").checked = false;
                 document.getElementById("configcpfsolicitante").value = "";
                 document.getElementById("configselecSolicitante").value = "";
+                document.getElementById("botaoChaves").style.visibility = "hidden";
                 document.getElementById("modalChavesConfig").style.display = "block";
             }
             function fechaModalConfig(){

@@ -29,8 +29,8 @@
     }
     ?>
     <div style="text-align: center; margin: 10px;">
-        <div style="position: relative; float: right;"><label style="font-size: 80%;"><?php echo "Claviculário: ".$row." chaves"; ?></label></div>
-        <div id="chavesmarcadas" style="text-align: left; font-size: 80%;"><?php echo "Marcadas: ".$rowMarc; ?></div>
+        <div id="chavesmarcadas" style="position: relative; float: left; width: 45%; text-align: left; font-size: 80%;"><?php echo "Marcadas: ".$rowMarc; ?></div>
+        <div style="position: relative; float: right; width: 45%; text-align: right; font-size: 80%;"><label><?php echo "Claviculário: ".$row." chaves"; ?></label></div>
         <table style="margin: 0 auto;">
             <tr>
                 <td style="display: none;"></td>

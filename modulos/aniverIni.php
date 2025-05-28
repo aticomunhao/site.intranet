@@ -83,7 +83,7 @@
                         $NiverHoje = 1; // tem hoje
                     }else{
                         echo "<tr>";
-                        echo "<td colspan='2' style='color: red; text-align: center; font-weight: normal; font-size: 80%;'>Nenhum aniversariante hoje</td>";
+                        echo "<td colspan='2' style='color: red; text-align: center; font-weight: normal; font-size: 80%;'>Não há aniversariante hoje</td>";
                         echo "</tr>";
                     }
                 }

@@ -73,7 +73,6 @@
     }else{
         $Tema = 0;
     }
-//    echo "Tema: ".$Tema;
 
     if(isset($_REQUEST["largTela"])){
         $LargTela = $_REQUEST["largTela"]; // largura da tela

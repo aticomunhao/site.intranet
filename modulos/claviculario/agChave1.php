@@ -13,6 +13,29 @@
     $Chave = parEsc("chave", $Conec, $xProj, $_SESSION["usuarioID"]); // pode pegar chaves
 	$FiscClav = parEsc("fisc_clav", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
     
+    $NumDiaSem = date('w'); // dom = 0, seg = 1, ter = 2 ...
+
+    $Semana = array(
+        '0' => 'dom', 
+        '1' => 'seg',
+        '2' => 'ter',
+        '3' => 'qua',
+        '4' => 'qui',
+        '5' => 'sex',
+        '6' => 'sab'
+    );
+    $Campo = $Semana[$NumDiaSem]; // campo no BD em chaves_aut
+
+    $SemanaExt = array(
+        '0' => 'Domingo', 
+        '1' => 'Segunda-Feira',
+        '2' => 'Terça-Feira',
+        '3' => 'Quarta-Feira',
+        '4' => 'Quinta-Feira',
+        '5' => 'Sexta-Feira',
+        '6' => 'Sábado'
+    );
+
     //formata CNPJ e CPF em máscaras.
     function Mask($mask,$str){
         $str = str_replace(" ","",$str);
@@ -42,11 +65,11 @@
                     <table style="margin: 0 auto; width:95%">
                         <tr>          
                             <td colspan="2"><div class="quadrlista" style="border-color: #E90074; font-size: 120%;"> <?php echo str_pad($tbl[2], 3, 0, STR_PAD_LEFT)." ".$tbl[11]; ?></div>
-                            <div class="quadrlista"><label class="etiq">Sala: </label> <?php echo $tbl[4]; ?></div>
-                            <div class="quadrlista" style="border: 0px;"></div>
-                        </td>
+                                <div class="quadrlista"><label class="etiq">Sala: </label> <?php echo $tbl[4]; ?></div>
+                                <div class="quadrlista" style="border: 0px;"></div>
+                            </td>
                         </tr>
-                        <tr>              
+                        <tr>
                             <td colspan="2"> 
                                 <?php
                                 if(strtotime($tbl[10]) < strtotime($Hoje)){
@@ -118,6 +141,64 @@
             <div style="text-align: center; padding-left: 5px; padding-rigth: 5px;"><label class="etiq">Nenhum Agendamento </label> </div>
             <?php
         }
+
+        //Previsão dia da Semana
+        $rs1 = pg_query($Conec, "SELECT ".$xProj.".chaves_aut.id, chaves_id, chavenum, chavecompl, nomecompl, chavesala, $Campo, ".$xProj.".poslog.pessoas_id, chavelocal, chavecompl 
+        FROM ".$xProj.".poslog INNER JOIN (".$xProj.".chaves_aut INNER JOIN ".$xProj.".chaves ON ".$xProj.".chaves_aut.chaves_id = ".$xProj.".chaves.id) ON ".$xProj.".poslog.pessoas_id = ".$xProj.".chaves_aut.pessoas_id 
+        WHERE ".$xProj.".chaves.ativo = 1 And ".$xProj.".chaves_aut.ativo = 1 And $Campo = 1 ORDER BY chavenum, chavecompl ");
+
+        $Agenda = $SemanaExt[$NumDiaSem];
+
+        $row1 = pg_num_rows($rs1);
+        if($row1 > 0){
+            ?>
+            <div style="border: 2px solid #CFB53B; border-radius: 8px; margin: 5px; padding: 5px;">
+                <table style="margin: 0 auto; width:95%">
+                    <tr>
+                        <td style="text-align: center;"> 
+                            <?php
+                            echo "<div style='font-size: 70%;'>Previsão</div>";
+                            echo "<div style='font-size: 120%;'> $Agenda </div>";
+                            ?>
+                        </td>
+                    </tr>
+                    <tr>              
+                        <td style="padding-top: 5px;"><hr style="margin: 0;"></td>
+                    </tr>
+                <?php
+
+                while($tbl1 = pg_fetch_row($rs1)){
+                    $CodAut = $tbl1[0];
+                    $CodChaves = $tbl1[1]; // chaves_id de chaves_aut
+                    $DiaSem = $tbl1[6];
+                    //ver se foi retirada
+                    $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_ctl WHERE chaves_id = $CodChaves And ativo = 1 And usuretira > 0 And usudevolve = 0");
+                    $row2 = pg_num_rows($rs2);
+                    if($row2 == 0){
+                        ?>
+                        <tr>          
+                            <td><div class="quadrlista" style="border-color: #E90074; font-size: 120%;"> <?php echo str_pad($tbl1[2], 3, 0, STR_PAD_LEFT)." ".$tbl1[3]; ?></div>
+                                <div class="quadrlista" style="border: 0px;"><label class="etiq">Sala: </label> <?php echo $tbl1[5]; ?></div>
+                                <div class="quadrlista" style="border: 0px;"></div>
+                            </td>
+                        </tr>
+                        <tr>              
+                            <td>
+                                <div class="quadrlista" style="text-align: left; border: 0px;"><label class="etiq">para: </label> <?php echo $tbl1[4]; ?></div>
+                            </td>
+                        </tr>
+                        <tr>              
+                            <td style="padding-top: 5px;"><hr style="margin: 0;"></td>
+                        </tr>
+                    <?php
+                    }
+                }
+                ?>
+                </table>
+            </div>
+            <?php
+        }
+
         ?>
         <br><br>
     </div>

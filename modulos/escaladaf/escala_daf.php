@@ -145,7 +145,7 @@ if(!isset($_SESSION["usuarioID"])){
                 min-width: 30px;
                 border: 1px solid;
                 border-radius: 3px;
-                background-color: #E8E8E8;
+                background-color: #B5B5B5; /*#E8E8E8;  modificado 28/05/2025 a pedido */
                 color: black;
             }
             .quadrodiaClick {
@@ -162,7 +162,7 @@ if(!isset($_SESSION["usuarioID"])){
                 border: 1px solid;
                 border-radius: 3px;
                 cursor: pointer;
-                background-color: #E8E8E8;
+                background-color: #B5B5B5;
                 color: black;
             }
             .quadroletra {
@@ -275,6 +275,8 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("checkvisucargo").style.visibility = "hidden";
                     document.getElementById("etiqcheckprimcargo").style.visibility = "hidden";
                     document.getElementById("checkprimcargo").style.visibility = "hidden";
+                    document.getElementById("etiqcheckvisuCorListas").style.visibility = "hidden";
+                    document.getElementById("checkvisuCorListas").style.visibility = "hidden";
                 }
                 if(parseInt(document.getElementById("guardaUsuId").value) != 3 && parseInt(document.getElementById("guardaUsuId").value) != 83){ // Programador
                     document.getElementById("etiqchecksemanaIniFim").style.visibility = "hidden";
@@ -1648,6 +1650,13 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("checksemanaIniFim").checked = false;
                                     }
+                                    if(parseInt(Resp.escolhaCorListas) === 1){
+                                        document.getElementById("checkvisuCorListas").checked = true;
+                                        document.getElementById("corListasEscalaDaf").style.visibility = "visible";
+                                    }else{
+                                        document.getElementById("checkvisuCorListas").checked = false;
+                                        document.getElementById("corListasEscalaDaf").style.visibility = "hidden";
+                                    }
 
                                     document.getElementById("modalEscalaConfig").style.display = "block";
                                     $("#configOcorrencias").load("modulos/escaladaf/edNotaOcor.php");
@@ -1951,6 +1960,33 @@ if(!isset($_SESSION["usuarioID"])){
                                     alert("Houve um erro no servidor.");
                                 }else{
                                     $("#faixacarga").load("modulos/escaladaf/jCargaDaf.php?numgrupo="+document.getElementById("selecGrupo").value);
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function marcaVisuCorListas(obj){
+                if(obj.checked === true){
+                    Valor = 1;
+                    document.getElementById("corListasEscalaDaf").style.visibility = "visible";
+                }else{
+                    Valor = 0;
+                    document.getElementById("corListasEscalaDaf").style.visibility = "hidden";
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=marcaEscolhaCorListas&valor="+Valor, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
                                 }
                             }
                         }
@@ -2847,7 +2883,6 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
         <input type="hidden" id="guardaIdEscalaIns" value = "0" />
         <input type="hidden" id="guardaTema" value = "<?php echo $Tema; ?>" />
         <input type="hidden" id="guardaCodEdit" value = "0" />
-        
 
         <div style="margin: 5px; border: 2px solid green; border-radius: 15px; padding: 5px;">
             <div id="tricoluna0" class="row" style="margin: 0 auto;"> <!-- botões Inserir e Imprimir-->
@@ -3055,6 +3090,9 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                 <input type='checkbox' id='checkprimcargo' onchange='marcaPrimCargo(this);' title='Primeiro o cargo depois o nome' >
                 <label for='checksemanaIniFim' id='etiqchecksemanaIniFim' class='etiqAzul' style='padding-left: 15px' title='Mostar as semanas inicial e final na contagem da carga horária'>Semanas Inicial e Final</label> 
                 <input type='checkbox' id='checksemanaIniFim' onchange='marcaSemanaIniFim(this);' title='Mostar as semanas inicial e final na contagem da carga horária' >
+                <label for='checkvisuCorListas' id='etiqcheckvisuCorListas' class='etiqAzul' style='padding-left: 15px' title='Mostar a escolha de cor das listas'>Cores das Listas</label> 
+                <input type='checkbox' id='checkvisuCorListas' onchange='marcaVisuCorListas(this);' title='Mostar a escolha de cor das listas' >
+
                 <table style="margin: 0 auto; width: 95%;">
                     <tr>
                         <td colspan="4" style="text-align: center;"></td>
@@ -3082,7 +3120,6 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                             <input type="text" id="configCpfEscala" placeholder="CPF" style="width: 130px; text-align: center; border: 1px solid #666; border-radius: 5px;" onkeypress="if(event.keyCode===13){javascript:foco('configSelecEscala');return false;}" title="Procura por CPF. Digite o CPF."/>
                             <label class="etiqAzul" style="padding-left: 10px">Função: </label>
                             <input type="text" id="configCargoEscala" maxlength="15" placeholder="Cargo/FG" style="width: 150px; border: 1px solid #666; border-radius: 5px;" title="Digite o cargo/FG"/>
-
                         </td>
                     </tr>
                     <tr>
@@ -3158,35 +3195,32 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                     <tr>
                         <td colspan="5"><hr style="margin: 0; padding: 2px;"></td>
                     </tr>
-                    <tr>
-                        <td class="etiqAzul eItalic" title="Cor das listas na tela (Tema: Claro) e na impressão do PDF">Cor das Listas:</td>
-                        <td colspan="4" style="text-align: left;">
-                            <input type="radio" name="corlistas" id="corlista0" value="0" <?php if($CorListas == 0){echo "CHECKED";} ?> title="Branco" onclick="salvaCor(0);"><label for="corlista0"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #FFFFFF; font-size: 70%;">Branco</div></label>
-                            <input type="radio" name="corlistas" id="corlista1" value="1" <?php if($CorListas == 1){echo "CHECKED";} ?> title="Cornsilk" onclick="salvaCor(1);"><label for="corlista1"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #FFF8DC; font-size: 70%;">Cornsilk</div></label>
-                            <input type="radio" name="corlistas" id="corlista2" value="1" <?php if($CorListas == 2){echo "CHECKED";} ?> title="Azure" onclick="salvaCor(2);"><label for="corlista2"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #F0FFFF; font-size: 70%;">Azure</div></label>
-                            <input type="radio" name="corlistas" id="corlista3" value="1" <?php if($CorListas == 3){echo "CHECKED";} ?> title="Lavanda" onclick="salvaCor(3);"><label for="corlista3"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #E6E6FA; font-size: 70%;">Lavanda</div></label>
-                            <input type="radio" name="corlistas" id="corlista4" value="1" <?php if($CorListas == 4){echo "CHECKED";} ?> title="Marfim" onclick="salvaCor(4);"><label for="corlista4"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #EEEEE0; font-size: 70%;">Marfim</div></label>
-                            <br>
-                            <input type="radio" name="corlistas" id="corlista5" value="1" <?php if($CorListas == 5){echo "CHECKED";} ?> title="Cinza" onclick="salvaCor(5);"><label for="corlista5"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #BEBEBE; font-size: 70%;">Cinza</div></label>
-                            <input type="radio" name="corlistas" id="corlista6" value="1" <?php if($CorListas == 6){echo "CHECKED";} ?> title="Magenta" onclick="salvaCor(6);"><label for="corlista6"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #FF00FF; font-size: 70%;">Magenta</div></label>
-                            <input type="radio" name="corlistas" id="corlista7" value="1" <?php if($CorListas == 7){echo "CHECKED";} ?> title="Violeta" onclick="salvaCor(7);"><label for="corlista7"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #EE82EE; font-size: 70%;">Violeta</div></label>
-                            <input type="radio" name="corlistas" id="corlista8" value="1" <?php if($CorListas == 8){echo "CHECKED";} ?> title="Laranja" onclick="salvaCor(8);"><label for="corlista8"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #FFA500; font-size: 70%;">Laranja</div></label>
-                            <input type="radio" name="corlistas" id="corlista9" value="1" <?php if($CorListas == 9){echo "CHECKED";} ?> title="Ciano" onclick="salvaCor(9);"><label for="corlista9"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #00EEEE; font-size: 70%;">Ciano</div></label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="5" style="padding-top: 3px; padding-bottom: 3px;"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="5"><hr style="margin: 0; padding: 2px;"></td>
-                    </tr>
                 </table>
-
+                <div id="corListasEscalaDaf" style="position: relative; width: 100%; text-align: center;">
+                    <table style="margin: 0 auto; width: 85%;">
+                        <tr>
+                            <td class="etiqAzul eItalic" title="Cor das listas na tela (Tema: Claro) e na impressão do PDF">Cor das Listas:</td>
+                            <td colspan="2" style="text-align: left;">
+                                <input type="radio" name="corlistas" id="corlista0" value="0" <?php if($CorListas == 0){echo "CHECKED";} ?> title="Branco" onclick="salvaCor(0);"><label for="corlista0"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #FFFFFF; font-size: 70%;">Branco</div></label>
+                                <input type="radio" name="corlistas" id="corlista1" value="1" <?php if($CorListas == 1){echo "CHECKED";} ?> title="Cornsilk" onclick="salvaCor(1);"><label for="corlista1"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #FFF8DC; font-size: 70%;">Cornsilk</div></label>
+                                <input type="radio" name="corlistas" id="corlista2" value="1" <?php if($CorListas == 2){echo "CHECKED";} ?> title="Azure" onclick="salvaCor(2);"><label for="corlista2"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #F0FFFF; font-size: 70%;">Azure</div></label>
+                                <input type="radio" name="corlistas" id="corlista3" value="1" <?php if($CorListas == 3){echo "CHECKED";} ?> title="Lavanda" onclick="salvaCor(3);"><label for="corlista3"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #E6E6FA; font-size: 70%;">Lavanda</div></label>
+                                <input type="radio" name="corlistas" id="corlista4" value="1" <?php if($CorListas == 4){echo "CHECKED";} ?> title="Marfim" onclick="salvaCor(4);"><label for="corlista4"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #EEEEE0; font-size: 70%;">Marfim</div></label>
+                                <br>
+                                <input type="radio" name="corlistas" id="corlista5" value="1" <?php if($CorListas == 5){echo "CHECKED";} ?> title="Cinza" onclick="salvaCor(5);"><label for="corlista5"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #BEBEBE; font-size: 70%;">Cinza</div></label>
+                                <input type="radio" name="corlistas" id="corlista6" value="1" <?php if($CorListas == 6){echo "CHECKED";} ?> title="Magenta" onclick="salvaCor(6);"><label for="corlista6"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #FF00FF; font-size: 70%;">Magenta</div></label>
+                                <input type="radio" name="corlistas" id="corlista7" value="1" <?php if($CorListas == 7){echo "CHECKED";} ?> title="Violeta" onclick="salvaCor(7);"><label for="corlista7"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #EE82EE; font-size: 70%;">Violeta</div></label>
+                                <input type="radio" name="corlistas" id="corlista8" value="1" <?php if($CorListas == 8){echo "CHECKED";} ?> title="Laranja" onclick="salvaCor(8);"><label for="corlista8"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #FFA500; font-size: 70%;">Laranja</div></label>
+                                <input type="radio" name="corlistas" id="corlista9" value="1" <?php if($CorListas == 9){echo "CHECKED";} ?> title="Ciano" onclick="salvaCor(9);"><label for="corlista9"><div style="padding-left: 3px; width: 60px; border-radius: 5px; color: black; background: #00EEEE; font-size: 70%;">Ciano</div></label>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
                 <?php
                 if($_SESSION["AdmUsu"] > 6){
                     ?>
-                    <hr>
-                    <div style="margin-top: 5px; padding-top: 10px; border-top: 2px solid;">
+
+                    <div style="position: relative; width: 100%; margin-top: 5px; padding-top: 10px; border-top: 2px solid;">
                         <div style="position: relative; float: right; font-size: 70%; color: black; padding-right: 15px;">Superusuários</div>
                         <label class="corPreta" style="padding-bottom: 10px;">Configurações: edita parâmetros para anotações na escala:</label>
                         <table>

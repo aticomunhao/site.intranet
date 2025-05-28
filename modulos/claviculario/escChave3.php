@@ -29,8 +29,8 @@
     }
     ?>
     <div style="text-align: center; margin: 10px;">
-        <div style="position: relative; float: right;"><label style="font-size: 80%;"><?php echo "Claviculário: ".$row." chaves"; ?></label></div>
-        <div id="chavesmarcadas" style="text-align: left; font-size: 80%;"><?php echo "Marcadas: ".$rowMarc; ?></div>
+        <div id="chavesmarcadas" style="position: relative; float: left; width: 45%; text-align: left; font-size: 80%;"><?php echo "Marcadas: ".$rowMarc; ?></div>
+        <div style="position: relative; float: right; width: 45%; text-align: right; font-size: 80%;"><label style="font-size: 80%;"><?php echo "Claviculário: ".$row." chaves"; ?></label></div>
         <table style="margin: 0 auto;">
             <tr>
                 <td style="display: none;"></td>
@@ -42,6 +42,7 @@
                 <td class="etiq aCentro bordaInf">Nome Sala</td>
                 <td class="etiq aCentro bordaInf">Local</td>
                 <td class="etiq aCentro bordaInf">Obs</td>
+                <td class="etiq aCentro bordaInf">Código</td>
             </tr>
             <?php
                 if($row > 0){
@@ -56,11 +57,12 @@
                             <td>
                                 <input type="checkbox" <?php if($row1 > 0){echo "CHECKED";} ?> title="Marcar chave para retirar na portaria" onchange="marcaChaveInd(this, <?php echo $Cod; ?>);" >
                             </td>
-                            <td><div class="quadrinho"> <?php echo str_pad($tbl[1], 3, 0, STR_PAD_LEFT)." ".$tbl[7]; ?></div></td>
+                            <td><div class="quadrinho"> <?php echo str_pad($tbl[1], 3, 0, STR_PAD_LEFT); ?></div></td>
                             <td><div class="quadrinho"> <?php echo $tbl[4]; ?></div></td>
                             <td><div class="quadrinho" style="font-size: 80%; text-align: left;"> <?php echo $tbl[2]; ?></div></td>
                             <td><div class="quadrinho" style="font-size: 80%; text-align: left;"> <?php echo $tbl[3]; ?></div></td>
                             <td><div class="quadrinho" style="font-size: 70%; text-align: left;"> <?php echo $tbl[5]; ?></div></td>
+                            <td><div class="quadrinho" style="font-size: 70%; text-align: left;"> <?php echo $tbl[7]; ?></div></td>
                         </tr>
                         <tr>
                             <td colspan="7"><hr style="margin: 0; padding: 0;"></td>

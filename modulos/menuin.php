@@ -33,11 +33,33 @@
 			//Provisório
 			if(strtotime('2025/05/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//0112
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_func ADD COLUMN IF NOT EXISTS id_ocor smallint NOT NULL DEFAULT 1 ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_func ADD COLUMN IF NOT EXISTS id_mot smallint NOT NULL DEFAULT 1 ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_func ADD COLUMN IF NOT EXISTS id_stat smallint NOT NULL DEFAULT 1 ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_func ADD COLUMN IF NOT EXISTS id_adm smallint NOT NULL DEFAULT 1 ");
+				//0115
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS corlistas_Daf smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET corlistas_daf = 9;");
+
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves_aut ADD COLUMN IF NOT EXISTS seg smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves_aut ADD COLUMN IF NOT EXISTS ter smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves_aut ADD COLUMN IF NOT EXISTS qua smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves_aut ADD COLUMN IF NOT EXISTS qui smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves_aut ADD COLUMN IF NOT EXISTS sex smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves_aut ADD COLUMN IF NOT EXISTS sab smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves_aut ADD COLUMN IF NOT EXISTS dom smallint NOT NULL DEFAULT 0;");
+
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves2_aut ADD COLUMN IF NOT EXISTS seg smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves2_aut ADD COLUMN IF NOT EXISTS ter smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves2_aut ADD COLUMN IF NOT EXISTS qua smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves2_aut ADD COLUMN IF NOT EXISTS qui smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves2_aut ADD COLUMN IF NOT EXISTS sex smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves2_aut ADD COLUMN IF NOT EXISTS sab smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves2_aut ADD COLUMN IF NOT EXISTS dom smallint NOT NULL DEFAULT 0;");
+
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves3_aut ADD COLUMN IF NOT EXISTS seg smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves3_aut ADD COLUMN IF NOT EXISTS ter smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves3_aut ADD COLUMN IF NOT EXISTS qua smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves3_aut ADD COLUMN IF NOT EXISTS qui smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves3_aut ADD COLUMN IF NOT EXISTS sex smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves3_aut ADD COLUMN IF NOT EXISTS sab smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves3_aut ADD COLUMN IF NOT EXISTS dom smallint NOT NULL DEFAULT 0;");
 
 			} // fim data limite
         ?>

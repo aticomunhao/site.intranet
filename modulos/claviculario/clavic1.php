@@ -55,8 +55,8 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 50%;
-                max-width: 900px;
+                width: 70%;
+                max-width: 850px;
             }
             .quadrinho {
                 font-size: 90%;
@@ -196,6 +196,63 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById("msgInfo2").innerHTML = "Usuário não vinculado a essa chave";
                                             document.getElementById("msgInfo3").innerHTML = "O vínculo é feito pela DAF/ATI.";
                                             document.getElementById("modalInfo").style.display = "block";
+                                            document.getElementById("msgInfo4").style.display = "none";
+                                        }
+                                        // Se tiver marcado um dia da semana, verifica se é hoje - Nenhum dia da semana marcado -> autorizado a semana toda
+                                        if(parseInt(Resp.chaveautorizada) === 1 && parseInt(Resp.campoHoje) === 0 && parseInt(Resp.somadias) > 0){ // tem algum dia da semana marcado
+                                            document.getElementById("msgInfo2").innerHTML = "Verifique os dias da semana autorizados:";
+                                            document.getElementById("msgInfo4").style.display = "block";
+                                            //checa dia da semana marcado
+                                            if(parseInt(Resp.seg) === 1){ 
+                                                let element = document.getElementById('divSeg');
+                                                element.classList.add('fundoCyan');
+                                            }else{
+                                                let element = document.getElementById('divSeg');
+                                                element.classList.remove('fundoCyan');
+                                            }
+                                            if(parseInt(Resp.ter) === 1){
+                                                let element = document.getElementById('divTer');
+                                                element.classList.add('fundoCyan');
+                                            }else{
+                                                let element = document.getElementById('divTer');
+                                                element.classList.remove('fundoCyan');
+                                            }
+                                            if(parseInt(Resp.qua) === 1){
+                                                let element = document.getElementById('divQua');
+                                                element.classList.add('fundoCyan');
+                                            }else{
+                                                let element = document.getElementById('divQua');
+                                                element.classList.remove('fundoCyan');
+                                            }
+                                            if(parseInt(Resp.qui) === 1){
+                                                let element = document.getElementById('divQui');
+                                                element.classList.add('fundoCyan');
+                                            }else{
+                                                let element = document.getElementById('divQui');
+                                                element.classList.remove('fundoCyan');
+                                            }
+                                            if(parseInt(Resp.sex) === 1){
+                                                let element = document.getElementById('divSex');
+                                                element.classList.add('fundoCyan');
+                                            }else{
+                                                let element = document.getElementById('divSex');
+                                                element.classList.remove('fundoCyan');
+                                            }
+                                            if(parseInt(Resp.sab) === 1){
+                                                let element = document.getElementById('divSab');
+                                                element.classList.add('fundoCyan');
+                                            }else{
+                                                let element = document.getElementById('divSab');
+                                                element.classList.remove('fundoCyan');
+                                            }
+                                            if(parseInt(Resp.dom) === 1){
+                                                let element = document.getElementById('divDom');
+                                                element.classList.add('fundoCyan');
+                                            }else{
+                                                let element = document.getElementById('divDom');
+                                                element.classList.remove('fundoCyan');
+                                            }
+                                            document.getElementById("modalInfo").style.display = "block";
                                         }
                                     }else{
                                         document.getElementById("selecSolicitante").value = "";
@@ -256,6 +313,62 @@ if(!isset($_SESSION["usuarioID"])){
                                         if(parseInt(Resp.chaveautorizada) === 0){
                                             document.getElementById("msgInfo2").innerHTML = "Usuário não vinculado a essa chave";
                                             document.getElementById("msgInfo3").innerHTML = "O vínculo é feito pela DAF/ATI.";
+                                            document.getElementById("modalInfo").style.display = "block";
+                                        }
+                                        // Se tiver marcado um dia da semana, verifica se é hoje - Nenhum dia da semana marcado -> autorizado a semana toda
+                                        if(parseInt(Resp.chaveautorizada) === 1 && parseInt(Resp.campoHoje) === 0 && parseInt(Resp.somadias) > 0){ // tem algum dia da semana marcado
+                                            document.getElementById("msgInfo2").innerHTML = "Verifique os dias da semana autorizados:";
+                                            document.getElementById("msgInfo4").style.display = "block";
+                                            //checa dia da semana marcado
+                                            if(parseInt(Resp.seg) === 1){ 
+                                                let element = document.getElementById('divSeg');
+                                                element.classList.add('fundoCyan');
+                                            }else{
+                                                let element = document.getElementById('divSeg');
+                                                element.classList.remove('fundoCyan');
+                                            }
+                                            if(parseInt(Resp.ter) === 1){
+                                                let element = document.getElementById('divTer');
+                                                element.classList.add('fundoCyan');
+                                            }else{
+                                                let element = document.getElementById('divTer');
+                                                element.classList.remove('fundoCyan');
+                                            }
+                                            if(parseInt(Resp.qua) === 1){
+                                                let element = document.getElementById('divQua');
+                                                element.classList.add('fundoCyan');
+                                            }else{
+                                                let element = document.getElementById('divQua');
+                                                element.classList.remove('fundoCyan');
+                                            }
+                                            if(parseInt(Resp.qui) === 1){
+                                                let element = document.getElementById('divQui');
+                                                element.classList.add('fundoCyan');
+                                            }else{
+                                                let element = document.getElementById('divQui');
+                                                element.classList.remove('fundoCyan');
+                                            }
+                                            if(parseInt(Resp.sex) === 1){
+                                                let element = document.getElementById('divSex');
+                                                element.classList.add('fundoCyan');
+                                            }else{
+                                                let element = document.getElementById('divSex');
+                                                element.classList.remove('fundoCyan');
+                                            }
+                                            if(parseInt(Resp.sab) === 1){
+                                                let element = document.getElementById('divSab');
+                                                element.classList.add('fundoCyan');
+                                            }else{
+                                                let element = document.getElementById('divSab');
+                                                element.classList.remove('fundoCyan');
+                                            }
+                                            if(parseInt(Resp.dom) === 1){
+                                                let element = document.getElementById('divDom');
+                                                element.classList.add('fundoCyan');
+                                            }else{
+                                                let element = document.getElementById('divDom');
+                                                element.classList.remove('fundoCyan');
+                                            }
                                             document.getElementById("modalInfo").style.display = "block";
                                         }
                                     }
@@ -1260,12 +1373,16 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function AbreModalChaves(){
+                if(document.getElementById("configselecSolicitante").value == ""){
+                    return false;
+                }
                 document.getElementById("relacmodalChaves").style.display = "block";
                 $("#faixachaves").load("modulos/claviculario/escChave1.php?usuario="+document.getElementById("configselecSolicitante").value);
             }
             function fechaModalChaves(){
                 document.getElementById("relacmodalChaves").style.display = "none";
             }
+
             function marcaChaveInd(Obj, Cod){
                 if(Obj.checked === true){
                     Valor = 1;
@@ -1287,6 +1404,40 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("checkGeral").checked = true;
                                     }else{
                                         document.getElementById("checkGeral").checked = false;
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                } 
+            }
+
+            function marcaChaveSemana(Obj, Cod, Marca, Sem){
+//                if(parseInt(Marca) === 0){
+//                    if(Obj.checked === true){
+//                        Obj.checked = false;
+//                    }
+//                    return false;
+//                }
+//alert(Marca);
+                if(Obj.checked === true){
+                    Valor = 1;
+                }else{
+                    Valor = 0;
+                }
+                if(ajax){
+                    ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=marcaChaveUsuarioSemana&param="+Valor+"&codigo="+Cod+"&semana="+Sem+"&usuario="+document.getElementById("configselecSolicitante").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.")
+                                }else{
+                                    if(parseInt(Marca) === 0){ //não estava marcada - recarrega
+                                        $("#faixachaves").load("modulos/claviculario/escChave1.php?usuario="+document.getElementById("configselecSolicitante").value);
                                     }
                                 }
                             }
@@ -1339,7 +1490,6 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
             }
-
 
             function apagaAgendaChaves(Cod){ // põe ativo = 2
                 $.confirm({
@@ -1417,6 +1567,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("editChaves").checked = false;
                 document.getElementById("configcpfsolicitante").value = "";
                 document.getElementById("configselecSolicitante").value = "";
+                document.getElementById("botaoChaves").style.visibility = "hidden";
                 document.getElementById("modalChavesConfig").style.display = "block";
             }
             function carregaHelp(){
@@ -1573,7 +1724,6 @@ if(!isset($_SESSION["usuarioID"])){
         }
         date_default_timezone_set('America/Sao_Paulo'); //Um dia = 86.400 seg
         $Hoje = date('d/m/Y');
-
 
 //---------------  Provisório
 //        pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".chaves");
@@ -2327,7 +2477,6 @@ if(!isset($_SESSION["usuarioID"])){
            </div>
         </div>
 
-
         <div id="modalDevolvida" class="relacmodal">
             <div class="modal-content-tarjaAzul">
                 <span class="close" onclick="fechaDevolv();">&times;</span>
@@ -2347,11 +2496,24 @@ if(!isset($_SESSION["usuarioID"])){
         </div> <!-- Fim Modal-->
 
         <div id="modalInfo" class="relacmodal">
-            <div class="modal-content-tarjaAzul">
+            <div class="modal-content-tarjaAzul" style="text-align: center;">
                 <span class="close" onclick="fechaInfo();">&times;</span>
                 <div id="msgInfo1" style="color: white; font-size: 300%; text-align: center;">Sem Vínculo</div>
                 <div id="msgInfo2" style="color: white; font-size: 150%; text-align: center;"></div>
                 <div id="msgInfo3" style="color: white; text-align: center;"></div>
+
+                <div id="msgInfo4" style="margin: 20px; padding-left: 60px; text-align: center; display: none;">
+                    <div id="divSeg" style="position: relative; float: left; margin: 5px; text-align: center; width: 50px; border: 1px solid; border-radius: 20px;">Seg</div>
+                    <div id="divTer" style="position: relative; float: left; margin: 5px; text-align: center; width: 50px; border: 1px solid; border-radius: 20px;">Ter</div>
+                    <div id="divQua" style="position: relative; float: left; margin: 5px; text-align: center; width: 50px; border: 1px solid; border-radius: 20px;">Qua</div>
+                    <div id="divQui" style="position: relative; float: left; margin: 5px; text-align: center; width: 50px; border: 1px solid; border-radius: 20px;">Qui</div>
+                    <div id="divSex" style="position: relative; float: left; margin: 5px; text-align: center; width: 50px; border: 1px solid; border-radius: 20px;">Sex</div>
+                    <div id="divSab" style="position: relative; float: left; margin: 5px; text-align: center; width: 50px; border: 1px solid; border-radius: 20px;">Sab</div>
+                    <div id="divDom" style="position: relative; float: left; margin: 5px; text-align: center; width: 50px; border: 1px solid; border-radius: 20px;">Dom</div>
+                </div>
+
+                <br>
+                <div id="msgInfo5" style="margin-bottom: 20px; color: white; text-align: center;"></div>
             </div>
         </div> <!-- Fim Modal-->
 

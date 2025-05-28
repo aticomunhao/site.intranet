@@ -36,11 +36,11 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <?php
         $TempoAviso  = parAdm("aviso_extint", $Conec, $xProj); // dias de antecedência para aviso
         $Condic = $xProj.".extintores.ativo = 1";
+        $CompDesc = "";
          if(isset($_REQUEST["acao"])){
             $Acao = $_REQUEST["acao"];
         }else{
             $Acao = "ext_todos";
-            $CompDesc = "";
         }
         if($Acao == "ext_todos"){
             $Condic = $xProj.".extintores.ativo = 1";

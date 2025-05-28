@@ -10,6 +10,19 @@ require_once(dirname(dirname(__FILE__))."/config/gUtils.php"); // Normatizar nom
 if(isset($_REQUEST["acao"])){
     $Acao = $_REQUEST["acao"];
     $UsuIns = $_SESSION['usuarioID'];
+    $NumDiaSem = date('w'); // dom = 0, seg = 1, ter = 2 ...
+
+    $Semana = array(
+        '0' => 'dom', 
+        '1' => 'seg',
+        '2' => 'ter',
+        '3' => 'qua',
+        '4' => 'qui',
+        '5' => 'sex',
+        '6' => 'sab'
+    );
+    $Campo = $Semana[$NumDiaSem]; // campo no BD em chaves_aut
+
 
     if($Acao == "buscaChave"){
         $Erro = 0;
@@ -191,16 +204,40 @@ if(isset($_REQUEST["acao"])){
                 $Telef = "";
             }
         }
+
+        $Seg = 0;
+        $Ter = 0;
+        $Qua = 0;
+        $Qui = 0;
+        $Sex = 0;
+        $Sab = 0;
+        $Dom = 0;
+        $CampoHoje = 0;
+        $SomaDias = 0; // nenhum dia da semana marcado
+
         //Verifica se usuário $Cod pode pegar a chave $CodChave
-        $EscChave = parAdm("esc_chaves1", $Conec, $xProj); // marca para ligar/desligar chaves autorizadas a retirar por usuário - arq paramsis
+        $EscChave = parAdm("esc_chaves1", $Conec, $xProj); // marca em Parâmetros do Sistema para ligar/desligar chaves autorizadas a retirar por usuário - arq paramsis
         if($EscChave == 1){ // ligado
-            $rs3 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_aut WHERE pessoas_id = $Cod And chaves_id = $CodChave And ativo = 1");
+            $rs3 = pg_query($Conec, "SELECT id, seg, ter, qua, qui, sex, sab, dom, $Campo FROM ".$xProj.".chaves_aut WHERE pessoas_id = $Cod And chaves_id = $CodChave And ativo = 1");
             $Autoriz = pg_num_rows($rs3);
+            //Para formar a semana
+            if($Autoriz > 0){
+                $tbl3 = pg_fetch_row($rs3);
+                $Seg = $tbl3[1];
+                $Ter = $tbl3[2];
+                $Qua = $tbl3[3];
+                $Qui = $tbl3[4];
+                $Sex = $tbl3[5];
+                $Sab = $tbl3[6];
+                $Dom = $tbl3[7];
+                $CampoHoje = $tbl3[8];
+                $SomaDias = $Seg+$Ter+$Qua+$Qui+$Sex+$Sab+$Dom; 
+            }
         }else{ // desligado
             $Autoriz = 1; // todos autorizados
         }
 
-        $var = array("coderro"=>$Erro, "nomecompl"=>$tbl[0], "nome"=>$tbl[1], "cpf"=>$tbl[2], "siglasetor"=>$tbl[3], "telef"=>$Telef, "chaveautorizada"=>$Autoriz );
+        $var = array("coderro"=>$Erro, "nomecompl"=>$tbl[0], "nome"=>$tbl[1], "cpf"=>$tbl[2], "siglasetor"=>$tbl[3], "telef"=>$Telef, "chaveautorizada"=>$Autoriz, "campoHoje"=>$CampoHoje, "seg"=>$Seg, "ter"=>$Ter, "qua"=>$Qua, "qui"=>$Qui, "sex"=>$Sex, "sab"=>$Sab, "dom"=>$Dom, "somadias"=>$SomaDias);
         $responseText = json_encode($var);
         echo $responseText;
     }
@@ -237,15 +274,37 @@ if(isset($_REQUEST["acao"])){
                 $Erro = 3;
             }
 
+            $Seg = 0;
+            $Ter = 0;
+            $Qua = 0;
+            $Qui = 0;
+            $Sex = 0;
+            $Sab = 0;
+            $Dom = 0;
+            $CampoHoje = 0;
+            $SomaDias = 0; // nenhum dia da semana marcado
             //Verifica se usuário $Cod pode pegar a chave $CodChave
             if($EscChave == 1){ // ligado
-                $rs3 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_aut WHERE pessoas_id = $Cod And chaves_id = $CodChave And ativo = 1");
+                $rs3 = pg_query($Conec, "SELECT id, seg, ter, qua, qui, sex, sab, dom, $Campo FROM ".$xProj.".chaves_aut WHERE pessoas_id = $Cod And chaves_id = $CodChave And ativo = 1");
                 $Autoriz = pg_num_rows($rs3);
+                //Para formar a semana
+                if($Autoriz > 0){
+                    $tbl3 = pg_fetch_row($rs3);
+                    $Seg = $tbl3[1];
+                    $Ter = $tbl3[2];
+                    $Qua = $tbl3[3];
+                    $Qui = $tbl3[4];
+                    $Sex = $tbl3[5];
+                    $Sab = $tbl3[6];
+                    $Dom = $tbl3[7];
+                    $CampoHoje = $tbl3[8];
+                    $SomaDias = $Seg+$Ter+$Qua+$Qui+$Sex+$Sab+$Dom; 
+                }
             }else{ // desligado
                 $Autoriz = 1; // todos autorizados
             }
 
-            $var = array("coderro"=>$Erro, "nomecompl"=>$tbl[0], "nome"=>$tbl[1], "cpf"=>$tbl[2], "siglasetor"=>$tbl[3], "PosCod"=>$tbl[4], "telef"=>$Telef, "chave"=>$Chave, "chaveautorizada"=>$Autoriz);
+            $var = array("coderro"=>$Erro, "nomecompl"=>$tbl[0], "nome"=>$tbl[1], "cpf"=>$tbl[2], "siglasetor"=>$tbl[3], "PosCod"=>$tbl[4], "telef"=>$Telef, "chave"=>$Chave, "chaveautorizada"=>$Autoriz, "campoHoje"=>$CampoHoje, "seg"=>$Seg, "ter"=>$Ter, "qua"=>$Qua, "qui"=>$Qui, "sex"=>$Sex, "sab"=>$Sab, "dom"=>$Dom, "somadias"=>$SomaDias);
         }else{ // vai procurar no arquivo pessoas
 //            if($EscChave == 0){ // desligado
                 $rs2 = pg_query($ConecPes, "SELECT nome_completo, nome_resumido, cpf, id, TO_CHAR(dt_nascimento, 'DD/MM/YYYY'), TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') 
@@ -267,7 +326,16 @@ if(isset($_REQUEST["acao"])){
                     }else{
                         $NomeUsual = "";
                     }
-                    $var = array("coderro"=>$Erro, "nomecompl"=>$NomeCompl, "nome"=>$NomeUsual, "cpf"=>$tbl2[2], "siglasetor"=>'', "PosCod"=>$tbl2[3], "telef"=>'', "chave"=>'1', "chaveautorizada"=>'1');
+                    $Seg = 0;
+                    $Ter = 0;
+                    $Qua = 0;
+                    $Qui = 0;
+                    $Sex = 0;
+                    $Sab = 0;
+                    $Dom = 0;
+                    $CampoHoje = 0;
+                    $SomaDias = 0; // nenhum dia da semana marcado
+                    $var = array("coderro"=>$Erro, "nomecompl"=>$NomeCompl, "nome"=>$NomeUsual, "cpf"=>$tbl2[2], "siglasetor"=>'', "PosCod"=>$tbl2[3], "telef"=>'', "chave"=>'1', "chaveautorizada"=>'1', "campoHoje"=>$CampoHoje, "seg"=>$Seg, "ter"=>$Ter, "qua"=>$Qua, "qui"=>$Qui, "sex"=>$Sex, "sab"=>$Sab, "dom"=>$Dom, "somadias"=>$SomaDias);
                 }else{
                     $Erro = 2;
                     $var = array("coderro"=>$Erro );
@@ -817,7 +885,7 @@ if(isset($_REQUEST["acao"])){
             if($Param == 1 ){
                 $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 1, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
             }else{
-                $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 0, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
+                $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 0, seg = 0, ter = 0, qua = 0, qui = 0, sex = 0, sab = 0, dom = 0, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
             }
         }else{ // inserir
             $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves_aut");
@@ -826,6 +894,48 @@ if(isset($_REQUEST["acao"])){
             $CodigoNovo = ($Codigo+1); 
             $rs = pg_query($Conec, "INSERT INTO ".$xProj.".chaves_aut (id, chaves_id, pessoas_id, ativo, usuins, datains) 
             VALUES ( $CodigoNovo, $CodChave, $Usu, 1, ".$_SESSION["usuarioID"].", NOW())");
+        }
+        if(!$rs){
+            $Erro = 1;
+        }
+        //Conta as chaves marcadas
+        $rsCont = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_aut WHERE pessoas_id = $Usu And ativo = 1");
+        $rowCont = pg_num_rows($rsCont);
+        //Conta o total de chaves
+        $rsT = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves WHERE ativo = 1 ");
+        $rowT = pg_num_rows($rsT);
+    
+        $Todos = 0;
+        if($rowCont == $rowT){
+            $Todos = 1;
+        }
+        $var = array("coderro"=>$Erro, "marcadas"=>$rowCont, "todas"=>$Todos);
+        $responseText = json_encode($var);
+        echo $responseText;
+    }
+
+    if($Acao =="marcaChaveUsuarioSemana"){ // marca a chave se não estiver marcada
+        $CodChave = (int) filter_input(INPUT_GET, 'codigo'); // id de Chaves
+        $Param = (int) filter_input(INPUT_GET, 'param'); // 0 ou 1 - semana
+        $Semana = filter_input(INPUT_GET, 'semana'); // seg, ter...
+        $Usu = (int) filter_input(INPUT_GET, 'usuario');
+        $Erro = 0;
+        $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_aut WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
+        $row = pg_num_rows($rs);
+        if($row > 0){
+            if($Param == 1 ){
+                $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 1, $Semana = 1, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
+            }else{
+                $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET $Semana = 0, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
+            }
+        }else{ // inserir
+            $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves_aut");
+            $tblCod = pg_fetch_row($rsCod);
+            $Codigo = $tblCod[0];
+            $CodigoNovo = ($Codigo+1); 
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".chaves_aut (id, chaves_id, pessoas_id, ativo, usuins, datains) 
+            VALUES ( $CodigoNovo, $CodChave, $Usu, 1, ".$_SESSION["usuarioID"].", NOW())");
+            $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET $Semana = 1 WHERE chaves_id = $CodChave And id = $CodigoNovo ");
         }
         if(!$rs){
             $Erro = 1;
@@ -851,9 +961,9 @@ if(isset($_REQUEST["acao"])){
         $Param = (int) filter_input(INPUT_GET, 'param');
         $Usu = (int) filter_input(INPUT_GET, 'usuario');
         $Erro = 0;
-    
+
         if($Param == 0){ // desmarcar todas
-            $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 0, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE pessoas_id = $Usu "); 
+            $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 0, seg = 0, ter = 0, qua = 0, qui = 0, sex = 0, sab = 0, dom = 0, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE pessoas_id = $Usu "); 
         }else{ // marcar todas
             pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 1 WHERE pessoas_id = $Usu"); // se tiver marca
             $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves WHERE ativo = 1 ORDER BY chavenum, chavenumcompl ");

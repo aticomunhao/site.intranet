@@ -67,6 +67,10 @@
     .corAzulClaro{
         color: #81BEF7;
     }
+    .fundoCyan{
+        background-color: #00EEEE;
+        color: black;
+    }
     .corBranca{
         color: #fcfdfe;
     }
@@ -304,7 +308,8 @@
     padding: 10px;
     border: 1px solid #888;
     border-radius: 15px;
-    width: 40%;
+    width: 50%;
+    max-width: 600px;
 }
 .modal-content-tarjaVerm{
     background: linear-gradient(180deg, white, #c40505);
