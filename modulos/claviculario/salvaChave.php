@@ -479,7 +479,7 @@ if(isset($_REQUEST["acao"])){
             $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves_aut");
             $tblCod = pg_fetch_row($rsCod);
             $CodigoNovo = $tblCod[0]+1;
-            pg_query($Conec, "INSERT INTO ".$xProj.".chaves_aut (chaves_id, pessoas_id, ativo, usuins, datains) VALUES($Cod, $CodUsu, 1, ".$_SESSION['usuarioID'].", NOW())");
+            pg_query($Conec, "INSERT INTO ".$xProj.".chaves_aut (id, chaves_id, pessoas_id, ativo, usuins, datains) VALUES($CodigoNovo, $Cod, $CodUsu, 1, ".$_SESSION['usuarioID'].", NOW())");
         }
 
         $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves_ctl");
@@ -710,6 +710,76 @@ if(isset($_REQUEST["acao"])){
         }
 
         $rs2 = pg_query($Conec, "SELECT telef FROM ".$xProj.".chaves_agd WHERE id = $IdAgenda ");   //usuretira = $CodUsu And TO_CHAR(datasaida, 'DD/MM/YYYY') = '$Data' ORDER BY datasaida DESC");
+        $row2 = pg_num_rows($rs2);
+        if($row2 > 0){
+            $tbl2 = pg_fetch_row($rs2);
+            $Telef = $tbl2[0];
+        }else{
+            $Telef = "";
+        }
+        
+        if($Presente == 0){
+            $rs3 = pg_query($Conec, "SELECT nomecompl, cpf, telef 
+            FROM ".$xProj.".poslog INNER JOIN ".$xProj.".chaves_ctl ON ".$xProj.".poslog.pessoas_id = ".$xProj.".chaves_ctl.usuretira 
+            WHERE chaves_id = $Cod And usudevolve = 0");
+            $row3 = pg_num_rows($rs3);
+            if($row3 > 0){
+                $tbl3 = pg_fetch_row($rs3);
+                $NomeRetirou = $tbl3[0];
+                $CpfRetirou = $tbl3[1];
+                $TelefRetirou = $tbl3[2];
+            }else{
+                $NomeRetirou = "";
+                $CpfRetirou = "";
+                $TelefRetirou = "";
+            }
+        }else{
+            $NomeRetirou = "";
+            $CpfRetirou = "";
+            $TelefRetirou = "";
+        }
+
+        $var = array("coderro"=>$Erro, "chavenum"=>$ChaveNum, "chavenumcompl"=>$tbl[1], "chavecompl"=>$tbl[6], "chavelocal"=>$tbl[2], "chavesala"=>$tbl[3], "chaveobs"=>$tbl[4], "presente"=>$tbl[5], "nomecompl"=>$NomeCompl, "nome"=>$Nome, "siglasetor"=>$SiglaSetor, "cpf"=>$Cpf, "telef"=>$Telef, "nomeretirou"=>$NomeRetirou, "cpfretirou"=>$CpfRetirou, "telefretirou"=>$TelefRetirou );
+        $responseText = json_encode($var);
+        echo $responseText;
+    }
+
+    if($Acao == "buscaChaveSemanal"){
+        $Erro = 0;
+        $Cod = (int) filter_input(INPUT_GET, 'codigo'); //id de chaves
+        $CodUsu = (int) filter_input(INPUT_GET, 'codusu'); // id de poslog
+        $Data = $Hoje;  //addslashes(filter_input(INPUT_GET, 'dataagenda')); 
+        $Presente = 1;
+
+        $rs = pg_query($Conec, "SELECT chavenum, chavenumcompl, chavelocal, chavesala, chaveobs, presente, chavecompl FROM ".$xProj.".chaves WHERE id = $Cod");
+        $row = pg_num_rows($rs);
+        if($row > 0){
+            $tbl = pg_fetch_row($rs);
+            $ChaveNum = str_pad($tbl[0], 3, 0, STR_PAD_LEFT);
+            $Presente = (int) $tbl[5]; // 0 = ausente, 1 = no claviculário
+        }
+        if(!$rs){
+            $Erro = 1;
+        }
+
+        $rs1 = pg_query($Conec, "SELECT nomecompl, nomeusual, cpf, siglasetor 
+        FROM ".$xProj.".poslog INNER JOIN ".$xProj.".setores ON ".$xProj.".poslog.codsetor = ".$xProj.".setores.codset 
+        WHERE pessoas_id = $CodUsu");
+        $row1 = pg_num_rows($rs1);
+        if($row1 > 0){
+            $tbl1 = pg_fetch_row($rs1);
+            $NomeCompl = $tbl1[0];
+            $Nome = $tbl1[1];
+            $Cpf = $tbl1[2];
+            $SiglaSetor = $tbl1[3];
+        }else{
+            $NomeCompl = "";
+            $Nome = "";
+            $Cpf = "";
+            $SiglaSetor = "";
+        }
+
+        $rs2 = pg_query($Conec, "SELECT telef FROM ".$xProj.".chaves_ctl WHERE usuretira = $CodUsu And telef IS NOT NULL ORDER BY datasaida DESC");   //pega sempre o último fornecido na retirada
         $row2 = pg_num_rows($rs2);
         if($row2 > 0){
             $tbl2 = pg_fetch_row($rs2);

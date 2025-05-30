@@ -47,6 +47,12 @@
         return $mask;
     }
 
+    if(isset($_REQUEST["largTela"])){
+        $LargTela = $_REQUEST["largTela"]; // largura da tela
+    }else{
+        $LargTela = 1280; // laptop 14pol
+    }
+
     ?>
     <div style="text-align: center; margin: 5px;">
         <h5>Agenda</h5>
@@ -169,17 +175,20 @@
 
                 while($tbl1 = pg_fetch_row($rs1)){
                     $CodAut = $tbl1[0];
-                    $CodChaves = $tbl1[1]; // chaves_id de chaves_aut
+                    $CodChave = $tbl1[1]; // chaves_id de chaves_aut
+                    $CodUsu = $tbl1[7]; // usuário que retira
                     $DiaSem = $tbl1[6];
                     //ver se foi retirada
-                    $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_ctl WHERE chaves_id = $CodChaves And ativo = 1 And usuretira > 0 And usudevolve = 0");
+                    $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".chaves_ctl WHERE chaves_id = $CodChave And ativo = 1 And usuretira > 0 And usudevolve = 0");
                     $row2 = pg_num_rows($rs2);
                     if($row2 == 0){
                         ?>
                         <tr>          
                             <td><div class="quadrlista" style="border-color: #E90074; font-size: 120%;"> <?php echo str_pad($tbl1[2], 3, 0, STR_PAD_LEFT)." ".$tbl1[3]; ?></div>
                                 <div class="quadrlista" style="border: 0px;"><label class="etiq">Sala: </label> <?php echo $tbl1[5]; ?></div>
-                                <div class="quadrlista" style="border: 0px;"></div>
+                                <div class="quadrlista" style="border: 0px; padding-left: 2px;">
+                                    <input type="button" id="botinserirSemana" class="resetbot fundoAmareloCl" style="font-size: 80%;" value="<?php if($LargTela > 1280){echo 'Entrega';}else{echo 'E';} ?> " title="Registrar Entrega" onclick="saidaChaveSemanal(<?php echo $CodAut; ?>, <?php echo $CodChave; ?>, <?php echo $CodUsu; ?>);">
+                                </div>
                             </td>
                         </tr>
                         <tr>              
@@ -198,7 +207,6 @@
             </div>
             <?php
         }
-
         ?>
         <br><br>
     </div>

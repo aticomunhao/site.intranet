@@ -133,7 +133,7 @@ if(!isset($_SESSION["usuarioID"])){
                    }
                 }
             }
-            
+            LargTela = $(window).width(); // largura da tela ao abrir o módulo
             $(document).ready(function(){
                 document.getElementById("botinserir").style.visibility = "hidden";
                 document.getElementById("botimpr").style.visibility = "hidden";
@@ -145,7 +145,7 @@ if(!isset($_SESSION["usuarioID"])){
                 if(parseInt(document.getElementById("guardaEditaChaves").value) === 1 || parseInt(document.getElementById("guardaEntregaChaves").value) === 1 || parseInt(document.getElementById("guardaFiscChaves").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
                     $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
                     $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");
-                    $("#faixaagenda").load("modulos/claviculario/agChave1.php?acao=todos");
+                    $("#faixaagenda").load("modulos/claviculario/agChave1.php?largTela="+LargTela);
                     if(parseInt(document.getElementById("guardaEditaChaves").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ 
                         document.getElementById("botinserir").style.visibility = "visible";
                         document.getElementById("botimpr").style.visibility = "visible";
@@ -193,8 +193,9 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("resultsetor").innerHTML = Resp.siglasetor;
                                         document.getElementById("resulttelef").value = Resp.telef;
                                         if(parseInt(Resp.chaveautorizada) === 0){
-                                            document.getElementById("msgInfo2").innerHTML = "Usuário não vinculado a essa chave";
+                                            document.getElementById("msgInfo2").innerHTML = "Usuário não está vinculado à chave "+document.getElementById("sainumchave").value;
                                             document.getElementById("msgInfo3").innerHTML = "O vínculo é feito pela DAF/ATI.";
+                                            document.getElementById("msgInfo5").innerHTML = "";
                                             document.getElementById("modalInfo").style.display = "block";
                                             document.getElementById("msgInfo4").style.display = "none";
                                         }
@@ -202,6 +203,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         if(parseInt(Resp.chaveautorizada) === 1 && parseInt(Resp.campoHoje) === 0 && parseInt(Resp.somadias) > 0){ // tem algum dia da semana marcado
                                             document.getElementById("msgInfo2").innerHTML = "Verifique os dias da semana autorizados:";
                                             document.getElementById("msgInfo4").style.display = "block";
+                                            document.getElementById("msgInfo5").innerHTML = "Chave "+document.getElementById("sainumchave").value;
                                             //checa dia da semana marcado
                                             if(parseInt(Resp.seg) === 1){ 
                                                 let element = document.getElementById('divSeg');
@@ -292,7 +294,6 @@ if(!isset($_SESSION["usuarioID"])){
                         document.getElementById("mensagemErro").style.display = "block";
                         return false;
                     }
-
                     document.getElementById("selecSolicitante").value = "";
                     document.getElementById("guardaCPF").value = "";
                     ajaxIni();
@@ -311,14 +312,17 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("guardaPosCod").value = Resp.PosCod;
                                         document.getElementById("selecSolicitante").value = Resp.PosCod;
                                         if(parseInt(Resp.chaveautorizada) === 0){
-                                            document.getElementById("msgInfo2").innerHTML = "Usuário não vinculado a essa chave";
+                                            document.getElementById("msgInfo2").innerHTML = "Usuário não está vinculado à chave "+document.getElementById("sainumchave").value;
                                             document.getElementById("msgInfo3").innerHTML = "O vínculo é feito pela DAF/ATI.";
+                                            document.getElementById("msgInfo5").innerHTML = "";
                                             document.getElementById("modalInfo").style.display = "block";
+                                            document.getElementById("msgInfo4").style.display = "none";
                                         }
                                         // Se tiver marcado um dia da semana, verifica se é hoje - Nenhum dia da semana marcado -> autorizado a semana toda
                                         if(parseInt(Resp.chaveautorizada) === 1 && parseInt(Resp.campoHoje) === 0 && parseInt(Resp.somadias) > 0){ // tem algum dia da semana marcado
                                             document.getElementById("msgInfo2").innerHTML = "Verifique os dias da semana autorizados:";
                                             document.getElementById("msgInfo4").style.display = "block";
+                                            document.getElementById("msgInfo5").innerHTML = "Chave "+document.getElementById("sainumchave").value;
                                             //checa dia da semana marcado
                                             if(parseInt(Resp.seg) === 1){ 
                                                 let element = document.getElementById('divSeg');
@@ -840,7 +844,7 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("editaModalChave").style.display = "none";
                                         $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
                                         $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");
-                                        $("#faixaagenda").load("modulos/claviculario/agChave1.php?acao=todos");
+                                        $("#faixaagenda").load("modulos/claviculario/agChave1.php?largTela="+LargTela);
                                     }
                                 }
                             }
@@ -892,7 +896,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                                                 document.getElementById("editaModalChave").style.display = "none";
                                                                                 $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
                                                                                 $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");
-                                                                                $("#faixaagenda").load("modulos/claviculario/agChave1.php?acao=todos");
+                                                                                $("#faixaagenda").load("modulos/claviculario/agChave1.php?largTela="+LargTela);
                                                                             }
                                                                         }
                                                                     }
@@ -907,7 +911,7 @@ if(!isset($_SESSION["usuarioID"])){
                                                 document.getElementById("editaModalChave").style.display = "none";
                                                 $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
                                                 $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");
-                                                $("#faixaagenda").load("modulos/claviculario/agChave1.php?acao=todos");
+                                                $("#faixaagenda").load("modulos/claviculario/agChave1.php?largTela="+LargTela);
                                             }
                                         }
                                     }
@@ -921,6 +925,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function saidaChave(Cod){ // id de chaves
+                document.getElementById("botagenda1").style.visibility = "visible";
                 document.getElementById("guardaCod").value = Cod;
                 document.getElementById("CodidChave").value = Cod;
                 document.getElementById("mensagemErro").style.display = "none";
@@ -1033,7 +1038,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("registroRetiradaChave").style.display = "none";  
                                     $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
                                     $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");  
-                                    $("#faixaagenda").load("modulos/claviculario/agChave1.php?acao=todos"); 
+                                    $("#faixaagenda").load("modulos/claviculario/agChave1.php?largTela="+LargTela);
                                 }
                             }
                         }
@@ -1130,7 +1135,7 @@ if(!isset($_SESSION["usuarioID"])){
 //alert(ajax.responseText);
                                             Resp2 = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                             if(parseInt(Resp.coderro) === 0){
-                                                $("#faixaagenda").load("modulos/claviculario/agChave1.php?acao=todos");
+                                                $("#faixaagenda").load("modulos/claviculario/agChave1.php?largTela="+LargTela);
                                                 document.getElementById("registroAgendaChave").style.display = "none";
                                             }else{
                                                 alert("Houve um erro no servidor.")
@@ -1147,6 +1152,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function saidaChaveAgenda(CodAg, CodChaves, CodUsu, DataSai){ // id de chaves
+                document.getElementById("botagenda1").style.visibility = "hidden";
                 document.getElementById("guardaCod").value = CodChaves;
                 document.getElementById("CodidChave").value = CodChaves;
                 document.getElementById("guardaPosCod").value = CodUsu;
@@ -1197,7 +1203,57 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
+            function saidaChaveSemanal(CodAut, CodChave, CodUsu){ // id de chaves
+                document.getElementById("botagenda1").style.visibility = "hidden";
+                document.getElementById("guardaCod").value = CodChave;
+                document.getElementById("CodidChave").value = CodChave;
+                document.getElementById("guardaPosCod").value = CodUsu;
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=buscaChaveSemanal&codigo="+CodChave
+                    +"&codusu="+CodUsu
+                    , true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.");
+                                }else{
+                                    if(parseInt(Resp.presente) === 0){
+                                        document.getElementById("msgAlerta2").innerHTML = "Verifique com: "+Resp.nomeretirou;
+                                        document.getElementById("msgAlerta3").innerHTML = "CPF: "+format_CnpjCpf(Resp.cpfretirou);
+                                        document.getElementById("msgAlerta4").innerHTML = "Telefone: "+Resp.telefretirou;
+                                        document.getElementById("modalAlerta").style.display = "block";
+                                    }else{
+                                        document.getElementById("sainumchave").value = Resp.chavenum;
+                                        document.getElementById("saichavecomplem").value = Resp.chavecompl;
+                                        document.getElementById("sailocalchave").value = Resp.chavelocal;
+                                        document.getElementById("saisalachave").value = Resp.chavesala;
+                                        document.getElementById("saicomplemchave").value = Resp.chavenumcompl;
+                                        document.getElementById("saiobschave").value = Resp.chaveobs;
+                                        document.getElementById("registroRetiradaChave").style.display = "block";
+                                        document.getElementById("selecSolicitante").value = CodUsu;
+                                        document.getElementById("cpfsolicitante").value = Resp.cpf;
+                                        document.getElementById("resultsolicitante").innerHTML = Resp.nomecompl;
+                                        document.getElementById("resulttelef").value = Resp.telef;
+                                        document.getElementById("guardaCPF").value = Resp.cpf;
+                                        document.getElementById("resultcpf").innerHTML = format_CnpjCpf(Resp.cpf);
+                                        document.getElementById("resultsetor").innerHTML = Resp.siglasetor;
+                                        document.getElementById("selecSolicitante").disabled = true;
+                                        document.getElementById("cpfsolicitante").disabled = true;
+                                    }
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
             function retornoChave1(Cod){  // Cod = id de chaves  
+                document.getElementById("botagenda1").style.visibility = "visible";
                 document.getElementById("CodidChave").value = Cod;
                 ajaxIni();
                 if(ajax){
@@ -1292,7 +1348,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("modalDevolvida").style.display = "block";
                                     $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
                                     $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");
-                                    $("#faixaagenda").load("modulos/claviculario/agChave1.php?acao=todos");
+                                    $("#faixaagenda").load("modulos/claviculario/agChave1.php?largTela="+LargTela);
                                 }else{
                                     alert("Houve um erro no servidor.")
                                 }
@@ -1413,14 +1469,7 @@ if(!isset($_SESSION["usuarioID"])){
                 } 
             }
 
-            function marcaChaveSemana(Obj, Cod, Marca, Sem){
-//                if(parseInt(Marca) === 0){
-//                    if(Obj.checked === true){
-//                        Obj.checked = false;
-//                    }
-//                    return false;
-//                }
-//alert(Marca);
+            function marcaChaveSemana(Obj, Cod, Marca, Sem, NumDia){
                 if(Obj.checked === true){
                     Valor = 1;
                 }else{
@@ -1438,6 +1487,9 @@ if(!isset($_SESSION["usuarioID"])){
                                 }else{
                                     if(parseInt(Marca) === 0){ //não estava marcada - recarrega
                                         $("#faixachaves").load("modulos/claviculario/escChave1.php?usuario="+document.getElementById("configselecSolicitante").value);
+                                    }
+                                    if(parseInt(NumDia) === parseInt(document.getElementById("guardaNumDiaSemana").value)){
+                                        $("#faixaagenda").load("modulos/claviculario/agChave1.php?largTela="+LargTela);
                                     }
                                 }
                             }
@@ -1508,7 +1560,7 @@ if(!isset($_SESSION["usuarioID"])){
 //alert(ajax.responseText);
                                             Resp2 = eval("(" + ajax.responseText + ")"); 
                                             if(parseInt(Resp.coderro) === 0){
-                                                $("#faixaagenda").load("modulos/claviculario/agChave1.php?acao=todos");
+                                                $("#faixaagenda").load("modulos/claviculario/agChave1.php?largTela="+LargTela);
                                             }else{
                                                 alert("Houve um erro no servidor.")
                                             }
@@ -1542,7 +1594,7 @@ if(!isset($_SESSION["usuarioID"])){
                                             if(parseInt(Resp.coderro) === 0){
                                                 $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
                                                 $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");
-                                                $("#faixaagenda").load("modulos/claviculario/agChave1.php?acao=todos");
+                                                $("#faixaagenda").load("modulos/claviculario/agChave1.php?largTela="+LargTela);
                                             }else{
                                                 alert("Houve um erro no servidor.")
                                             }
@@ -1609,6 +1661,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("resultcpf").innerHTML = "";
                 document.getElementById("cpfsolicitante").value = "";
                 document.getElementById("resultsetor").innerHTML = "";
+                 document.getElementById("resulttelef").value = "";
 
                 document.getElementById("agendacpfsolicitante").value = "";
                 document.getElementById("agendasolicitante").innerHTML = "";
@@ -1816,6 +1869,7 @@ if(!isset($_SESSION["usuarioID"])){
         $FiscClav = parEsc("fisc_clav", $Conec, $xProj, $_SESSION["usuarioID"]); // fiscal de chaves
         $Tema = parEsc("tema", $Conec, $xProj, $_SESSION["usuarioID"]); // Claro(0) Escuro(1)
         $EscChave = parAdm("esc_chaves1", $Conec, $xProj); // marca para aparecer/ocultar escolha de chaves a retirar por usuário 
+        $NumDiaSem = date('w'); // dom = 0, seg = 1, ter = 2 ...
 
         $OpUsuSolic = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave = 1 And ativo = 1 ORDER BY nomecompl, nomeusual");
         $OpUsuAgenda = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE chave = 1 And ativo = 1 ORDER BY nomecompl, nomeusual");
@@ -1876,6 +1930,7 @@ if(!isset($_SESSION["usuarioID"])){
         <input type="hidden" id="guardaEntregaChaves" value="<?php echo $Clav; ?>" />
         <input type="hidden" id="codagenda" value="0" />
         <input type="hidden" id="guardaEscolheChaves" value="<?php echo $EscChave; ?>" />
+        <input type="hidden" id="guardaNumDiaSemana" value="<?php echo $NumDiaSem; ?>" />
         
         <div id="editaModalChave" class="relacmodal">
             <div class="modal-content-relacChave corPreta">
@@ -2036,7 +2091,6 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="2" style="text-align: left; padding-top: 10px;"><button class="botpadramarelo" id="botagenda1" style="font-size: 80%;" onclick="abreAgendaChave1();">Agendar retirada desta Chave</button></td>
                             <td colspan="2" style="text-align: left; padding-top: 10px;"><button class="botpadrred" style="font-size: 80%;" onclick="entregaChave();">Registrar Saída</button></td>
                         </tr>
-
                         <tr>
                             <td colspan="4" style="text-align: center; padding-top: 5px;"></td>
                         </tr>
@@ -2478,9 +2532,9 @@ if(!isset($_SESSION["usuarioID"])){
         </div>
 
         <div id="modalDevolvida" class="relacmodal">
-            <div class="modal-content-tarjaAzul">
+            <div class="modal-content-tarjaAzul corPreta">
                 <span class="close" onclick="fechaDevolv();">&times;</span>
-                <div id="msgdevolv" style="color: white; font-size: 300%; text-align: center;">Chave DEVOLVIDA</div>
+                <div id="msgdevolv" style="font-size: 300%; text-align: center;">Chave DEVOLVIDA</div>
                 <div id="msgUsuDevolv" style="color: white; font-size: 110%; text-align: center;"></div>
             </div>
         </div> <!-- Fim Modal-->
@@ -2496,11 +2550,13 @@ if(!isset($_SESSION["usuarioID"])){
         </div> <!-- Fim Modal-->
 
         <div id="modalInfo" class="relacmodal">
-            <div class="modal-content-tarjaAzul" style="text-align: center;">
+            <div class="modal-content-tarjaAzul corPreta" style="text-align: center;">
                 <span class="close" onclick="fechaInfo();">&times;</span>
-                <div id="msgInfo1" style="color: white; font-size: 300%; text-align: center;">Sem Vínculo</div>
-                <div id="msgInfo2" style="color: white; font-size: 150%; text-align: center;"></div>
-                <div id="msgInfo3" style="color: white; text-align: center;"></div>
+                <div id="msgInfo1" style="font-size: 300%; text-align: center;">Sem Vínculo</div>
+                <div id="msgInfo5" style="text-align: center;"></div>
+                <div id="msgInfo2" style="font-size: 150%; text-align: center;"></div>
+                
+                <div id="msgInfo3" style="text-align: center;"></div>
 
                 <div id="msgInfo4" style="margin: 20px; padding-left: 60px; text-align: center; display: none;">
                     <div id="divSeg" style="position: relative; float: left; margin: 5px; text-align: center; width: 50px; border: 1px solid; border-radius: 20px;">Seg</div>
@@ -2511,9 +2567,8 @@ if(!isset($_SESSION["usuarioID"])){
                     <div id="divSab" style="position: relative; float: left; margin: 5px; text-align: center; width: 50px; border: 1px solid; border-radius: 20px;">Sab</div>
                     <div id="divDom" style="position: relative; float: left; margin: 5px; text-align: center; width: 50px; border: 1px solid; border-radius: 20px;">Dom</div>
                 </div>
-
                 <br>
-                <div id="msgInfo5" style="margin-bottom: 20px; color: white; text-align: center;"></div>
+                <div id="msgInfo6" style="margin-bottom: 40px; color: white; text-align: center;"></div>
             </div>
         </div> <!-- Fim Modal-->
 

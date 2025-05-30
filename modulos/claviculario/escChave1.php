@@ -70,13 +70,13 @@
                             <td><div class="quadrinho" style="font-size: 80%; text-align: left;"> <?php echo $tbl[3]; ?></div></td>
                             <td><div class="quadrinho" style="font-size: 70%; text-align: left;"> <?php echo $tbl[5]; ?></div></td>
 
-                            <td><input type="checkbox" <?php if($row1 > 0 && $tbl1[1] == 1){echo "CHECKED";} ?> title="2ª Feira" onchange="marcaChaveSemana(this, <?php echo $Cod; ?>, <?php echo $row1; ?>, 'seg');" ></td>
-                            <td><input type="checkbox" <?php if($row1 > 0 && $tbl1[2] == 1){echo "CHECKED";} ?> title="3ª Feira" onchange="marcaChaveSemana(this, <?php echo $Cod; ?>, <?php echo $row1; ?>, 'ter');" ></td>
-                            <td><input type="checkbox" <?php if($row1 > 0 && $tbl1[3] == 1){echo "CHECKED";} ?> title="4ª Feira" onchange="marcaChaveSemana(this, <?php echo $Cod; ?>, <?php echo $row1; ?>, 'qua');" style="outline: 1px solid blue;"></td>
-                            <td><input type="checkbox" <?php if($row1 > 0 && $tbl1[4] == 1){echo "CHECKED";} ?> title="5ª Feira" onchange="marcaChaveSemana(this, <?php echo $Cod; ?>, <?php echo $row1; ?>, 'qui');" ></td>
-                            <td><input type="checkbox" <?php if($row1 > 0 && $tbl1[5] == 1){echo "CHECKED";} ?> title="6ª Feira" onchange="marcaChaveSemana(this, <?php echo $Cod; ?>, <?php echo $row1; ?>, 'sex');" ></td>
-                            <td><input type="checkbox" <?php if($row1 > 0 && $tbl1[6] == 1){echo "CHECKED";} ?> title="Sábado" onchange="marcaChaveSemana(this, <?php echo $Cod; ?>, <?php echo $row1; ?>, 'sab');" style="outline: 1px solid red;"></td>
-                            <td><input type="checkbox" <?php if($row1 > 0 && $tbl1[7] == 1){echo "CHECKED";} ?> title="Domingo" onchange="marcaChaveSemana(this, <?php echo $Cod; ?>, <?php echo $row1; ?>, 'dom');" style="outline: 1px solid red;"></td>
+                            <td><input type="checkbox" <?php if($row1 > 0 && $tbl1[1] == 1){echo "CHECKED";} ?> title="2ª Feira" onchange="marcaChaveSemana(this, <?php echo $Cod; ?>, <?php echo $row1; ?>, 'seg', 1);" ></td>
+                            <td><input type="checkbox" <?php if($row1 > 0 && $tbl1[2] == 1){echo "CHECKED";} ?> title="3ª Feira" onchange="marcaChaveSemana(this, <?php echo $Cod; ?>, <?php echo $row1; ?>, 'ter', 2);" ></td>
+                            <td><input type="checkbox" <?php if($row1 > 0 && $tbl1[3] == 1){echo "CHECKED";} ?> title="4ª Feira" onchange="marcaChaveSemana(this, <?php echo $Cod; ?>, <?php echo $row1; ?>, 'qua', 3);" style="outline: 1px solid blue;"></td>
+                            <td><input type="checkbox" <?php if($row1 > 0 && $tbl1[4] == 1){echo "CHECKED";} ?> title="5ª Feira" onchange="marcaChaveSemana(this, <?php echo $Cod; ?>, <?php echo $row1; ?>, 'qui', 4);" ></td>
+                            <td><input type="checkbox" <?php if($row1 > 0 && $tbl1[5] == 1){echo "CHECKED";} ?> title="6ª Feira" onchange="marcaChaveSemana(this, <?php echo $Cod; ?>, <?php echo $row1; ?>, 'sex', 5);" ></td>
+                            <td><input type="checkbox" <?php if($row1 > 0 && $tbl1[6] == 1){echo "CHECKED";} ?> title="Sábado" onchange="marcaChaveSemana(this, <?php echo $Cod; ?>, <?php echo $row1; ?>, 'sab', 6);" style="outline: 1px solid red;"></td>
+                            <td><input type="checkbox" <?php if($row1 > 0 && $tbl1[7] == 1){echo "CHECKED";} ?> title="Domingo" onchange="marcaChaveSemana(this, <?php echo $Cod; ?>, <?php echo $row1; ?>, 'dom', 0);" style="outline: 1px solid red;"></td>
                         </tr>
                         <tr>
                             <td colspan="14"><hr style="margin: 0; padding: 0;"></td>

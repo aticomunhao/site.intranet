@@ -15,6 +15,7 @@
     $row = pg_num_rows($rs);
     ?>
     <div style="text-align: center; margin: 10px;">
+        <div style="position: relative; float: left;"><label style="font-size: 60%;">Procura: Ctrl F </label></div>
         <div style="position: relative; float: right;"><label style="font-size: 80%;"><?php echo $row." chaves"; ?></label></div>
         <h5>Claviculário da Portaria</h5>
         <table style="margin: 0 auto;">
@@ -26,6 +27,7 @@
                 <td class="etiq aCentro">Nome Sala</td>
                 <td class="etiq aCentro">Local</td>
                 <td class="etiq aCentro">Obs</td>
+                <td class="etiq aCentro"></td>
                 <td class="etiq aCentro"></td>
             </tr>
             <?php
@@ -67,6 +69,7 @@
                                 }
                                 ?>
                             </td>
+                            <td style="font-size: 80%;"><?php echo "<sup>$tbl[1] $tbl[7]</sup>"; ?></td>
                         </tr>
                         <?php
                     }

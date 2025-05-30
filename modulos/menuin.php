@@ -31,7 +31,7 @@
 				$diaSemana = 1;
 			}
 			//Provisório
-			if(strtotime('2025/05/30') > strtotime(date('Y/m/d'))){
+			if(strtotime('2025/06/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
 				//0115
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS corlistas_Daf smallint NOT NULL DEFAULT 0;");

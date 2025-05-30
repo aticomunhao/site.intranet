@@ -2236,9 +2236,9 @@ if(!isset($_SESSION["usuarioID"])){
         </div>
 
         <div id="modalDevolvida" class="relacmodal">
-            <div class="modal-content-tarjaAzul">
+            <div class="modal-content-tarjaAzul corPreta">
                 <span class="close" onclick="fechaDevolv();">&times;</span>
-                <div id="msgdevolv" style="color: white; font-size: 300%; text-align: center;">Chave DEVOLVIDA</div>
+                <div id="msgdevolv" style="font-size: 300%; text-align: center;">Chave DEVOLVIDA</div>
                 <div id="msgUsuDevolv" style="color: white; font-size: 110%; text-align: center;"></div>
             </div>
         </div> <!-- Fim Modal-->
@@ -2254,11 +2254,11 @@ if(!isset($_SESSION["usuarioID"])){
         </div> <!-- Fim Modal-->
 
         <div id="modalInfo" class="relacmodal">
-            <div class="modal-content-tarjaAzul">
+            <div class="modal-content-tarjaAzul corPreta">
                 <span class="close" onclick="fechaInfo();">&times;</span>
-                <div id="msgInfo1" style="color: white; font-size: 300%; text-align: center;">Sem Vínculo</div>
-                <div id="msgInfo2" style="color: white; font-size: 150%; text-align: center;"></div>
-                <div id="msgInfo3" style="color: white; text-align: center;"></div>
+                <div id="msgInfo1" style="font-size: 300%; text-align: center;">Sem Vínculo</div>
+                <div id="msgInfo2" style="font-size: 150%; text-align: center;"></div>
+                <div id="msgInfo3" style="text-align: center;"></div>
             </div>
         </div> <!-- Fim Modal-->
 

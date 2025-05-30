@@ -349,7 +349,7 @@ if(isset($_REQUEST["acao"])){
             $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves2_aut");
             $tblCod = pg_fetch_row($rsCod);
             $CodigoNovo = $tblCod[0]+1;
-            pg_query($Conec, "INSERT INTO ".$xProj.".chaves2_aut (chaves_id, pessoas_id, ativo, usuins, datains) VALUES($Cod, $CodUsu, 1, ".$_SESSION['usuarioID'].", NOW())");
+            pg_query($Conec, "INSERT INTO ".$xProj.".chaves2_aut (id, chaves_id, pessoas_id, ativo, usuins, datains) VALUES($CodigoNovo, $Cod, $CodUsu, 1, ".$_SESSION['usuarioID'].", NOW())");
         }
 
 
