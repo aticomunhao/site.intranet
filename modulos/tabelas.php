@@ -292,13 +292,39 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".livroreg (
       largtela character varying(30),
       ordem_daf smallint NOT NULL DEFAULT 0,
       corlistas_daf smallint NOT NULL DEFAULT 1,
-      combust smallint NOT NULL DEFAULT 0, 
-      fisc_combust smallint NOT NULL DEFAULT 0 
+      viatura smallint NOT NULL DEFAULT 0,
+      fisc_viat smallint NOT NULL DEFAULT 0,
+      tema smallint NOT NULL DEFAULT 0,
+      eletric5 smallint NOT NULL DEFAULT 0,
+      extsen smallint NOT NULL DEFAULT 0,
+      lro_rev smallint NOT NULL DEFAULT 0,
+      filtros smallint NOT NULL DEFAULT 0,
+      fisc_filtros smallint NOT NULL DEFAULT 0,
+      clav_edit smallint NOT NULL DEFAULT 0,
+      clav_edit2 smallint NOT NULL DEFAULT 0,
+      clav_edit3 smallint NOT NULL DEFAULT 0,
+      bebed smallint NOT NULL DEFAULT 0,
+      bebed_fisc smallint NOT NULL DEFAULT 0
       ) ");
    
    echo "Tabela ".$xProj.".poslog checada. <br>";
 
+	pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".usuarios_elim (
+		id SERIAL PRIMARY KEY, 
+      pessoas_id bigint DEFAULT 0 NOT NULL,
+		cpf character varying(20),
+		nomecompl character varying(150),
+      nomeusual character varying(50),
+      sexo smallint DEFAULT 1 NOT NULL,
+		datanasc date DEFAULT '1500-01-01',
+      codsetor smallint DEFAULT 1 NOT NULL,
+		siglasetor character varying(10),
+      numacessos integer DEFAULT 0 NOT NULL,
+		datainat timestamp without time zone DEFAULT CURRENT_TIMESTAMP 
+	  	) ");
+   echo "Tabela ".$xProj.".usuarios_elim. <br>";   
 
+   
    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".leitura_agua (
       id SERIAL PRIMARY KEY, 
       dataleitura date,

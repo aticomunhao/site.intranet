@@ -959,7 +959,7 @@ if($Acao =="procChefeDiv"){
     if(!$rs){
         $Erro = 1;
     }
-    $rs1 = pg_query($Conec, "SELECT visucargo_daf, primcargo_daF, seminifim_daf, corlistas_Daf FROM ".$xProj.".paramsis WHERE idpar = 1");
+    $rs1 = pg_query($Conec, "SELECT visucargo_daf, primcargo_daF, seminifim_daf, corlistas_daf FROM ".$xProj.".paramsis WHERE idpar = 1");
     if($rs1){
         $tbl1 = pg_fetch_row($rs1);
         $VisuCargo = $tbl1[0];

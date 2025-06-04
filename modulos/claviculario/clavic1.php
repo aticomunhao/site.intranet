@@ -1461,6 +1461,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("checkGeral").checked = false;
                                     }
+                                    $("#faixachaves").load("modulos/claviculario/escChave1.php?usuario="+document.getElementById("configselecSolicitante").value);
                                 }
                             }
                         }
@@ -2603,14 +2604,15 @@ if(!isset($_SESSION["usuarioID"])){
                         <li>08 - O agendamento da retirada de chave (para os administradores) segue o mesmo processo com um campo adicional para inserir a data prevista para a retirada. A anotação nesse caso aparecerá na coluna da esquerda.</li>
                             <div style="text-align: center;"><img src="modulos/claviculario/imgHelp03.jpg" height="150px;" style="padding-right: 30px;" title="Agendamento"></div>
                         <li>09 - O agendamento só vale para o dia marcado. Se a chave não for retirada no dia marcado, um administrador pode apagar o agendamento.</li>
-                        <li>10 - Para proceder à devolução da chave ao claviculário, procure na coluna da direita o número da chave que está sendo devolvida e clique no botão <b>Retorno</b> ou localize o número da chave na coluna central e clique na imagem da chave vermelha.</li>
-                        <li>11 - Na janela modal que aparece, o nome do usuário que retirou já está colocado no lugar do usuário que está devolvendo.</li>
+                        <li>10 - Alguns usuários estão autorizados a retirar determinada chave somente em determinados <u>dias da semana</u>. Essa previsão aparecerá na coluna da esquerda, junto com as chaves agendadas, encabeçadas pelo dia da semana. Se um usuário vier retirar a chave no dia errado, uma mensagem aparecerá informando o dia da semana em que está autorizado a fazer a retirada.</li>
+                        <li>11 - Para proceder à devolução da chave ao claviculário, procure na coluna da direita o número da chave que está sendo devolvida e clique no botão <b>Retorno</b> ou localize o número da chave na coluna central e clique na imagem da chave vermelha.</li>
+                        <li>12 - Na janela modal que aparece, o nome do usuário que retirou já está colocado no lugar do usuário que está devolvendo.</li>
                             <div style="text-align: center;"><img src="modulos/claviculario/imgHelp04.jpg" height="150px;" style="padding-right: 30px;" title="Agendamento"></div>
-                        <li>12 - Se for uma outra pessoa que está devolvendo a chave, selecione o nome dessa pessoa na lista suspensa do quadro logo abaixo ou digite o CPF dela no espaço ao lado da lista.</li>
-                        <li>13 - Se o nome da pessoa que devolve a chave não estiver na lista e não aparecer ao digitar o CPF, clique nessa procura por CPF e dê um enter sem digitar nada. O espaço destinado ao nome do entregador se tornará editável. Escreva o nome de quem está entregando a chave. Anote também o telefone, se possível.  </li>
-                        <li>14 - Quando a vinculação usuário/chave estiver ligada, o sistema informará se porventura um usuário não puder retirar determinada chave.</li>
+                        <li>13 - Se for uma outra pessoa que está devolvendo a chave, selecione o nome dessa pessoa na lista suspensa do quadro logo abaixo ou digite o CPF dela no espaço ao lado da lista.</li>
+                        <li>14 - Se o nome da pessoa que devolve a chave não estiver na lista e não aparecer ao digitar o CPF, clique nessa procura por CPF e dê um enter sem digitar nada. O espaço destinado ao nome do entregador se tornará editável. Escreva o nome de quem está entregando a chave. Anote também o telefone, se possível.  </li>
+                        <li>15 - Quando a vinculação usuário/chave estiver ligada, o sistema informará se porventura um usuário não puder retirar determinada chave.</li>
                         <?php if($EscChave == 1){
-                            echo "<li>15 - A vinculação está ligada.</li>";    
+                            echo "<li>15 - A vinculação está <u>ligada</u>.</li>";    
                         }else{
                             echo "<li>15 - No momento a vinculação está desligada.</li>";    
                         }

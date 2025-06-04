@@ -168,6 +168,8 @@ if($Acao =="loglog"){
                         }
                         $Hoje = date('Y/m/d');
                         if(strtotime($DataElim) < strtotime($Hoje)){ // verifica se alguém já logou e inseriu a data de hoje
+                            //Salva os bloqueados e deleta
+                            elimBloqueados($Conec, $xProj);
                             if($PrazoDel < 1000){
                                 pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ativo = 0"); //Elimina dados apagados da tabela calendário
                                 pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ((CURRENT_DATE - dataini)/365 > $PrazoDel)"); //Apaga da tabela calendário eventos passados há mais de $PrazoDel anos
@@ -190,7 +192,7 @@ if($Acao =="loglog"){
                                 pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf WHERE datains < CURRENT_DATE - interval '$PrazoDel years' And ativo = 0"); // Apaga só os deletados
                                 pg_query($Conec, "DELETE FROM ".$xProj.".usulog WHERE datalogin < CURRENT_DATE - interval '$PrazoDel years'");
                             }
-                            $rs6 = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog ");
+                            $rs6 = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog WHERE ativo = 1"); // ativo = 1 para não reabilitar os deletados no site
                             $row6 = pg_num_rows($rs6); // atualiza nomes de poslog com pessoas
                             if($row6 > 0){
                                 while ($tbl6 = pg_fetch_row($rs6)){
@@ -202,11 +204,7 @@ if($Acao =="loglog"){
                                         $NomeC = GUtils::normalizarNome($tbl7[0]);  // Normatizar nomes próprios
                                         $NomeComp = addslashes($NomeC);
                                         $NomeCompl = str_replace('"', "'", $NomeComp); // substitui aspas duplas por simples
-//                                        if(!is_null($tbl7[1])){
-                                            $Ativo = $tbl7[1];
-//                                        }else{
-//                                            $Ativo = 0;
-//                                        }
+                                        $Ativo = $tbl7[1];
                                         if(!is_null($tbl7[2])){
                                             $DNasc = $tbl7[2];
                                         }else{
@@ -1231,7 +1229,8 @@ if($Acao =="marcaChaveUsuario"){
         if($Param == 1 ){
             $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 1, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
         }else{
-            $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 0, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
+//            $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 0, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
+            $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 0, seg = 0, ter = 0, qua = 0, qui = 0, sex = 0, sab = 0, dom = 0, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
         }
     }else{ // inserir
         $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".chaves_aut");
@@ -1296,7 +1295,6 @@ if($Acao =="marcaChaveTodas"){
 }
 
 
-
 function removeInj($VemDePost){  // função para remover injeções SQL
     $VemDePost = addslashes($VemDePost);
     $VemDePost = htmlspecialchars($VemDePost);
@@ -1339,4 +1337,35 @@ function removeInj($VemDePost){  // função para remover injeções SQL
         $navegador = $_SERVER['HTTP_USER_AGENT']; 
     }
     return $navegador;
+}
+
+function elimBloqueados($Conec, $xProj){
+    //Salva em usuarios_elim
+    $rs = pg_query($Conec, "SELECT pessoas_id, cpf, nomecompl, nomeusual, sexo, datanasc, codsetor, numacessos, datainat, siglasetor 
+	FROM ".$xProj.".poslog INNER JOIN ".$xProj.".setores ON ".$xProj.".poslog.codsetor = ".$xProj.".setores.codset 
+	WHERE ".$xProj.".poslog.ativo = 0");
+    $row = pg_num_rows($rs);
+	if($row > 0){
+		while($tbl = pg_fetch_row($rs)){
+            $Cod = $tbl[0];
+			$Cpf = $tbl[1];
+			$NomeCompl = $tbl[2];
+            $NomeUsual = $tbl[3];
+			$Sexo = $tbl[4];
+			$DNasc = $tbl[5];
+            $CodSetor = $tbl[6];
+			$Acessos = $tbl[7];
+			$DataInat = $tbl[8];
+            $SiglaSetor = $tbl[9];
+
+			$rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".usuarios_elim");
+            $tblCod = pg_fetch_row($rsCod);
+            $Codigo = $tblCod[0];
+            $CodigoNovo = ($Codigo+1);
+			pg_query($Conec, "INSERT INTO ".$xProj.".usuarios_elim (id, pessoas_id, cpf, nomecompl, nomeusual, sexo, datanasc, codsetor, numacessos, datainat, siglasetor)
+            VALUES ($CodigoNovo, $Cod, '$Cpf', '$NomeCompl', '$NomeUsual', $Sexo, '$DNasc', $CodSetor, $Acessos, '$DataInat', '$SiglaSetor') ");
+		}
+        //Apaga
+        pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE ativo = 0");
+	}
 }

@@ -33,34 +33,26 @@
 			//Provisório
 			if(strtotime('2025/06/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//0115
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS corlistas_Daf smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET corlistas_daf = 9;");
+				//0117
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 0 WHERE pessoas_id = 33");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 0 WHERE pessoas_id = 16");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 0 WHERE pessoas_id = 9");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 0 WHERE pessoas_id = 39");
 
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves_aut ADD COLUMN IF NOT EXISTS seg smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves_aut ADD COLUMN IF NOT EXISTS ter smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves_aut ADD COLUMN IF NOT EXISTS qua smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves_aut ADD COLUMN IF NOT EXISTS qui smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves_aut ADD COLUMN IF NOT EXISTS sex smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves_aut ADD COLUMN IF NOT EXISTS sab smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves_aut ADD COLUMN IF NOT EXISTS dom smallint NOT NULL DEFAULT 0;");
-
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves2_aut ADD COLUMN IF NOT EXISTS seg smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves2_aut ADD COLUMN IF NOT EXISTS ter smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves2_aut ADD COLUMN IF NOT EXISTS qua smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves2_aut ADD COLUMN IF NOT EXISTS qui smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves2_aut ADD COLUMN IF NOT EXISTS sex smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves2_aut ADD COLUMN IF NOT EXISTS sab smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves2_aut ADD COLUMN IF NOT EXISTS dom smallint NOT NULL DEFAULT 0;");
-
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves3_aut ADD COLUMN IF NOT EXISTS seg smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves3_aut ADD COLUMN IF NOT EXISTS ter smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves3_aut ADD COLUMN IF NOT EXISTS qua smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves3_aut ADD COLUMN IF NOT EXISTS qui smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves3_aut ADD COLUMN IF NOT EXISTS sex smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves3_aut ADD COLUMN IF NOT EXISTS sab smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".chaves3_aut ADD COLUMN IF NOT EXISTS dom smallint NOT NULL DEFAULT 0;");
-
+			   	pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".usuarios_elim (
+			    	id SERIAL PRIMARY KEY, 
+      				pessoas_id bigint DEFAULT 0 NOT NULL,
+					cpf character varying(20),
+					nomecompl character varying(150),
+      				nomeusual character varying(50),
+      				sexo smallint DEFAULT 1 NOT NULL,
+					datanasc date DEFAULT '1500-01-01',
+      				codsetor smallint DEFAULT 1 NOT NULL,
+					siglasetor character varying(10),
+      				numacessos integer DEFAULT 0 NOT NULL,
+					datainat timestamp without time zone DEFAULT CURRENT_TIMESTAMP 
+	  			) ");
+				
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

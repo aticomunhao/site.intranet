@@ -32,7 +32,7 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 50%;
+                width: 70%;
                 max-width: 900px;
             }
         </style>
@@ -603,6 +603,7 @@ if(!isset($_SESSION["usuarioID"])){
 
             function insUsu(){
                 document.getElementById("guardaid_click").value = 0;
+                document.getElementById("botaoChaves").style.visibility = "hidden";
                 if(document.getElementById("guardaSiglaSetor").value === "n/d"){
                     document.getElementById("textoMsg").innerHTML = "Administrador sem setor definido.";
                     document.getElementById("relacmensagem").style.display = "block"; // está em modais.php
@@ -621,6 +622,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("mesAniv").value = "";
                 document.getElementById("acessos").value = "-";
                 document.getElementById("ultlog").value = "-";
+                document.getElementById("retiraChave").checked = false;
                 if(parseInt(document.getElementById("UsuAdm").value) < 7){
                     document.getElementById("setor").disabled = true;
                     document.getElementById("flAdm").value = 2; // usuário registrado
@@ -666,15 +668,16 @@ if(!isset($_SESSION["usuarioID"])){
 
             function mostraBotChave(Obj, Cod){
                 document.getElementById("mudou").value = "1";
+                if(parseInt(document.getElementById("guardaid_click").value) > 0){
 //                if(parseInt(Cod) === 1){
                     if(Obj.checked === true){
                         document.getElementById("botaoChaves").style.visibility = "visible";
                     }else{
                         document.getElementById("botaoChaves").style.visibility = "hidden";
                     }
-//                }else{
-//                    document.getElementById("botaoChaves").style.visibility = "hidden";
-//                }
+                }else{
+                    document.getElementById("botaoChaves").style.visibility = "hidden";
+                }
             }
 
             function marcaChaveInd(Obj, Cod){
@@ -699,6 +702,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("checkGeral").checked = false;
                                     }
+                                    $("#faixachaves").load("modulos/config/escChave.php?usuario="+document.getElementById("guardaid_click").value);
                                 }
                             }
                         }
@@ -706,6 +710,32 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 } 
             }
+
+            function marcaChaveSemana(Obj, Cod, Marca, Sem, NumDia){
+                if(Obj.checked === true){
+                    Valor = 1;
+                }else{
+                    Valor = 0;
+                }
+                if(ajax){
+                    ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=marcaChaveUsuarioSemana&param="+Valor+"&codigo="+Cod+"&semana="+Sem+"&usuario="+document.getElementById("guardaid_click").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.")
+                                }else{
+                                    $("#faixachaves").load("modulos/config/escChave.php?usuario="+document.getElementById("guardaid_click").value);
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                } 
+            }
+
 
             function marcaChaveTodas(Obj){
                 if(Obj.checked === true){
@@ -733,7 +763,8 @@ if(!isset($_SESSION["usuarioID"])){
                                             if(parseInt(Resp.coderro) === 1){
                                                 alert("Houve um erro no servidor.")
                                             }
-                                            $("#faixachaves").load("modulos/config/jChaves.php?usuario="+document.getElementById("guardaid_click").value);
+//                                            $("#faixachaves").load("modulos/config/jChaves.php?usuario="+document.getElementById("guardaid_click").value);
+                                            $("#faixachaves").load("modulos/config/escChave.php?usuario="+document.getElementById("guardaid_click").value);
                                         }
                                     }
                                 };
@@ -753,7 +784,8 @@ if(!isset($_SESSION["usuarioID"])){
 
             function AbreModalChaves(){
                 document.getElementById("relacmodalChaves").style.display = "block";
-                $("#faixachaves").load("modulos/config/jChaves.php?usuario="+document.getElementById("guardaid_click").value);
+//                $("#faixachaves").load("modulos/config/jChaves.php?usuario="+document.getElementById("guardaid_click").value);
+                $("#faixachaves").load("modulos/config/escChave.php?usuario="+document.getElementById("guardaid_click").value);
             }
 
             function fechaModal(){
@@ -1370,7 +1402,8 @@ if(!isset($_SESSION["usuarioID"])){
                             <label for="retiraChave" title="Autorizado a retirar chaves do claviculário da Portaria">usuário autorizado a retirar chaves do claviculário da Portaria</label>
                             <label style="padding-left: 5px;"></label>
                             <!-- Há um gatilho em paramsis para requerer ou interromper a exigência de determinar qual chave um usuário pode pegar -->
-                            <button id="botaoChaves" class="botpadrblue" style="font-size: 70%;" onclick="AbreModalChaves();" title="Definir quais chaves este usuário pode pegar.">Chaves</button>
+<!--                            <button id="botaoChaves" class="botpadrblue" style="font-size: 70%;" onclick="AbreModalChaves();" title="Definir quais chaves este usuário pode pegar.">Chaves</button> -->
+                            <button id="botaoChaves" <?php if($EscChave == 1){echo "class='botpadrTijolo'";}else{echo "class='botpadrblue'";} ?> style="font-size: 70%;" onclick="AbreModalChaves();" <?php if($EscChave == 1){echo "title='Vínculo ligado - Definir quais chaves este usuário pode pegar.'";}else{echo "title='Vínculo desligado - Definir quais chaves este usuário pode pegar.'";} ?> >Chaves</button>
                         </td>
                         <td style="text-align: center; border-bottom: 1px solid;"><img src="imagens/iinfo.png" height="20px;" style="cursor: pointer;" onclick="carregaHelpUsu(12);" title="Guia rápido"></td>
                     </tr>
