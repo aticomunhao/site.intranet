@@ -115,6 +115,21 @@ require_once("abrealas.php");
             ?>
               <div class="box" style="position: relative; float: left; width: 33%; text-align: left;">
                 <table>
+                    <caption style="font-size: 80%;">
+                        <?php 
+                            if($Acao == "todos"){
+                                echo "Seleção Todos: ".$row0;
+                            }
+                            if($Acao == "online"){
+                                echo "Seleção Online: ".$row0;
+                            }
+                            if($Acao == "dehoje"){
+                                echo "Seleção usuários de hoje: ".$row0;
+                            }
+                            if($Acao == "inativos"){
+                                echo "Seleção usuários bloqueados: ".$row0;
+                            }
+                         ?></caption>
                     <tr>
                         <td style="font-size: 80%; color: green;">Total de Usuários:</td>
                         <td style="font-size: 80%; color: green; text-align: right; padding-left: 3px; min-width: 15px;"><?php echo $Total; ?></td>

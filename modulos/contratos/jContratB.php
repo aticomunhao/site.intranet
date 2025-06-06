@@ -90,7 +90,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
          <!-- Empresas contrantes da comunhão -->
         <?php
         $rs0 = pg_query($Conec, "SELECT id, numcontrato, TO_CHAR(dataassinat, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), codsetor, codempresa, vigencia, notific, objetocontr, 
-        CASE WHEN dataaviso <= CURRENT_DATE AND datavencim >= CURRENT_DATE THEN 'aviso' END, emvigor 
+        CASE WHEN dataaviso <= CURRENT_DATE AND datavencim >= CURRENT_DATE THEN 'aviso' END, emvigor, valor_contrato 
         FROM ".$xProj.".contratos2 WHERE ativo = 1 ORDER BY emvigor, dataassinat DESC");
         $row0 = pg_num_rows($rs0);
         ?>
@@ -107,6 +107,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         <th class="etiq">Objeto</th>
                         <th class="etiq aCentro">Setor</th>
                         <th class="etiq aCentro" title="Vigência do contrato">Vigência</th>
+                        <th class="etiq aCentro">Valor</th>
                         <th class="etiq aCentro" title="Notificação sobre a não prorrogação do contrato?">Notif</th>
                         <th class="etiq aCentro">Status</th>
                     </tr>
@@ -115,6 +116,12 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                     <?php 
                     while ($tbl = pg_fetch_row($rs0)) {
                         $Cod = $tbl[0];
+                        $Valor = $tbl[12];
+                        if($Valor == 0){
+                            $Valor = "";
+                        }else{
+                            $Valor = number_format(($Valor), 2, ",",".");
+                        }
                     ?>
                     <tr>
                         <td style="display: none;"></td>
@@ -146,9 +153,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     $DescEmpr = "";
                                 }
                             ?>
-                            <div class="quadrinho" style="font-size: 80%; text-align: left; border: 0px;" title="Objeto: <?php echo $tbl[9]; ?>"><?php echo $DescEmpr." - ".$tbl[10]; ?></div>
+                            <div class="quadrinho" style="font-size: 80%; text-align: left; border: 0px;" <?php if($Contr == 1){echo "onclick='editContrato(2, $Cod);'";} ?> title="Objeto: <?php echo $tbl[9]; ?>"><?php echo $DescEmpr; ?></div>
                         </td>
-                        <td><div class="quadrinho" style="font-size: 70%; text-align: left; border: 0px;"><?php echo $tbl[9]; ?></div></td>
+                        <td><div class="quadrinho" style="font-size: 70%; text-align: left; border: 0px;" <?php if($Contr == 1){echo "onclick='editContrato(2, $Cod);'";} ?>><?php echo $tbl[9]; ?></div></td>
                         <td>
                             <?php
                                 $rs2 = pg_query($ConecPes, "SELECT sigla FROM ".$xPes.".setor WHERE id = $tbl[5]");
@@ -160,9 +167,13 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     $DescSetor = "";
                                 }
                             ?>
-                            <div class="quadrinho" style="font-size: 70%;"><?php echo $DescSetor; ?></div>
+                            <div  <?php if($Contr == 1){echo "class='quadrinhoClick' onclick='editContrato(2, $Cod);'";}else{echo "class='quadrinho'";} ?> style="font-size: 70%;"><?php echo $DescSetor; ?></div>
                         </td>
-                        <td><div class="quadrinho" style="font-size: 70%;" title="Vigência do contrato em meses."><?php echo $tbl[7]; ?></div></td>
+                        <td><div <?php if($Contr == 1){echo "class='quadrinhoClick' onclick='editContrato(2, $Cod);'";}else{echo "class='quadrinho'";} ?> style="font-size: 70%;" title="Vigência do contrato em meses."><?php echo $tbl[7]; ?></div></td>
+                        <td>
+                            <div <?php if($Contr == 1){echo "class='quadrinhoClick' onclick='editContrato(2, $Cod);'";}else{echo "class='quadrinho'";} ?> style="font-size: 70%;" title="Valor do contrato."><?php echo $Valor; ?></div>
+                        </td>
+
                         <td>
                             <?php
                                 if($tbl[8] == 0){

@@ -243,6 +243,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("dataAviso").disabled = true;
                 document.getElementById("numcontrato").value = "";
                 document.getElementById("selecSetor").value = "";
+                document.getElementById("valorcontrato").value = "";
                 document.getElementById("selecEmpresa").value = "";
                 document.getElementById("objetocontrato").value = "";
                 document.getElementById("obscontrato").value = "";
@@ -292,9 +293,11 @@ if(!isset($_SESSION["usuarioID"])){
                                 Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
                                 if(parseInt(Resp.coderro) === 0){
                                     document.getElementById("numcontrato").value = Resp.numcontrato;
+                                    document.getElementById("valorcontrato").value = Resp.valorcontrato;
                                     document.getElementById("selecSetor").value = Resp.codsetor;
                                     document.getElementById("selecEmpresa").value = Resp.codempresa;
-                                    document.getElementById("objetocontrato").value = Resp.objcontrato;
+//                                    document.getElementById("objetocontrato").value = Resp.objcontrato;
+                                    document.getElementById("valorcontrato").value = formataNum(Resp.valorcontrato);
                                     document.getElementById("obscontrato").value = Resp.obs;
                                     document.getElementById("dataAssinat").value = Resp.dataassinat;
                                     document.getElementById("dataVencim").value = Resp.datavencim;
@@ -449,6 +452,7 @@ if(!isset($_SESSION["usuarioID"])){
                     +"&observ="+encodeURIComponent(document.getElementById("obscontrato").value)
                     +"&vencim="+encodeURIComponent(document.getElementById("dataVencim").value)
                     +"&assinat="+encodeURIComponent(document.getElementById("dataAssinat").value)
+                    +"&valorcontrato="+encodeURIComponent(document.getElementById("valorcontrato").value)
                     +"&notific="+Notif
                     +"&pararaviso="+ParaAv
                     +"&anteced="+document.getElementById("diasAnteced").value
@@ -805,9 +809,16 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("relacimprContratosB").style.display = "block";
 //                window.open("modulos/contratos/imprContr1.php?acao=listaContratantes", "listaContratantes");
             }
+
             function ImprContratosB(Valor){
-                window.open("modulos/contratos/imprContr1.php?acao=listaContratantes&selec="+Valor, "listaContratantes");
+                if(document.getElementById("indexPor1").checked === true){
+                    Index = "dataassinat";
+                }else{
+                    Index = "datavencim";
+                }
+                window.open("modulos/contratos/imprContr1.php?acao=listaContratantes&selec="+Valor+"&indexImpr="+Index, "listaContratantes");
             }
+
             function fechaContratosConfig(){
                 document.getElementById("modalContratosConfig").style.display = "none";
             }
@@ -840,6 +851,17 @@ if(!isset($_SESSION["usuarioID"])){
                   // compara se a data informada é maior que a data atual e retorna true ou false
                 return date1 > date2 ? true : false
             }
+
+            function formataNum(Num){
+                if(Num !== ""){
+                    number = parseFloat(Num);
+                    let Valor = number.toFixed(2);
+                    return String(Valor).replace('.', ',');
+                }else{
+                    return "";
+                }
+            }
+
             /* Brazilian initialisation for the jQuery UI date picker plugin. */
             /* Written by Leonildo Costa Silva (leocsilva@gmail.com). */
             jQuery(function($){
@@ -952,6 +974,8 @@ if(!isset($_SESSION["usuarioID"])){
         $OpSetor = pg_query($ConecPes, "SELECT id, sigla FROM ".$xPes.".setor WHERE dt_fim IS NULL ORDER BY sigla");
         $OpDias = pg_query($Conec, "SELECT codesc FROM ".$xProj.".escolhas WHERE codesc <= 120 ORDER BY codesc");
         $OpConfig = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE ativo = 1 ORDER BY nomecompl, nomeusual");
+        $OpEmpresas = pg_query($Conec, "SELECT id, empresa FROM ".$xProj.".contrato_empr WHERE ativo = 1 ORDER BY empresa");
+
        //Verificar término de validade dos constratos
         pg_query($Conec, "UPDATE ".$xProj.".contratos2 SET emvigor = 2 WHERE datavencim <= CURRENT_DATE And emvigor != 3 ");
         ?>
@@ -1018,12 +1042,11 @@ if(!isset($_SESSION["usuarioID"])){
                         <tr>
                             <td class="etiq" style="padding-bottom: 7px;">Contrato: </td>
                             <td style="padding-bottom: 10px;"><input type="text" id="numcontrato" style="width: 200px; text-align: center; border:1px solid; border-radius: 5px;"/></td>
-                            <td>
+                            <td colspan="2">
                                 <input type="radio" name="vigorcontrato" id="vigorcontrato1" value="1" title="Contrato em vigor" onclick="mudaStatus(value);"><label for="vigorcontrato1" class="etiqAzul" style="padding-left: 3px;"> Em Vigor</label>
                                 <input type="radio" name="vigorcontrato" id="vigorcontrato2" value="2" title="Contrato terminado." onclick="mudaStatus(value);"><label for="vigorcontrato2" class="etiqAzul" style="padding-left: 3px;"> Terminado</label>
                                 <input type="radio" name="vigorcontrato" id="vigorcontrato3" value="3" title="Contrato rescindido." onclick="mudaStatus(value);"><label for="vigorcontrato3" class="etiqAzul" style="padding-left: 3px;"> Rescindido</label>
                             </td>
-                            <td></td>
                             <td class="etiq" style="padding-bottom: 7px;"><label id="numsequencia" style="font-size: 150%; border:1px solid; border-radius: 5px; padding-left: 3px; padding-right: 3px;" title="Mera sugestão para numeração."></label></td>
                         </tr>
                         <tr>
@@ -1040,25 +1063,37 @@ if(!isset($_SESSION["usuarioID"])){
                                         }
                                         ?>
                                 </select>
+                                <label class="etiq" style="padding-left: 50px;">Valor do Contrato: </label>
+                                <input type="text" id="valorcontrato" style="text-align: center; width: 150px;border:1px solid; border-radius: 5px;" onchange="modif();" placeholder="Valor do contrato"/>
                             </td>
                             <td></td>
                         </tr>
                         <tr>
                             <td class="etiq">Empresa: </td>
                             <td colspan="3" style="min-width: 200px;">
-                                <select id="selecEmpresa" onchange="modif();" style="font-size: 1rem; min-width: 150px;" title="Selecione uma empresa."></select>
+                                <select id="selecEmpresa" style="min-width: 180px;" onchange="modif();" title="Selecione uma empresa.">
+                                    <option value=""></option>
+                                        <?php 
+                                        if($OpEmpresas){
+                                            while ($Opcoes = pg_fetch_row($OpEmpresas)){ ?>
+                                                <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                            <?php 
+                                            }
+                                        }
+                                        ?>
+                                </select>
                             </td>
                             <td></td>
                         </tr>
 
                         <tr>
                             <td class="etiq">Objeto: </td>
-                            <td colspan="3" style="width: 100px;"><textarea id="objetocontrato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="2" cols="40" title="Observações" onchange="modif();"></textarea></td>
+                            <td colspan="3" style="width: 100px;"><textarea id="objetocontrato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="2" cols="55" title="Objeto do contrato" onchange="modif();"></textarea></td>
                             <td></td>
                         </tr>
                         <tr>
                             <td class="etiq">Observações: </td>
-                            <td colspan="3" style="width: 100px;"><textarea id="obscontrato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="2" cols="40" title="Observações" onchange="modif();"></textarea></td>
+                            <td colspan="3" style="width: 100px;"><textarea id="obscontrato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="2" cols="55" title="Observações" onchange="modif();"></textarea></td>
                             <td></td>
                         </tr>
                         <tr>
@@ -1269,7 +1304,11 @@ if(!isset($_SESSION["usuarioID"])){
                 <span class="close" onclick="fechaModalImprB();">&times;</span>
                 <h5 id="titulomodal" style="text-align: center;color: #666;">Contratos - Empresas Contratantes</h5>
                 <h6 id="titulomodal" style="text-align: center; padding-bottom: 18px; color: #666;">Impressão PDF</h6>
-                <div>
+                <div style="text-align: center;">
+                    <label class="etiqAzul">Indexar por: </label>
+                    <input type="radio" name="indexPor" id="indexPor1" value="1" CHECKED style="cursor: pointer;"><label for="indexPor1" class="etiqAzul" style="cursor: pointer; font-size: 80%;">&nbsp;Assinatura</label>
+                    <input type="radio" name="indexPor" id="indexPor2" value="2" style="cursor: pointer;"><label for="indexPor2" class="etiqAzul" style="cursor: pointer; font-size: 80%;">&nbsp;Vencimento</label>
+
                     <table style="margin: 0 auto;">
                         <tr>
                             <td><div style="margin: 5px; padding: 5px; border: 2px solid #C6E2FF; border-radius: 10px;"><button class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="ImprContratosB('todos');">Todos</button></div></td>
@@ -1278,7 +1317,6 @@ if(!isset($_SESSION["usuarioID"])){
                             <td><div style="margin: 5px; padding: 5px; border: 2px solid #C6E2FF; border-radius: 10px;"><button class="resetbot fundoAmareloCl" style="font-size: .9rem;" onclick="ImprContratosB('rescindidos');" title="Contratos rescindidos.">Rescindidos</button></div></td>
                         </tr>
                     </table>
-
                 </div>
                 <div style="padding-bottom: 20px;"></div>
            </div>

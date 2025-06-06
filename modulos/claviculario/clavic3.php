@@ -726,6 +726,9 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function saidaChave(Cod){ // id de chaves
+                if(parseInt(document.getElementById("guardaEditaChaves").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+                    document.getElementById("botagenda1").style.visibility = "visible";
+                }
                 document.getElementById("guardaCod").value = Cod;
                 document.getElementById("CodidChave").value = Cod;
                 document.getElementById("mensagemErro").style.display = "none";
@@ -951,6 +954,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function saidaChaveAgenda(CodAg, CodChaves, CodUsu, DataSai){ // id de chaves
+                document.getElementById("botagenda1").style.visibility = "hidden";
                 document.getElementById("guardaCod").value = CodChaves;
                 document.getElementById("CodidChave").value = CodChaves;
                 document.getElementById("guardaPosCod").value = CodUsu;
@@ -1001,6 +1005,9 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function retornoChave1(Cod){  // Cod = id de chaves  
+                if(parseInt(document.getElementById("guardaEditaChaves").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+                    document.getElementById("botagenda1").style.visibility = "visible";
+                }
                 document.getElementById("CodidChave").value = Cod;
                 document.getElementById("botagenda2").style.visibility = "visible";
                 ajaxIni();

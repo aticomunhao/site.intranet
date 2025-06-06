@@ -118,7 +118,7 @@
                             <td colspan="2">
                                 <div>
                                     <?php
-                                    if($ClavEdit == 1){
+                                    if($ClavEdit == 1 || $_SESSION["AdmUsu"] > 6){
                                         echo "<img src='imagens/lixeiraPreta.png' height='20px;' style='cursor: pointer; padding-right: 3px;' onclick='apagaAgendaChaves($CodAg);' title='Apagar este agendamento.'>";
                                     }
                                     if(strtotime($tbl[10]) == strtotime($Hoje)){

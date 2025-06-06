@@ -133,12 +133,12 @@ if(isset($_REQUEST["acao"])){
         if($Acao == "imprNotasGrupo"){ // grupo todo
             $rs0 = pg_query($Conec, "SELECT poslog_id, nomecompl 
             FROM ".$xProj.".poslog INNER JOIN ".$xProj.".escaladaf_func ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escaladaf_func.poslog_id 
-            WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo 
+            WHERE TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo And ".$xProj.".escaladaf_func.ativo = 1
             GROUP BY poslog_id, nomecompl ORDER BY nomecompl");
         }else{ // individual
             $rs0 = pg_query($Conec, "SELECT poslog_id, nomecompl 
             FROM ".$xProj.".poslog INNER JOIN ".$xProj.".escaladaf_func ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escaladaf_func.poslog_id 
-            WHERE poslog_id = $Cod And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo 
+            WHERE poslog_id = $Cod And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo And ".$xProj.".escaladaf_func.ativo = 1 
             GROUP BY poslog_id, nomecompl ");
         }
         
@@ -154,7 +154,7 @@ if(isset($_REQUEST["acao"])){
 
                 $rs1 = pg_query($Conec, "SELECT TO_CHAR(dataescala, 'DD/MM/YYYY'), letra, turno, observ, id_ocor, id_mot, id_stat, id_adm 
                 FROM ".$xProj.".escaladaf_func 
-                WHERE poslog_id = $CodPosLog And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo ORDER BY dataescala");
+                WHERE poslog_id = $CodPosLog And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo And ativo = 1 ORDER BY dataescala");
                 $row1 = pg_num_rows($rs1);
                 while($tbl1 = pg_fetch_row($rs1)){
                     $pdf->SetX(40); 

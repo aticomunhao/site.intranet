@@ -1097,7 +1097,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <button class="resetbot" style="font-size: .9rem;" onclick="mostraUsu('todos');">Todos</button>
                 <button class="resetbot" style="font-size: .9rem;" onclick="mostraUsu('online');">On Line</button>
                 <button class="resetbot" style="font-size: .9rem;" onclick="mostraUsu('dehoje');">Usuários de Hoje</button>
-                <button class="resetbot" style="font-size: .9rem;" onclick="mostraUsu('inativos');">Inativos</button>
+                <button class="resetbot" style="font-size: .9rem;" onclick="mostraUsu('inativos');">Bloqueados</button>
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: left;"></div>
 
@@ -1494,6 +1494,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <span class="close" onclick="fechaModalChaves();">&times;</span>
                 <div style="text-align: center;"><h6>Claviculário da Portaria</h6></div>
                 <div id="nomeUsuChaves" style="text-align: center;"></div>
+                <div style="text-align: center; font-size: 80%;">Se nenhum dia da Semana estiver marcado pode pegar a chave em qualquer dia. <br>Se um ou mais dias da semana estiverem marcados só pode pegar a chave naquele(s) dia(s) marcado(s).</div>
                 <div id="faixachaves"></div>
             </div>
         </div> <!-- Fim Modal-->

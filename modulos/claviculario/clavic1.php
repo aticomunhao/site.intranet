@@ -925,7 +925,9 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function saidaChave(Cod){ // id de chaves
-                document.getElementById("botagenda1").style.visibility = "visible";
+                if(parseInt(document.getElementById("guardaEditaChaves").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+                    document.getElementById("botagenda1").style.visibility = "visible";
+                }
                 document.getElementById("guardaCod").value = Cod;
                 document.getElementById("CodidChave").value = Cod;
                 document.getElementById("mensagemErro").style.display = "none";
@@ -1071,7 +1073,6 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("agendanumchave").value = document.getElementById("voltanumchave").value;
                 document.getElementById("agendachavecomplem").value = document.getElementById("voltachavecomplem").value;
                 document.getElementById("agendacomplemchave").value = document.getElementById("voltacomplemchave").value;
-
                 document.getElementById("agendalocalchave").value = document.getElementById("voltalocalchave").value;
                 document.getElementById("agendasalachave").value = document.getElementById("voltasalachave").value;
                 document.getElementById("agendasolicitante").innerHTML = "";
@@ -1253,7 +1254,9 @@ if(!isset($_SESSION["usuarioID"])){
             }
 
             function retornoChave1(Cod){  // Cod = id de chaves  
-                document.getElementById("botagenda1").style.visibility = "visible";
+                if(parseInt(document.getElementById("guardaEditaChaves").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+                    document.getElementById("botagenda1").style.visibility = "visible";
+                }
                 document.getElementById("CodidChave").value = Cod;
                 ajaxIni();
                 if(ajax){
@@ -1527,6 +1530,9 @@ if(!isset($_SESSION["usuarioID"])){
                                                 alert("Houve um erro no servidor.")
                                             }
                                             $("#faixachaves").load("modulos/claviculario/escChave1.php?usuario="+document.getElementById("configselecSolicitante").value);
+                                            if(parseInt(Valor) === 0){
+                                                $("#faixaagenda").load("modulos/claviculario/agChave1.php?largTela="+LargTela);
+                                            }
                                         }
                                     }
                                 };
@@ -2417,7 +2423,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <td class="etiqAzul" title="Inserir, modificar, editar a descrição das chaves do claviculário da Portaria">DAF:</td>
                         <td colspan="4">
                             <input type="checkbox" id="editChaves" title="Gerenciar, inserir, modificar a descrição das chaves do claviculário da Portaria" onchange="marcaChave(this, 'clav_edit');" >
-                            <label for="editChaves" title="Inserir, modificar, editar a descrição das chaves do claviculário da Portaria">inserir, editar e apagar chaves do claviculário da Portaria</label>
+                            <label for="editChaves" title="Inserir, modificar, editar a descrição das chaves do claviculário da Portaria">inserir, editar, apagar e AGENDAR chaves do claviculário da Portaria.</label>
                         </td>
                     </tr>
                     <tr>
@@ -2579,6 +2585,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <span class="close" onclick="fechaModalChaves();">&times;</span>
                 <div style="text-align: center;"><h6>Claviculário da Portaria</h6></div>
                 <div id="nomeUsuChaves" style="text-align: center;"></div>
+                <div style="text-align: center; font-size: 80%;">Se nenhum dia da Semana estiver marcado pode pegar a chave em qualquer dia. <br>Se um ou mais dias da semana estiverem marcados só pode pegar a chave naquele(s) dia(s) marcado(s).</div>
                 <div id="faixachaves"></div>
             </div>
         </div> <!-- Fim Modal-->

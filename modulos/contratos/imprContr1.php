@@ -91,7 +91,7 @@ if(isset($_REQUEST["acao"])){
         $pdf->SetFont('Arial', '', 11);
         $pdf->MultiCell(0, 5, "Empresas Contratadas pela Comunhão", 0, 'C', false);
         $rs0 = pg_query($Conec, "SELECT id, numcontrato, TO_CHAR(dataassinat, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), codsetor, codempresa, vigencia, notific, objetocontr,
-        CASE WHEN dataaviso <= CURRENT_DATE THEN true And datavencim >= CURRENT_DATE ELSE false END 
+        CASE WHEN dataaviso <= CURRENT_DATE THEN true And datavencim >= CURRENT_DATE ELSE false END, valor_contrato 
         FROM ".$xProj.".contratos1 WHERE ativo = 1 ORDER BY dataassinat DESC");
         $row0 = pg_num_rows($rs0);
         $pdf->ln(5);
@@ -105,6 +105,7 @@ if(isset($_REQUEST["acao"])){
             
             $pdf->Cell(20, 3, "Setor", 0, 0, 'L');
             $pdf->Cell(25, 3, "Vigência", 0, 0, 'L');
+            $pdf->Cell(15, 5, "Valor", 0, 0, 'L');
             $pdf->Cell(90, 3, "Objeto", 0, 0, 'L');
             $pdf->ln(4);
             $lin = $pdf->GetY();
@@ -113,6 +114,12 @@ if(isset($_REQUEST["acao"])){
 
             while($tbl0 = pg_fetch_row($rs0)){
                 $Cod = $tbl0[0];
+                $Valor = $tbl0[11];
+                if($Valor == 0){
+                    $Valor = "";
+                }else{
+                    $Valor = number_format(($Valor), 2, ",",".");
+                }
                 $pdf->SetX(20); 
                 $pdf->Cell(20, 5, $tbl0[2], 0, 0, 'C');
                 $pdf->Cell(30, 5, $tbl0[1], 0, 0, 'C');
@@ -140,7 +147,8 @@ if(isset($_REQUEST["acao"])){
                 }
                 $pdf->Cell(20, 5, $DescSetor, 0, 0, 'L');
                 $pdf->Cell(25, 5, $tbl0[7], 0, 0, 'L');
-                $pdf->MultiCell(100, 4, $tbl0[9], 0, 'L', false);
+                $pdf->Cell(15, 5, $Valor, 0, 0, 'L');
+                $pdf->MultiCell(80, 4, $tbl0[9], 0, 'L', false);
 
                 $pdf->SetFont('Arial', '', 10);
                 $lin = $pdf->GetY();
@@ -194,7 +202,7 @@ if(isset($_REQUEST["acao"])){
         $pdf->SetFont('Arial', '', 11);
         $pdf->MultiCell(0, 5, "Empresas Contratantes", 0, 'C', false);
         $rs0 = pg_query($Conec, "SELECT id, numcontrato, TO_CHAR(dataassinat, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), codsetor, codempresa, vigencia, notific, objetocontr,
-        CASE WHEN dataaviso <= CURRENT_DATE THEN true And datavencim >= CURRENT_DATE ELSE false END 
+        CASE WHEN dataaviso <= CURRENT_DATE THEN true And datavencim >= CURRENT_DATE ELSE false END, valor_contrato 
         FROM ".$xProj.".contratos2 WHERE ativo = 1 ORDER BY dataassinat DESC");
         $row0 = pg_num_rows($rs0);
         $pdf->ln(5);
@@ -208,6 +216,7 @@ if(isset($_REQUEST["acao"])){
             
             $pdf->Cell(20, 3, "Setor", 0, 0, 'L');
             $pdf->Cell(25, 3, "Vigência", 0, 0, 'L');
+            $pdf->Cell(15, 5, "Valor", 0, 0, 'L');
             $pdf->Cell(90, 3, "Objeto", 0, 0, 'L');
             $pdf->ln(4);
             $lin = $pdf->GetY();
@@ -216,6 +225,12 @@ if(isset($_REQUEST["acao"])){
 
             while($tbl0 = pg_fetch_row($rs0)){
                 $Cod = $tbl0[0];
+                $Valor = $tbl0[11];
+                if($Valor == 0){
+                    $Valor = "";
+                }else{
+                    $Valor = number_format(($Valor), 2, ",",".");
+                }
                 $pdf->SetX(20); 
                 $pdf->Cell(20, 5, $tbl0[2], 0, 0, 'C');
                 $pdf->Cell(30, 5, $tbl0[1], 0, 0, 'C');
@@ -243,7 +258,8 @@ if(isset($_REQUEST["acao"])){
                 }
                 $pdf->Cell(20, 5, $DescSetor, 0, 0, 'L');
                 $pdf->Cell(25, 5, $tbl0[7], 0, 0, 'L');
-                $pdf->MultiCell(100, 4, $tbl0[9], 0, 'L', false);
+                $pdf->Cell(15, 5, $Valor, 0, 0, 'L');
+                $pdf->MultiCell(80, 4, $tbl0[9], 0, 'L', false);
 
                 $pdf->SetFont('Arial', '', 10);
                 $lin = $pdf->GetY();
@@ -285,6 +301,11 @@ if(isset($_REQUEST["acao"])){
             $Condic = "ativo = 1 And emvigor = 3";
             $Info = "Contratos Rescindidos";
         }
+        if(isset($_REQUEST["indexImpr"])){
+            $IndexImpr = $_REQUEST["indexImpr"];
+        }else{
+            $IndexImpr = "dataassinat";
+        }
 
         $pdf->ln(5);
         $pdf->SetFont('Arial', '', 11);
@@ -292,8 +313,8 @@ if(isset($_REQUEST["acao"])){
         $pdf->MultiCell(0, 5, $Info, 0, 'C', false);
 
         $rs0 = pg_query($Conec, "SELECT id, numcontrato, TO_CHAR(dataassinat, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), codsetor, codempresa, vigencia, notific, objetocontr,
-        CASE WHEN dataaviso <= CURRENT_DATE THEN true And datavencim >= CURRENT_DATE ELSE false END 
-        FROM ".$xProj.".contratos1 WHERE $Condic ORDER BY dataassinat DESC");
+        CASE WHEN dataaviso <= CURRENT_DATE THEN true And datavencim >= CURRENT_DATE ELSE false END, valor_contrato 
+        FROM ".$xProj.".contratos1 WHERE $Condic ORDER BY $IndexImpr DESC");
         $row0 = pg_num_rows($rs0);
         $pdf->ln(5);
         if($row0 > 0){
@@ -303,9 +324,9 @@ if(isset($_REQUEST["acao"])){
             $pdf->Cell(30, 3, "Número", 0, 0, 'C');
             $pdf->Cell(20, 3, "Vencimento", 0, 0, 'C');
             $pdf->Cell(65, 3, "Empresa", 0, 0, 'L');
-            
             $pdf->Cell(20, 3, "Setor", 0, 0, 'L');
             $pdf->Cell(25, 3, "Vigência", 0, 0, 'L');
+            $pdf->Cell(15, 3, "Valor", 0, 0, 'L');
             $pdf->Cell(90, 3, "Objeto", 0, 0, 'L');
             $pdf->ln(4);
             $lin = $pdf->GetY();
@@ -314,6 +335,13 @@ if(isset($_REQUEST["acao"])){
 
             while($tbl0 = pg_fetch_row($rs0)){
                 $Cod = $tbl0[0];
+                $Valor = $tbl0[11];
+                if($Valor == 0){
+                    $Valor = "";
+                }else{
+                    $Valor = number_format(($Valor), 2, ",",".");
+                }
+
                 $pdf->SetX(20); 
                 $pdf->Cell(20, 5, $tbl0[2], 0, 0, 'C');
                 $pdf->SetFont('Arial', '', 8);
@@ -343,7 +371,8 @@ if(isset($_REQUEST["acao"])){
                 }
                 $pdf->Cell(20, 5, $DescSetor, 0, 0, 'L');
                 $pdf->Cell(25, 5, $tbl0[7], 0, 0, 'L');
-                $pdf->MultiCell(100, 4, $tbl0[9], 0, 'L', false);
+                $pdf->Cell(15, 5, $Valor, 0, 0, 'L');
+                $pdf->MultiCell(80, 4, $tbl0[9], 0, 'L', false);
 
                 $pdf->SetFont('Arial', '', 10);
                 $lin = $pdf->GetY();
@@ -383,13 +412,19 @@ if(isset($_REQUEST["acao"])){
             $Condic = "ativo = 1 And emvigor = 3";
             $Info = "Contratos Rescindidos";
         }
+        if(isset($_REQUEST["indexImpr"])){
+            $IndexImpr = $_REQUEST["indexImpr"];
+        }else{
+            $IndexImpr = "dataassinat";
+        }
+
         $pdf->ln(10);
         $pdf->SetFont('Arial', '', 11);
         $pdf->MultiCell(0, 5, "Empresas Contratantes", 0, 'C', false);
         $pdf->MultiCell(0, 5, $Info, 0, 'C', false);
         $rs0 = pg_query($Conec, "SELECT id, numcontrato, TO_CHAR(dataassinat, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), codsetor, codempresa, vigencia, notific, objetocontr,
-        CASE WHEN dataaviso <= CURRENT_DATE THEN true And datavencim >= CURRENT_DATE ELSE false END 
-        FROM ".$xProj.".contratos2 WHERE $Condic ORDER BY dataassinat DESC");
+        CASE WHEN dataaviso <= CURRENT_DATE THEN true And datavencim >= CURRENT_DATE ELSE false END, valor_contrato 
+        FROM ".$xProj.".contratos2 WHERE $Condic ORDER BY $IndexImpr DESC");
         $row0 = pg_num_rows($rs0);
         $pdf->ln(5);
         if($row0 > 0){
@@ -399,9 +434,9 @@ if(isset($_REQUEST["acao"])){
             $pdf->Cell(30, 3, "Número", 0, 0, 'C');
             $pdf->Cell(20, 3, "Vencimento", 0, 0, 'C');
             $pdf->Cell(65, 3, "Empresa", 0, 0, 'L');
-            
             $pdf->Cell(20, 3, "Setor", 0, 0, 'L');
             $pdf->Cell(25, 3, "Vigência", 0, 0, 'L');
+            $pdf->Cell(15, 3, "Valor", 0, 0, 'L');
             $pdf->Cell(90, 3, "Objeto", 0, 0, 'L');
             $pdf->ln(4);
             $lin = $pdf->GetY();
@@ -410,6 +445,13 @@ if(isset($_REQUEST["acao"])){
 
             while($tbl0 = pg_fetch_row($rs0)){
                 $Cod = $tbl0[0];
+                $Valor = $tbl0[11];
+                if($Valor == 0){
+                    $Valor = "";
+                }else{
+                    $Valor = number_format(($Valor), 2, ",",".");
+                }
+
                 $pdf->SetX(20); 
                 $pdf->Cell(20, 5, $tbl0[2], 0, 0, 'C');
                 $pdf->SetFont('Arial', '', 8);
@@ -439,7 +481,8 @@ if(isset($_REQUEST["acao"])){
                 }
                 $pdf->Cell(20, 5, $DescSetor, 0, 0, 'L');
                 $pdf->Cell(25, 5, $tbl0[7], 0, 0, 'L');
-                $pdf->MultiCell(100, 4, $tbl0[9], 0, 'L', false);
+                $pdf->Cell(15, 5, $Valor, 0, 0, 'L');
+                $pdf->MultiCell(80, 4, $tbl0[9], 0, 'L', false);
 
                 $pdf->SetFont('Arial', '', 10);
                 $lin = $pdf->GetY();

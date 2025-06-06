@@ -26,7 +26,7 @@ if(isset($_REQUEST["acao"])){
         $Cod = (int) filter_input(INPUT_GET, 'codigo');
         $Tipo = (int) filter_input(INPUT_GET, 'tipo');
         $Erro = 0;
-        $rs = pg_query($Conec, "SELECT TO_CHAR(dataassinat, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), numcontrato, codsetor, codempresa, objetocontr, observ, notific, diasnotific, vigencia, pararaviso, emvigor FROM ".$xProj.".contratos".$Tipo." WHERE id = $Cod");
+        $rs = pg_query($Conec, "SELECT TO_CHAR(dataassinat, 'DD/MM/YYYY'), TO_CHAR(datavencim, 'DD/MM/YYYY'), TO_CHAR(dataaviso, 'DD/MM/YYYY'), numcontrato, codsetor, codempresa, objetocontr, observ, notific, diasnotific, vigencia, pararaviso, emvigor, valor_contrato FROM ".$xProj.".contratos".$Tipo." WHERE id = $Cod");
         if(!$rs){
             $Erro = 1;
             $var = array("coderro"=>$Erro);
@@ -36,7 +36,13 @@ if(isset($_REQUEST["acao"])){
                 $tbl = pg_fetch_row($rs);
                 $Vig = str_replace("meses", "", $tbl[10]);
                 $Vigencia = str_replace("mês", "", $Vig);
-                $var = array("coderro"=>$Erro, "dataassinat"=>$tbl[0], "datavencim"=>$tbl[1], "dataaviso"=>$tbl[2], "numcontrato"=>$tbl[3], "codsetor"=>$tbl[4], "codempresa"=>$tbl[5], "objcontrato"=>$tbl[6], "obs"=>$tbl[7], "notific"=>$tbl[8], "diasnotific"=>$tbl[9], "vigencia"=>trim($Vigencia), "pararaviso"=>$tbl[11], "emvigor"=>$tbl[12]);
+                $Valor= $tbl[13];
+                if($Valor == 0){
+                    $Valor = "";
+                }else{
+//                    $Valor = number_format(($Valor), 2, ",",".");
+                }
+                $var = array("coderro"=>$Erro, "dataassinat"=>$tbl[0], "datavencim"=>$tbl[1], "dataaviso"=>$tbl[2], "numcontrato"=>$tbl[3], "codsetor"=>$tbl[4], "codempresa"=>$tbl[5], "objcontrato"=>$tbl[6], "obs"=>$tbl[7], "notific"=>$tbl[8], "diasnotific"=>$tbl[9], "vigencia"=>trim($Vigencia), "pararaviso"=>$tbl[11], "emvigor"=>$tbl[12], "valorcontrato"=>$Valor);
             }
         }
         $responseText = json_encode($var);
@@ -116,6 +122,12 @@ if(isset($_REQUEST["acao"])){
         $Obs = addslashes(filter_input(INPUT_GET, 'observ')); 
         $Prazo = (int) filter_input(INPUT_GET, 'prazo');
         $guardaPrazo = filter_input(INPUT_GET, 'guardaPrazo');
+        $Valor = filter_input(INPUT_GET, 'valorcontrato'); 
+        if($Valor == ""){
+            $ValorContr = 0;
+        }else{
+            $ValorContr = str_replace(",", ".", $Valor);
+        }
 
         if($Prazo == 0){
             $Prazo = "";
@@ -154,17 +166,16 @@ if(isset($_REQUEST["acao"])){
             $Codigo = $tblCod[0];
             $CodigoNovo = $Codigo+1; 
 
-            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".contratos".$Tipo." (id, dataassinat, datavencim, dataaviso, numcontrato, codsetor, codempresa, objetocontr, observ, notific, pararaviso, diasnotific, ativo, usuins, datains, vigencia ) 
-            VALUES ($CodigoNovo, '$DataAssinat', '$DataVenc', '$DataAviso', '$NumContrato', $Setor, $NumEmpresa, '$Objeto', '$Obs', $Notif, $ParaAv, $DiasAntec, 1, $UsuIns, NOW(), '$Prazo' )");
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".contratos".$Tipo." (id, dataassinat, datavencim, dataaviso, numcontrato, codsetor, codempresa, objetocontr, observ, notific, pararaviso, diasnotific, ativo, usuins, datains, vigencia, valor_contrato ) 
+            VALUES ($CodigoNovo, '$DataAssinat', '$DataVenc', '$DataAviso', '$NumContrato', $Setor, $NumEmpresa, '$Objeto', '$Obs', $Notif, $ParaAv, $DiasAntec, 1, $UsuIns, NOW(), '$Prazo', $ValorContr )");
             if($Prazo == "" || $Prazo == 0){
-//                    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".contratos1 SET vigencia = (extract('Year' from AGE(datavencim, dataassinat))*12) + extract('Month' from AGE(datavencim, dataassinat)) WHERE id = $CodigoNovo");
                 $PrazoDias = calculaDifDias($DataA, $DataV);
                 if($PrazoDias < 60){
                     pg_query($Conec, "UPDATE ".$xProj.".contratos".$Tipo." SET vigencia = CONCAT('$PrazoDias', ' dias') WHERE id = $Cod"); 
                 }
             }
         }else{  // atualizar
-            $rs = pg_query($Conec, "UPDATE ".$xProj.".contratos".$Tipo." SET dataassinat = '$DataAssinat', datavencim = '$DataVenc', vigencia = '$Prazo', 
+            $rs = pg_query($Conec, "UPDATE ".$xProj.".contratos".$Tipo." SET dataassinat = '$DataAssinat', datavencim = '$DataVenc', vigencia = '$Prazo', valor_contrato = $ValorContr, 
             dataaviso = '$DataAviso', numcontrato = '$NumContrato', codsetor = $Setor, codempresa = $NumEmpresa, 
             objetocontr = '$Objeto', observ = '$Obs', notific = $Notif, pararaviso = $ParaAv, diasnotific = $DiasAntec, ativo = 1, usuedit =  $UsuIns, dataedit = NOW() WHERE id = $Cod");
             if($Prazo == "" || $Prazo == 0){

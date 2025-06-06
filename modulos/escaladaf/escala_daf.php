@@ -2086,7 +2086,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("selecAcaoAdm").value = Resp.idAdm;
                                     document.getElementById("guardaIdEscalaIns").value = Resp.idescalains;
                                     document.getElementById("observEscalado").value = Resp.observ;
-                                    if(Resp.observ == ""){
+                                    if(parseInt(Resp.idOcor) === 1){
                                         document.getElementById("apagarNotaFunc").style.visibility = "hidden";
                                         }else{
                                             document.getElementById("apagarNotaFunc").style.visibility = "visible";

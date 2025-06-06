@@ -167,9 +167,8 @@ if($Acao =="loglog"){
                             $PrazoDel = 5;
                         }
                         $Hoje = date('Y/m/d');
-                        if(strtotime($DataElim) < strtotime($Hoje)){ // verifica se alguém já logou e inseriu a data de hoje
-                            //Salva os bloqueados e deleta
-                            elimBloqueados($Conec, $xProj);
+                        if(strtotime($DataElim) < strtotime($Hoje)){ // verifica se alguém já logou hoje
+                            elimBloqueados($Conec, $xProj); //Salva os bloqueados e deleta de poslog
                             if($PrazoDel < 1000){
                                 pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ativo = 0"); //Elimina dados apagados da tabela calendário
                                 pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ((CURRENT_DATE - dataini)/365 > $PrazoDel)"); //Apaga da tabela calendário eventos passados há mais de $PrazoDel anos
@@ -191,6 +190,7 @@ if($Acao =="loglog"){
                                 pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf WHERE dataescala < CURRENT_DATE - interval '2 months' And ativo = 0;");
                                 pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf WHERE datains < CURRENT_DATE - interval '$PrazoDel years' And ativo = 0"); // Apaga só os deletados
                                 pg_query($Conec, "DELETE FROM ".$xProj.".usulog WHERE datalogin < CURRENT_DATE - interval '$PrazoDel years'");
+                                pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf_func WHERE ativo = 0");
                             }
                             $rs6 = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog WHERE ativo = 1"); // ativo = 1 para não reabilitar os deletados no site
                             $row6 = pg_num_rows($rs6); // atualiza nomes de poslog com pessoas
