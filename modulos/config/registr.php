@@ -168,7 +168,10 @@ if($Acao =="loglog"){
                         }
                         $Hoje = date('Y/m/d');
                         if(strtotime($DataElim) < strtotime($Hoje)){ // verifica se alguém já logou hoje
-                            elimBloqueados($Conec, $xProj); //Salva os bloqueados e deleta de poslog
+                            verifFuncionarios($Conec, $xProj, $ConecPes, $xPes); // verifica fim de contrato para funcionários 
+                            //set ativo = 2 deixa de ser visível 
+                            pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 2 WHERE ativo = 0 And datainat < CURRENT_DATE - interval '30 days' ");
+//                            elimBloqueados($Conec, $xProj); //Salva os bloqueados e deleta de poslog
                             if($PrazoDel < 1000){
                                 pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ativo = 0"); //Elimina dados apagados da tabela calendário
                                 pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ((CURRENT_DATE - dataini)/365 > $PrazoDel)"); //Apaga da tabela calendário eventos passados há mais de $PrazoDel anos
@@ -659,7 +662,7 @@ if($Acao =="checaLogin"){
             $NomeCompl = $Proc[1];
             $NomeUsual = $Proc[5];
 
-            $rs1 = pg_query($Conec, "SELECT to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, ativo, adm, codsetor, pessoas_id, nomeusual 
+            $rs1 = pg_query($Conec, "SELECT TO_CHAR(logini, 'DD/MM/YYYY HH24:MI'), numacessos, ativo, adm, codsetor, pessoas_id, nomeusual, TO_CHAR(datainat, 'DD/MM/YYYY'), TO_CHAR(datainat, 'YYYY') 
             FROM ".$xProj.".poslog WHERE cpf = '$Cpf' ");  //pessoas_id = $Usu ");
             $row1 = pg_num_rows($rs1);
             if($row1 > 0){
@@ -667,16 +670,23 @@ if($Acao =="checaLogin"){
                 $Proc1= pg_fetch_row($rs1);
                 $UltLog = $Proc1[0];
                 $Acessos = $Proc1[1];
+                if($Acessos == 0){
+                    $UltLog = "";
+                }
                 $Ativo = $Proc1[2];
                 $Adm = $Proc1[3];
                 $Setor = $Proc1[4];
-//                $NomeUsual = $Proc1[6];
+                if($Proc1[8] == '3000'){
+                    $DataInat = "";
+                }else{
+                    $DataInat = $Proc1[7];
+                }
             }
         }else{
             $Erro = 2; // não encontrado no pessoal
         }
     }
-    $var = array("coderro"=>$Erro, "quantiUsu"=>$row, "idpessoa"=>$Usu, "cpf"=>$Cpf, "nomeusual"=>$NomeUsual, "nomecompl"=>$NomeCompl, "dianasc"=>$DiaNasc, "mesnasc"=>$MesNasc, "jatem"=>$JaTem, "ultlog"=>$UltLog, "acessos"=>$Acessos, "ativo"=>$Ativo, "adm"=>$Adm, "setor"=>$Setor);
+    $var = array("coderro"=>$Erro, "quantiUsu"=>$row, "idpessoa"=>$Usu, "cpf"=>$Cpf, "nomeusual"=>$NomeUsual, "nomecompl"=>$NomeCompl, "dianasc"=>$DiaNasc, "mesnasc"=>$MesNasc, "jatem"=>$JaTem, "ultlog"=>$UltLog, "acessos"=>$Acessos, "ativo"=>$Ativo, "adm"=>$Adm, "setor"=>$Setor, "datainat"=>$DataInat);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -696,6 +706,7 @@ if($Acao =="checaLro"){  // Sem uso
     $responseText = json_encode($var);
     echo $responseText;
 }
+
 if($Acao =="checaBens"){  // Sem uso
     $Param = (int) filter_input(INPUT_GET, 'param'); 
     $Cpf = filter_input(INPUT_GET, 'numero'); 
@@ -711,6 +722,7 @@ if($Acao =="checaBens"){  // Sem uso
     $responseText = json_encode($var);
     echo $responseText;
 }
+
 if($Acao =="checaBoxes"){ // por mudança de setor
     $Param = (int) filter_input(INPUT_GET, 'param'); 
     $Cpf = filter_input(INPUT_GET, 'numero'); 
@@ -868,6 +880,7 @@ if($Acao =="salvaParam"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
 if($Acao =="valorleituraAgua"){
     $Val = filter_input(INPUT_GET, 'valor');
     $Valor = str_replace(",", ".", $Val);
@@ -880,6 +893,7 @@ if($Acao =="valorleituraAgua"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
 if($Acao =="dataleituraAgua"){
     $PegaData = addslashes(filter_input(INPUT_GET, 'valor')); 
     $PegaDia = implode("-", array_reverse(explode("/", $PegaData))); // date('d/m/Y', strtotime("+ 1 days", strtotime($DataI)));
@@ -892,6 +906,7 @@ if($Acao =="dataleituraAgua"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
 if($Acao =="valorleituraEletric"){
     $Num = (int) filter_input(INPUT_GET, 'numero'); 
     $Val = filter_input(INPUT_GET, 'valor');
@@ -947,6 +962,7 @@ if($Acao =="apagaAgua"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
 if($Acao =="apagaEletric"){
     $Num = (int) filter_input(INPUT_GET, 'numero'); 
     $Erro = 0;
@@ -1118,6 +1134,7 @@ if($Acao =="checaLogFim"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
 if($Acao =="buscaMenuOpr"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Erro = 0;
@@ -1229,7 +1246,6 @@ if($Acao =="marcaChaveUsuario"){
         if($Param == 1 ){
             $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 1, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
         }else{
-//            $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 0, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
             $rs = pg_query($Conec, "UPDATE ".$xProj.".chaves_aut SET ativo = 0, seg = 0, ter = 0, qua = 0, qui = 0, sex = 0, sab = 0, dom = 0, usuedit = ".$_SESSION["usuarioID"].", dataedit = NOW() WHERE chaves_id = $CodChave And pessoas_id = $Usu ");
         }
     }else{ // inserir
@@ -1294,7 +1310,6 @@ if($Acao =="marcaChaveTodas"){
     echo $responseText;
 }
 
-
 function removeInj($VemDePost){  // função para remover injeções SQL
     $VemDePost = addslashes($VemDePost);
     $VemDePost = htmlspecialchars($VemDePost);
@@ -1318,7 +1333,6 @@ function removeInj($VemDePost){  // função para remover injeções SQL
     $Chromium = strpos($_SERVER['HTTP_USER_AGENT'],"Chromium");
     $Safari = strpos($_SERVER['HTTP_USER_AGENT'],"Safari");
     $Opera = strpos($_SERVER['HTTP_USER_AGENT'],"Opera");
-
     if($MSIE == true){
         $navegador = "IE"; 
     }else if($Firefox == true){
@@ -1340,10 +1354,10 @@ function removeInj($VemDePost){  // função para remover injeções SQL
 }
 
 function elimBloqueados($Conec, $xProj){
-    //Salva em usuarios_elim
+    //Salva em usuarios_elim e apaga depois de 30 dias de inativado
     $rs = pg_query($Conec, "SELECT pessoas_id, cpf, nomecompl, nomeusual, sexo, datanasc, codsetor, numacessos, datainat, siglasetor 
 	FROM ".$xProj.".poslog INNER JOIN ".$xProj.".setores ON ".$xProj.".poslog.codsetor = ".$xProj.".setores.codset 
-	WHERE ".$xProj.".poslog.ativo = 0");
+	WHERE ".$xProj.".poslog.ativo = 0 And datainat < CURRENT_DATE - interval '30 days' ");
     $row = pg_num_rows($rs);
 	if($row > 0){
 		while($tbl = pg_fetch_row($rs)){
@@ -1368,4 +1382,27 @@ function elimBloqueados($Conec, $xProj){
         //Apaga
         pg_query($Conec, "DELETE FROM ".$xProj.".poslog WHERE ativo = 0");
 	}
+}
+
+function verifFuncionarios($Conec, $xProj, $ConecPes, $xPes){
+    $rsF = pg_query($Conec, "SELECT pessoas_id, cpf FROM ".$xProj.".poslog WHERE ativo = 1");
+    $rowF = pg_num_rows($rsF); 
+    if($rowF > 0){
+        while ($tblF = pg_fetch_row($rsF)){
+            $Cpf = $tblF[1];
+            $rs1F = pg_query($ConecPes, "SELECT dt_fim 
+
+            FROM $xPes.contrato INNER JOIN ($xPes.pessoas INNER JOIN $xPes.funcionarios ON pessoas.id = funcionarios.id_pessoa)
+            ON funcionarios.id = contrato.id_funcionario
+            WHERE pessoas.cpf = '$Cpf'");
+            $row1F = pg_num_rows($rs1F);
+            if($row1F > 0){
+                $tbl1F = pg_fetch_row($rs1F);
+                $Contr = $tbl1F[0];
+                if(!is_null($Contr)){ // se houver data de fim de contrato inserida
+                    pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 0, datainat = NOW() WHERE cpf = '$Cpf'"); //bloqueia
+                }
+            }
+        }
+    }
 }

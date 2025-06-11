@@ -128,6 +128,124 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->Cell(20, 4, "Data", 0, 0, 'C');
             $pdf->Cell(10, 4, "Sem", 0, 0, 'L');
             $pdf->Cell(20, 4, "Processo", 0, 0, 'C');
+            
+            $pdf->Cell(14, 4, "Registro", 0, 0, 'C');
+            $pdf->Cell(17, 4, "Guarda", 0, 0, 'C');
+            $pdf->Cell(18, 4, "Restituido", 0, 0, 'C');
+            $pdf->Cell(20, 4, "Destinado", 0, 0, 'C');
+            $pdf->Cell(18, 4, "Arquivado", 0, 0, 'C');
+            $pdf->Cell(20, 4, "Dias", 0, 0, 'C');
+            $pdf->Cell(110, 4, "Descrição do bem encontrado", 0, 1, 'L');
+
+            $pdf->SetTextColor(0, 0, 0);
+            $lin = $pdf->GetY();
+            $pdf->SetDrawColor(200); // cinza claro
+            $pdf->Line(10, $lin, 290, $lin);
+
+            $pdf->SetFont('Arial', '', 10);
+            while ($tbl0 = pg_fetch_row($rs0)){
+                $Cod = $tbl0[0];
+                $pdf->ln(2);
+                $UsuIns = $tbl0[5]; // usuário que inseriu só para dar o status do processo 
+                $SobGuarda = $tbl0[6];
+                $Restit = $tbl0[7];
+                $GuardaCSG = $tbl0[8];
+                $Destino = $tbl0[9];
+                $DescDestino = $tbl0[17];
+                $Arquivado = $tbl0[10];
+                $Intervalo = (int) $tbl0[12];
+                $Dias = str_pad(($tbl0[11]), 2, "0", STR_PAD_LEFT);
+
+                if(!is_null($tbl0[16])){
+                    $TempoTotal = str_pad(($tbl0[16]), 2, "0", STR_PAD_LEFT);
+                }else{
+                    $TempoTotal = "";
+                }
+                $pdf->Cell(20, 5, $tbl0[1], 0, 0, 'L');
+                $pdf->SetFont('Arial', '', 7);
+                $pdf->Cell(10, 5, $semana[$tbl0[2]], 0, 0, 'L');
+                $pdf->SetFont('Arial', '', 8);
+                $pdf->Cell(20, 5, $tbl0[3], 1, 0, 'L'); // Processo
+
+
+                if($UsuIns > 0){
+                    $pdf->Cell(14, 5, "Registro", 1, 0, 'C'); 
+                }
+
+                if($GuardaCSG > 0){
+                    $pdf->Cell(17, 5, "Guarda SSV", 1, 0, 'C'); 
+                }else{
+                    $pdf->Cell(17, 5, "", 1, 0, 'C'); 
+                }
+
+                if($Restit > 0){
+                    $pdf->Cell(17, 5, "Restituido", 1, 0, 'C'); 
+                }else{
+                    $pdf->Cell(17, 5, "", 1, 0, 'C'); 
+                }
+
+                if($Destino > 0){
+                    $pdf->Cell(20, 5, $DescDestino, 1, 0, 'C'); 
+                }else{
+                    $pdf->Cell(20, 5, "", 1, 0, 'C'); 
+                }
+
+                if($Arquivado > 0){
+                    $pdf->Cell(18, 5, "Arquivado", 1, 0, 'C'); 
+                }else{
+                    $pdf->Cell(18, 5, "", 1, 0, 'C'); 
+                }
+
+                if($Arquivado > 0){
+                    if($TempoTotal == '01' || $TempoTotal == '00'){
+                        $pdf->Cell(20, 5, $TempoTotal." dia", 1, 0, 'C'); 
+                    }else{
+                        $pdf->Cell(20, 5, $TempoTotal." dias", 1, 0, 'C'); 
+                    }
+                }else{
+                    if($Dias == '01' || $Dias == '00'){
+                        $pdf->Cell(20, 5, $Dias." dia", 1, 0, 'C'); 
+                    }else{
+                        $pdf->Cell(20, 5, $Dias." dias", 1, 0, 'C'); 
+                    }
+                }
+
+                $pdf->SetFont('Arial', '', 8);
+                $pdf->MultiCell(110, 5, $tbl0[4], 0, 'L', false); // descdobem
+
+                $lin = $pdf->GetY();
+                $pdf->Line(20, $lin, 290, $lin);
+            }
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->Cell(150, 5, "Total: ".$row0." registros", 0, 1, 'L');
+            $pdf->SetFont('Arial', '', 10);
+        }else{
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->ln(10);
+            $pdf->Cell(20, 4, "Nenhum registro encontrado. Informe à ATI,", 0, 1, 'L');
+        }
+    }
+
+
+    if($Acao == "listamesBens__" || $Acao == "listaanoBens__"){
+        $row0 = pg_num_rows($rs0);
+        $Cont = 0;
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->ln(7);
+        if($row0 > 0){
+            $pdf->SetTextColor(125, 125, 125); //cinza  //   $pdf->SetTextColor(190, 190, 190); //cinza claro   //  $pdf->SetTextColor(204, 204, 204); //cinza mais claro
+            $pdf->SetFont('Arial', 'I', 14);
+            if($Acao == "listamesBens"){
+                $pdf->MultiCell(0, 5, $mes_extenso[$Mes]." / ".$Ano, 0, 'C', false);
+            }
+            if($Acao == "listaanoBens"){
+                $pdf->MultiCell(0, 5, $Ano, 0, 'C', false);
+            }
+            $pdf->ln(5);
+            $pdf->SetFont('Arial', 'I', 8);
+            $pdf->Cell(20, 4, "Data", 0, 0, 'C');
+            $pdf->Cell(10, 4, "Sem", 0, 0, 'L');
+            $pdf->Cell(20, 4, "Processo", 0, 0, 'C');
             $pdf->Cell(110, 4, "Descrição do bem encontrado", 0, 0, 'L');
             $pdf->Cell(14, 4, "Registro", 0, 0, 'C');
             $pdf->Cell(17, 4, "Guarda", 0, 0, 'C');
@@ -245,5 +363,6 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->Cell(20, 4, "Nenhum registro encontrado. Informe à ATI,", 0, 1, 'L');
         }
     }
+
 }
 $pdf->Output();

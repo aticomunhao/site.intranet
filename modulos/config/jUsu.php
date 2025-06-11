@@ -77,7 +77,7 @@ require_once("abrealas.php");
             $rsT = pg_query($Conec, "SELECT pessoas_id FROM ".$xProj.".poslog WHERE ativo = 1"); 
             $Total = pg_num_rows($rsT);
 
-            $Condic = "id != 0 And nomecompl IS NOT NULL ";
+            $Condic = "ativo = 1 And nomecompl IS NOT NULL ";
             if($Acao == "online"){
                 $Condic = "ativo = 1 And EXTRACT(EPOCH FROM (NOW() - logfim)) <= 60 ";
             }

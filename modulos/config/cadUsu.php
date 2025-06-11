@@ -563,7 +563,11 @@ if(!isset($_SESSION["usuarioID"])){
                                             if(parseInt(Resp.jatem) === 1){
                                                 document.getElementById("guardaid_click").value = Resp.idpessoa; // para salvar modif se for procurado por inserção ao invés de click
                                                 $('#mensagemCima').fadeIn("slow");
-                                                document.getElementById("mensagemCima").innerHTML = "Usuário já cadastrado no site.";
+                                                if(parseInt(Resp.ativo) === 2 && Resp.datainat != ""){
+                                                    document.getElementById("mensagemCima").innerHTML = "Usuário já cadastrado no site. Foi bloqueado em "+Resp.datainat;
+                                                }else{
+                                                    document.getElementById("mensagemCima").innerHTML = "Usuário já cadastrado no site.";
+                                                }
                                                 $('#mensagemCima').fadeOut(5000);
                                             }
                                         }
@@ -669,7 +673,6 @@ if(!isset($_SESSION["usuarioID"])){
             function mostraBotChave(Obj, Cod){
                 document.getElementById("mudou").value = "1";
                 if(parseInt(document.getElementById("guardaid_click").value) > 0){
-//                if(parseInt(Cod) === 1){
                     if(Obj.checked === true){
                         document.getElementById("botaoChaves").style.visibility = "visible";
                     }else{
@@ -736,7 +739,6 @@ if(!isset($_SESSION["usuarioID"])){
                 } 
             }
 
-
             function marcaChaveTodas(Obj){
                 if(Obj.checked === true){
                     Valor = 1;
@@ -763,7 +765,6 @@ if(!isset($_SESSION["usuarioID"])){
                                             if(parseInt(Resp.coderro) === 1){
                                                 alert("Houve um erro no servidor.")
                                             }
-//                                            $("#faixachaves").load("modulos/config/jChaves.php?usuario="+document.getElementById("guardaid_click").value);
                                             $("#faixachaves").load("modulos/config/escChave.php?usuario="+document.getElementById("guardaid_click").value);
                                         }
                                     }
@@ -784,7 +785,6 @@ if(!isset($_SESSION["usuarioID"])){
 
             function AbreModalChaves(){
                 document.getElementById("relacmodalChaves").style.display = "block";
-//                $("#faixachaves").load("modulos/config/jChaves.php?usuario="+document.getElementById("guardaid_click").value);
                 $("#faixachaves").load("modulos/config/escChave.php?usuario="+document.getElementById("guardaid_click").value);
             }
 

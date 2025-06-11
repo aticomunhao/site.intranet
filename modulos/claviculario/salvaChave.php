@@ -262,7 +262,7 @@ if(isset($_REQUEST["acao"])){
            $Telef = "";
         }
 
-        $rs = pg_query($Conec, "SELECT nomecompl, nomeusual, cpf, siglasetor, pessoas_id, chave 
+        $rs = pg_query($Conec, "SELECT nomecompl, nomeusual, cpf, siglasetor, pessoas_id, chave, ".$xProj.".poslog.ativo 
         FROM ".$xProj.".poslog INNER JOIN ".$xProj.".setores ON ".$xProj.".poslog.codsetor = ".$xProj.".setores.codset 
         WHERE cpf = '$GuardaCpf' "); 
         $row = pg_num_rows($rs);
@@ -272,6 +272,10 @@ if(isset($_REQUEST["acao"])){
             $Cod = $tbl[4]; // cod do usuário para procurar o vínculo com a chave
             if($Chave == 0){
                 $Erro = 3;
+            }
+            $Ativo = $tbl[6]; // ativo = 0 bloqueado por 30 dias, ativo = 2 usuário bloqueado 
+            if($Ativo != 1){
+                $Erro = 5;
             }
 
             $Seg = 0;
@@ -307,12 +311,16 @@ if(isset($_REQUEST["acao"])){
             $var = array("coderro"=>$Erro, "nomecompl"=>$tbl[0], "nome"=>$tbl[1], "cpf"=>$tbl[2], "siglasetor"=>$tbl[3], "PosCod"=>$tbl[4], "telef"=>$Telef, "chave"=>$Chave, "chaveautorizada"=>$Autoriz, "campoHoje"=>$CampoHoje, "seg"=>$Seg, "ter"=>$Ter, "qua"=>$Qua, "qui"=>$Qui, "sex"=>$Sex, "sab"=>$Sab, "dom"=>$Dom, "somadias"=>$SomaDias);
         }else{ // vai procurar no arquivo pessoas
 //            if($EscChave == 0){ // desligado
-                $rs2 = pg_query($ConecPes, "SELECT nome_completo, nome_resumido, cpf, id, TO_CHAR(dt_nascimento, 'DD/MM/YYYY'), TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') 
+                $rs2 = pg_query($ConecPes, "SELECT nome_completo, nome_resumido, cpf, id, TO_CHAR(dt_nascimento, 'DD/MM/YYYY'), TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM'), status 
                 FROM ".$xPes.".pessoas 
-                WHERE ".$xPes.".pessoas.cpf = '$GuardaCpf' ");
+                WHERE ".$xPes.".pessoas.cpf = '$GuardaCpf'");
                 $row2 = pg_num_rows($rs2);
                 if($row2 > 0){
                     $tbl2 = pg_fetch_row($rs2);
+                    $Status = $tbl2[7];
+                    if($Status == 0){
+                        $Erro = 4;    
+                    }
 
                     $NomeC = GUtils::normalizarNome($tbl2[0]);  // Normatizar nomes próprios
                     $NomeComp = addslashes($NomeC);
@@ -369,7 +377,7 @@ if(isset($_REQUEST["acao"])){
            $Telef = "";
         }
 
-        $rs = pg_query($Conec, "SELECT nomecompl, nomeusual, cpf, siglasetor, pessoas_id, chave 
+        $rs = pg_query($Conec, "SELECT nomecompl, nomeusual, cpf, siglasetor, pessoas_id, chave, ".$xProj.".poslog.ativo  
         FROM ".$xProj.".poslog INNER JOIN ".$xProj.".setores ON ".$xProj.".poslog.codsetor = ".$xProj.".setores.codset 
         WHERE cpf = '$GuardaCpf' "); 
         $row = pg_num_rows($rs);
@@ -380,15 +388,22 @@ if(isset($_REQUEST["acao"])){
             if($Chave == 0){
                 $Erro = 3;
             }
-
+            $Ativo = $tbl[6]; // ativo = 0 bloqueado por 30 dias, ativo = 2 usuário bloqueado 
+            if($Ativo != 1){
+                $Erro = 5;
+            }
             $var = array("coderro"=>$Erro, "nomecompl"=>$tbl[0], "nome"=>$tbl[1], "cpf"=>$tbl[2], "siglasetor"=>$tbl[3], "PosCod"=>$tbl[4], "telef"=>$Telef, "chave"=>$Chave);
         }else{ // vai procurar no arquivo pessoas
-                $rs2 = pg_query($ConecPes, "SELECT nome_completo, nome_resumido, cpf, id, TO_CHAR(dt_nascimento, 'DD/MM/YYYY'), TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') 
+                $rs2 = pg_query($ConecPes, "SELECT nome_completo, nome_resumido, cpf, id, TO_CHAR(dt_nascimento, 'DD/MM/YYYY'), TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM'), status 
                 FROM ".$xPes.".pessoas 
                 WHERE ".$xPes.".pessoas.cpf = '$GuardaCpf' ");
                 $row2 = pg_num_rows($rs2);
                 if($row2 > 0){
                     $tbl2 = pg_fetch_row($rs2);
+                    $Status = $tbl2[7];
+                    if($Status == 0){
+                        $Erro = 4;    
+                    }
                     $NomeC = GUtils::normalizarNome($tbl2[0]);  // Normatizar nomes próprios
                     $NomeComp = addslashes($NomeC);
                     $NomeCompl = str_replace('"', "'", $NomeComp); // substitui aspas duplas por simples

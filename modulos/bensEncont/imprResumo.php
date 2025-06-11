@@ -95,7 +95,7 @@ if(!isset($_SESSION['AdmUsu'])){
                 $rsP1 = pg_query($Conec, "SELECT COUNT(id) FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And usurestit != 0");
                 $tblP1 = pg_fetch_row($rsP1);
 
-                $rsPR = pg_query($Conec, "SELECT TO_CHAR(datarestit - datareceb, 'DD') FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And usurestit != 0");
+                $rsPR = pg_query($Conec, "SELECT TO_CHAR(datarestit - datareceb, 'DD') FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And usurestit != 0 And dataarquivou IS NOT NULL");
                 $rowPR = pg_num_rows($rsPR);
                 if($rowPR == 0){
                     $rowPR = 1; // para evitar divisão por zero
@@ -131,7 +131,7 @@ if(!isset($_SESSION['AdmUsu'])){
                 $pdf->SetFont('Arial', 'B' , 10); 
                 $pdf->Cell(10, 4, number_format($tblP3[0], 0, ",","."), 0, 0, 'R');
 
-                $rsPR = pg_query($Conec, "SELECT (dataarquivou - datareceb) FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And usudestino != 0");
+                $rsPR = pg_query($Conec, "SELECT (dataarquivou - datareceb) FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And usudestino != 0 And dataarquivou IS NOT NULL");
                 $rowPR = pg_num_rows($rsPR);
                 $Dias = 0;
                 while($tblPR = pg_fetch_row($rsPR)){

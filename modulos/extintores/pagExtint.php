@@ -29,7 +29,7 @@ if(!isset($_SESSION["usuarioID"])){
                 border: 1px solid #888;
                 border-radius: 15px;
                 width: 65%;
-                max-width: 900px;
+                max-width: 920px;  
             }
             .modal-content-InsEmpresa{
                 background: linear-gradient(180deg, white, #0099FF);
@@ -537,6 +537,54 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
+            function transfData(Campo){
+                if(Campo == "Revisão" && document.getElementById("datarevis").value == ""){
+                    return false;
+                }
+                if(Campo == "Vencimento" && document.getElementById("datavalid").value == ""){
+                    return false;
+                }
+                if(Campo == "Validade" && document.getElementById("datavalcasco").value == ""){
+                    return false;
+                }
+                $.confirm({
+                    title: 'Transferir Datas.',
+                    content: 'Esta ação tranferirá as datas de '+Campo+' para todos os outros extintores.\nContinua?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/extintores/salvaExtint.php?acao=transfDatas&campo="+encodeURIComponent(Campo) 
+                                +"&datarevis="+encodeURIComponent(document.getElementById("datarevis").value)
+                                +"&datavalid="+encodeURIComponent(document.getElementById("datavalid").value)
+                                +"&datavalcasco="+encodeURIComponent(document.getElementById("datavalcasco").value)
+                                , true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                            if(parseInt(Resp.coderro) === 1){
+                                                alert("Houve um erro desconhecido.");
+                                            }else{
+                                                document.getElementById("relacmodalIns").style.display = "none";
+                                                $("#faixacentral").load("modulos/extintores/jExtint.php?acao="+document.getElementById("guardaAcao").value);
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                        }
+                    }
+                });
+
+            }
+
             function salvaAviso(){
                 ajaxIni();
                 if(ajax){
@@ -778,26 +826,25 @@ if(!isset($_SESSION["usuarioID"])){
                 <div style="margin: 3px; padding: 3px; border: 1px solid; border-radius: 10px; background: linear-gradient(180deg, white,rgb(99, 167, 215));">
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>
-                            <td class="etiq aDir">Extintor nº: </td>
+                            <td class="etiqAzul aDir">Extintor nº: </td>
                             <td colspan="2">
-<!--                                <label class="aCentro" id="numextintor" style="padding-left: 5px; font-weight: bold;"></label> -->
                                 <input type="text" id="numextintor" class="aCentro" onchange="modif();" style="width: 70px; border: 1px solid; border-radius: 5px; padding-left: 3px; font-weight: bold;">
                                 <input type="text" id="complextintor" class="aCentro" onchange="modif();" style="width: 50px; border: 1px solid; border-radius: 5px; padding-left: 3px; font-weight: bold;" title="Complemento para o número do extintor.">
                             </td>
-                            <td class="etiq aDir">nº de Registro:</td>
+                            <td class="etiqAzul aDir">nº de Registro:</td>
                             <td colspan="2"><input type="text" id="registroextint" valor="" onchange="modif();" style="width: 150px; border: 1px solid; border-radius: 5px; padding-left: 3px;"></td>
-                            <td class="etiq aDir">nº de Série:</td>
+                            <td class="etiqAzul aDir">nº de Série:</td>
                             <td><input type="text" id="serieextint" valor="" onchange="modif();" style="width: 150px; border: 1px solid; border-radius: 5px; padding-left: 3px;"></td>
                             <td></td>
                         </tr>
                     </table>
                 </div>
-                <div style="margin: 3px; padding: 3px; border: 1px solid; border-radius: 10px;">
+                <div style="margin: 3px; padding: 3px; border: 1px solid; border-radius: 10px; text-align: center;">
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>
-                            <td class="etiq aDir">Tipo de Extintor: </td>
-                            <td colspan="26">
-                                <select id="reltipoextint" onchange="modif();" style="font-size: .9rem; width: 90%;" title="Selecione um tipo de extintor.">
+                            <td class="etiqAzul aDir">Tipo de Extintor: </td>
+                            <td class="aEsq">
+                                <select id="reltipoextint" onchange="modif();" style="font-size: .9rem; width: 150px;" title="Selecione um tipo de extintor.">
                                     <option value=""></option>
                                     <?php 
                                     if($rsTipos){
@@ -809,26 +856,39 @@ if(!isset($_SESSION["usuarioID"])){
                                     ?>
                                 </select>
                             </td>
-                            <td class="etiq aDir">Capacidade: </td>
-                            <td colspan="2"><input type="text" id="capacidextint" valor="" onchange="modif();" style="padding-left: 3px; width: 150px; border: 1px solid; border-radius: 5px;"></td>
+                            <td class="etiqAzul aDir">Capacidade: </td>
+                            <td class="aEsq"><input type="text" id="capacidextint" valor="" onchange="modif();" style="padding-left: 3px; width: 150px; border: 1px solid; border-radius: 5px;"></td>
                         </tr>
                         <tr>
-                            <td class="etiq aDir">Revisado em: </td>
-                            <td colspan="12"><input type="text" id="datarevis" valor="" width="150" onchange="modif();" style="text-align: center; border: 1px solid; border-radius: 5px;"></td>
-                            <td colspan="4" class="etiq aDir">Validade até: </td>
+                            <td colspan="4" style="padding-bottom: 10px;"></td>
+                        </tr>
+                    </table>
+
+                    <table style="margin: 0 auto; width: 95%;">
+                        <tr>
+                            <td class="etiqAzul aDir">Revisado em: </td>
+                            <td><input type="text" id="datarevis" valor="" width="150" onchange="modif();" style="text-align: center; border: 1px solid; border-radius: 5px;"></td>
+                            <td style="width: 30px; text-align: left;"><button class="botpadrblue" style="font-size: .7rem; padding: 5px;" onclick="transfData('Revisão');" title="Transfere a data de revisão a todos os outros extintores">Tr</button></td>
+                            <td class="etiqAzul aDir">Validade até: </td>
                             <td colspan="10"><input type="text" id="datavalid" valor="" width="150" onchange="modif();" style="text-align: center; border: 1px solid; border-radius: 5px;"></td>
-                            <td class="etiq aDir">Validade Casco: </td>
+                            <td style="width: 30px; text-align: left;"><button class="botpadrblue" style="font-size: .7rem; padding: 5px;" onclick="transfData('Vencimento');" title="Transfere a data de vencimento a todos os outros extintores">Tr</button></td>
+                            <td class="etiqAzul aDir">Validade Casco: </td>
                             <td><input type="text" id="datavalcasco" valor="" width="150" onchange="modif();" style="text-align: center; border: 1px solid; border-radius: 5px;"></td>
-                            <td></td>
+                            <td style="width: 30px; text-align: left;"><button class="botpadrblue" style="font-size: .7rem; padding: 5px;" onclick="transfData('Validade');" title="Transfere a data de validade do casco a todos os outros extintores">Tr</button></td>
                         </tr>
                         <tr>
-                            <td class="etiq aDir">Local de instalação: </td>
-                            <td colspan="28"><input type="text" id="localextint" valor="" onchange="modif();" style="width: 100%; padding-left: 3px; border: 1px solid; border-radius: 5px;"></td>
-                            <td></td>
+                            <td colspan="9" style="padding-bottom: 10px;"></td>
+                        </tr>
+                    </table>
+
+                    <table style="margin: 0 auto; width: 85%;">
+                        <tr>
+                            <td class="etiqAzul aDir">Local de instalação: </td>
+                            <td style="text-align: left; width: 600px;"><input type="text" id="localextint" valor="" onchange="modif();" style="width: 100%; padding-left: 3px; border: 1px solid; border-radius: 5px;"></td>
                         </tr>
                         <tr>
-                            <td class="etiq aDir">Empresa de Manutenção: </td>
-                            <td colspan="27">
+                            <td class="etiqAzul aDir">Empresa de Manutenção: </td>
+                            <td>
                                 <select id="relempresas" onchange="modif();" style="font-size: .9rem; width: 100%;" title="Selecione uma empresa.">
                                     <option value=""></option>
                                     <?php 
@@ -841,17 +901,18 @@ if(!isset($_SESSION["usuarioID"])){
                                     ?>
                                 </select>
                             </td>
-                            <td></td>
-                            <td></td>
                         </tr>
                         <tr>
-                            <td colspan="30" style="padding-bottom: 10px;"></td>
+                            <td colspan="2" style="padding-bottom: 10px;"></td>
                         </tr>
+                    </table>
+
+                    <table style="margin: 0 auto; width: 95%;">
                         <tr>
-                            <td colspan="15" style="text-align: center;">
-                                <button class="botpadrred" id="botapagaextint" style="font-size: .9rem; font-size: 80%; padding: 2px;" onclick="apagaExtintor();">Apagar</button>
+                            <td style="text-align: center;">
+                                <button class="botpadrred" id="botapagaextint" style="font-size: .7rem; padding: 2px;" onclick="apagaExtintor();">Apagar</button>
                             </td>
-                            <td colspan="15" style="text-align: center;">
+                            <td style="text-align: right;">
                                 <button class="botpadrblue" id="botsalvarextint" style="font-size: .9rem;" onclick="salvaInsExtintor();">Salvar</button>
                             </td>
                         </tr>

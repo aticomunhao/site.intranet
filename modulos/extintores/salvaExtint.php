@@ -305,3 +305,31 @@ if($Acao == "configMarcaCheckBox"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+
+if($Acao=="transfDatas"){
+    $Campo = filter_input(INPUT_GET, 'campo');
+    $DataR = addslashes(filter_input(INPUT_GET, 'datarevis'));
+    $DataV = addslashes(filter_input(INPUT_GET, 'datavalid'));
+    $DataC = addslashes(filter_input(INPUT_GET, 'datavalcasco'));
+
+    $DataRev = implode("-", array_reverse(explode("/", $DataR))); // inverte o formato da data para y/m/d
+    $DataVal = implode("-", array_reverse(explode("/", $DataV))); // inverte o formato da data para y/m/d
+    $DataCas = implode("-", array_reverse(explode("/", $DataC))); // inverte o formato da data para y/m/d
+
+    $Erro = 0;
+    if($Campo == "Revisão"){
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".extintores SET datacarga = '$DataRev' WHERE ativo = 1");
+    }
+    if($Campo == "Vencimento"){
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".extintores SET datavalid = '$DataVal' WHERE ativo = 1");
+    }
+    if($Campo == "Validade"){
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".extintores SET datacasco = '$DataCas' WHERE ativo = 1");
+    }
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}

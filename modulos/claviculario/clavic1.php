@@ -376,17 +376,27 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById("modalInfo").style.display = "block";
                                         }
                                     }
+                                    if(parseInt(Resp.coderro) === 1){
+                                        alert("Houve um erro no servidor.")
+                                    }
+                                    if(parseInt(Resp.coderro) === 2){
+                                        document.getElementById("resultsolicitante").innerHTML = "Arquivos Pessoal: Nada foi encontrado.";
+                                        document.getElementById("cpfsolicitante").focus();
+                                    }
                                     if(parseInt(Resp.coderro) === 3){
-                                        document.getElementById("mensagemErro").innerHTML = "Usuário não autorizado.";
+                                        document.getElementById("mensagemErro").innerHTML = "Usuário ainda não autorizado no site.";
                                         document.getElementById("mensagemErro").style.display = "block";
                                         document.getElementById("cpfsolicitante").focus();
                                     }
-                                    if(parseInt(Resp.coderro) === 2){
-                                        document.getElementById("resultsolicitante").innerHTML = "Nada foi encontrado.";
+                                    if(parseInt(Resp.coderro) === 4){
+                                        document.getElementById("mensagemErro").innerHTML = "Arquivos Pessoal: Usuário com Status 0.";
+                                        document.getElementById("mensagemErro").style.display = "block";
                                         document.getElementById("cpfsolicitante").focus();
                                     }
-                                    if(parseInt(Resp.coderro) === 1){
-                                        alert("Houve um erro no servidor.")
+                                    if(parseInt(Resp.coderro) === 5){
+                                        document.getElementById("mensagemErro").innerHTML = "Usuário bloqueado no site";
+                                        document.getElementById("mensagemErro").style.display = "block";
+                                        document.getElementById("cpfsolicitante").focus();
                                     }
                                 }
                             }
@@ -396,6 +406,7 @@ if(!isset($_SESSION["usuarioID"])){
                 });
 
                 $("#selecEntregador").change(function(){
+                    document.getElementById("voltamensagemErro").style.display = "none";
                     document.getElementById("cpfentregador").value = "";
                     document.getElementById("guardaCPF").value = "";
                     document.getElementById("guardaPosCod").value = document.getElementById("selecEntregador").value;
@@ -439,6 +450,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("voltasetor").innerHTML = "";
                     document.getElementById("voltatelef").value = "";
                     document.getElementById("guardaPosCod").value = "";
+                    document.getElementById("voltamensagemErro").style.display = "none";
                     document.getElementById("voltasolicitante").disabled = false;
                 });
                 $("#cpfentregador").change(function(){
@@ -483,6 +495,26 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("guardaPosCod").value = "";
                                         alert("Houve um erro no servidor.")
                                     }
+                                    if(parseInt(Resp.coderro) === 4){
+                                        document.getElementById("voltamensagemErro").innerHTML = "Arquivos Pessoal: Usuário com Status 0.";
+                                        document.getElementById("voltamensagemErro").style.display = "block";
+                                        document.getElementById("voltasolicitante").value = "";
+                                        document.getElementById("guardaCPF").value = "";
+                                        document.getElementById("voltasetor").innerHTML = "";
+                                        document.getElementById("voltatelef").value = "";
+                                        document.getElementById("guardaPosCod").value = ""
+                                        document.getElementById("cpfentregador").focus();
+                                    }
+                                    if(parseInt(Resp.coderro) === 5){
+                                        document.getElementById("voltasolicitante").value = "";
+                                        document.getElementById("voltamensagemErro").innerHTML = "Arquivos Site: Usuário bloqueado";
+                                        document.getElementById("voltamensagemErro").style.display = "block";
+                                        document.getElementById("guardaCPF").value = "";
+                                        document.getElementById("voltasetor").innerHTML = "";
+                                        document.getElementById("voltatelef").value = "";
+                                        document.getElementById("guardaPosCod").value = ""
+                                        document.getElementById("cpfentregador").focus();
+                                    }
                                 }
                             }
                         };
@@ -494,6 +526,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("agendacpfsolicitante").value = "";
                     document.getElementById("guardaCPF").value = "";
                     document.getElementById("agendamensagemErro").style.display = "none";
+                    document.getElementById("voltamensagemErro").style.display = "none";
                     document.getElementById("guardaPosCod").value = document.getElementById("agendaselecSolicitante").value;
                     ajaxIni();
                     if(ajax){
@@ -543,6 +576,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("agendatelef").value = "";
                     document.getElementById("guardaPosCod").value = "";
                     document.getElementById("agendamensagemErro").style.display = "none";
+                    document.getElementById("voltamensagemErro").style.display = "none";
                 });
                 $("#agendacpfsolicitante").change(function(){
                     if(!validaCPF(document.getElementById("agendacpfsolicitante").value)){
@@ -574,18 +608,27 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById("modalInfo").style.display = "block";
                                         }
                                     }
+                                    if(parseInt(Resp.coderro) === 1){
+                                        alert("Houve um erro no servidor.")
+                                    }
+                                    if(parseInt(Resp.coderro) === 2){
+                                        document.getElementById("agendasolicitante").innerHTML = "Arquivos Pessoal: Nada foi encontrado.";
+                                        document.getElementById("agendacpfsolicitante").focus();
+                                    }
                                     if(parseInt(Resp.coderro) === 3){
-//                                        document.getElementById("agendasolicitante").innerHTML = "Usuário não está autorizado a retirar chaves.";
-                                        document.getElementById("agendamensagemErro").innerHTML = "Usuário não autorizado.";
+                                        document.getElementById("agendamensagemErro").innerHTML = "Usuário ainda não autorizado no site.";
                                         document.getElementById("agendamensagemErro").style.display = "block";
                                         document.getElementById("agendacpfsolicitante").focus();
                                     }
-                                    if(parseInt(Resp.coderro) === 2){
-                                        document.getElementById("agendasolicitante").innerHTML = "Nada foi encontrado.";
+                                    if(parseInt(Resp.coderro) === 4){
+                                        document.getElementById("agendamensagemErro").innerHTML = "Arquivos Pessoal: Usuário com Status 0";
+                                        document.getElementById("agendamensagemErro").style.display = "block";
                                         document.getElementById("agendacpfsolicitante").focus();
                                     }
-                                    if(parseInt(Resp.coderro) === 1){
-                                        alert("Houve um erro no servidor.")
+                                    if(parseInt(Resp.coderro) === 5){
+                                        document.getElementById("agendamensagemErro").innerHTML = "Usuário bloqueado no site";
+                                        document.getElementById("agendamensagemErro").style.display = "block";
+                                        document.getElementById("agendacpfsolicitante").focus();
                                     }
                                 }
                             }
@@ -1258,6 +1301,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("botagenda1").style.visibility = "visible";
                 }
                 document.getElementById("CodidChave").value = Cod;
+                document.getElementById("voltamensagemErro").style.display = "none";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=retornoChave1&codigo="+Cod, true);
@@ -1292,6 +1336,7 @@ if(!isset($_SESSION["usuarioID"])){
 
             function retornoChave(Cod){
                 document.getElementById("guardaCod").value = Cod; // id de chaves_ctl
+                document.getElementById("voltamensagemErro").style.display = "none";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/claviculario/salvaChave.php?acao=retornoChave&codigo="+Cod, true);
@@ -2157,6 +2202,11 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
                         <tr>
                             <td colspan="4" style="text-align: center; font-weight: bold;">Devolvido por</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding-top: 10px;">
+                                <label id="voltamensagemErro" style="display: none; min-width: 20px; padding-left: 3px; font-size: 120%; color: red;"></label>
+                            </td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Nome:</td>
