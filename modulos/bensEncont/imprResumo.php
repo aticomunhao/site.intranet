@@ -158,13 +158,20 @@ if(!isset($_SESSION['AdmUsu'])){
                         while($tblProc = pg_fetch_row($rsProc)){
                             $CodProc = $tblProc[0];
                             $DescProc = $tblProc[1];
-                            $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And usudestino != 0 And codencdestino = $CodDest And codencprocesso = $CodProc ");
+                            $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And usudestino != 0 And codencdestino = $CodDest And codencprocesso = $CodProc");
                             $row2 = pg_num_rows($rs2);
                             if($row2 > 0){
                                 $pdf->SetFont('Arial', '' , 7); 
                                 $pdf->SetX(75);
                                 $pdf->Cell(50, 4, $DescProc." (".$row2.")", 0, 1, 'L');
                             }
+                        }
+                        $rs3 = pg_query($Conec, "SELECT id FROM ".$xProj.".bensachados WHERE ativo != 0 And DATE_PART('YEAR', datareceb) = '$AnoTar' And usudestino != 0 And codencdestino = $CodDest And codencprocesso = 0");
+                        $row3 = pg_num_rows($rs3);
+                        if($row3 > 0){
+                            $pdf->SetFont('Arial', '' , 7); 
+                            $pdf->SetX(75);
+                            $pdf->Cell(50, 4, "a processar (".$row3.")", 0, 1, 'L');
                         }
                     }
                 }

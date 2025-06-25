@@ -33,10 +33,14 @@
 			//Provisório
 			if(strtotime('2025/06/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//0118
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".contratos1 ADD COLUMN IF NOT EXISTS valor_contrato double precision NOT NULL DEFAULT 0 ");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".contratos2 ADD COLUMN IF NOT EXISTS valor_contrato double precision NOT NULL DEFAULT 0 ");
-				
+				//120
+				$rs = pg_query($Conec, "SELECT codencprocesso FROM ".$xProj.".bensachados WHERE id = 167");
+				$tbl = pg_fetch_row($rs);
+				$CodProc = $tbl[0];
+				if($CodProc == 0){
+					pg_query($Conec, "UPDATE ".$xProj.".bensachados SET codencprocesso = 4, descencprocesso = 'Doação' WHERE id = 167 Or id = 169 Or id = 157 Or id = 139 Or id = 155");
+				}
+
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

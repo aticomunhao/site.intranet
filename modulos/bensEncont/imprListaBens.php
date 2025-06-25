@@ -105,7 +105,7 @@ if(!isset($_SESSION['AdmUsu'])){
     if($Acao == "listaanoBens"){
         $Ano = filter_input(INPUT_GET, 'ano'); 
         $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(datareceb, 'DD/MM/YYYY'), date_part('dow', datareceb), numprocesso, descdobem, codusuins, usuguarda, usurestit, usucsg, usudestino, usuarquivou, 
-        CURRENT_DATE-datareceb, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, localachou, nomeachou, telefachou, dataarquivou-datareceb As tempoTot, descencdestino 
+        CURRENT_DATE-datareceb, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, localachou, nomeachou, telefachou, dataarquivou-datareceb As tempoTot, descencdestino, descencprocesso 
         FROM ".$xProj.".bensachados WHERE ativo = 1 And DATE_PART('YEAR', datareceb) = '$Ano' ORDER BY datareceb DESC, id DESC ");
     }
 
@@ -128,14 +128,14 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->Cell(20, 4, "Data", 0, 0, 'C');
             $pdf->Cell(10, 4, "Sem", 0, 0, 'L');
             $pdf->Cell(20, 4, "Processo", 0, 0, 'C');
-            
             $pdf->Cell(14, 4, "Registro", 0, 0, 'C');
             $pdf->Cell(17, 4, "Guarda", 0, 0, 'C');
             $pdf->Cell(18, 4, "Restituido", 0, 0, 'C');
             $pdf->Cell(20, 4, "Destinado", 0, 0, 'C');
+            $pdf->Cell(20, 4, "Processo", 0, 0, 'C');
             $pdf->Cell(18, 4, "Arquivado", 0, 0, 'C');
             $pdf->Cell(20, 4, "Dias", 0, 0, 'C');
-            $pdf->Cell(110, 4, "Descrição do bem encontrado", 0, 1, 'L');
+            $pdf->Cell(90, 4, "Descrição do bem encontrado", 0, 1, 'L');
 
             $pdf->SetTextColor(0, 0, 0);
             $lin = $pdf->GetY();
@@ -152,6 +152,7 @@ if(!isset($_SESSION['AdmUsu'])){
                 $GuardaCSG = $tbl0[8];
                 $Destino = $tbl0[9];
                 $DescDestino = $tbl0[17];
+                $DescProcesso = $tbl0[18];
                 $Arquivado = $tbl0[10];
                 $Intervalo = (int) $tbl0[12];
                 $Dias = str_pad(($tbl0[11]), 2, "0", STR_PAD_LEFT);
@@ -161,12 +162,12 @@ if(!isset($_SESSION['AdmUsu'])){
                 }else{
                     $TempoTotal = "";
                 }
+                $pdf->SetFont('Arial', '', 8);
                 $pdf->Cell(20, 5, $tbl0[1], 0, 0, 'L');
                 $pdf->SetFont('Arial', '', 7);
                 $pdf->Cell(10, 5, $semana[$tbl0[2]], 0, 0, 'L');
                 $pdf->SetFont('Arial', '', 8);
-                $pdf->Cell(20, 5, $tbl0[3], 1, 0, 'L'); // Processo
-
+                $pdf->Cell(20, 5, $tbl0[3], 1, 0, 'C'); // Processo
 
                 if($UsuIns > 0){
                     $pdf->Cell(14, 5, "Registro", 1, 0, 'C'); 
@@ -186,6 +187,12 @@ if(!isset($_SESSION['AdmUsu'])){
 
                 if($Destino > 0){
                     $pdf->Cell(20, 5, $DescDestino, 1, 0, 'C'); 
+                }else{
+                    $pdf->Cell(20, 5, "", 1, 0, 'C'); 
+                }
+
+                if(!is_null($DescProcesso)){
+                    $pdf->Cell(20, 5, $DescProcesso, 1, 0, 'C'); 
                 }else{
                     $pdf->Cell(20, 5, "", 1, 0, 'C'); 
                 }
@@ -211,7 +218,7 @@ if(!isset($_SESSION['AdmUsu'])){
                 }
 
                 $pdf->SetFont('Arial', '', 8);
-                $pdf->MultiCell(110, 5, $tbl0[4], 0, 'L', false); // descdobem
+                $pdf->MultiCell(100, 5, $tbl0[4], 0, 'L', false); // descdobem
 
                 $lin = $pdf->GetY();
                 $pdf->Line(20, $lin, 290, $lin);
