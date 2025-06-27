@@ -161,6 +161,9 @@ function openhref(Num){
     if(parseInt(Num) === 96){
         $('#container3').load('modulos/bebedouros/pagBebed.php');
     }
+    if(parseInt(Num) === 97){
+        $('#container3').load('modulos/ramaisCel.php?tipo=3');
+    }
 }
 
 function openhrefDir(Num){

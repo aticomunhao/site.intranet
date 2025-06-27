@@ -117,7 +117,7 @@ session_start();
                                 document.getElementById("TelefoneFixo").value = Resp.TelefoneFixo;
                                 document.getElementById("TelefoneCel").value = Resp.TelefoneCel;
                                 document.getElementById("titulomodal").innerHTML = "Edição de Telefones Úteis";
-                                document.getElementById("botapagar").disabled = false;
+                                document.getElementById("botapagar").style.visibility = "visible"; 
                                 document.getElementById("mudou").value = "0";
                                 document.getElementById("relacmodal").style.display = "block";
                                 document.getElementById("SiglaEmpresa").focus();
@@ -187,7 +187,7 @@ session_start();
                 document.getElementById("TelefoneFixo").value = "";
 				document.getElementById("TelefoneCel").value = "";
                 document.getElementById("guardaid_click").value = 0;
-                document.getElementById("botapagar").disabled = true;
+                document.getElementById("botapagar").style.visibility = "hidden"; 
                 document.getElementById("titulomodal").innerHTML = "Inserção de Telefones Úteis";
                 document.getElementById("relacmodal").style.display = "block";
             }
@@ -305,7 +305,7 @@ session_start();
         <input type="hidden" id="guardaid_click" value="0" />
         <input type="hidden" id="mudou" value="0" /> <!-- valor 1 quando houver mudança em qualquer campo do modal -->
 
-        <div style="margin: 20px; border: 2px solid green; border-radius: 15px; padding: 20px;">
+        <div style="margin: 20px; border: 2px solid #EEDD82; border-radius: 15px; padding: 20px;">
             <div class="box" style="position: relative; float: left; width: 33%;">
                 <input type="button" id="botinserir" class="resetbot" value="Inserir Novo" onclick="InsRamais();">
             </div>
@@ -355,34 +355,34 @@ session_start();
                 <h5 id="titulomodal" style="text-align: center; color: #666;">Edição de Ramal Telefônico</h5>
                 <table style="margin: 0 auto;">
                     <tr>
-                        <td id="etiqNome" class="etiq">Sigla/Nome</td>
+                        <td id="etiqNome" class="etiqAzul">Sigla/Nome</td>
                         <td><input type="text" id="SiglaEmpresa" style="width: 99%;" placeholder="Sigla/Nome" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('NomeEmpresa');return false;}"></td>
                         <td></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td id="etiqNomeCompl" class="etiq">Nome Compl</td>
+                        <td id="etiqNomeCompl" class="etiqAzul">Nome Compl</td>
                         <td colspan="3"><input type="text" id="NomeEmpresa" style="width: 99%;" placeholder="Nome" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('TelefoneFixo');return false;}"></td>
                     </tr>
                     <tr>
-                        <td id="etiqRamal" class="etiq">Telefone</td>
+                        <td id="etiqRamal" class="etiqAzul">Telefone</td>
                         <td><input type="tel" id="TelefoneFixo" style="width: 99%;" placeholder="Telefone" onkeyup="handlePhone(event);" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('TelefoneCel');return false;}"></td>
-                        <td id="etiqCelular" class="etiq">Celular</td>
+                        <td id="etiqCelular" class="etiqAzul">Celular</td>
 <!--                        <td><input type="tel" id="TelefoneCel" style="width: 99%;" placeholder="Celular" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('Setor');return false;}"></td>  -->
                         <td><input type="tel" id="TelefoneCel" style="width: 99%;" placeholder="Celular" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('Setor');return false;}else{maskTel(this, mphone);}" onblur="maskTel(this, mphone);" ></td>
 
                     </tr>
                     <tr>
-                        <td id="etiqSetor" class="etiq">Setor</td>
+                        <td id="etiqSetor" class="etiqAzul">Setor</td>
                         <td><input type="text" id="Setor" name="Setor" style="width: 99%;" placeholder="Setor" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('ContatoNome');return false;}"></td>
-                        <td id="etiqContato" class="etiq">Contato</td>
+                        <td id="etiqContato" class="etiqAzul">Contato</td>
                         <td><input type="text" id="ContatoNome" style="width: 99%;" placeholder="Nome" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('SiglaEmpresa');return false;}"></td>
                     </tr>
                     <tr>
                         <td colspan="4" style="text-align: center;"><div id="mensagem" style="color: red; font-weight: bold;"></div></td>
                     </tr>                    
                     <tr>
-                        <td class="etiq" style="text-align: left;"><input type="button" class="resetbotred" id="botapagar" value="Apagar" onclick="deletaModal();"></td>
+                        <td style="text-align: left;"><input type="button" class="resetbotred" id="botapagar" style="font-size: 70%;" value="Apagar" onclick="deletaModal();"></td>
                         <td colspan="3" style="text-align: right; padding-right: 50px;"><input type="button" class="resetbotazul" id="botsalvar" value="Salvar" onclick="salvaModal();"></td>
                     </tr>
                 </table>

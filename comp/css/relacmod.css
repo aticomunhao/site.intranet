@@ -121,6 +121,14 @@
     border-radius: 15px;
     width: 50%;
 }
+.modal-content-Celulares{
+    background: linear-gradient(135deg, white, #90EE90);
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    border-radius: 15px;
+    width: 50%;
+}
 .modal-content-Login{
     background: linear-gradient(180deg, white, #86c1eb);
     margin: 15% auto;

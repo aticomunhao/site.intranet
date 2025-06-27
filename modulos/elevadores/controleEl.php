@@ -782,19 +782,19 @@ if(!isset($_SESSION["usuarioID"])){
                 <div id="subtitulomodal" style="text-align: center; color: red;"></div>
                 <table style="margin: 0 auto; width: 90%">
                     <tr>
-                        <td class="etiq aDir">Elevador: </td>
+                        <td class="etiqAzul aDir">Elevador: </td>
                         <td><label class="aCentro" style="padding-left: 5px; font-weight: bold;" id="apar"></label><label id="etiqmes" class="etiq" style="padding-left: 50px; font-size: 90%; font-weight: bold;"></label></td>
                         <td></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td class="etiq aDir">Local de instalação: </td>
+                        <td class="etiqAzul aDir">Local de instalação: </td>
                         <td><input type="text" id="localap" valor="" onchange="modif();" style="width: 50%;"></td>
                         <td></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td class="etiq aDir">Empresa: </td>
+                        <td class="etiqAzul aDir">Empresa: </td>
                         <td>
                             <select id="empresa" onchange="modif();" style="font-size: 1rem; width: 100%;" title="Selecione uma empresa.">
                                 <option value=""></option>
@@ -812,7 +812,6 @@ if(!isset($_SESSION["usuarioID"])){
                         <td></td>
                         <td></td>
                     </tr>
-
                     <tr>
                         <td colspan="4" style="padding-bottom: 10px;"></td>
                     </tr>
@@ -838,13 +837,13 @@ if(!isset($_SESSION["usuarioID"])){
 
                 <table style="margin: 0 auto; width: 90%;">
                     <tr>
-                        <td class="etiq aDir">Elevador: </td>
+                        <td class="etiqAzul aDir">Elevador: </td>
                         <td><label class="aCentro" style="padding-left: 5px; font-weight: bold;" id="aparins"></label><label id="etiqmes" class="etiq" style="padding-left: 50px; font-size: 90%; font-weight: bold;"></label></td>
                         <td></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td class="etiq aDir">Local de instalação: </td>
+                        <td class="etiqAzul aDir">Local de instalação: </td>
                         <td style="min-width: 400px;"><label id="localapins" style="width: 90%; font-weight: bold;"></label></td>
                         <td></td>
                         <td></td>
@@ -855,19 +854,19 @@ if(!isset($_SESSION["usuarioID"])){
                 <div id="relacmodalInsPrevent" style="display: none;">
                     <table style="margin: 0 auto; width: 90%;">
                         <tr>
-                            <td class="etiq aDir">Data da Visita: </td>
+                            <td class="etiqAzul aDir">Data da Visita: </td>
                             <td style="text-align: left;"><input type="text" id="datavisins" valor="" width="150" style="text-align: center; border: 1px solid; border-radius: 5px;" onchange="modif();"></td>
                             <td></td>
                             <td></td>
                         </tr>
                         <tr>
-                            <td class="etiq aDir">Nome do Técnico: </td>
+                            <td class="etiqAzul aDir">Nome do Técnico: </td>
                             <td><input type="text" id="nometecins" style="width: 100%; min-width: 400px;" valor="" onchange="modif();"></td>
                             <td></td>
                             <td></td>
                         </tr>
                         <tr>
-                            <td class="etiq aDir" title="Nome do funcionário que acompanhou a manutenção">Acompanhante: </td>
+                            <td class="etiqAzul aDir" title="Nome do funcionário que acompanhou a manutenção">Acompanhante: </td>
                             <td><input type="text" id="nomeAcompPrevent" style="width: 100%;" valor="" onchange="modif();" title="Nome do funcionário que acompanhou a manutenção"></td>
                             <td colspan="2" style="padding-bottom: 10px;"></td>
                         </tr>
@@ -881,7 +880,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <div id="relacmodalInsCorret" style="display: none;">
                     <table style="margin: 0 auto; width: 90%;">
                         <tr>
-                            <td class="etiq aDir" title="Nome da empresa contratada">Empresa: </td>
+                            <td class="etiqAzul aDir" title="Nome da empresa contratada">Empresa: </td>
                             <td colspan="3">
                                 <select id="empresaCorret" onchange="modif();" style="font-size: 1rem; width: 100%;" title="Selecione uma empresa.">
                                     <option value=""></option>
@@ -898,38 +897,38 @@ if(!isset($_SESSION["usuarioID"])){
                             </td>
                         </tr>
                         <tr>
-                            <td class="etiq aDir" title="Data e hora do acionamento">Acionamento: </td>
+                            <td class="etiqAzul aDir" title="Data e hora do acionamento">Acionamento: </td>
                             <td><input type="text" id="dataAcionam" width="200" style="text-align: center; border: 1px solid; border-radius: 5px;" valor="" onchange="modif();" title="Data do acionamento"></td>
-                            <td class="etiq aDir" title="Nome do responsável contactado da empresa contratada">Nome do Atendente: </td>
+                            <td class="etiqAzul aDir" title="Nome do responsável contactado da empresa contratada">Nome do Atendente: </td>
                             <td><input type="text" id="nomecontactado" style="width: 100%;" valor="" onchange="modif();" title="Nome do responsável contactado da empresa contratada"></td>
                         </tr>
                         <tr>
-                            <td class="etiq aDir" title="Defeito observado no Elevador">Defeito observado: </td>
+                            <td class="etiqAzul aDir" title="Defeito observado no Elevador">Defeito observado: </td>
                             <td colspan="3" style="padding-bottom: 10px;">
                                 <textarea id="defeito" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="4" cols="60" title="Defeito observado no elevador" onchange="modif();"></textarea>
                             </td>
                         </tr>
                         <tr>
-                            <td class="etiq aDir" title="Data e hora do atendimento">Atendimento: </td>
+                            <td class="etiqAzul aDir" title="Data e hora do atendimento">Atendimento: </td>
                             <td><input type="text" id="dataAtendim" width="200" style="text-align: center; border: 1px solid; border-radius: 5px;" valor="" onchange="modif();" title="Data e hora do atendimento"></td>
-                            <td class="etiq aDir" title="Nome do funcionário que acompanhou a manutenção">Acompanhante: </td>
+                            <td class="etiqAzul aDir" title="Nome do funcionário que acompanhou a manutenção">Acompanhante: </td>
                             <td><input type="text" id="nomeAcompanhante" style="width: 100%;" valor="" onchange="modif();" title="Nome do funcionário que acompanhou a manutenção"></td>
                         </tr>
 
-                        <td class="etiq aDir" title="Diagnóstico do técnico da empresa contratada">Diagnóstico do técnico: </td>
+                        <td class="etiqAzul aDir" title="Diagnóstico do técnico da empresa contratada">Diagnóstico do técnico: </td>
                             <td colspan="3" style="padding-bottom: 10px; width: 100%;">
                                 <textarea id="diagnostico" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="4" cols="60" title="Diagnóstico do técnico da empresa contratada" onchange="modif();"></textarea>
                             </td>
                         </tr>
-                        <td class="etiq aDir" title="Descrição do serviço realizado">Serviço realizado: </td>
+                        <td class="etiqAzul aDir" title="Descrição do serviço realizado">Serviço realizado: </td>
                             <td colspan="3" style="padding-bottom: 10px; width: 100%;">
                                 <textarea id="svcRealizado" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="4" cols="60" title="Descrição do serviço realizado" onchange="modif();"></textarea>
                             </td>
                         </tr>
                         <tr>
-                            <td class="etiq aDir" title="Data da conclusão do serviço">Data conclusão: </td>
+                            <td class="etiqAzul aDir" title="Data da conclusão do serviço">Data conclusão: </td>
                             <td><input type="text" id="dataConclus" width="160" style="text-align: center; border: 1px solid; border-radius: 5px;" valor="" onchange="modif();" title="Data e hora da conclusão do reparo"></td>
-                            <td class="etiq aDir" title="Nome do técnico da empresa contratada que efetuou o reparo">Técnico da Empresa: </td>
+                            <td class="etiqAzul aDir" title="Nome do técnico da empresa contratada que efetuou o reparo">Técnico da Empresa: </td>
                             <td><input type="text" id="nomeTecnicoEmpresa" style="width: 100%;" valor="" onchange="modif();" title="Nome do técnico da empresa contratada que efetuou o reparo"></td>
                         </tr>
                         <tr>
@@ -953,19 +952,19 @@ if(!isset($_SESSION["usuarioID"])){
                 <div id="subtitulomodal" style="text-align: center; color: red;"></div>
                 <table style="margin: 0 auto; width: 90%">
                     <tr>
-                        <td class="etiq aDir">Elevador: </td>
+                        <td class="etiqAzul aDir">Elevador: </td>
                         <td><label class="aCentro" style="padding-left: 5px; font-weight: bold;" id="aparlocal"></label><label id="etiqmes" class="etiq" style="padding-left: 50px; font-size: 90%; font-weight: bold;"></label></td>
                         <td></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td class="etiq aDir">Local de instalação: </td>
+                        <td class="etiqAzul aDir">Local de instalação: </td>
                         <td><input type="text" id="localaplocal" valor="" onchange="modif();" style="width: 90%;"></td>
                         <td></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td class="etiq aDir">Empresa: </td>
+                        <td class="etiqAzul aDir">Empresa: </td>
                         <td>
                             <select id="empresalocal" onchange="modif();" style="font-size: 1rem; width: 100%;" title="Selecione uma empresa.">
                                 <option value=""></option>
@@ -1012,13 +1011,13 @@ if(!isset($_SESSION["usuarioID"])){
                 <div id="subtitulomodal" style="text-align: center; color: red;"></div>
                     <table style="margin: 0 auto; width: 90%">
                         <tr>
-                            <td class="etiq aDir">Empresa: </td>
+                            <td class="etietiqAzulq aDir">Empresa: </td>
                             <td><input type="text" id="editNomeEmpr" valor="" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 90%;"></td>
                             <td></td>
                             <td></td>
                         </tr>
                         <tr>
-                            <td class="etiq aDir">Valor da visita: </td>
+                            <td class="etiqAzul aDir">Valor da visita: </td>
                             <td><input type="text" id="valorvisita" valor="" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 120px; text-align: right;"></td>
                             <td></td>
                             <td></td>

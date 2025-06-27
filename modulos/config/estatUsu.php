@@ -29,10 +29,6 @@ if(!isset($_SESSION["usuarioID"])){
         </style>
         <script>
             $(document).ready(function(){
-                document.getElementById("botinserir").style.visibility = "hidden";
-                document.getElementById("botimpr").style.visibility = "hidden";
-                document.getElementById("imgConfig").style.visibility = "hidden";
-
                 if(parseInt(document.getElementById("Editor").value) === 1 || parseInt(document.getElementById("Fiscal").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
 //                    document.getElementById("relacgrafico").style.display = "block";
 //                    $("#divgrafico").load("modulos/config/grafUsu.php");
@@ -74,10 +70,7 @@ if(!isset($_SESSION["usuarioID"])){
        
         <!-- div três colunas -->
         <div id="tricoluna0" style="margin: 10px; padding: 10px; border: 2px solid; border-radius: 10px; min-height: 52px;">
-            <div id="tricoluna1" class="box" style="position: relative; float: left; width: 17%;">
-                <img src="imagens/settings.png" height="20px;" id="imgConfig" style="cursor: pointer; padding-right: 30px;" onclick="abreChavesConfig();" title="Configurar o acesso às chaves no claviculário da Portaria">
-                <input type="button" id="botinserir" class="resetbot fundoAzul2" style="font-size: 80%;" value="Inserir Nova Chave" onclick="insChave();">
-            </div>
+            <div id="tricoluna1" class="box" style="position: relative; float: left; width: 17%;"></div>
             <div id="tricoluna2" class="box" style="position: relative; float: left; width: 55%; text-align: center;">
                 <h5>Desempenho de Usuários</h5>
             </div>
@@ -90,7 +83,6 @@ if(!isset($_SESSION["usuarioID"])){
                 </div>
                 <img src="imagens/iconGraf.png" height="36px;" id="botgrafico" style="cursor: pointer;" onclick="abreGrafico();" title="Gráfico">
                 <label style="padding-left: 20px;"></label>
-                <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="abreImprChaves();">PDF</button>
             </div>
 
             <div id="faixaMensagem" style="display: none; position: relative; margin: 70px; padding: 20px; text-align: center;">

@@ -1717,29 +1717,29 @@ if(!isset($_SESSION["usuarioID"])){
                 <label style="color: #666;">Edição:</label>
                 <table style="margin: 0 auto; width: 85%;">
                     <tr>
-                        <td class="etiq" style="padding-bottom: 7px;">Chave: </td>
+                        <td class="etiqAzul" style="padding-bottom: 7px;">Chave: </td>
                         <td style="padding-bottom: 10px;"><input type="text" id="numchave" style="width: 70px; text-align: center;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('chavecomplem');return false;}" title="Número da chave. Preferencialmente único."/>
                             <input type="text" id="chavecomplem" style="width: 60px; text-align: center;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('salachave');return false;}" title="Complemento do número da Chave"/><label class="etiqAzul"><- complemento</label>
                         </td>
                         <td style="padding-bottom: 10px;"></td>
                     </tr>
                     <tr>
-                        <td class="etiq">Sala nº: </td>
+                        <td class="etiqAzul">Sala nº: </td>
                         <td colspan="3" style="width: 200px;"><input type="text" id="salachave" style="width: 180px; text-align: center;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('complemchave');return false;}" title="Número da sala"/></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td class="etiq">Sala Nome: </td>
+                        <td class="etiqAzul">Sala Nome: </td>
                         <td colspan="3" style="width: 100px;"><input type="text" id="complemchave" style="width: 380px; text-align: left;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('localchave');return false;}" title="Nome da sala"/></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td class="etiq">Local: </td>
+                        <td class="etiqAzul">Local: </td>
                         <td colspan="3" style="width: 100px;"><input type="text" id="localchave" maxlength="70" style="width: 380px; text-align: left;" onchange="modif();" onkeypress="if(event.keyCode===13){javascript:foco('numchave');return false;}" title=""/></td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td class="etiq">Observações: </td>
+                        <td class="etiqAzul">Observações: </td>
                         <td colspan="3" style="width: 100px;"><textarea id="obschave" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="2" cols="43" title="Observações" onchange="modif();"></textarea></td>
                         <td></td>
                     </tr>

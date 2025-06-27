@@ -54,7 +54,6 @@
                     $("#relmenu").load("modulos/config/relMenu.php"); // para editar menu
                     $("#carGruposEscala").load("modulos/config/carGrupos.php");
                     $("#carCheckListLRO").load("modulos/config/carckListLRO.php");
-                    
                 });
 
                 function salvaParam(Valor, Param){
@@ -68,8 +67,6 @@
                                     Resp = eval("(" + ajax.responseText + ")");
                                     if(parseInt(Resp.coderro) > 0){
                                         alert("Houve erro ao salvar");
-                                    }else{
-
                                     }
                                 }
                             }
@@ -785,7 +782,7 @@
             $rsSis = pg_query($Conec, "SELECT admvisu, admedit, admcad, insevento, editevento, instarefa, edittarefa, insramais, editramais, instelef, edittelef, 
             editpagina, insarq, insaniver, editaniver, instroca, edittroca, insocor, editocor, insleituraagua, editleituraagua, 
             TO_CHAR(datainiagua, 'DD/MM/YYYY'), valoriniagua, insleituraeletric, editleituraeletric, TO_CHAR(datainieletric, 'DD/MM/YYYY'), valorinieletric, inslro, editlro, insbens, editbens, 
-            prazodel, vertarefa, verarquivos, TO_CHAR(datainieletric2, 'DD/MM/YYYY'), valorinieletric2, TO_CHAR(datainieletric3, 'DD/MM/YYYY'), valorinieletric3, editpagini 
+            prazodel, vertarefa, verarquivos, TO_CHAR(datainieletric2, 'DD/MM/YYYY'), valorinieletric2, TO_CHAR(datainieletric3, 'DD/MM/YYYY'), valorinieletric3, editpagini, visucelcorp, inseditcelcorp 
             FROM ".$xProj.".paramsis WHERE idPar = 1");
             $ProcSis = pg_fetch_row($rsSis);
             $admVisu = $ProcSis[0]; // admVisu - administrador visualiza usuários
@@ -935,6 +932,15 @@
             $Proc21 = pg_fetch_row($rs21);
             $nomeEditPagIni = $Proc21[0];
 
+            $VisuCelCorp = $ProcSis[39];
+            $rs22 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $VisuCelCorp");
+            $Proc22 = pg_fetch_row($rs22);
+            $nomeVisuCelCorp = $Proc22[0];
+
+            $CelCorp = $ProcSis[40];
+            $rs23 = pg_query($Conec, "SELECT adm_nome FROM ".$xProj.".usugrupos WHERE adm_fl = $CelCorp");
+            $Proc23 = pg_fetch_row($rs23);
+            $nomeCelCorp = $Proc23[0];
 
             $PrazoDel = $ProcSis[31];   // prazo para apagar registros antigos
             $VerTarefa = $ProcSis[32];  // parâmetro para liberar tarefas para todos verem
@@ -975,6 +981,9 @@
 
             $OpAdmInsBens = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
             $OpAdmEditBens = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
+
+            $OpVisuCelCorp = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
+            $OpAdmCelCorp = pg_query($Conec, "SELECT adm_fl, adm_nome FROM ".$xProj.".usugrupos WHERE ativo = 1 ORDER BY adm_fl");
 
             $TempoInat  = parAdm("tempoinat", $Conec, $xProj); // tempo de ociosidade
             $DescInat = "";
@@ -1123,6 +1132,53 @@
                             ?>
                             </select>
                         </td>
+                    </tr>
+                </table>
+            </div>
+
+<!-- Celulares Corporativos  -->
+            <div style="margin: 5px; border: 1px solid; border-radius: 10px; padding: 15px;">
+                - <b>Celulares Corporativos</b>:<br>
+                <table style="margin: 0 auto;">
+                    <tr>
+                        <td>Nível mínimo para VISUALIZAR Telefones Celulares Corporativos:</td>
+                        <td style="padding-left: 5px;">
+                        <select onchange="salvaParam(value, 'visuCelCorp');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                            <option value="<?php echo $VisuCelCorp; ?>"><?php echo $nomeVisuCelCorp; ?></option>
+                            <?php 
+                            if($OpVisuCelCorp){
+                                while ($Opcoes = pg_fetch_row($OpVisuCelCorp)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                <?php 
+                                }
+                            }
+                            ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Nível mínimo para INSERIR/EDITAR Telef. Celulares Corporativos:</td>
+                        <td style="padding-left: 5px;">
+                        <select onchange="salvaParam(value, 'insEditCelCorp');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                            <option value="<?php echo $CelCorp; ?>"><?php echo $nomeCelCorp; ?></option>
+                            <?php 
+                            if($OpAdmCelCorp){
+                                while ($Opcoes = pg_fetch_row($OpAdmCelCorp)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                <?php 
+                                }
+                            }
+                            ?>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
                     </tr>
                 </table>
             </div>
@@ -1684,9 +1740,10 @@
             </div>
             <br><br><br>
         </div>
-
+<br><br>
     <!-- Prazo para apagar registros -->
-            <div style="margin: 50px; border: 3px solid red; border-radius: 20px; padding: 15px;">
+
+            <div style="margin: 0 auto; padding: 20px; border: 3px solid red; border-radius: 20px; width: 70%; min-height: 200px;">
                 <div style="margin: 5px; padding: 15px; text-align: center;">
                     <h4>Apagar Registros Antigos</h4>
                 </div>

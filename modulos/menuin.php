@@ -31,15 +31,11 @@
 				$diaSemana = 1;
 			}
 			//Provisório
-			if(strtotime('2025/06/30') > strtotime(date('Y/m/d'))){
+			if(strtotime('2025/07/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//120
-				$rs = pg_query($Conec, "SELECT codencprocesso FROM ".$xProj.".bensachados WHERE id = 167");
-				$tbl = pg_fetch_row($rs);
-				$CodProc = $tbl[0];
-				if($CodProc == 0){
-					pg_query($Conec, "UPDATE ".$xProj.".bensachados SET codencprocesso = 4, descencprocesso = 'Doação' WHERE id = 167 Or id = 169 Or id = 157 Or id = 139 Or id = 155");
-				}
+				//121
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS visucelcorp smallint NOT NULL DEFAULT 7;");
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS inseditcelcorp smallint NOT NULL DEFAULT 7;");
 
 			} // fim data limite
         ?>

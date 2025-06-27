@@ -73,7 +73,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
                 $rs3 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual, daf_turno, daf_marca, letra, horaturno, ordem_daf, destaq, valeref 
                 FROM ".$xProj.".poslog LEFT JOIN ".$xProj.".escaladaf_turnos ON ".$xProj.".poslog.daf_turno = ".$xProj.".escaladaf_turnos.id
-                WHERE eft_daf = 1 And ".$xProj.".poslog.ativo = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl ");
+                WHERE eft_daf = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl ");
+                // And ".$xProj.".poslog.ativo = 1
             ?>
             <input type="hidden" id="guardagrupo" value="<?php echo $NumGrupo; ?>" />
             <input type="hidden" id="guardaDiaId" value="<?php echo $DiaId; ?>" />

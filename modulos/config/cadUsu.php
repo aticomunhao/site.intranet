@@ -642,6 +642,28 @@ if(!isset($_SESSION["usuarioID"])){
             function salvaAtiv(Valor){
                 document.getElementById("guardaAtiv").value = Valor;
                 document.getElementById("mudou").value = "1";
+//                if(parseInt(Valor) === 0 && parseInt(document.getElementById("grupoEscala").value) > 0){
+//                    ajaxIni();
+//                    if(ajax){
+//                        ajax.open("POST", "modulos/config/registr.php?acao=buscaEftEscala&cpf="+encodeURIComponent(document.getElementById("guardaid_cpf").value), true);
+//                        ajax.onreadystatechange = function(){
+//                            if(ajax.readyState === 4 ){
+//                                if(ajax.responseText){
+//alert(ajax.responseText);
+//                                    Resp = eval("(" + ajax.responseText + ")");
+//                                    if(parseInt(Resp.coderro) === 1){
+//                                        alert("Houve um erro no servidor.")
+//                                    }else{
+//                                        if(parseInt(Resp.efetivo) === 1){
+//                                            alert("Participa da Escala: "+Resp.descgrupo);
+//                                        }
+//                                    }
+//                                }
+//                            }
+//                        };
+//                        ajax.send(null);
+//                    }
+//                }
             }
 
             function deletaModal(){

@@ -65,12 +65,14 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
         <div style="margin: 10px; padding: 10px; text-align: center; border: 2px solid green; border-radius: 15px;">
             <?php
-            $rsEft = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo");
+//            $rsEft = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo");
+            $rsEft = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE eft_daf = 1 And esc_grupo = $NumGrupo");
             $Eft = pg_num_rows($rsEft); // Número de escalados
 
             $rs0 = pg_query($Conec, "SELECT ".$xProj.".escaladaf_ins.id, TO_CHAR(dataescala, 'DD'), nomeusual, nomecompl, turnoturno, horafolga, ".$xProj.".escaladaf_ins.poslog_id, ".$xProj.".escaladaf_ins.turnos_id, date_part('dow', dataescala), letraturno 
             FROM ".$xProj.".escaladaf INNER JOIN (".$xProj.".poslog INNER JOIN ".$xProj.".escaladaf_ins ON ".$xProj.".poslog.pessoas_id = ".$xProj.".escaladaf_ins.poslog_id) ON ".$xProj.".escaladaf.id = ".$xProj.".escaladaf_ins.escaladaf_id 
-            WHERE ".$xProj.".poslog.eft_daf = 1 And ".$xProj.".poslog.ativo = 1 And ".$xProj.".escaladaf_ins.ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And esc_grupo = $NumGrupo ORDER BY dataescala, nomeusual");
+            WHERE ".$xProj.".poslog.eft_daf = 1 And ".$xProj.".escaladaf_ins.ativo = 1 And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And esc_grupo = $NumGrupo ORDER BY dataescala, nomeusual");
+            //And ".$xProj.".poslog.ativo = 1 - retirado para mostrar os bloqueados
             ?>
             <div style="position: relative; float: right; color: red; font-weight: bold;" id="mensagemQuadroHorario"></div>
             <table style="margin: 0 auto; width: 95%;">

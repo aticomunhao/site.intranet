@@ -143,6 +143,14 @@
              <li>
 				<a href="#">Telefones</a>
 				<ul>
+					<?php
+					$VisuCelCorporat = parAdm("visucelcorp", $Conec, $xProj); 
+					if($_SESSION["AdmUsu"] >= $VisuCelCorporat){
+						echo "<li>";
+							echo "<a href='#' onclick='openhref(97);'>Celulares Corporativos</a>";
+						echo "</li>";
+					}
+					?>
 					<li>
 						<a href="#" onclick="openhref(57);">Ramais Internos</a>
 					</li>

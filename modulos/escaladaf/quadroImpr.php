@@ -37,7 +37,8 @@ if(isset($_REQUEST["mesano"])){
                 <select id="selectNotasIndiv" style="font-size: 1rem; width: 250px;" title="Selecione o usuário." onchange="imprNotasIndiv(value);">
                     <option value = ""></option>
                     <?php
-                    $OpcoesTodos = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 And eft_daf = 1 And esc_grupo = $NumGrupo ORDER BY nomecompl");
+//                    $OpcoesTodos = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE ativo = 1 And eft_daf = 1 And esc_grupo = $NumGrupo ORDER BY nomecompl");
+                    $OpcoesTodos = pg_query($Conec, "SELECT pessoas_id, nomecompl FROM ".$xProj.".poslog WHERE eft_daf = 1 And esc_grupo = $NumGrupo ORDER BY nomecompl");
                     if($OpcoesTodos){
                         while ($Opcoes = pg_fetch_row($OpcoesTodos)){ ?>
                             <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>

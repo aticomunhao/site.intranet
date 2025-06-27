@@ -1038,17 +1038,17 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="5" style="text-align: center; padding-top: 10px;"></td>
                         </tr>
                         <tr>
-                            <td class="etiq" style="padding-bottom: 7px;">Contrato: </td>
+                            <td class="etiqAzul" style="padding-bottom: 7px;">Contrato: </td>
                             <td style="padding-bottom: 10px;"><input type="text" id="numcontrato" style="width: 200px; text-align: center; border:1px solid; border-radius: 5px;"/></td>
                             <td colspan="2">
                                 <input type="radio" name="vigorcontrato" id="vigorcontrato1" value="1" title="Contrato em vigor." onclick="mudaStatus(value);"><label for="vigorcontrato1" class="etiqAzul" style="padding-left: 3px;"> Em Vigor</label>
                                 <input type="radio" name="vigorcontrato" id="vigorcontrato2" value="2" title="Contrato terminado." onclick="mudaStatus(value);"><label for="vigorcontrato2" class="etiqAzul" style="padding-left: 3px;"> Terminado</label>
                                 <input type="radio" name="vigorcontrato" id="vigorcontrato3" value="3" title="Contrato rescindido." onclick="mudaStatus(value);"><label for="vigorcontrato3" class="etiqAzul" style="padding-left: 3px;"> Rescindido</label>
                             </td>
-                            <td class="etiq" style="padding-bottom: 7px;"><label id="numsequencia" style="font-size: 150%; border:1px solid; border-radius: 5px; padding-left: 3px; padding-right: 3px;" title="Mera sugestão para numeração."></label></td>
+                            <td class="etiqAzul" style="padding-bottom: 7px;"><label id="numsequencia" style="font-size: 150%; border:1px solid; border-radius: 5px; padding-left: 3px; padding-right: 3px;" title="Mera sugestão para numeração."></label></td>
                         </tr>
                         <tr>
-                            <td class="etiq">Setor: </td>
+                            <td class="etiqAzul">Setor: </td>
                             <td colspan="3" style="min-width: 150px;">
                                 <select id="selecSetor" style="min-width: 50px;" onchange="modif();" onmousedown="tiraBorda(id);" title="Selecione um Setor.">
                                     <option value=""></option>
@@ -1061,13 +1061,13 @@ if(!isset($_SESSION["usuarioID"])){
                                         }
                                         ?>
                                 </select>
-                                <label class="etiq" style="padding-left: 50px;">Valor do Contrato: </label>
+                                <label class="etiqAzul" style="padding-left: 50px;">Valor do Contrato: </label>
                                 <input type="text" id="valorcontrato" style="text-align: center; width: 150px;border:1px solid; border-radius: 5px;" onchange="modif();" placeholder="Valor do contrato"/>
                             </td>
                             <td></td>
                         </tr>
                         <tr>
-                            <td class="etiq">Empresa: </td>
+                            <td class="etiqAzul">Empresa: </td>
                             <td colspan="3" style="min-width: 200px;">
 <!--                                <select id="selecEmpresa" onchange="modif();" style="font-size: 1rem; min-width: 150px;" title="Selecione uma empresa."></select> -->
                                 <select id="selecEmpresa" style="min-width: 180px;" onchange="modif();" title="Selecione uma empresa.">
@@ -1086,12 +1086,12 @@ if(!isset($_SESSION["usuarioID"])){
                         </tr>
 
                         <tr>
-                            <td class="etiq">Objeto: </td>
+                            <td class="etiqAzul">Objeto: </td>
                             <td colspan="3" style="width: 100px;"><textarea id="objetocontrato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="2" cols="55" title="Objeto do contrato" onchange="modif();"></textarea></td>
                             <td></td>
                         </tr>
                         <tr>
-                            <td class="etiq">Observações: </td>
+                            <td class="etiqAzul">Observações: </td>
                             <td colspan="3" style="width: 100px;"><textarea id="obscontrato" style="margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 2px;" rows="2" cols="55" title="Observações" onchange="modif();"></textarea></td>
                             <td></td>
                         </tr>
@@ -1107,17 +1107,17 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="5" style="text-align: center; padding-top: 10px;"></td>
                         </tr>
                         <tr>
-                            <td class="etiq aCentro"></td>
-                            <td class="etiq aCentro"></td>
-                            <td class="etiq aCentro"></td>
-                            <td colspan="2" class="etiq aCentro" style="border-inline: 1px solid; border-top: 1px solid;">Término do Contrato</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td colspan="2" class="etiqAzul aCentro" style="border-inline: 1px solid; border-top: 1px solid;">Término do Contrato</td>
                         </tr>
                         <tr>
-                            <td class="etiq aEsq">Data Assinatura</td>
-                            <td class="etiq aCentro">Prazo</td>
-                            <td class="etiq aEsq">Data Vencimento</td>
-                            <td class="etiq aCentro" style="border-left: 1px solid;">Notificação?</td>
-                            <td class="etiq aCentro" style="border-right: 1px solid;">Antecedência</td>
+                            <td class="etiqAzul aEsq">Data Assinatura:</td>
+                            <td class="etiqAzul aCentro">Prazo:</td>
+                            <td class="etiqAzul aEsq">Data Vencimento:</td>
+                            <td class="etiqAzul aCentro" style="border-left: 1px solid;">Notificação?</td>
+                            <td class="etiqAzul aCentro" style="border-right: 1px solid;">Antecedência</td>
                         </tr>
                         <tr>
                             <!-- on change nas datas com o datepicker trava a máquina -->
@@ -1162,7 +1162,7 @@ if(!isset($_SESSION["usuarioID"])){
                             </td>
                             <td style="text-align: center; border-right: 1px solid; border-color: #9C9C9C;">
                                 <input type="text" style="width: 60px; text-align: center; border: 1px solid; border-radius: 5px;" id="diasAnteced" placeholder="Dias" onchange="calcAviso();" onkeypress="if(event.keyCode===13){javascript:foco('dataAviso');return false;}" title="Aviso emitido na página inicial ao longo desses dias."/>
-                                <label class="etiq"> dias</label>
+                                <label class="etiqAzul"> dias</label>
                             </td>
                         </tr>
 
@@ -1172,7 +1172,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 <label class="etiqAzul" id="etiqpararaviso" for="pararaviso" title="Parar a emissão de aviso na página inicial sobre este contrato.">desativar aviso na página inicial</label>
                             </td>
                             <td colspan="2" style="text-align: center; border-left: 1px solid; border-bottom: 1px solid; border-right: 1px solid; border-color: #9C9C9C;">
-                                <label class="etiq">Dia aviso:</label>
+                                <label class="etiqAzul">Dia aviso:</label>
                                 <input type="text" style="text-align: center; border: 1px solid; border-radius: 5px; width: 110px;" id="dataAviso" placeholder="Data Aviso" onkeypress="if(event.keyCode===13){javascript:foco('dataVencim');return false;}"/>
                             </td>
                         </tr>
@@ -1242,14 +1242,14 @@ if(!isset($_SESSION["usuarioID"])){
 
                 <table style="margin: 0 auto; width: 85%;">
                     <tr>
-                        <td class="etiq80" title="Registrar, colecionar e acompanhar os contratos da casa como Contratante ou Contratada.">Contratos: </td>
+                        <td class="etiqAzul" title="Registrar, colecionar e acompanhar os contratos da casa como Contratante ou Contratada.">Contratos: </td>
                         <td colspan="4">
                             <input type="checkbox" id="registroContratos" title="Registrar, colecionar e acompanhar os contratos da casa como Contratante ou Contratada." onchange="marcaContrato(this, 'contr');" >
                             <label for="registroContratos" title="Registrar, colecionar e acompanhar os contratos da casa">registrar, editar e acompanhar os contratos da casa.</label>
                         </td>
                     </tr>
                     <tr>
-                        <td class="etiq80" title="Acompanhar e fiscalizar os contratos da casa como Contratante ou Contratada.">Contratos:</td>
+                        <td class="etiqAzul" title="Acompanhar e fiscalizar os contratos da casa como Contratante ou Contratada.">Contratos:</td>
                         <td colspan="4">
                             <input type="checkbox" id="fiscalContratos" title="Acompanhar e fiscalizar os contratos da casa como Contratante ou Contratada." onchange="marcaContrato(this, 'fisc_contr');" >
                             <label for="fiscalContratos" title="Acompanhar e fiscalizar os contratos da casa como Contratante ou Contratada.">acompanhar e fiscalizar os contratos da casa. Não pode editar.</label>

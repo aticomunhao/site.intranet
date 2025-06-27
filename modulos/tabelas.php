@@ -124,6 +124,8 @@ pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".bensachados (
    editramais smallint DEFAULT 7,
    instelef smallint DEFAULT 4,
    edittelef smallint DEFAULT 4,
+   inscelcorp smallint DEFAULT 4,
+   editcelcorp smallint DEFAULT 4,
    instroca smallint DEFAULT 4,
    edittroca smallint DEFAULT 4,
    editpagina smallint DEFAULT 4,

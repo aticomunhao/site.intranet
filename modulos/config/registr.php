@@ -169,8 +169,8 @@ if($Acao =="loglog"){
                         $Hoje = date('Y/m/d');
                         if(strtotime($DataElim) < strtotime($Hoje)){ // verifica se alguém já logou hoje
                             verifFuncionarios($Conec, $xProj, $ConecPes, $xPes); // verifica fim de contrato para funcionários 
-                            //set ativo = 2 deixa de ser visível 
-                            pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 2 WHERE ativo = 0 And datainat < CURRENT_DATE - interval '30 days' ");
+                            //set ativo = 2 deixa de ser visível em 6 meses 
+                            pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 2 WHERE ativo = 0 And datainat < CURRENT_DATE - interval '180 days' ");
 //                            elimBloqueados($Conec, $xProj); //Salva os bloqueados e deleta de poslog
                             if($PrazoDel < 1000){
                                 pg_query($Conec, "DELETE FROM ".$xProj.".calendev WHERE ativo = 0"); //Elimina dados apagados da tabela calendário
@@ -525,9 +525,9 @@ if($Acao =="salvaUsu"){
             pg_query($Conec, "UPDATE ".$xProj.".pessoas SET dt_nascimento = '$DNasc' WHERE cpf = '$Cpf' "); 
         }
         if($Ativo == 0){ // bloqueado
-            pg_query($Conec, "UPDATE ".$xProj.".poslog SET datainat = NOW() WHERE cpf = '$Cpf'"); // só marca a data da inatividade
+            pg_query($Conec, "UPDATE ".$xProj.".poslog SET usuinat = $UsuLogado, datainat = NOW() WHERE cpf = '$Cpf'"); // marca a data da inatividade
         }else{
-            pg_query($Conec, "UPDATE ".$xProj.".poslog SET datainat = '3000-12-31' WHERE cpf = '$Cpf'");
+            pg_query($Conec, "UPDATE ".$xProj.".poslog SET usuinat = $UsuLogado, datainat = '3000-12-31' WHERE cpf = '$Cpf'");
         }
         if(!$rs){
             $Erro = 1;
@@ -882,7 +882,7 @@ if($Acao =="salvaParam"){
 }
 
 if($Acao =="valorleituraAgua"){
-    $Val = filter_input(INPUT_GET, 'valor');
+    $Val = strtolower(filter_input(INPUT_GET, 'valor'));
     $Valor = str_replace(",", ".", $Val);
     $Erro = 0;
     $rs = pg_query($Conec, "UPDATE ".$xProj.".paramsis SET valoriniagua = $Valor WHERE idPar = 1");
@@ -1235,6 +1235,32 @@ if($Acao =="salvaTema"){
     echo $responseText;
 }
 
+if($Acao =="buscaEftEscala"){
+    $Cpf = filter_input(INPUT_GET, 'cpf'); 
+    $Cpf1 = addslashes($Cpf);
+    $Cpf2 = str_replace(".", "", $Cpf1);
+    $GuardaCpf = str_replace("-", "", $Cpf2);
+    $Erro = 0;
+    $Eft = 0;
+    $DescGrupo = "";
+    $rs = pg_query($Conec, "SELECT eft_daf, esc_grupo FROM ".$xProj.".poslog WHERE cpf = '$GuardaCpf'");
+    if(!$rs){
+        $Erro = 1;
+    }else{
+        $tbl = pg_fetch_row($rs);
+        $Eft = $tbl[0];
+        $Grupo = $tbl[1];
+        if($Grupo > 0){
+            $rs1 = pg_query($Conec, "SELECT siglagrupo FROM ".$xProj.".escalas_gr WHERE id = $Grupo");
+            $tbl1 = pg_fetch_row($rs1);
+            $DescGrupo = $tbl1[0];
+        }
+    }
+    $var = array("coderro"=>$Erro, "efetivo"=>$Eft, "descgrupo"=>$DescGrupo);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
 if($Acao =="marcaChaveUsuario"){
     $CodChave = (int) filter_input(INPUT_GET, 'codigo'); // id de Chaves
     $Param = (int) filter_input(INPUT_GET, 'param');
@@ -1323,9 +1349,9 @@ function removeInj($VemDePost){  // função para remover injeções SQL
     $VemDePost = str_replace("DROP","",$VemDePost);
     $VemDePost = str_replace("DATABASE","",$VemDePost);
     return $VemDePost; 
- }
+}
 
- function Navegador(){
+function Navegador(){
     $MSIE = strpos($_SERVER['HTTP_USER_AGENT'],"MSIE");
     $Firefox = strpos($_SERVER['HTTP_USER_AGENT'],"Firefox");
     $Mozilla = strpos($_SERVER['HTTP_USER_AGENT'],"Mozilla");
@@ -1353,11 +1379,11 @@ function removeInj($VemDePost){  // função para remover injeções SQL
     return $navegador;
 }
 
-function elimBloqueados($Conec, $xProj){
-    //Salva em usuarios_elim e apaga depois de 30 dias de inativado
+function elimBloqueados($Conec, $xProj){ // sem uso
+    //Salva em usuarios_elim e apaga depois de 90 dias de inativado se não estiver como efetivo na escala DAF
     $rs = pg_query($Conec, "SELECT pessoas_id, cpf, nomecompl, nomeusual, sexo, datanasc, codsetor, numacessos, datainat, siglasetor 
 	FROM ".$xProj.".poslog INNER JOIN ".$xProj.".setores ON ".$xProj.".poslog.codsetor = ".$xProj.".setores.codset 
-	WHERE ".$xProj.".poslog.ativo = 0 And datainat < CURRENT_DATE - interval '30 days' ");
+	WHERE ".$xProj.".poslog.ativo = 0 And eft_daf = 0 And datainat < CURRENT_DATE - interval '90 days' ");
     $row = pg_num_rows($rs);
 	if($row > 0){
 		while($tbl = pg_fetch_row($rs)){
@@ -1385,22 +1411,36 @@ function elimBloqueados($Conec, $xProj){
 }
 
 function verifFuncionarios($Conec, $xProj, $ConecPes, $xPes){
+    //Verifica se está na tabela contratos com dt_inicio e dt_fim preenchidos
     $rsF = pg_query($Conec, "SELECT pessoas_id, cpf FROM ".$xProj.".poslog WHERE ativo = 1");
     $rowF = pg_num_rows($rsF); 
     if($rowF > 0){
         while ($tblF = pg_fetch_row($rsF)){
             $Cpf = $tblF[1];
-            $rs1F = pg_query($ConecPes, "SELECT dt_fim 
-
-            FROM $xPes.contrato INNER JOIN ($xPes.pessoas INNER JOIN $xPes.funcionarios ON pessoas.id = funcionarios.id_pessoa)
-            ON funcionarios.id = contrato.id_funcionario
-            WHERE pessoas.cpf = '$Cpf'");
+            $rs1F = pg_query($ConecPes, "SELECT dt_fim FROM $xPes.contrato INNER JOIN ($xPes.pessoas INNER JOIN $xPes.funcionarios ON pessoas.id = funcionarios.id_pessoa) ON funcionarios.id = contrato.id_funcionario WHERE pessoas.cpf = '$Cpf'");
             $row1F = pg_num_rows($rs1F);
-            if($row1F > 0){
-                $tbl1F = pg_fetch_row($rs1F);
-                $Contr = $tbl1F[0];
-                if(!is_null($Contr)){ // se houver data de fim de contrato inserida
-                    pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 0, datainat = NOW() WHERE cpf = '$Cpf'"); //bloqueia
+            if($row1F > 0){ //É funcionário e tem contrato
+                $rs2F = pg_query($ConecPes, "SELECT dt_fim, $xPes.contrato.dt_inicio FROM $xPes.contrato INNER JOIN ($xPes.pessoas INNER JOIN $xPes.funcionarios ON pessoas.id = funcionarios.id_pessoa) ON funcionarios.id = contrato.id_funcionario WHERE pessoas.cpf = '$Cpf' And $xPes.contrato.dt_inicio IS NOT NULL And $xPes.contrato.dt_fim IS NULL ");
+                $row2F = pg_num_rows($rs2F);
+                if($row2F == 0){ // Só tem contratos com data de início e data fim preenchidos
+                    pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 0, usuinat = 999999, datainat = NOW() WHERE cpf = '$Cpf'"); //bloqueia
+                }
+            }
+        }
+    }
+    //Verifica se está na tabela contratos com dt_inicio preenchda e dt_fim em branco
+    $rsF = pg_query($Conec, "SELECT pessoas_id, cpf FROM ".$xProj.".poslog WHERE ativo != 1");
+    $rowF = pg_num_rows($rsF); 
+    if($rowF > 0){
+        while ($tblF = pg_fetch_row($rsF)){
+            $Cpf = $tblF[1];
+            $rs1F = pg_query($ConecPes, "SELECT dt_fim FROM $xPes.contrato INNER JOIN ($xPes.pessoas INNER JOIN $xPes.funcionarios ON pessoas.id = funcionarios.id_pessoa) ON funcionarios.id = contrato.id_funcionario WHERE pessoas.cpf = '$Cpf'");
+            $row1F = pg_num_rows($rs1F);
+            if($row1F > 0){ //É funcionário e tem contrato
+                $rs2F = pg_query($ConecPes, "SELECT dt_fim, $xPes.contrato.dt_inicio FROM $xPes.contrato INNER JOIN ($xPes.pessoas INNER JOIN $xPes.funcionarios ON pessoas.id = funcionarios.id_pessoa) ON funcionarios.id = contrato.id_funcionario WHERE pessoas.cpf = '$Cpf' And $xPes.contrato.dt_inicio IS NOT NULL And $xPes.contrato.dt_fim IS NULL ");
+                $row2F = pg_num_rows($rs2F);
+                if($row2F > 0){ // Tem contrato com data de início preenchido e data fim em branco
+                    pg_query($Conec, "UPDATE ".$xProj.".poslog SET ativo = 1, usumodif = 999999, datamodif = NOW() WHERE cpf = '$Cpf'"); //desbloqueia
                 }
             }
         }

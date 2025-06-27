@@ -75,7 +75,8 @@
                             <td colspan='2' class="etiq aEsq" style="text-align: center;">Mês: <?php echo $Mes_Extract[$Mes]; ?></td>
                         </tr>
                         <?php
-                        $rs = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl"); 
+//                        $rs = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl"); 
+                        $rs = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl"); 
                         $row = pg_num_rows($rs);
                         if($row > 0){
                             while($tbl = pg_fetch_row($rs)){
@@ -143,7 +144,8 @@
                                         <td colspan='2' class="etiq aEsq">Semana: <?php echo $DiaIniSem." a ".$DiaFimSem; ?></td>
                                     </tr>
                                     <?php
-                                    $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl"); 
+//                                    $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl"); 
+                                    $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl"); 
                                     $row0 = pg_num_rows($rs0);
                                     if($row0 > 0){
                                         while($tbl0 = pg_fetch_row($rs0)){
@@ -184,7 +186,8 @@
                                     <td colspan='2' class="etiq aEsq">Semana: <?php echo $DiaIniSem." a ".$DiaFimSem; ?></td>
                                 </tr>
                                 <?php
-                                $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl"); 
+//                                $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And ativo = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl"); 
+                                $rs0 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog WHERE eft_daf = 1 And esc_grupo = $NumGrupo ORDER BY ordem_daf, nomeusual, nomecompl"); 
                                 $row0 = pg_num_rows($rs0);
                                 if($row0 > 0){
                                     while($tbl0 = pg_fetch_row($rs0)){

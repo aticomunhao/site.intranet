@@ -244,5 +244,149 @@ if($Tipo == 2){ // ramais externos
         $responseText = json_encode($var);
         echo $responseText;
     }
+}
 
+if($Tipo == 3){ // celulares corporativos
+    if($Acao =="buscaRamal"){
+        $Num = (int) filter_input(INPUT_GET, 'numero'); // id
+        $Erro = 0;
+        $row = 0;
+
+        $Sql = pg_query($Conec, "SELECT nomeusu, nomecompl, codsetor, ramal, poslog_id, setor, ativo, ramal2 
+        FROM ".$xProj.".ramais_cel WHERE codtel = $Num");
+        if(!$Sql){
+           $Erro = 1;
+        }else{
+            $row = pg_num_rows($Sql);
+            $Proc = pg_fetch_row($Sql);
+        }
+        $var = array("coderro"=>$Erro, "usuario"=>$Proc[0], "nomecompleto"=>$Proc[1], "codsetor"=>$Proc[2], "setor"=>$Proc[5], "ramal"=>$Proc[3], "ramal2"=>$Proc[7], "idposlog"=>$Proc[4], "sit_ativo"=>$Proc[6] );
+        $responseText = json_encode($var);
+        echo $responseText;
+    }
+
+    if($Acao =="salvaRamal"){
+        $id = (int) filter_input(INPUT_GET, 'numero');
+        $Nom = trim(filter_input(INPUT_GET, 'usuario'));  // nome usual
+        if(!is_null($Nom)){
+            $NomeU = $Nom;
+            $NomeUs = GUtils::normalizarNome($NomeU);  // Normatizar nomes próprios
+            $NomeUsu = addslashes($NomeUs);
+            $Nome = str_replace('"', "'", $NomeUsu); // substitui aspas duplas por simples
+        }else{
+            $Nome = "";
+        }
+
+        $CodNome = filter_input(INPUT_GET, 'codnomecompl'); // id de poslog
+        if($CodNome == ""){
+            $CodNome = 0;
+        }
+        if(is_null($CodNome)){
+            $CodNome = 0;
+        }
+        $NomeC = trim(filter_input(INPUT_GET, 'nomecompleto'));
+        $NomeCo = GUtils::normalizarNome($NomeC);  // Normatizar nomes próprios
+        $NomeComp = addslashes($NomeCo);
+        $NomeCompl = str_replace('"', "'", $NomeComp); // substitui aspas duplas por simples
+
+        $Ramal = filter_input(INPUT_GET, 'ramal');
+        $Ramal2 = filter_input(INPUT_GET, 'ramal2');
+        $CodSetor = (int) filter_input(INPUT_GET, 'codsetor');
+        $DescSetor = filter_input(INPUT_GET, 'setor');
+
+        $UsuLogado = $_SESSION["usuarioID"]; //$_REQUEST["usulogado"];
+        $Erro = 0;
+        $row = 0;
+        if($id != 0){ // já tem em ramais_int - edição
+            $Sql = pg_query($Conec, "UPDATE ".$xProj.".ramais_cel SET poslog_id = $CodNome, nomeusu = '$Nome', nomecompl = '$NomeCompl', ramal = '$Ramal', ramal2 = '$Ramal2', setor = '$DescSetor', usumodif = $UsuLogado, ativo = 1, datamodif = NOW() WHERE codtel = $id");
+            if(!$Sql){
+                $Erro = 1;
+            }
+        }else{ // inserção
+            $rsCod = pg_query($Conec, "SELECT MAX(codtel) FROM ".$xProj.".ramais_cel");
+            $tblCod = pg_fetch_row($rsCod);
+            $Codigo = $tblCod[0];
+            $CodigoNovo = ($Codigo+1);
+
+            $rs = pg_query($Conec, "INSERT INTO ".$xProj.".ramais_cel (codtel, nomeusu, nomecompl, ramal, ramal2, setor, datains, usuins, poslog_id) 
+            VALUES($CodigoNovo, '$Nome', '$NomeCompl', '$Ramal', '$Ramal2', '$DescSetor', NOW(), $UsuLogado, $CodNome) ");
+            if(!$rs){
+                $Erro = 1;
+            }
+        }
+        $var = array("coderro"=>$Erro, "id"=>$id);
+        $responseText = json_encode($var);
+        echo $responseText;
+    }
+
+    if($Acao =="buscaNome"){
+        $Num = (int) filter_input(INPUT_GET, 'numero'); // id
+        $Arq = (int) filter_input(INPUT_GET, 'arquivo'); // arquivo 0 = pessoas   1 - poslog
+        $Erro = 0;
+        $CodTel = 0;
+        $CodSetor = "";
+        $SiglaSetor = "";
+        $NomeUsual = "";
+        $NomeCompl = "";
+        $Ramal = "";
+        $Ramal2 = "";
+        $Sit = 1;
+        $JaTem = 0;
+
+        if($Num > 0){ // veio um número do select usuários de poslog
+            if($Arq == 0){
+                $rs = pg_query($ConecPes, "SELECT nome_completo, sexo, nome_resumido FROM ".$xPes.".pessoas WHERE id = $Num");
+            }else{
+                $rs = pg_query($Conec, "SELECT nomecompl, codsetor, nomeusual FROM ".$xProj.".poslog WHERE id = $Num");
+            }
+            $row = pg_num_rows($rs);
+            if($row > 0){
+                $tbl = pg_fetch_row($rs);
+                $NomeCompl = $tbl[0];
+                if($Arq == 0){
+                    $CodSetor = 0;
+                }else{
+                    $CodSetor = $tbl[1]; 
+                }
+                $NomeUsual = $tbl[2];
+                if($CodSetor > 0){
+                    $rs1 = pg_query($Conec, "SELECT siglasetor FROM ".$xProj.".setores WHERE codset = $CodSetor");
+                    $row1 = pg_num_rows($rs1);
+                    if($row1 > 0){
+                        $tbl1 = pg_fetch_row($rs1);
+                        $SiglaSetor = $tbl1[0];
+                    }
+                }
+            }
+            //Verifica se já foi inserido em ramais_cel
+            $rs2 = pg_query($Conec, "SELECT codtel, nomeusu, nomecompl, ramal, ramal2, ativo FROM ".$xProj.".ramais_cel WHERE poslog_id = $Num");
+            $row2 = pg_num_rows($rs2);
+            if($row2 > 0){ //pega o codtel de ramais_int
+                $JaTem = 1;
+                $tbl2 = pg_fetch_row($rs2);
+                $CodTel = $tbl2[0];
+                $NomeUsual = $tbl2[1];
+                $NomeCompl = $tbl2[2];
+                $Ramal = $tbl2[3];
+                $Ramal2 = $tbl2[4];
+                $Sit = $tbl2[5];
+            }
+        }
+
+        $var = array("coderro"=>$Erro, 'jatem'=>$JaTem, "codtel"=>$CodTel, "codsetor"=>$CodSetor, "siglasetor"=>$SiglaSetor, "nomeusual"=>$NomeUsual, "nomecompleto"=>$NomeCompl, "ramal"=>$Ramal, "ramal2"=>$Ramal2, "sit_ativo"=>$Sit);
+        $responseText = json_encode($var);
+        echo $responseText;
+    }
+
+    if($Acao =="deletaRamal"){
+        $id = (int) filter_input(INPUT_GET, 'numero');
+        $Erro = 0;
+        $Sql = pg_query($Conec, "UPDATE ".$xProj.".ramais_cel SET ativo = 0 WHERE codtel = $id");
+        if(!$Sql){
+            $Erro = 1;
+        }
+        $var = array("coderro"=>$Erro, "id"=>$id);
+        $responseText = json_encode($var);
+        echo $responseText;
+    }
 }

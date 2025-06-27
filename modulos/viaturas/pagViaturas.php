@@ -1020,9 +1020,9 @@ if(!isset($_SESSION["usuarioID"])){
                 <div style="margin: 3px; padding: 3px; border: 1px solid; border-radius: 10px;">
                 <table style="margin: 0 auto; width: 95%;">
                     <tr>
-                        <td class="etiq aDir">Data: </td>
+                        <td class="etiqAzul aDir">Data: </td>
                         <td><input type="text" id="datacompra" valor="" width="150" onchange="modif();" style="text-align: center; border: 1px solid; border-radius: 5px;" onkeypress="if(event.keyCode===13){javascript:foco('valorcompra');return false;}"></td>
-                        <td class="etiq aDir">Viatura: </td>
+                        <td class="etiqAzul aDir">Viatura: </td>
                         <td>
                             <select id="relviaturas" onchange="modif();" style="font-size: .9rem; width: 100%;" title="Selecione uma viatura.">
                                 <option value=""></option>
@@ -1036,7 +1036,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 ?>
                             </select>
                         </td>
-                        <td class="etiq aDir">Odômetro: </td>
+                        <td class="etiqAzul aDir">Odômetro: </td>
                         <td><input type="text" id="odometro" valor="" onchange="modif();" style="width: 100px; text-align: center; border: 1px solid; border-radius: 5px;" onkeypress="if(event.keyCode===13){javascript:foco('datacompra');return false;}"><label class="etiqAzul" style="padding-left: 2px;"> Km</label></td>
                     </tr>
                 </table>
@@ -1045,7 +1045,7 @@ if(!isset($_SESSION["usuarioID"])){
                 <div id="relacmodalInsAbast" style="margin: 3px; padding: 3px; border: 1px solid; border-radius: 10px; background: linear-gradient(180deg, white,rgb(226, 207, 214))">
                     <table style="margin: 0 auto; width: 95%;">
                         <tr>
-                            <td class="etiq aDir">Tipo de Combustível: </td>
+                            <td class="etiqAzul aDir">Tipo de Combustível: </td>
                             <td>
                                 <select id="reltipocombust" onchange="modif();" style="font-size: .9rem; width: 90%;" title="Selecione um tipo de combustível.">
                                     <option value=""></option>
@@ -1065,11 +1065,11 @@ if(!isset($_SESSION["usuarioID"])){
                             <td></td>
                         </tr>
                         <tr>
-                            <td class="etiq aDir" style="min-width: 50px;">Valor da Nota R$: </td>
+                            <td class="etiqAzul aDir" style="min-width: 50px;">Valor da Nota R$: </td>
                             <td><input type="text" id="valorcompra" valor="" onchange="modifValor();" style="width: 100px; text-align: center; border: 1px solid; border-radius: 5px;" onkeypress="if(event.keyCode===13){javascript:foco('volumecompra');return false;}"></td>
-                            <td class="etiq aDir" style="min-width: 50px;">Volume: </td>
+                            <td class="etiqAzul aDir" style="min-width: 50px;">Volume: </td>
                             <td><input type="text" id="volumecompra" valor="" onchange="modifVolume();" style="width: 100px; text-align: center; border: 1px solid; border-radius: 5px;" onkeypress="if(event.keyCode===13){javascript:foco('odometro');return false;}"><label class="etiqAzul" style="padding-left: 2px;"> litros</label></td>
-                            <td class="etiq aDir" style="min-width: 50px;">R$: </td>
+                            <td class="etiqAzul aDir" style="min-width: 50px;">R$: </td>
                             <td><input disabled type="text" id="precolitro" valor="" onchange="modif();" style="width: 100px; text-align: center; border: 1px solid; border-radius: 5px;"><label class="etiqAzul" style="padding-left: 2px;"> por litro</label></td>
                         </tr>
                         <tr>
@@ -1084,7 +1084,7 @@ if(!isset($_SESSION["usuarioID"])){
                             <td colspan="6" style="padding-top: 2px;"></td>
                         <tr>
                         <tr>
-                            <td class="etiq aDir">Tipo de Manutenção: </td>
+                            <td class="etiqAzul aDir">Tipo de Manutenção: </td>
                             <td>
                                 <select id="reltipomanut" onchange="modif();" style="font-size: .9rem; width: 90%;" title="Selecione um tipo de combustível.">
                                     <option value=""></option>
@@ -1099,7 +1099,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 </select>
                             </td>
                             <td style="min-width: 50px;"></td>
-                            <td class="etiq aDir">Valor da Nota R$: </td>
+                            <td class="etiqAzul aDir">Valor da Nota R$: </td>
                             <td><input type="text" id="valormanut" valor="" onchange="modifValor();" style="width: 100px; text-align: center; border: 1px solid; border-radius: 5px;" onkeypress="if(event.keyCode===13){javascript:foco('volumecompra');return false;}"></td>
                             <td style="min-width: 100px;"></td>
                         </tr>
@@ -1110,14 +1110,14 @@ if(!isset($_SESSION["usuarioID"])){
                 </div>
                 <table style="margin: 0 auto; width: 95%;">
                     <tr>
-                        <td class="etiq aDir">Observações: </td>
+                        <td class="etiqAzul aDir">Observações: </td>
                         <td><textarea class="form-control" id="obsviatura" style="resize: both; margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 4px;" rows="2" cols="70" title="Observações" onchange="modif();"></textarea></td>
                     </tr>
                 </table>
 
                 <table style="margin: 0 auto; width: 95%;">
                     <tr>
-                        <td><button class="botpadrred" id="apagaRegCombust" style="display: none; font-size: .9rem; font-size: 80%; padding: 2px;" onclick="apagaModalViatura();">Apagar</button></td>
+                        <td><button class="botpadrred" id="apagaRegCombust" style="display: none; font-size: .9rem; font-size: 80%; padding: 2px; font-size: 70%;" onclick="apagaModalViatura();">Apagar</button></td>
                         <td style="text-align: center;"><div id="mensagemLeitura" style="position: relative; float: right; color: red; font-weight: bold;"></div></td>
                         <td style="text-align: center;"><button id="botsalvar" class="botpadrblue" onclick="salvaModal();">Salvar</button></td>
                     </tr>
