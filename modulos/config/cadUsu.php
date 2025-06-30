@@ -35,6 +35,14 @@ if(!isset($_SESSION["usuarioID"])){
                 width: 70%;
                 max-width: 900px;
             }
+            .modalMsg-content{
+                background: linear-gradient(180deg, white, #86c1eb);
+                margin: 10% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                border-radius: 15px;
+                width: 60%; 
+            }
         </style>
         <script>
             function ajaxIni(){
@@ -54,6 +62,9 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
             $(document).ready(function(){
+                //Provisório
+                document.getElementById("imgInfo").style.visibility = "hidden";
+
                 document.getElementById("botinserir").style.visibility = "hidden"; // botão de inserir usuário
                 if(parseInt(document.getElementById("UsuAdm").value) === 7){ // superusuário 
                     document.getElementById("botinserir").style.visibility = "visible";
@@ -278,6 +289,11 @@ if(!isset($_SESSION["usuarioID"])){
                                     }else{
                                         document.getElementById("fiscalExtintor").checked = false;
                                     }
+                                    if(parseInt(Resp.mostraAniv) === 1){
+                                        document.getElementById("mostrarAniver").checked = true;
+                                    }else{
+                                        document.getElementById("mostrarAniver").checked = false;
+                                    }
 
                                     document.getElementById("titulomodal").innerHTML = "Edição de Usuários";
                                     document.getElementById("ressetsenha").disabled = false;
@@ -444,6 +460,10 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("fiscalExtintor").checked === true){
                     FiscExtint = 1;
                 }
+                MarcaAniv = 0;
+                if(document.getElementById("mostrarAniver").checked === true){
+                    MarcaAniv = 1;
+                }
                 if(parseInt(document.getElementById("mudou").value) === 1){
                     ajaxIni();
                     if(ajax){
@@ -483,6 +503,7 @@ if(!isset($_SESSION["usuarioID"])){
                         +"&fisccontrato="+FiscContr
                         +"&Extint="+Extint
                         +"&fiscExtint="+FiscExtint
+                        +"&mostraaniver="+MarcaAniv
                         , true);
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
@@ -1047,6 +1068,12 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#faixacentral").load("modulos/config/jUsu.php?acao="+Valor);
             }
 
+            function carregaHelp(){
+                document.getElementById("relacHelp").style.display = "block";
+            }
+            function fechaHelp(){
+                document.getElementById("relacHelp").style.display = "none";
+            }
         </script>
     </head>
     <body>
@@ -1113,6 +1140,8 @@ if(!isset($_SESSION["usuarioID"])){
                 <input type="button" id="botinserir" class="resetbot" value="Inserir Novo" onclick="insUsu();">
                 <label style="padding-left: 20px;"></label>
                 <button class="botpadrred" style="font-size: 80%;" id="botimpr" onclick="resumoUsu();">PDF</button>
+                <label style="padding-left: 30px;"></label>
+                <img src="imagens/iinfo.png" height="20px;" id="imgInfo" style="cursor: pointer;" onclick="carregaHelp();" title="Guia rápido">
             </div>
             <div class="box" style="position: relative; float: left; width: 33%; text-align: center;">
                 <h3>Usuários Cadastrados</h3>
@@ -1199,14 +1228,13 @@ if(!isset($_SESSION["usuarioID"])){
                             ?>
                             </select>
                         </td>
-                        <td></td>
-                        <td></td>
-
-                        <td colspan="2" style="text-align: right;">
+                        <td colspan="4" style="text-align: right;">
                             <label class="etiq80">Aniversário: -Dia: </label>
                             <input type="text" disabled id="diaAniv" style="text-align: center; font-size: .8rem; width: 25px;">
                             <label class="etiq80"> -Mês: </label>
                             <input type="text" disabled id="mesAniv" style="text-align: center; font-size: .8rem; width: 25px;">
+                            <label style="padding-left: 3px;"></label>
+                            <input type="checkbox" id="mostrarAniver" title="Mostrar aniversário na página inicial" onchange="modif();"  >
                         </td>
                     </tr>
                     <tr>
@@ -1520,6 +1548,23 @@ if(!isset($_SESSION["usuarioID"])){
                 <div id="faixachaves"></div>
             </div>
         </div> <!-- Fim Modal-->
+
+       <!-- div modal para instruções -->
+        <div id="relacHelp" class="relacmodal">
+            <div class="modalMsg-content">
+                <span class="close" onclick="fechaHelp();">&times;</span>
+                <h4 style="text-align: center; color: #666;">Informações</h4>
+                <h5 style="text-align: center; color: #666;">Cadastro de Usuários</h5>
+                <div style="color: #000000; border: 1px solid; border-radius: 10px; margin: 5px; padding: 5px;">
+                    Regras inseridas:
+                    <ul>
+                        <li>01 - Quando um usuário é bloqueado vai para a relação de Bloqueados, onde fica inativo por 180 dias até desaparecer da relação de Bloqueados.</li>
+                        <li>02 - Quando um funcionário tem seu contrato encerrado, o sistema o bloqueia e ele permanece inativo por 180 dias. Os escalantes o retirarão de seu grupo nas escalas de serviço dos meses subsequentes à demissão.</li>
+                        <li>03 - Depois dos 180 dias ele não será mais visível porém poderá ser visto nas escalas de serviço anteriores ao término do seu contrato. Se um novo contrato for assinado ele voltará à condição de usuário ativo.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>  <!-- Fim Modal Help-->
 
     </body>
 </html>

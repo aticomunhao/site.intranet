@@ -65,6 +65,7 @@ if(!isset($_SESSION["usuarioID"])){
                 border-radius: 3px;
                 padding-left: 3px;
                 padding-right: 3px;
+                cursor: default;
             }
             .quadrinhoClick {
                 font-size: 90%;
@@ -1677,6 +1678,10 @@ if(!isset($_SESSION["usuarioID"])){
             function carregaHelp(){
                 document.getElementById("relacHelp").style.display = "block";
             }
+            function fechaHelp(){
+                document.getElementById("relacHelp").style.display = "none";
+            }
+
             function fechaModalConfig(){
                 document.getElementById("modalChavesConfig").style.display = "none";
             }
@@ -1721,9 +1726,6 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("agendasetor").innerHTML = "";
                 document.getElementById("agendatelef").value = "";
                 document.getElementById("agendaselecSolicitante").value = "";
-            }
-            function fechaHelp(){
-                document.getElementById("relacHelp").style.display = "none";
             }
 
             function modif(){
@@ -2669,9 +2671,9 @@ if(!isset($_SESSION["usuarioID"])){
                         <li>14 - Se o nome da pessoa que devolve a chave não estiver na lista e não aparecer ao digitar o CPF, clique nessa procura por CPF e dê um enter sem digitar nada. O espaço destinado ao nome do entregador se tornará editável. Escreva o nome de quem está entregando a chave. Anote também o telefone, se possível.  </li>
                         <li>15 - Quando a vinculação usuário/chave estiver ligada, o sistema informará se porventura um usuário não puder retirar determinada chave.</li>
                         <?php if($EscChave == 1){
-                            echo "<li>15 - A vinculação está <u>ligada</u>.</li>";    
+                            echo "<li>15 - A vinculação Usuário/Chave está <u>ligada</u>.</li>";    
                         }else{
-                            echo "<li>15 - No momento a vinculação está desligada.</li>";    
+                            echo "<li>15 - No momento a vinculação Usuário/Chave está desligada.</li>";    
                         }
                         ?>
                     </ul>

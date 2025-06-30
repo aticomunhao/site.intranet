@@ -65,11 +65,29 @@
                                         echo "<img src='imagens/ChaveAzul.png' height='20px;' title='Chave presente'>";
                                     }
                                 }else{
-                                    echo "<img src='imagens/ChaveVerm.png' height='20px;' style='cursor: pointer;' onclick='retornoChave1($Cod);' title='Chave ausente'>";
+                                    if($Clav == 1 || $ClavEdit == 1){
+                                        echo "<img src='imagens/ChaveVerm.png' height='20px;' style='cursor: pointer;' onclick='retornoChave1($Cod);' title='Chave ausente'>";
+                                    }else{
+                                        echo "<img src='imagens/ChaveVerm.png' height='20px;' style='cursor: default;' title='Chave ausente'>";
+                                    }
                                 }
                                 ?>
                             </td>
-                            <td style="font-size: 80%;"><?php echo "<sup>$tbl[1] $tbl[7]</sup>"; ?></td>
+                            <?php
+                                if($Presente == 1){
+                                    if($Clav == 1 || $ClavEdit == 1){
+                                        echo "<td style='font-size: 80%; cursor: pointer;' onclick='saidaChave($Cod);' title='Número da Chave - Presente'><sup>$tbl[1] $tbl[7]</sup></td>";
+                                    }else{
+                                        echo "<td style='font-size: 80%; cursor: default;' title='Número da Chave - Presente'><sup>$tbl[1] $tbl[7]</sup></td>";
+                                    }
+                                }else{
+                                    if($Clav == 1 || $ClavEdit == 1){
+                                        echo "<td style='font-size: 80%; cursor: pointer; color: red;' onclick='retornoChave1($Cod);' title='Número da Chave - Ausente'><sup>$tbl[1] $tbl[7]</sup></td>";
+                                    }else{
+                                        echo "<td style='font-size: 80%; cursor: default; color: red;' title='Número da Chave - Ausente'><sup>$tbl[1] $tbl[7]</sup></td>";
+                                    }
+                                }
+                            ?>
                         </tr>
                         <?php
                     }

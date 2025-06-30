@@ -33,6 +33,14 @@
 			//Provisório
 			if(strtotime('2025/07/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
+				//122
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS mostraniv smallint NOT NULL DEFAULT 1;");
+				$rs = pg_query($Conec, "SELECT mostraniv FROM ".$xProj.".poslog WHERE mostraniv = 1");
+				$row = pg_num_rows($rs);
+				if($row == 0){
+					pg_query($Conec, "UPDATE FROM ".$xProj.".poslog SET mostraniv = 1"); // marca todos
+					//inserir na query mostraniv = 1 em aniverIni.php na atualização 123
+				}
 				//121
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS visucelcorp smallint NOT NULL DEFAULT 7;");
 				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS inseditcelcorp smallint NOT NULL DEFAULT 7;");

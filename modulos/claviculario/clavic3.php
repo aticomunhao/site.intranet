@@ -65,6 +65,7 @@ if(!isset($_SESSION["usuarioID"])){
                 border-radius: 3px;
                 padding-left: 5px;
                 padding-right: 5px;
+                cursor: default;
             }
             .quadrinhoClick {
                 font-size: 90%;
