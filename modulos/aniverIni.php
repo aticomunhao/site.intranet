@@ -32,26 +32,26 @@
     }
 
     require_once("config/gUtils.php");
-    if(strtotime('2024/08/07') > strtotime(date('Y/m/d'))){
-    //usando a data de nascimento na tabela pessoas
-    function pegaAniver($param, $mdate, $ddate, $ConecPes, $xPes, $ProxMes) {
-        $rs0 = pg_query($ConecPes, "SELECT nome_completo, nome_resumido, TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') 
-        FROM ".$xPes.".pessoas 
-        WHERE status = 1 And TO_CHAR(dt_nascimento, 'MM') = '$mdate' And TO_CHAR(dt_nascimento, 'DD') $param '$ddate' Or status = 1 And TO_CHAR(dt_nascimento, 'MM') = '$ProxMes' 
-        ORDER BY TO_CHAR(dt_nascimento, 'MM'), TO_CHAR(dt_nascimento, 'DD'), nome_completo LIMIT 20");
-        return $rs0;
-    }
-    }
-    if(strtotime('2024/08/07') <= strtotime(date('Y/m/d'))){
+//    if(strtotime('2024/08/07') > strtotime(date('Y/m/d'))){
+//    //usando a data de nascimento na tabela pessoas
+//    function pegaAniver($param, $mdate, $ddate, $ConecPes, $xPes, $ProxMes) {
+//        $rs0 = pg_query($ConecPes, "SELECT nome_completo, nome_resumido, TO_CHAR(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM') 
+//        FROM ".$xPes.".pessoas 
+//        WHERE status = 1 And TO_CHAR(dt_nascimento, 'MM') = '$mdate' And TO_CHAR(dt_nascimento, 'DD') $param '$ddate' Or status = 1 And TO_CHAR(dt_nascimento, 'MM') = '$ProxMes' 
+//        ORDER BY TO_CHAR(dt_nascimento, 'MM'), TO_CHAR(dt_nascimento, 'DD'), nome_completo LIMIT 20");
+//        return $rs0;
+//    }
+//    }
+//    if(strtotime('2024/08/07') <= strtotime(date('Y/m/d'))){
     function pegaAniver($param, $mdate, $ddate, $Conec, $xProj, $ProxMes) {
         $rs0 = pg_query($Conec, "SELECT nomecompl, nomeusual, TO_CHAR(datanasc, 'DD'), TO_CHAR(datanasc, 'MM') 
         FROM ".$xProj.".poslog  
-        WHERE ativo = 1 And TO_CHAR(datanasc, 'YYYY') != '1500' And TO_CHAR(datanasc, 'MM') = '$mdate' And TO_CHAR(datanasc, 'DD') $param '$ddate' 
-        Or ativo = 1 And TO_CHAR(datanasc, 'YYYY') != '1500' And TO_CHAR(datanasc, 'MM') = '$ProxMes' 
+        WHERE ativo = 1 And mostraniv = 1 And TO_CHAR(datanasc, 'YYYY') != '1500' And TO_CHAR(datanasc, 'MM') = '$mdate' And TO_CHAR(datanasc, 'DD') $param '$ddate' 
+        Or ativo = 1 And mostraniv = 1 And TO_CHAR(datanasc, 'YYYY') != '1500' And TO_CHAR(datanasc, 'MM') = '$ProxMes' 
         ORDER BY TO_CHAR(datanasc, 'MM'), TO_CHAR(datanasc, 'DD'), nomecompl LIMIT 20");
         return $rs0;
     }
-    }
+//    }
     $NiverHoje = 0;
     echo "<div style='text-align: center;'>";
         echo "<span style='font-weight: bold;'>Aniversariantes</span>";

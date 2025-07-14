@@ -1,38 +1,35 @@
 <?php
 session_start();
 require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
-function cleanString($text) {
-    $utf8 = array(
-      '/[áàâãä]/u'    =>   'a',
-      '/[ÁÀÂÃÄ]/u'    =>   'A',
-      '/[ÍÌÎÏ]/u'     =>   'I',
-      '/[íìîï]/u'     =>   'i',
-      '/[éèêë]/u'     =>   'e',
-      '/[ÉÈÊË]/u'     =>   'E',
-      '/[óòôõºö]/u'   =>   'o',
-      '/[ÓÒÔÕÖ]/u'    =>   'O',
-      '/[úùûü]/u'     =>   'u',
-      '/[ÚÙÛÜ]/u'     =>   'U',
-      '/ç/'           =>   'c',
-      '/Ç/'           =>   'C',
-      '/ª/'           =>   'a',
-      '/ñ/'           =>   'n',
-      '/Ñ/'           =>   'N',
-      '/–/'           =>   '-', // UTF-8 hyphen to "normal" hyphen
-      '/[’‘‹›‚]/u'    =>   ' ', // Literally a single quote
-      '/[“”«»„]/u'    =>   ' ', // Double quote
-      '/ /'           =>   ' ', // nonbreaking space (equiv. to 0x160)
-    );
-    return preg_replace(array_keys($utf8), array_values($utf8), $text);
- }
+    function cleanString($text) {
+        $utf8 = array(
+          '/[áàâãä]/u'    =>   'a',
+          '/[ÁÀÂÃÄ]/u'    =>   'A',
+          '/[ÍÌÎÏ]/u'     =>   'I',
+          '/[íìîï]/u'     =>   'i',
+          '/[éèêë]/u'     =>   'e',
+          '/[ÉÈÊË]/u'     =>   'E',
+          '/[óòôõºö]/u'   =>   'o',
+          '/[ÓÒÔÕÖ]/u'    =>   'O',
+          '/\[úùûü]/u'     =>   'u',
+          '/[ÚÙÛÜ]/u'     =>   'U',
+          '/ç/'           =>   'c',
+          '/Ç/'           =>   'C',
+          '/ª/'           =>   'a',
+          '/ñ/'           =>   'n',
+          '/Ñ/'           =>   'N',
+          '/–/'           =>   '-', // UTF-8 hyphen to "normal" hyphen
+          '/[’‘‹›‚]/u'    =>   ' ', // Literally a single quote
+          '/[“”«»„]/u'    =>   ' ', // Double quote
+          '/ /'           =>   ' ', // nonbreaking space (equiv. to 0x160)
+        );
+        return preg_replace(array_keys($utf8), array_values($utf8), $text);
+    }
  
     $arquivo = $_FILES['arquivo'];  //recebe o arquivo do formulário
 
-    //Verificar as extensões outra vez - já foi feito no custom.js - O js não está entendendo o MIME type pptx e ppsx - está sendo filtrado só aqui
-    if($arquivo['type'] == 'application/pdf' || $arquivo['type'] == 'application/msword' || $arquivo['type'] == 'application/vnd.openxmlformats' || $arquivo['type'] == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || $arquivo['type'] == 'text/plain' || $arquivo['type'] == 'application/vnd.openxmlformats-officedocument.presentationml.presentation' || $arquivo['type'] == 'application/vnd.openxmlformats-officedocument.presentationml.slideshow' || $arquivo['type'] == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'){
-        // MIME docx = application/vnd.openxmlformats-officedocument.wordprocessingml.document
-        // MIME pptx = application/vnd.openxmlformats-officedocument.presentationml.presentation 
-        // MIME xlsx = application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+    //Verificar as extensões pelo tipo MIME 
+    if($arquivo['type'] == 'application/pdf' || $arquivo['type'] == 'application/msword' || $arquivo['type'] == 'application/vnd.openxmlformats' || $arquivo['type'] == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || $arquivo['type'] == 'text/plain' || $arquivo['type'] == 'application/vnd.openxmlformats-officedocument.presentationml.presentation' || $arquivo['type'] == 'application/vnd.openxmlformats-officedocument.presentationml.slideshow' || $arquivo['type'] == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || $arquivo['type'] == 'image/jpeg' || $arquivo['type'] == 'image/png' || $arquivo['type'] == 'image/webp' || $arquivo['type'] == 'application/x-zip-compressed'){
         $DescSetor = "Sistema";
         // Seleciona o setor do usuário
         //Verificar onde estará o código do setor

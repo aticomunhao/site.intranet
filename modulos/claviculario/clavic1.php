@@ -46,7 +46,7 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 60%; /* acertar de acordo com a tela */
+                width: 70%; /* acertar de acordo com a tela */
                 max-width: 900px;
             }
             .modal-content-Chaves{
@@ -145,7 +145,7 @@ if(!isset($_SESSION["usuarioID"])){
 
                 if(parseInt(document.getElementById("guardaEditaChaves").value) === 1 || parseInt(document.getElementById("guardaEntregaChaves").value) === 1 || parseInt(document.getElementById("guardaFiscChaves").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
                     $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
-                    $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");
+                    $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos"); // faixa saída
                     $("#faixaagenda").load("modulos/claviculario/agChave1.php?largTela="+LargTela);
                     if(parseInt(document.getElementById("guardaEditaChaves").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ 
                         document.getElementById("botinserir").style.visibility = "visible";
@@ -824,6 +824,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("obschave").value = "";
                                     document.getElementById("apagarChaves").style.visibility = "hidden";
                                     document.getElementById("editaModalChave").style.display = "block";
+                                    document.getElementById("etiqInsEditChave").innerHTML = "Inserção de Chave";
                                     document.getElementById("salachave").focus();
                                 }else{
                                     alert("Houve um erro no servidor.")
@@ -856,6 +857,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("obschave").value = Resp.chaveobs;
                                     document.getElementById("apagarChaves").style.visibility = "visible";
                                     document.getElementById("editaModalChave").style.display = "block";
+                                    document.getElementById("etiqInsEditChave").innerHTML = "Edição de Chave";
                                     document.getElementById("salachave").focus();
                                }
                             }
@@ -1083,7 +1085,7 @@ if(!isset($_SESSION["usuarioID"])){
                                 }else{
                                     document.getElementById("registroRetiradaChave").style.display = "none";  
                                     $("#faixacentral").load("modulos/claviculario/jChave1.php?acao=todos");
-                                    $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos");  
+                                    $("#faixamostra").load("modulos/claviculario/kChave1.php?acao=todos"); // saída 
                                     $("#faixaagenda").load("modulos/claviculario/agChave1.php?largTela="+LargTela);
                                 }
                             }
@@ -1989,7 +1991,7 @@ if(!isset($_SESSION["usuarioID"])){
         <div id="editaModalChave" class="relacmodal">
             <div class="modal-content-relacChave corPreta">
                 <span class="close" onclick="fechaEditaChave();">&times;</span>
-                <label style="color: #666;">Edição:</label>
+                <div style="text-align: center;"><label id="etiqInsEditChave" style="color: #666; font-size: 130%; font-weight: bold;">Edição de Chave</label></div>
                 <table style="margin: 0 auto; width: 85%;">
                     <tr>
                         <td class="etiqAzul" style="padding-bottom: 7px;">Chave: </td>
@@ -2667,7 +2669,7 @@ if(!isset($_SESSION["usuarioID"])){
                         <li>11 - Para proceder à devolução da chave ao claviculário, procure na coluna da direita o número da chave que está sendo devolvida e clique no botão <b>Retorno</b> ou localize o número da chave na coluna central e clique na imagem da chave vermelha.</li>
                         <li>12 - Na janela modal que aparece, o nome do usuário que retirou já está colocado no lugar do usuário que está devolvendo.</li>
                             <div style="text-align: center;"><img src="modulos/claviculario/imgHelp04.jpg" height="150px;" style="padding-right: 30px;" title="Agendamento"></div>
-                        <li>13 - Se for uma outra pessoa que está devolvendo a chave, selecione o nome dessa pessoa na lista suspensa do quadro logo abaixo ou digite o CPF dela no espaço ao lado da lista.</li>
+                        <li>13 - Se for uma <b>outra pessoa</b> que está devolvendo a chave, selecione o nome dessa pessoa na lista suspensa do quadro logo abaixo ou digite o CPF dela no espaço ao lado da lista.</li>
                         <li>14 - Se o nome da pessoa que devolve a chave não estiver na lista e não aparecer ao digitar o CPF, clique nessa procura por CPF e dê um enter sem digitar nada. O espaço destinado ao nome do entregador se tornará editável. Escreva o nome de quem está entregando a chave. Anote também o telefone, se possível.  </li>
                         <li>15 - Quando a vinculação usuário/chave estiver ligada, o sistema informará se porventura um usuário não puder retirar determinada chave.</li>
                         <?php if($EscChave == 1){

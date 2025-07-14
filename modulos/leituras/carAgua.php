@@ -44,7 +44,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
     </head>
     <body> 
-        <div style="text-align: center;"><label class="titRelat">Leituras Hidrômetro<label></div>
+        <div style="text-align: center;"><label class="titRelat corPreta">Leituras Hidrômetro<label></div>
             <?php 
                 date_default_timezone_set('America/Sao_Paulo');
                 $admIns = parAdm("insleituraagua", $Conec, $xProj);   // nível para inserir 

@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
+//Carregado em carTema.php
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -8,6 +9,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <meta charset="UTF-8"> 
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title></title>
+        <script src="comp/js/plotly.min.js"></script>
         <script type="text/javascript">
             $("#insdata").mask("99/99/9999");
         </script>
@@ -21,6 +23,14 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         $Menu1 = escMenu($Conec, $xProj, 1);
         $Menu2 = escMenu($Conec, $xProj, 2);
         $Menu3 = escMenu($Conec, $xProj, 3);
+
+        //para o gráfico
+        if(isset($_REQUEST["corTema"])){ // vem de carTema.php
+            $VarCor = filter_input(INPUT_GET, 'corTema');
+            $Cor = "#".$VarCor; 
+        }else{
+            $Cor = "#FFFAFA";
+        }
         ?>
         <div style="text-align: center;"><label class="titRelat corPreta">Controle do Consumo de Eletricidade<?php echo " - ".$Menu1; ?><label></div>
         <?php
@@ -93,9 +103,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             while($tbl1 = pg_fetch_row($rs1)){ // messes e anos
                 $Mes = $tbl1[0];
                 $Ano = $tbl1[3];
+                $Ident = $Ano.$Mes; // para o nome da DIV: graficoMensal.$Ident
                 if(strLen($Mes) < 2){
                     $Mes = "0".$Mes;
-                }                
+                } 
                 $QuantDias = $tbl1[1];
                 $Cons1 = 0;
                 $MediaDiaria = 0;
@@ -259,7 +270,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             <td style="border-bottom: 1px solid gray; text-align: center; font-size: 90%; color: #9C9C9C;">
                                 <?php 
                                 if($Eletric2Mes > 0 && $Eletric2MesAnt > 0){
-//                                    echo number_format(($Eletric2Mes - $Eletric2MesAnt), 0, ",",".")." kWh";
                                     $Total1 = "R$ ".number_format(($Eletric2Mes - $Eletric2MesAnt)*$CalcValorKwh, 2, ",",".");
                                     echo $Total1;
 
@@ -313,7 +323,51 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         </tr>
                     </table>
                 </div>
+                <div id="graficoMensal<?php echo $Ident; ?>" style="width: 100%; height: 300px;"></div>
                 <br>
+
+                <?php
+                    //Definir valores máximos para o eixo y do gráfico
+                    $rsY = pg_query($Conec, "SELECT MAX(consdiario1) FROM ".$xProj.".leitura_eletric WHERE ativo = 1 And consdiario1 < 1000");
+                    $tblY = pg_fetch_row($rsY);
+                    $MaxY = number_format($tblY[0], 0, ",",".");
+
+                    //Preenche arrays para o gráfico
+                    $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(dataleitura1, 'DD') as Dia, consdiario1 As Leitura 
+                    FROM ".$xProj.".leitura_eletric WHERE ativo = 1 And DATE_PART('MONTH', dataleitura1) = $Mes And DATE_PART('YEAR', dataleitura1) = $Ano And colec = 1 ORDER BY dataleitura1 ");
+                    $row0 = pg_num_rows($rs0);
+                    $datay = [];
+                    $datax = [];
+                    while($tbl0 = pg_fetch_row($rs0)){
+                        array_push($datay, $tbl0[1]);
+                        array_push($datax, $tbl0[2]);
+                    }
+                ?>
+
+                <script>
+                    xArray = <?php echo json_encode($datay); ?>;
+                    yArray = <?php echo json_encode($datax); ?>;
+
+                    // Define Data
+                    data = [{
+                        x: xArray,
+                        y: yArray,
+                        mode:"lines+markers"
+                    }];
+
+                    // Define Layout
+                    layout = {
+                        xaxis: {range: [1, 31], title: "Dia"},
+                        yaxis: {range: [0, <?php echo $MaxY; ?>], title: "kWh"},
+                        title: "Consumo Diário - <?php echo $mes_extenso[$Mes]."/".$Ano; ?>",
+                        paper_bgcolor: '<?php echo  $Cor; ?>', // ok fundo preto/branco fora do gráfico
+                        plot_bgcolor: "<?php echo  $Cor; ?>"   // ok fundo preto/branco dentro do gráfico
+                      };
+
+                    // Display using Plotly
+                    Plotly.newPlot("graficoMensal<?php echo $Ident; ?>", data, layout, {displayModeBar: false});
+                </script>
+
                 <?php
             }
         }

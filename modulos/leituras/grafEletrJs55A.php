@@ -31,7 +31,7 @@ if(!isset($_SESSION["usuarioID"])){
 
         //Calcular quantos dias do mês atual estão preenchidos
         $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".leitura_eletric 
-        WHERE colec = 5 And dataleitura5 IS NOT NULL And leitura5 != 0 And ativo = 1 And DATE_PART('MONTH', dataleitura5) = $MesAtual");
+        WHERE colec = 5 And dataleitura5 IS NOT NULL And leitura5 != 0 And ativo = 1 And DATE_PART('MONTH', dataleitura5) = $MesAtual And DATE_PART('YEAR', dataleitura5) = $AnoAtual");
         $DiasMesAtual = pg_num_rows($rs);
 
         $MaxY = 100;
@@ -53,7 +53,6 @@ if(!isset($_SESSION["usuarioID"])){
                     array_push($datay1, $tbl1[2]);
                 }
                 if($tbl1[2] > $MaxY){
-//                    $MaxY = number_format($tbl1[2], 0, ",","."); // Maior valor para o gráfico
                     $MaxY = $tbl1[2]; // Maior valor para o gráfico
                 }
             }

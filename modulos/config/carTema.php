@@ -74,6 +74,26 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             document.getElementById("selecVisuAnoAgua").value = "";
                         }
                     }
+                    if(document.getElementById("guardaPagina").value == "eletric1"){
+                        if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 || parseInt(document.getElementById("FiscEletric").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+                            $("#container6").load("modulos/leituras/carEstatEletric.php?corTema=FFFAFA");
+                        }
+                    }
+                    if(document.getElementById("guardaPagina").value == "eletric2"){
+                        if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 || parseInt(document.getElementById("FiscEletric").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+                            $("#container6").load("modulos/leituras/carEstatEletric2.php?corTema=FFFAFA");
+                        }
+                    }
+                    if(document.getElementById("guardaPagina").value == "eletric3"){
+                        if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 || parseInt(document.getElementById("FiscEletric").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+                            $("#container6").load("modulos/leituras/carEstatEletric3.php?corTema=FFFAFA");
+                        }
+                    }
+                    if(document.getElementById("guardaPagina").value == "eletric5"){
+                        if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 || parseInt(document.getElementById("FiscEletric").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+                            $("#container6").load("modulos/leituras/carEstatEletric5.php?corTema=FFFAFA");
+                        }
+                    }
                 }else{  // corEscura
                     document.getElementById("guardaCor").value = "101418";
                     document.getElementsByTagName("body")[0].style.background = "#101418";
@@ -124,6 +144,27 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             document.getElementById("selecVisuAnoAgua").value = "";
                         }
                     }
+
+                    if(document.getElementById("guardaPagina").value == "eletric1"){
+                        if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 || parseInt(document.getElementById("FiscEletric").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+                            $("#container6").load("modulos/leituras/carEstatEletric.php?corTema=101418");
+                        }
+                    }
+                    if(document.getElementById("guardaPagina").value == "eletric2"){
+                        if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 || parseInt(document.getElementById("FiscEletric").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+                            $("#container6").load("modulos/leituras/carEstatEletric2.php?corTema=101418");
+                        }
+                    }
+                    if(document.getElementById("guardaPagina").value == "eletric3"){
+                        if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 || parseInt(document.getElementById("FiscEletric").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+                            $("#container6").load("modulos/leituras/carEstatEletric3.php?corTema=101418");
+                        }
+                    } 
+                    if(document.getElementById("guardaPagina").value == "eletric5"){
+                        if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 || parseInt(document.getElementById("FiscEletric").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){
+                            $("#container6").load("modulos/leituras/carEstatEletric5.php?corTema=101418");
+                        }
+                    }                   
                 }
                 ajaxIni();
                 if(ajax){ // guardar o valor individual
@@ -154,8 +195,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 $Pag = "";
             }
         ?>
-        <input type="hidden" id="guardaTema" value="<?php echo $Tema; ?>" />
-        <input type="hidden" id="guardaPagina" value="<?php echo $Pag; ?>" />
-        <input type="hidden" id="guardaCor" value="" />
+        <input type="hidden" id="guardaTema" value = "<?php echo $Tema; ?>" />
+        <input type="hidden" id="guardaPagina" value = "<?php echo $Pag; ?>" />
+        <input type="hidden" id="guardaCor" value = "" />
     </body>
 </html>

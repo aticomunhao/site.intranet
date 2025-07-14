@@ -10,7 +10,9 @@
                 width: 47%; text-align: center;
             }
             .cabec1Dir{
-                width: 40%; border: 1px solid blue; border-radius: 20px; background-color: #6C7AB3; background-image: url('imagens/ComunBannerLongo2.jpg'); background-repeat: no-repeat; background-position-x: center; background-position-y: center;
+                width: 40%; border: 1px solid blue; border-radius: 20px; background-color: #6C7AB3; background-image: url('imagens/ComunBannerLongo2.jpg'); 
+                background-repeat: no-repeat; background-position-x: center; background-position-y: center;
+
             }
 			@media (max-width: 742px){
                 .fontTrebuchet_Spacing{
@@ -21,12 +23,9 @@
                     font-size: .7rem; 
                 }
                 .cabec1Dir{
-                    width: 40%; border: 1px solid blue; border-radius: 20px; background-color: #6C7AB3; background-image: url('imagens/bannerCurto.jpg'); background-repeat: no-repeat; background-position-x: center; background-position-y: center;
+                    width: 40%; border: 1px solid blue; border-radius: 20px; background-color: #6C7AB3; background-image: url('imagens/bannerCurto.jpg'); 
+                    background-repeat: no-repeat; background-position-x: center; background-position-y: center;
                 }
-/*                .cabec1Esq, .cabec1Cen, .cabec1Dir{
-                    width: 100%;
-                }
-*/
 			}
         </style>
     </head>

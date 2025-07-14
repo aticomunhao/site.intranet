@@ -11,8 +11,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <script type="text/javascript">
             new DataTable('#idTabela', {
                 lengthMenu: [
-                    [100, 200, 500, 1000],
-                    [100, 200, 500, 1000]
+                    [200, 500, 1000],
+                    [200, 500, 1000]
                 ],
                 language: {
                     info: 'Mostrando Página _PAGE_ of _PAGES_',

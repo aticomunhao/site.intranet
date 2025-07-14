@@ -650,6 +650,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("obschave").value = "";
                                     document.getElementById("apagarChaves").style.visibility = "hidden";
                                     document.getElementById("editaModalChave").style.display = "block";
+                                    document.getElementById("etiqInsEditChave").innerHTML = "Inserção de Chave";
                                     document.getElementById("salachave").focus();
                                 }else{
                                     alert("Houve um erro no servidor.")
@@ -682,6 +683,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("obschave").value = Resp.chaveobs;
                                     document.getElementById("apagarChaves").style.visibility = "visible";
                                     document.getElementById("editaModalChave").style.display = "block";
+                                    document.getElementById("etiqInsEditChave").innerHTML = "Edição de Chave";
                                     document.getElementById("salachave").focus();
                                }
                             }
@@ -1652,7 +1654,7 @@ if(!isset($_SESSION["usuarioID"])){
         <div id="editaModalChave" class="relacmodal">
             <div class="modal-content-relacChave3 corPreta">
                 <span class="close" onclick="fechaEditaChave();">&times;</span>
-                <label style="color: #666;">Edição:</label>
+                <div style="text-align: center;"><label id="etiqInsEditChave" style="color: #666; font-size: 130%; font-weight: bold;">Edição de Chave</label></div>
                 <table style="margin: 0 auto; width: 85%;">
                     <tr>
                         <td class="etiqAzul" style="padding-bottom: 7px;">Chave: </td>

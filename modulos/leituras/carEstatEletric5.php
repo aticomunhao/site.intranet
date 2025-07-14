@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
+//Carregado em carTema.php
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -8,6 +9,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <meta charset="UTF-8"> 
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title></title>
+        <script src="comp/js/plotly.min.js"></script>
         <script type="text/javascript">
             $("#insdata").mask("99/99/9999");
         </script>
@@ -74,6 +76,15 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 $Condic = "colec = 5 And dataleitura5 IS NOT NULL And leitura5 != 0 And ativo = 1";
             }
         }
+
+        //para o gráfico
+        if(isset($_REQUEST["corTema"])){ // vem de carTema.php
+            $VarCor = filter_input(INPUT_GET, 'corTema');
+            $Cor = "#".$VarCor; 
+        }else{
+            $Cor = "#FFFAFA";
+        }
+
         $rs1 = pg_query($Conec, "SELECT DATE_PART('MONTH', dataleitura5), COUNT(id), SUM(leitura5), DATE_PART('YEAR', dataleitura5)  
         FROM ".$xProj.".leitura_eletric 
         WHERE $Condic 
@@ -83,6 +94,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             while($tbl1 = pg_fetch_row($rs1) ){
                 $Ano = $tbl1[3];
                 $Mes = $tbl1[0];
+                $Ident = $Ano.$Mes; // para o nome da DIV: graficoMensal.$Ident
                 if(strLen($Mes) < 2){
                     $Mes = "0".$Mes;
                 }
@@ -217,7 +229,50 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         </tr>
                     </table>
                 </div>
+                <div id="graficoMensal<?php echo $Ident; ?>" style="width: 100%; height: 300px;"></div>
                 <br>
+
+                <?php
+                    //Definir valores máximos para o eixo y do gráfico
+                    $rsY = pg_query($Conec, "SELECT MAX(consdiario5) FROM ".$xProj.".leitura_eletric WHERE ativo = 1 And consdiario5 < 1000");
+                    $tblY = pg_fetch_row($rsY);
+                    $MaxY = number_format($tblY[0], 0, ",",".");
+
+                    //Preenche arrays para o gráfico
+                    $rs0 = pg_query($Conec, "SELECT id, TO_CHAR(dataleitura5, 'DD') as Dia, consdiario5 As Leitura 
+                    FROM ".$xProj.".leitura_eletric WHERE ativo = 1 And DATE_PART('MONTH', dataleitura5) = $Mes And DATE_PART('YEAR', dataleitura5) = $Ano And colec = 5 ORDER BY dataleitura5 ");
+                    $row0 = pg_num_rows($rs0);
+                    $datay = [];
+                    $datax = [];
+                    while($tbl0 = pg_fetch_row($rs0)){
+                        array_push($datay, $tbl0[1]);
+                        array_push($datax, $tbl0[2]);
+                    }
+                ?>
+
+                <script>
+                    xArray = <?php echo json_encode($datay); ?>;
+                    yArray = <?php echo json_encode($datax); ?>;
+
+                    // Define Data
+                    data = [{
+                        x: xArray,
+                        y: yArray,
+                        mode:"lines+markers"
+                    }];
+
+                    // Define Layout
+                    layout = {
+                        xaxis: {range: [1, 31], title: "Dia"},
+                        yaxis: {range: [0, <?php echo $MaxY; ?>], title: "kWh"},
+                        title: "Consumo Diário - <?php echo $mes_extenso[$Mes]."/".$Ano; ?>",
+                        paper_bgcolor: '<?php echo  $Cor; ?>', // ok fundo preto/branco fora do gráfico
+                        plot_bgcolor: "<?php echo  $Cor; ?>"   // ok fundo preto/branco dentro do gráfico
+                      };
+
+                    // Display using Plotly
+                    Plotly.newPlot("graficoMensal<?php echo $Ident; ?>", data, layout, {displayModeBar: false});
+                </script>
                 <?php
             }
         }else{

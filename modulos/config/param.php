@@ -1143,7 +1143,7 @@
                     <tr>
                         <td>Nível mínimo para VISUALIZAR Telefones Celulares Corporativos:</td>
                         <td style="padding-left: 5px;">
-                        <select onchange="salvaParam(value, 'visuCelCorp');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
+                        <select disabled onchange="salvaParam(value, 'visuCelCorp');" style="font-size: 1rem; width: 200px;" title="Selecione um nível de usuário.">
                             <option value="<?php echo $VisuCelCorp; ?>"><?php echo $nomeVisuCelCorp; ?></option>
                             <?php 
                             if($OpVisuCelCorp){
@@ -1154,6 +1154,7 @@
                             }
                             ?>
                             </select>
+                            <label style="font-size: 75%;">(Foi para a página inicial, sem login)</label>
                         </td>
                     </tr>
                     <tr>

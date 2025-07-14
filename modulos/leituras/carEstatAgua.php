@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
+//Carregado em carTema.php
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -14,7 +15,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         </script>
     </head>
     <body>
-        <div style="text-align: center;"><label class="titRelat">Controle do Consumo de Água<label></div>
+        <div style="text-align: center;"><label class="titRelat corPreta">Controle do Consumo de Água<label></div>
         <?php
         $mes_extenso = array(
             '1' => 'Janeiro',
@@ -44,11 +45,10 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         }
 
         //Definir valores máximos para o eixo y do gráfico
-        $rsY = pg_query($Conec, "SELECT MAX(consdiario) 
-        FROM ".$xProj.".leitura_agua WHERE ativo = 1 And consdiario < 1000");
+        $rsY = pg_query($Conec, "SELECT MAX(consdiario) FROM ".$xProj.".leitura_agua WHERE ativo = 1 And consdiario < 1000");
         $tblY = pg_fetch_row($rsY);
         $MaxY = number_format($tblY[0], 0, ",",".");
-        
+
         $Condic = "dataleitura IS NOT NULL And leitura1 != 0 And ativo = 1";
         if(isset($_REQUEST["mesano"])){
             $MesAno = addslashes(filter_input(INPUT_GET, 'mesano')); 
@@ -68,10 +68,12 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         if(isset($_REQUEST["ano"])){
             $Ano = filter_input(INPUT_GET, 'ano'); 
             if($Ano != ""){
-                $Condic = "dataleitura IS NOT NULL And leitura1 != 0 And ativo = 1 And DATE_PART('YEAR', dataleitura) = '$Ano'";
+                $Condic = "dataleitura IS NOT NULL And leitura1 != 0 And ativo = 1 And DATE_PART('YEAR', dataleitura) = $Ano";
             }else{
                 $Condic = "dataleitura IS NOT NULL And leitura1 != 0 And ativo = 1";
             }
+        }else{
+            $Ano = date('Y');
         }
 
         //para o gráfico
@@ -81,17 +83,18 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         }else{
             $Cor = "#FFFAFA";
         }
-        
+
+
         $rs1 = pg_query($Conec, "SELECT DATE_PART('YEAR', dataleitura), DATE_PART('MONTH', dataleitura), COUNT(id), SUM(leitura1), SUM(leitura2), SUM(leitura3) 
         FROM ".$xProj.".leitura_agua 
         WHERE $Condic 
         GROUP BY DATE_PART('YEAR', dataleitura), DATE_PART('MONTH', dataleitura) ORDER BY DATE_PART('YEAR', dataleitura) DESC, DATE_PART('MONTH', dataleitura) DESC ");
-
         $row1 = pg_num_rows($rs1);
         if($row1 > 0){
             while($tbl1 = pg_fetch_row($rs1) ){
                 $Ano = $tbl1[0];
                 $Mes = $tbl1[1];
+                $Ident = $Ano.$Mes; // para o nome da DIV: graficoMensal.$Ident
                 $QuantDias = $tbl1[2];
                 $Cons1 = 0;
                 $Cons2 = 0;
@@ -101,7 +104,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 $SomaLeit2 = 0;
                 $SomaLeit3 = 0;
                 $SomaLeitAnt = 0;
-
+//echo $Mes."/".$Ano." ";
                 $rs2 = pg_query($Conec, "SELECT dataleitura, leitura1, leitura2, leitura3 FROM ".$xProj.".leitura_agua 
                 WHERE DATE_PART('YEAR', dataleitura) = $Ano And DATE_PART('MONTH', dataleitura) = $Mes And ativo = 1 And leitura1 != 0 And leitura2 != 0 And leitura3 != 0 ");
                 $row2 = pg_num_rows($rs2);
@@ -168,7 +171,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         </tr>
                     </table>
                 </div>
-                <div id="graficoMensal<?php echo $Mes; ?>" style="width:100%; height: 300px;"></div>
+                <div id="graficoMensal<?php echo $Ident; ?>" style="width:100%; height: 300px;"></div>
                 <br>
 
                 <?php
@@ -185,8 +188,6 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                 ?>
 
                 <script>
-                    //const xArray = [50,60,70,80,90,100,110,120,130,140,150];
-                    //const yArray = [7,8,8,9,9,9,10,11,14,14,15];
                     xArray = <?php echo json_encode($datay); ?>;
                     yArray = <?php echo json_encode($datax); ?>;
 
@@ -207,7 +208,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                       };
 
                     // Display using Plotly
-                    Plotly.newPlot("graficoMensal<?php echo $Mes; ?>", data, layout, {displayModeBar: false});
+                    Plotly.newPlot("graficoMensal<?php echo $Ident; ?>", data, layout, {displayModeBar: false});
                 </script>
 
                 <?php

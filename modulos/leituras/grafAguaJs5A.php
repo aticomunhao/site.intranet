@@ -30,23 +30,24 @@ if(!isset($_SESSION["usuarioID"])){
         $AnoAtual = date('Y');
         //Calcular quantos dias do mês atual estão preenchidos
         $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".leitura_agua 
-        WHERE dataleitura IS NOT NULL And leitura1 != 0 And leitura2 != 0 And leitura3 != 0 And ativo = 1 And DATE_PART('MONTH', dataleitura) = $MesAtual");
+        WHERE dataleitura IS NOT NULL And leitura1 != 0 And leitura2 != 0 And leitura3 != 0 And ativo = 1 And DATE_PART('MONTH', dataleitura) = $MesAtual And DATE_PART('YEAR', dataleitura) = $AnoAtual");
         $DiasMesAtual = pg_num_rows($rs);
-
 
         $MaxY = 300;
         $datay1 = [];
         $datax1 = [];
         $row1 = 0;
-        $rs1 = pg_query($Conec, "SELECT DATE_PART('MONTH', dataleitura), DATE_PART('YEAR', dataleitura), SUM(consdiario) 
+        $rs1 = pg_query($Conec, "SELECT TO_CHAR(dataleitura, 'MM'), TO_CHAR(dataleitura, 'YYYY'), SUM(consdiario) 
         FROM ".$xProj.".leitura_agua 
-        WHERE dataleitura IS NOT NULL And leitura1 != 0 And ativo = 1 And DATE_PART('YEAR', dataleitura) = $AnoAtual 
-        GROUP BY DATE_PART('YEAR', dataleitura), DATE_PART('MONTH', dataleitura) ORDER BY DATE_PART('YEAR', dataleitura), DATE_PART('MONTH', dataleitura)");
-        $row1 = pg_num_rows($rs1);
+        WHERE dataleitura IS NOT NULL And leitura1 != 0 And ativo = 1 And TO_CHAR(dataleitura, 'YYYY') = '$AnoAtual' 
+        GROUP BY TO_CHAR(dataleitura, 'YYYY'), TO_CHAR(dataleitura, 'MM') ORDER BY TO_CHAR(dataleitura, 'YYYY'), TO_CHAR(dataleitura, 'MM')");
+        $row1 = pg_num_rows($rs1); // meses do ano
+
         if($row1 > 0){
             while($tbl1 = pg_fetch_row($rs1) ){
                 array_push($datax1, $tbl1[0]);
-                if($tbl1[0] == $MesAtual && $tbl1[1] == $AnoAtual){
+//                if($tbl1[0] == $MesAtual && $tbl1[1] == $AnoAtual){
+                if(strcmp($tbl1[0], $MesAtual) == 0 && strcmp($tbl1[1], $AnoAtual) == 0){
                     $Media = (($tbl1[2]/$DiasMesAtual)*30); // projeção para consumo do mês em curso
                     array_push($datay1, $Media);    
                 }else{

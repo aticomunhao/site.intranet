@@ -32,7 +32,8 @@
         $rs = pg_query($Conec, "SELECT ".$xProj.".chaves3_ctl.id, chaves_id, chavenum, chavenumcompl, chavesala, TO_CHAR(datasaida, 'DD/MM/YYYY HH24:MI'), funcentrega, usuretira, cpfretira, telef, chavelocal, 
         datasaida, chavecompl 
         FROM ".$xProj.".chaves3_ctl INNER JOIN ".$xProj.".chaves3 ON ".$xProj.".chaves3_ctl.chaves_id = ".$xProj.".chaves3.id 
-        WHERE ".$xProj.".chaves3.ativo = 1 And ".$xProj.".chaves3_ctl.ativo = 1 And usudevolve = 0 And TO_CHAR(datavolta, 'YYYY') = '3000' ORDER BY datasaida ");
+        WHERE ".$xProj.".chaves3.ativo = 1 And ".$xProj.".chaves3_ctl.ativo = 1 And usudevolve = 0 ORDER BY datasaida ");
+        // And TO_CHAR(datavolta, 'YYYY') = '3000'
         $row = pg_num_rows($rs);
         if($row > 0){
             while($tbl = pg_fetch_row($rs)){

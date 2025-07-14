@@ -3,7 +3,7 @@
 	require_once(dirname(__FILE__)."/config/abrealas.php");
 	if(!isset($_SESSION['AdmUsu'])){
 		session_destroy();
-        header("Location: ../index.html");
+        header("Location: ../index.php");
      }
 ?>
 <!DOCTYPE html>
@@ -58,7 +58,7 @@
 			}else{
 				$Setor = "";
 			}
-			
+
 			$LargTela = 1280; // laptop 14pol
 			if($LargTela > 1280){
 				$Quant = 15; // Quantidade de caracteres no nome ou cargo
@@ -332,6 +332,12 @@
 						echo "<li>";
 							echo "<a href='#' onclick='openhref(59);'>Aniversariantes</a>";
 						echo "</li>";
+						$VerArq = parEsc("verarqdaf", $Conec, $xProj, $_SESSION["usuarioID"]); // Ver atalho para o programas de arquivos
+						if($VerArq == 1){
+							echo "<li>";
+								echo "<a href='#' onclick='openhref(100);'>Arquivos</a>";
+							echo "</li>";
+						}
 						echo "<li>";
 							echo "<a href='#' onclick='openhref(62);'>Atualizar Senha</a>";
 						echo "</li>";

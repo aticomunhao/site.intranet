@@ -11,8 +11,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
         <script type="text/javascript">
             new DataTable('#idTabela', {
                 lengthMenu: [
-                    [200, 500, 1000],
-                    [200, 500, 1000]
+                    [500, 1000],
+                    [500, 1000]
                 ],
                 language: {
                     info: 'Mostrando Página _PAGE_ of _PAGES_',
@@ -154,15 +154,12 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
 
                                 $Leit07 = $tbl0[3];
                                 if($Leit07 == 0){
-                                    $Cons1 = 0;
+                                    $ConsDia = 0;
                                 }else{
-                                    $Cons1 = ($Leit07-$Leit24Ant);
+                                    $ConsDia = ($Leit07-$Leit24Ant);
                                 }
 
-                                if($Leit07 == 0){
-                                    $Cons1 = 0;
-                                }
-                                $ConsDia = $Cons1;
+                                //Preenche coluna consdiario2 para o gráfico
                                 pg_query($Conec, "UPDATE ".$xProj.".leitura_eletric SET consdiario2 = $ConsDia WHERE id = $Cod");
                             ?>
                         <tr>
@@ -175,7 +172,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                             </td> <!-- Data -->
                             <td style="border-bottom: 1px solid gray; text-align: center; font-size: 70%;" title="Dia da Semana"><?php echo $Sem; ?></td> <!-- dia da semana --> 
                             <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%; <?php if($Leit07 == 0){echo 'color: red;';} ?>" title="Leitura"><?php echo $Leit07; ?></td>
-                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;" title="Consumo do dia"><?php echo $Cons1." kWh"; ?></td>
+                            <td style="border-bottom: 1px solid gray; text-align: center; font-size: 80%;" title="Consumo do dia"><?php echo $ConsDia." kWh"; ?></td>
                         </tr>
                         <?php
                             $Cont = $Cont + $tbl0[3];

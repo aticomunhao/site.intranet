@@ -92,6 +92,10 @@ if(isset($_REQUEST["acao"])){
         $Cpf2 = str_replace(".", "", $Cpf1);
         $GuardaCpf = str_replace("-", "", $Cpf2);
 
+        if($CodUsu == 0 || $CodUsu == ""){
+            $CodUsu = 999999; // devolvido por CPF não cadastrado
+        }
+
         $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".poslog WHERE pessoas_id = $CodUsu");
         $row2 = pg_num_rows($rs2);
         if($row2 > 0){

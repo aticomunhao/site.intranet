@@ -15,7 +15,6 @@
         <script>
             $(document).ready(function(){
                 jQuery(function(){jQuery('ul.sf-menu').superfish();});
-
 				jQuery('ul.sf-menu').superfish({
 					delay:       500,                // delay no mouseout
 					speed:       'fast',             // animation speed
@@ -30,21 +29,14 @@
 			if(!isset($diaSemana)){
 				$diaSemana = 1;
 			}
-			//Provisório
+			//Provisório 
 			if(strtotime('2025/07/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//122
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS mostraniv smallint NOT NULL DEFAULT 1;");
-				$rs = pg_query($Conec, "SELECT mostraniv FROM ".$xProj.".poslog WHERE mostraniv = 1");
-				$row = pg_num_rows($rs);
-				if($row == 0){
-					pg_query($Conec, "UPDATE FROM ".$xProj.".poslog SET mostraniv = 1"); // marca todos
-					//inserir na query mostraniv = 1 em aniverIni.php na atualização 123
-				}
-				//121
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS visucelcorp smallint NOT NULL DEFAULT 7;");
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".paramsis ADD COLUMN IF NOT EXISTS inseditcelcorp smallint NOT NULL DEFAULT 7;");
-
+				//0123
+				pg_query($Conec, "UPDATE ".$xProj.".chaves_ctl SET usudevolve = 999999 WHERE usudevolve = 0 And TO_CHAR(datavolta, 'YYYY') != '3000'"); // lançamentos errados - devolução sem CPF
+				pg_query($Conec, "UPDATE ".$xProj.".paramsis SET visucelcorp = 0 WHERE idpar = 1 "); // nível adm para ver celulares corporativos - foi para a página inical - todos podem ver
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS verarqdaf smallint NOT NULL DEFAULT 0;");
+				pg_query($Conec, "UPDATE ".$xProj.".poslog SET verarqdaf = 1 WHERE pessoas_id = 3 Or pessoas_id = 83"); // 
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->
@@ -58,6 +50,9 @@
             <li class="current MenuEstend">
 				<a href="#">Telefones</a>
 				<ul>
+					<li class="MenuEstend">
+						<a href="#" onclick="openhref(97);">Celulares Corporativos</a>
+					</li>
 					<li class="MenuEstend">
 						<a href="#" onclick="openhref(55);">Ramais Internos</a>
 					</li>

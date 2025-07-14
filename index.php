@@ -53,7 +53,7 @@
         ?>
         <input type="hidden" id="guardadiasemana" value="<?php echo $diaSemana; ?>"/>
         <div id="container0" class="container-fluid"> <!-- página toda -->
-            <div id="container1" class="container-fluid corFundo"></div> <!-- cabec.php banner superior dividido em 3 -->
+            <div id="container1" class="container-fluid corFundo" style="margin-top: 3px;"></div> <!-- cabec.php banner superior dividido em 3 -->
             <div id="container2" class="container-fluid fontSiteFamily corFundoMenu-dia<?php echo $diaSemana; ?>"></div> <!-- Menu -->
             <div id="container3" class="container-fluid corFundo"> <!-- corpo da página -->
                 <div id="CorouselPagIni" class="carousel slide carousel-fade" data-bs-ride="carousel" style="text-align: center;"></div> <!-- Carrosel  -->

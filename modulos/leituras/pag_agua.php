@@ -407,7 +407,6 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("mensagemLeitura").innerHTML = "Lançamento salvo.";
                                     $('#mensagemLeitura').fadeOut(1000);
                                     $("#container5").load("modulos/leituras/carAgua.php");
-//                                    $("#container6").load("modulos/leituras/carEstatAgua.php");
                                     $("#container6").load("modulos/leituras/carEstatAgua.php?corTema="+document.getElementById("guardaCor").value);
                                     document.getElementById("relacmodalLeitura").style.display = "none";
 
@@ -438,7 +437,6 @@ if(!isset($_SESSION["usuarioID"])){
                                             if(parseInt(Resp.coderro) === 0){
                                                 document.getElementById("relacmodalLeitura").style.display = "none";
                                                 $("#container5").load("modulos/leituras/carAgua.php");
-//                                                $("#container6").load("modulos/leituras/carEstatAgua.php");
                                                 $("#container6").load("modulos/leituras/carEstatAgua.php?corTema="+document.getElementById("guardaCor").value);
                                             }else{
                                                 alert("Houve um erro no servidor.")

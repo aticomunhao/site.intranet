@@ -88,6 +88,8 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("etiqselecVisuAnoEletric").style.visibility = "hidden";
                     document.getElementById("selecVisuAnoEletric").style.visibility = "hidden";
 
+                    $('#carregaTema').load('modulos/config/carTema.php?carpag=eletric2');
+
                     if(parseInt(document.getElementById("InsLeituraEletric").value) === 1 || parseInt(document.getElementById("FiscEletric").value) === 1 || parseInt(document.getElementById("UsuAdm").value) > 6){ // // se estiver marcado em cadusu para fazer a leitura
                         if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admIns").value)){
                             document.getElementById("botInserir").style.visibility = "visible"; 
@@ -112,7 +114,6 @@ if(!isset($_SESSION["usuarioID"])){
                         document.getElementById("botgrafico").style.visibility = "hidden"; 
                         document.getElementById("botImprimir").disabled = true;
                     }
-                    $('#carregaTema').load('modulos/config/carTema.php?carpag=livroReg');
                     
                     //para editar obedece ao nivel administrativo
 //                    if(parseInt(document.getElementById("UsuAdm").value) >= parseInt(document.getElementById("admEdit").value) || parseInt(document.getElementById("UsuAdm").value) > 6){
@@ -248,12 +249,11 @@ if(!isset($_SESSION["usuarioID"])){
                 $("#selecVisuMesAnoEletric").change(function(){
                     document.getElementById("selecVisuAnoEletric").value = "";
                     $("#container5").load("modulos/leituras/carEletric2.php?mesano="+encodeURIComponent(document.getElementById("selecVisuMesAnoEletric").value));
-                    $("#container6").load("modulos/leituras/carEstatEletric2.php?mesano="+encodeURIComponent(document.getElementById("selecVisuMesAnoEletric").value));
+                    $("#container6").load("modulos/leituras/carEstatEletric2.php?mesano="+encodeURIComponent(document.getElementById("selecVisuMesAnoEletric").value)+"&corTema="+document.getElementById("guardaCor").value);
                 });
                 $("#selecVisuAnoEletric").change(function(){
                     document.getElementById("selecVisuMesAnoEletric").value = "";
-                    $("#container5").load("modulos/leituras/carEletric2.php?ano="+encodeURIComponent(document.getElementById("selecVisuAnoEletric").value));
-                    $("#container6").load("modulos/leituras/carEstatEletric2.php?ano="+encodeURIComponent(document.getElementById("selecVisuAnoEletric").value));
+                    $("#container6").load("modulos/leituras/carEstatEletric2.php?ano="+encodeURIComponent(document.getElementById("selecVisuAnoEletric").value)+"&corTema="+document.getElementById("guardaCor").value);
                 });
 
 
@@ -417,7 +417,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("mensagemLeitura").innerHTML = "Lançamento salvo.";
                                     $('#mensagemLeitura').fadeOut(1000);
                                     $("#container5").load("modulos/leituras/carEletric2.php");
-                                    $("#container6").load("modulos/leituras/carEstatEletric2.php");
+                                    $("#container6").load("modulos/leituras/carEstatEletric2.php?corTema="+document.getElementById("guardaCor").value);
                                     document.getElementById("relacmodalEletric").style.display = "none";
                                 }
                             }
@@ -503,7 +503,8 @@ if(!isset($_SESSION["usuarioID"])){
                                                 alert("Houve um erro no servidor.")
                                             }else{
                                                 $("#container5").load("modulos/leituras/carEletric2.php");
-                                                $("#container6").load("modulos/leituras/carEstatEletric2.php");
+//                                                $("#container6").load("modulos/leituras/carEstatEletric2.php");
+                                                $("#container6").load("modulos/leituras/carEstatEletric2.php?corTema="+document.getElementById("guardaCor").value);
                                                 document.getElementById("relacmodalEletric").style.display = "none";                                            }
                                         }
                                     }
@@ -816,8 +817,6 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
         </div> <!-- Fim Modal-->
 
-        <div id="carregaTema"></div> <!-- carrega a pág modulos/config/carTema.php - onde está a função mudaTema() -->
-
         <!-- div modal para mostrar gráfico anual -->
         <div id="relacgrafico" class="relacmodal">
             <div class="modal-content-grafico">
@@ -828,5 +827,8 @@ if(!isset($_SESSION["usuarioID"])){
             </div>
             <br><br>
         </div> <!-- Fim Modal-->
+
+        <div id="carregaTema"></div> <!-- carrega a pág modulos/config/carTema.php - onde está a função mudaTema() -->
+
     </body>
 </html>

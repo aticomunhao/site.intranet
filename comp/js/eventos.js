@@ -164,6 +164,11 @@ function openhref(Num){
     if(parseInt(Num) === 97){
         $('#container3').load('modulos/ramaisCel.php?tipo=3');
     }
+
+
+    if(parseInt(Num) === 100){
+        window.open("arqDaf/index.php", 'ArqDaf');
+    }
 }
 
 function openhrefDir(Num){
