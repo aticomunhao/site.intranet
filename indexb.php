@@ -376,7 +376,6 @@
                 }else{
                     clearInterval(contaTempo);
                 }
-                document.getElementById("teste").value = seg;
             }, 1000);
 
         </script>
@@ -416,7 +415,6 @@
         <input type="hidden" id="guardaAdm" value="<?php echo $_SESSION["AdmUsu"]; ?>"/> <!-- nível administrativo do usuário logado -->
         <input type="hidden" id="guardamsgcalend" value="0"/>
         <input type="hidden" id="guardatempo" value="<?php echo $TempoInat; ?>"/>
-        <input type="hidden" id="teste" style="font-size: 200%; color: black;" value=""/>
         <input type="hidden" id="numTarefa" value = "0"/>
         <input type="hidden" id="selecionar" value = "0"/>
         <input type="hidden" id="guardaContrato" value = "0"/>

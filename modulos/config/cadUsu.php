@@ -654,6 +654,7 @@ if(!isset($_SESSION["usuarioID"])){
                     document.getElementById("flAdm").disabled = true;
                 }
                 document.getElementById("atividade1").checked = true;
+                document.getElementById("mostrarAniver").checked = true;
                 document.getElementById("titulomodal").innerHTML = "Inserção de Usuário";
                 document.getElementById("ressetsenha").disabled = true;
                 document.getElementById("relacmodalUsu").style.display = "block";

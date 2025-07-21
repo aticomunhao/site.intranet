@@ -1,8 +1,11 @@
 <?php
 $url = $_SERVER["PHP_SELF"];
 $urlIni = "/site.intranet/";
-if(strtolower($url) == $urlIni."modulos/config/dbcclass.php"){
-    header("Location: $urlIni");
+if(strcmp($url, $urlIni.'modulos/config/dbcclass.php') == 0){
+    session_start();
+    $_SESSION = array();
+    session_destroy();
+    header("Location: ../../index.php"); // OK
 }else{
 
     function conecPost(){

@@ -1485,7 +1485,7 @@ if($Acao == "buscaNome"){
         $Grupo = "";
     }
 
-    $rs2 = pg_query($Conec, "SELECT letra, turno, observ, escaladafins_id, id_ocor, id_mot, id_stat, id_adm FROM ".$xProj.".escaladaf_func WHERE poslog_id = $Cod And dataescala = '$RevData' And ativo = 1");
+    $rs2 = pg_query($Conec, "SELECT letra, turno, observ, escaladafins_id, id_ocor, id_mot, id_stat, id_adm, id_disc FROM ".$xProj.".escaladaf_func WHERE poslog_id = $Cod And dataescala = '$RevData' And ativo = 1");
     $row2 = pg_num_rows($rs2);
     if($row2 > 0){
         $tbl2 = pg_fetch_row($rs2);
@@ -1496,7 +1496,8 @@ if($Acao == "buscaNome"){
         $idOcor = $tbl2[4];
         $idMot = $tbl2[5];
         $idStat = $tbl2[6];
-        $idAdm = $tbl2[7];            
+        $idAdm = $tbl2[7];
+        $idDisc = $tbl2[8];
     }else{
         $Observ = "";
         $rs3 = pg_query($Conec, "SELECT letraturno, turnoturno, id FROM ".$xProj.".escaladaf_ins WHERE poslog_id = $Cod And dataescalains = '$RevData'");
@@ -1515,8 +1516,9 @@ if($Acao == "buscaNome"){
         $idMot = 1;
         $idStat = 1;
         $idAdm = 1;
+        $idDisc = 1;
     }
-    $var = array("coderro"=>$Erro, "nomecompl"=>$Nome, "letra"=>$Letra, "turno"=>$Turno, "observ"=>$Observ, "grupo"=>$Grupo, "idescalains"=>$Ins_id, "idOcor"=>$idOcor, "idMot"=>$idMot, "idStat"=>$idStat, "idAdm"=>$idAdm);
+    $var = array("coderro"=>$Erro, "nomecompl"=>$Nome, "letra"=>$Letra, "turno"=>$Turno, "observ"=>$Observ, "grupo"=>$Grupo, "idescalains"=>$Ins_id, "idOcor"=>$idOcor, "idMot"=>$idMot, "idStat"=>$idStat, "idAdm"=>$idAdm, "idDisc"=>$idDisc);
     $responseText = json_encode($var);
     echo $responseText;
 }
@@ -1536,18 +1538,19 @@ if($Acao == "salvaNotaFunc"){
     $selecMotivo = (int) filter_input(INPUT_GET, 'selecMotivo');
     $selecStatus = (int) filter_input(INPUT_GET, 'selecStatus');
     $selecAcaoAdm = (int) filter_input(INPUT_GET, 'selecAcaoAdm');
+    $selecAcaoDisc = (int) filter_input(INPUT_GET, 'selecAcaoDisc');
 
     $rs2 = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_func WHERE poslog_id = $Cod And dataescala = '$RevData' And ativo = 1");
     $row2 = pg_num_rows($rs2);
     if($row2 > 0){ // atualizar
-        $rs3 = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_func SET observ = '$Observ', grupo_id = $Grupo, escaladafins_id = $IdEscalaIns, id_ocor = $selecOcor, id_mot = $selecMotivo, id_stat = $selecStatus, id_adm = $selecAcaoAdm, usuedit = $UsuIns, dataedit = NOW() WHERE poslog_id = $Cod And dataescala = '$RevData' And ativo = 1");
+        $rs3 = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_func SET observ = '$Observ', grupo_id = $Grupo, escaladafins_id = $IdEscalaIns, id_ocor = $selecOcor, id_mot = $selecMotivo, id_stat = $selecStatus, id_adm = $selecAcaoAdm, id_disc = $selecAcaoDisc, usuedit = $UsuIns, dataedit = NOW() WHERE poslog_id = $Cod And dataescala = '$RevData' And ativo = 1");
     }else{ // adicionar
         $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_func");
         $tblCod = pg_fetch_row($rsCod);
         $Codigo = $tblCod[0];
         $CodigoNovo = ($Codigo+1);
-        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_func (id, poslog_id, dataescala, observ, letra, turno, grupo_id, escaladafins_id, id_ocor, id_mot, id_stat, id_adm, usuins, datains) 
-        VALUES($CodigoNovo, $Cod, '$RevData', '$Observ', '$Letra', '$Turno', $Grupo, $IdEscalaIns, $selecOcor, $selecMotivo, $selecStatus, $selecAcaoAdm, $UsuIns, NOW() )");
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_func (id, poslog_id, dataescala, observ, letra, turno, grupo_id, escaladafins_id, id_ocor, id_mot, id_stat, id_adm, id_disc, usuins, datains) 
+        VALUES($CodigoNovo, $Cod, '$RevData', '$Observ', '$Letra', '$Turno', $Grupo, $IdEscalaIns, $selecOcor, $selecMotivo, $selecStatus, $selecAcaoAdm, $selecAcaoDisc, $UsuIns, NOW() )");
         if(!$rs){
             $Erro = 1;
         }
@@ -1615,6 +1618,19 @@ if($Acao =="editAdm"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Erro = 0;
     $rs = pg_query($Conec, "SELECT descadm FROM ".$xProj.".escaladaf_funcadm WHERE id = $Cod And ativo = 1");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $tbl = pg_fetch_row($rs);
+    
+    $var = array("coderro"=>$Erro, "desc"=>$tbl[0]);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+if($Acao =="editDisc"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Erro = 0;
+    $rs = pg_query($Conec, "SELECT descdisc FROM ".$xProj.".escaladaf_funcdisc WHERE id = $Cod And ativo = 1");
     if(!$rs){
         $Erro = 1;
     }
@@ -1712,6 +1728,28 @@ if($Acao =="salvaAdm"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+if($Acao =="salvaDisc"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Texto = filter_input(INPUT_GET, 'texto');
+    $Erro = 0;
+    if($Cod > 0){
+        $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_funcdisc SET descdisc = '$Texto' WHERE id = $Cod ");
+    }else{
+        $CodigoNovo = 0;
+        $rsCod = pg_query($Conec, "SELECT MAX(id) FROM ".$xProj.".escaladaf_funcdisc");
+        $tblCod = pg_fetch_row($rsCod);
+        $Codigo = $tblCod[0];
+        $CodigoNovo = ($Codigo+1);
+        $rs = pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcdisc (id, descdisc, usuins, datains) 
+        VALUES($CodigoNovo, '$Texto', $UsuIns, NOW() )");
+    }
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
 if($Acao =="apagaOcor"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Erro = 0;
@@ -1749,6 +1787,17 @@ if($Acao =="apagaAdm"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Erro = 0;
     $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_funcadm SET ativo = 0 WHERE id = $Cod ");
+    if(!$rs){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+if($Acao =="apagaDisc"){
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Erro = 0;
+    $rs = pg_query($Conec, "UPDATE ".$xProj.".escaladaf_funcdisc SET ativo = 0 WHERE id = $Cod ");
     if(!$rs){
         $Erro = 1;
     }

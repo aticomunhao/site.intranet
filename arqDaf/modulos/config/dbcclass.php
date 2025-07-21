@@ -1,15 +1,19 @@
 <?php
 $url = $_SERVER["PHP_SELF"];
 $urlIni = "/site.intranet/";
-if(strtolower($url) == $urlIni."arqDaf/config/dbcclass.php"){
-    header("Location: $urlIni");
+if(strcmp($url, $urlIni.'arqDaf/modulos/config/dbcclass.php') == 0){
+    session_name("arqAdm");
+    session_start();
+    $_SESSION = array();
+    session_destroy();
+    header("Location: ../../index.php"); // OK
 }else{
 
     function conecPost(){
         if($_SERVER['HTTP_HOST'] == "localhost"){
             $con_string = "host = localhost port=5432 dbname=cesb user=postgres password=postgres";
         }else{
-            $con_string = "host = 192.168.1.143 port=5432 dbname=cesb user=postgres password=scga2298";
+             $con_string = "host = 192.168.1.143 port=5432 dbname=cesb user=postgres password=scga2298";
         }
         if(function_exists("pg_pconnect")){ // para o caso de a extension=pgsql não estar habilitada no phpini
             if(@pg_connect($con_string)){
@@ -27,7 +31,7 @@ if(strtolower($url) == $urlIni."arqDaf/config/dbcclass.php"){
         if($_SERVER['HTTP_HOST'] == "localhost"){
             $con_stringpes = "host = localhost port=5432 dbname=pessoal user=postgres password=postgres";
         }else{
-            $con_stringpes = "host= 192.168.1.143 port=5432 dbname=pessoal user=postgres password=scga2298";
+            $con_string = "host = 192.168.1.143 port=5432 dbname=cesb user=postgres password=scga2298";
         }
         if(function_exists("pg_pconnect")){ // para o caso de a extension=pgsql não estar habilitada no phpini
             if(@pg_connect($con_stringpes)){

@@ -165,6 +165,54 @@ if($Acao =="loglog"){
 }
 
 
+if($Acao =="buscausu_"){ // serve para o sigte phpini
+    $Usu = (int) filter_input(INPUT_GET, 'numero'); 
+    $Cpf = filter_input(INPUT_GET, 'cpf'); 
+    $Cpf1 = addslashes($Cpf);
+    $Cpf2 = str_replace(".", "", $Cpf1);
+    $GuardaCpf = str_replace("-", "", $Cpf2);
+    $Erro = 0;
+
+//    $rs0 = pg_query($ConecPes, "SELECT cpf, nome_completo, to_char(dt_nascimento, 'DD'), TO_CHAR(dt_nascimento, 'MM'), nome_resumido FROM ".$xPes.".pessoas WHERE cpf = '$GuardaCpf' ");
+//    if(!$rs0){
+//        $Erro = 1;
+//    }
+//    $row0 = pg_num_rows($rs0);
+//    if($row0 == 0){
+//        $Erro = 2;
+//        $var = array("coderro"=>$Erro);
+//        $responseText = json_encode($var);
+//        echo $responseText;
+//        return false;
+//    }else{
+//        $Proc0 = pg_fetch_row($rs0);
+//    }
+
+    $rs = pg_query($Conec, "SELECT adm, codsetor, ativo, to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, nomeusual, cpf, nomecompl, nomeusual 
+    FROM ".$xProj.".daf_poslog WHERE cpf = '$GuardaCpf' ");  //pessoas_id = $Usu ");
+
+    $row = pg_num_rows($rs);
+    if($row == 0){
+        $Erro = 1;
+        $var = array("coderro"=>$Erro);
+    }else{
+        $Proc = pg_fetch_row($rs);
+        $UltLog = $Proc[3];
+        if(is_null($Proc[3])){
+            $UltLog = "";
+        }
+        if($Proc[3] == "31/12/3000 00:00"){
+            $UltLog = "";
+        }
+        if($Proc[3] == "01/01/1500 00:00"){
+            $UltLog = "";
+        }
+        $var = array("coderro"=>$Erro, "usuario"=>$Proc[6], "nomecompl"=>$Proc[7], "usuarioAdm"=>$Proc[0], "setor"=>$Proc[1], "ativo"=>$Proc[2], "ultlog"=>$UltLog, "acessos"=>$Proc[4], "usuarioNome"=>$Proc[5], "cpf"=>$GuardaCpf);
+    }
+    $responseText = json_encode($var);
+    echo $responseText;
+}
+
 if($Acao =="buscausu"){
     $Usu = (int) filter_input(INPUT_GET, 'numero'); 
     $Cpf = filter_input(INPUT_GET, 'cpf'); 
@@ -188,7 +236,7 @@ if($Acao =="buscausu"){
         $Proc0 = pg_fetch_row($rs0);
     }
 
-    $rs = pg_query($Conec, "SELECT adm, codsetor, ativo, to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, nomeusual 
+    $rs = pg_query($Conec, "SELECT adm, codsetor, ativo, to_char(logini, 'DD/MM/YYYY HH24:MI'), numacessos, nomeusual, cpf, nomecompl, nomeusual 
     FROM ".$xProj.".daf_poslog WHERE cpf = '$GuardaCpf' ");  //pessoas_id = $Usu ");
 
     $row = pg_num_rows($rs);
@@ -246,6 +294,11 @@ if($Acao =="salvaUsu"){
         $Sexo = 1;
     }
 
+    if($GuardaId == 3){
+        $Ativo = 1;
+        $Adm = 3;
+        $Setor = 1;
+    }
     if($Usu > 0){ 
         $rs = pg_query($Conec, "UPDATE ".$xProj.".daf_poslog SET codsetor = $Setor, adm = $Adm, ativo = $Ativo, usumodif = $UsuLogado, datamodif = NOW(), nomeusual = '$NomeUsual', nomecompl = '$NomeCompl' WHERE cpf = '$Cpf'"); 
         if($Ativo == 0){ // bloqueado

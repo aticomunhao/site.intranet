@@ -130,8 +130,8 @@ if(!isset($_SESSION["usuarioID"])){
                 padding: 20px;
                 border: 1px solid #888;
                 border-radius: 15px;
-                width: 70%;
-                max-width: 900px;
+                width: 85%;
+                max-width: 1100px;
             }
             .quadrodia {
                 font-size: 90%;
@@ -858,7 +858,6 @@ if(!isset($_SESSION["usuarioID"])){
                                     alert("Houve um erro no servidor.");
                                 }else{
                                     $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php?numgrupo="+document.getElementById("guardanumgrupo").value);
-
                                     $.confirm({
                                         title: 'Valor Salvo!',
                                         content: '',
@@ -1663,7 +1662,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     $("#configMotivos").load("modulos/escaladaf/edNotaMot.php");
                                     $("#configStat").load("modulos/escaladaf/edNotaStat.php");
                                     $("#configAdm").load("modulos/escaladaf/edNotaAdm.php");
-
+                                    $("#configDisc").load("modulos/escaladaf/edNotaDisc.php");
                                }
                             }
                         }
@@ -2084,6 +2083,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("selecMotivo").value = Resp.idMot;
                                     document.getElementById("selecStatus").value = Resp.idStat;
                                     document.getElementById("selecAcaoAdm").value = Resp.idAdm;
+                                    document.getElementById("selecAcaoDisc").value = Resp.idDisc;
                                     document.getElementById("guardaIdEscalaIns").value = Resp.idescalains;
                                     document.getElementById("observEscalado").value = Resp.observ;
                                     if(parseInt(Resp.idOcor) === 1){
@@ -2100,6 +2100,25 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
+            function salvaNotaFunc0(){
+                if(parseInt(document.getElementById("selecOcor").value) === 1 || parseInt(document.getElementById("selecMotivo").value) === 1 || parseInt(document.getElementById("selecStatus").value) === 1 || parseInt(document.getElementById("selecAcaoAdm").value) === 1 || parseInt(document.getElementById("selecAcaoDisc").value) === 1){
+                    $.confirm({
+                        title: 'Confirmação',
+                        content: 'Há escolhas em branco. Continua?',
+                        autoClose: 'Não|10000',
+                        draggable: true,
+                        buttons: {
+                            Sim: function () {
+                                salvaNotaFunc();
+                            },
+                            Não: function () {
+                            }
+                        }
+                    });
+                }else{
+                    salvaNotaFunc();
+                }
+            }
             function salvaNotaFunc(){
                 if(document.getElementById("mudou").value == "0"){
                     document.getElementById("relacmodalAnotFunc").style.display = "none";
@@ -2117,6 +2136,7 @@ if(!isset($_SESSION["usuarioID"])){
                     +"&selecMotivo="+document.getElementById("selecMotivo").value
                     +"&selecStatus="+document.getElementById("selecStatus").value
                     +"&selecAcaoAdm="+document.getElementById("selecAcaoAdm").value
+                    +"&selecAcaoDisc="+document.getElementById("selecAcaoDisc").value
                     +"&observ="+encodeURIComponent(document.getElementById("observEscalado").value), true);
                     ajax.onreadystatechange = function(){
                         if(ajax.readyState === 4 ){
@@ -2190,29 +2210,41 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("guardaCodEdit").value = 0;
                 document.getElementById("editNomeTipo").value = "";
                 document.getElementById("relacEditTipo").style.display = "block";
+                document.getElementById("botApagaEditTipo").style.visibility = "hidden";
                 document.getElementById("editNomeTipo").focus();
             }
             function insMotivo(){
                 document.getElementById("guardaCodEdit").value = 0;
                 document.getElementById("editNomeMot").value = "";
                 document.getElementById("relacEditMotivo").style.display = "block";
+                document.getElementById("botApagaEditMot").style.visibility = "hidden";
                 document.getElementById("editNomeMot").focus();
             }
             function insStat(){
                 document.getElementById("guardaCodEdit").value = 0;
                 document.getElementById("editNomeStat").value = "";
                 document.getElementById("relacEditStat").style.display = "block";
+                document.getElementById("botApagaEditStat").style.visibility = "hidden";
                 document.getElementById("editNomeStat").focus();
             }
             function insAdm(){
                 document.getElementById("guardaCodEdit").value = 0;
                 document.getElementById("editNomeAdm").value = "";
                 document.getElementById("relacEditAdm").style.display = "block";
+                document.getElementById("botApagaEditAdm").style.visibility = "hidden";
                 document.getElementById("editNomeAdm").focus();
             }
-
+            function insDisc(){
+                document.getElementById("guardaCodEdit").value = 0;
+                document.getElementById("editNomeDisc").value = "";
+                document.getElementById("relacEditDisc").style.display = "block";
+                document.getElementById("botApagaEditDisc").style.visibility = "hidden";
+                document.getElementById("editNomeDisc").focus();
+            }
+    
             function editaOcor(Cod){
                 document.getElementById("guardaCodEdit").value = Cod;
+                document.getElementById("botApagaEditTipo").style.visibility = "visible";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=editOcor&codigo="+Cod, true);
@@ -2226,7 +2258,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("relacEditTipo").style.display = "block";
                                     document.getElementById("editNomeTipo").focus();
                                 }else{
-                                    alert("Houve um erro no servidor.")
+                                    alert("Houve um erro no servidor.");
                                 }
                             }
                         }
@@ -2236,6 +2268,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
             function editaMotivo(Cod){
                 document.getElementById("guardaCodEdit").value = Cod;
+                document.getElementById("botApagaEditMot").style.visibility = "visible";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=editMotivo&codigo="+Cod, true);
@@ -2249,7 +2282,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("relacEditMotivo").style.display = "block";
                                     document.getElementById("editNomeMot").focus();
                                 }else{
-                                    alert("Houve um erro no servidor.")
+                                    alert("Houve um erro no servidor.");
                                 }
                             }
                         }
@@ -2259,6 +2292,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
             function editaStat(Cod){
                 document.getElementById("guardaCodEdit").value = Cod;
+                document.getElementById("botApagaEditStat").style.visibility = "visible";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=editStat&codigo="+Cod, true);
@@ -2272,7 +2306,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("relacEditStat").style.display = "block";
                                     document.getElementById("editNomeStat").focus();
                                 }else{
-                                    alert("Houve um erro no servidor.")
+                                    alert("Houve um erro no servidor.");
                                 }
                             }
                         }
@@ -2282,6 +2316,7 @@ if(!isset($_SESSION["usuarioID"])){
             }
             function editaAdm(Cod){
                 document.getElementById("guardaCodEdit").value = Cod;
+                document.getElementById("botApagaEditAdm").style.visibility = "visible";
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=editAdm&codigo="+Cod, true);
@@ -2295,7 +2330,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     document.getElementById("relacEditAdm").style.display = "block";
                                     document.getElementById("editNomeAdm").focus();
                                 }else{
-                                    alert("Houve um erro no servidor.")
+                                    alert("Houve um erro no servidor.");
                                 }
                             }
                         }
@@ -2304,6 +2339,30 @@ if(!isset($_SESSION["usuarioID"])){
                 }
             }
 
+            function editaDisc(Cod){
+                document.getElementById("guardaCodEdit").value = Cod;
+                document.getElementById("botApagaEditDisc").style.visibility = "visible";
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=editDisc&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    document.getElementById("editNomeDisc").value = Resp.desc;
+                                    document.getElementById("relacEditDisc").style.display = "block";
+                                    document.getElementById("editNomeDisc").focus();
+                                }else{
+                                    alert("Houve um erro no servidor.");
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
 
             function salvaEditTipo(){
                 if(document.getElementById("editNomeTipo").value == ""){
@@ -2322,7 +2381,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     $("#configOcorrencias").load("modulos/escaladaf/edNotaOcor.php");
                                     document.getElementById("relacEditTipo").style.display = "none";
                                 }else{
-                                    alert("Houve um erro no servidor.")
+                                    alert("Houve um erro no servidor.");
                                 }
                             }
                         }
@@ -2347,7 +2406,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     $("#configMotivos").load("modulos/escaladaf/edNotaMot.php");
                                     document.getElementById("relacEditMotivo").style.display = "none";
                                 }else{
-                                    alert("Houve um erro no servidor.")
+                                    alert("Houve um erro no servidor.");
                                 }
                             }
                         }
@@ -2372,7 +2431,7 @@ if(!isset($_SESSION["usuarioID"])){
                                     $("#configStat").load("modulos/escaladaf/edNotaStat.php");
                                     document.getElementById("relacEditStat").style.display = "none";
                                 }else{
-                                    alert("Houve um erro no servidor.")
+                                    alert("Houve um erro no servidor.");
                                 }
                             }
                         }
@@ -2380,6 +2439,7 @@ if(!isset($_SESSION["usuarioID"])){
                     ajax.send(null);
                 }
             }
+
             function salvaEditAdm(){
                 if(document.getElementById("editNomeAdm").value == ""){
                     return false;
@@ -2397,7 +2457,33 @@ if(!isset($_SESSION["usuarioID"])){
                                     $("#configAdm").load("modulos/escaladaf/edNotaAdm.php");
                                     document.getElementById("relacEditAdm").style.display = "none";
                                 }else{
-                                    alert("Houve um erro no servidor.")
+                                    alert("Houve um erro no servidor.");
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+            }
+
+            function salvaEditDisc(){
+                if(document.getElementById("editNomeDisc").value == ""){
+                    return false;
+                }
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=salvaDisc&codigo="+document.getElementById("guardaCodEdit").value
+                    +"&texto="+document.getElementById("editNomeDisc").value, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                if(parseInt(Resp.coderro) === 0){
+                                    $("#configDisc").load("modulos/escaladaf/edNotaDisc.php");
+                                    document.getElementById("relacEditDisc").style.display = "none";
+                                }else{
+                                    alert("Houve um erro no servidor.");
                                 }
                             }
                         }
@@ -2410,97 +2496,182 @@ if(!isset($_SESSION["usuarioID"])){
                 if(document.getElementById("editNomeTipo").value == ""){
                     return false;
                 }
-                ajaxIni();
-                if(ajax){
-                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=apagaOcor&codigo="+document.getElementById("guardaCodEdit").value, true);
-                    ajax.onreadystatechange = function(){
-                        if(ajax.readyState === 4 ){
-                            if(ajax.responseText){
+                $.confirm({
+                    title: 'Apagar tipo.',
+                    content: 'Confirma apagar este tipo de ocorrência?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=apagaOcor&codigo="+document.getElementById("guardaCodEdit").value, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
 //alert(ajax.responseText);
-                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
-                                if(parseInt(Resp.coderro) === 0){
-                                    $("#configOcorrencias").load("modulos/escaladaf/edNotaOcor.php");
-                                    document.getElementById("relacEditTipo").style.display = "none";
-                                }else{
-                                    alert("Houve um erro no servidor.")
-                                }
+                                            Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                            if(parseInt(Resp.coderro) === 0){
+                                                $("#configOcorrencias").load("modulos/escaladaf/edNotaOcor.php");
+                                                document.getElementById("relacEditTipo").style.display = "none";
+                                            }else{
+                                                alert("Houve um erro no servidor.");
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
                             }
+                        },
+                        Não: function () {
                         }
-                    };
-                    ajax.send(null);
-                }
+                    }
+                });
             }
+
             function apagaMot(){
                 if(document.getElementById("editNomeMot").value == ""){
                     return false;
                 }
-                ajaxIni();
-                if(ajax){
-                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=apagaMotivo&codigo="+document.getElementById("guardaCodEdit").value, true);
-                    ajax.onreadystatechange = function(){
-                        if(ajax.readyState === 4 ){
-                            if(ajax.responseText){
+                $.confirm({
+                    title: 'Apagar tipo.',
+                    content: 'Confirma apagar este tipo de ocorrência?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=apagaMotivo&codigo="+document.getElementById("guardaCodEdit").value, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
 //alert(ajax.responseText);
-                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
-                                if(parseInt(Resp.coderro) === 0){
-                                    $("#configMotivos").load("modulos/escaladaf/edNotaMot.php");
-                                    document.getElementById("relacEditMotivo").style.display = "none";
-                                }else{
-                                    alert("Houve um erro no servidor.")
-                                }
+                                            Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                            if(parseInt(Resp.coderro) === 0){
+                                                $("#configMotivos").load("modulos/escaladaf/edNotaMot.php");
+                                                document.getElementById("relacEditMotivo").style.display = "none";
+                                            }else{
+                                                alert("Houve um erro no servidor.");
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
                             }
+                        },
+                        Não: function () {
                         }
-                    };
-                    ajax.send(null);
-                }
+                    }
+                });
             }
             function apagaStat(){
                 if(document.getElementById("editNomeStat").value == ""){
                     return false;
                 }
-                ajaxIni();
-                if(ajax){
-                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=apagaStat&codigo="+document.getElementById("guardaCodEdit").value, true);
-                    ajax.onreadystatechange = function(){
-                        if(ajax.readyState === 4 ){
-                            if(ajax.responseText){
+                $.confirm({
+                    title: 'Apagar status.',
+                    content: 'Confirma apagar este status?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                           ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=apagaStat&codigo="+document.getElementById("guardaCodEdit").value, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
 //alert(ajax.responseText);
-                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
-                                if(parseInt(Resp.coderro) === 0){
-                                    $("#configStat").load("modulos/escaladaf/edNotaStat.php");
-                                    document.getElementById("relacEditStat").style.display = "none";
-                                }else{
-                                    alert("Houve um erro no servidor.")
-                                }
+                                            Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                            if(parseInt(Resp.coderro) === 0){
+                                                $("#configStat").load("modulos/escaladaf/edNotaStat.php");
+                                                document.getElementById("relacEditStat").style.display = "none";
+                                            }else{
+                                                alert("Houve um erro no servidor.");
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
                             }
+                        },
+                        Não: function () {
                         }
-                    };
-                    ajax.send(null);
-                }
+                    }
+                });
             }
             function apagaAdm(){
                 if(document.getElementById("editNomeAdm").value == ""){
                     return false;
                 }
-                ajaxIni();
-                if(ajax){
-                    ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=apagaAdm&codigo="+document.getElementById("guardaCodEdit").value, true);
-                    ajax.onreadystatechange = function(){
-                        if(ajax.readyState === 4 ){
-                            if(ajax.responseText){
+                $.confirm({
+                    title: 'Apagar Ação Administrativa.',
+                    content: 'Confirma apagar esta ação administrativa?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=apagaAdm&codigo="+document.getElementById("guardaCodEdit").value, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
 //alert(ajax.responseText);
-                                Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
-                                if(parseInt(Resp.coderro) === 0){
-                                    $("#configAdm").load("modulos/escaladaf/edNotaAdm.php");
-                                    document.getElementById("relacEditAdm").style.display = "none";
-                                }else{
-                                    alert("Houve um erro no servidor.")
-                                }
+                                            Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                            if(parseInt(Resp.coderro) === 0){
+                                                $("#configAdm").load("modulos/escaladaf/edNotaAdm.php");
+                                                document.getElementById("relacEditAdm").style.display = "none";
+                                            }else{
+                                                alert("Houve um erro no servidor.");
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
                             }
+                        },
+                        Não: function () {
                         }
-                    };
-                    ajax.send(null);
+                    }
+                });
+            }
+            function apagaDisc(){
+                if(document.getElementById("editNomeDisc").value == ""){
+                    return false;
                 }
+                $.confirm({
+                    title: 'Apagar Ação Disciplinar.',
+                    content: 'Confirma apagar esta ação disciplinar?',
+                    autoClose: 'Não|10000',
+                    draggable: true,
+                    buttons: {
+                        Sim: function () {
+                            ajaxIni();
+                            if(ajax){
+                                ajax.open("POST", "modulos/escaladaf/salvaEscDaf.php?acao=apagaDisc&codigo="+document.getElementById("guardaCodEdit").value, true);
+                                ajax.onreadystatechange = function(){
+                                    if(ajax.readyState === 4 ){
+                                        if(ajax.responseText){
+//alert(ajax.responseText);
+                                            Resp = eval("(" + ajax.responseText + ")");  //Lê o array que vem
+                                            if(parseInt(Resp.coderro) === 0){
+                                                $("#configDisc").load("modulos/escaladaf/edNotaDisc.php");
+                                                document.getElementById("relacEditDisc").style.display = "none";
+                                            }else{
+                                                alert("Houve um erro no servidor.");
+                                            }
+                                        }
+                                    }
+                                };
+                                ajax.send(null);
+                            }
+                        },
+                        Não: function () {
+                        }
+                    }
+                });
             }
 
             function fechaEditTipo(){
@@ -2508,6 +2679,7 @@ if(!isset($_SESSION["usuarioID"])){
                 document.getElementById("relacEditMotivo").style.display = "none";
                 document.getElementById("relacEditStat").style.display = "none";
                 document.getElementById("relacEditAdm").style.display = "none";
+                document.getElementById("relacEditDisc").style.display = "none";
             }
             function fechaModalAnot(){
                 document.getElementById("relacmodalAnotFunc").style.display = "none";
@@ -2708,8 +2880,25 @@ if(!isset($_SESSION["usuarioID"])){
         pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcadm (id, descadm)  VALUES (4, 'Abonar')");
         pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcadm (id, descadm)  VALUES (5, 'Pagar Hora Extra')");
     }
-
-
+    //   pg_query($Conec, "DROP TABLE IF EXISTS ".$xProj.".escaladaf_fundisc"); // ação disciplinar
+    pg_query($Conec, "CREATE TABLE IF NOT EXISTS ".$xProj.".escaladaf_funcdisc (
+        id SERIAL PRIMARY KEY, 
+        descdisc character varying(100),
+        ativo smallint DEFAULT 1 NOT NULL, 
+        usuins integer DEFAULT 0 NOT NULL,
+        datains timestamp without time zone DEFAULT '3000-12-31',
+        usuedit integer DEFAULT 0 NOT NULL,
+        dataedit timestamp without time zone DEFAULT '3000-12-31' 
+        ) 
+    ");
+    $rs = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_funcdisc LIMIT 1");
+    $row = pg_num_rows($rs);
+    if($row == 0){
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcdisc (id, descdisc)  VALUES (1, '')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcdisc (id, descdisc)  VALUES (2, 'Advertência escrita')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcdisc (id, descdisc)  VALUES (3, 'Advertência verbal')");
+        pg_query($Conec, "INSERT INTO ".$xProj.".escaladaf_funcdisc (id, descdisc)  VALUES (4, 'Suspensão')");
+    }
 //  dataescala_troca date DEFAULT '3000-12-31',
 //  letra_troca character varying(3),
 //  turno_troca character varying(30),
@@ -3249,6 +3438,12 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                                         <div id="configAdm" style="text-align: center; color: black;"></div>
                                     </div>
                                 </td>
+                                <td>
+                                    <div style="margin: 10px; min-width: 180px; padding: 5px; text-align: center; border: 1px solid; border-radius: 15px; background: linear-gradient(180deg, white, #86c1eb);">
+                                        <div class='divbot corFundo' onclick='insDisc()' title="Adicionar ação disciplinar"> Adicionar </div>
+                                        <div id="configDisc" style="text-align: center; color: black;"></div>
+                                    </div>
+                                </td>
                             </tr>
                         </table>
                     </div>
@@ -3520,7 +3715,6 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                             }
                             ?>
                             </select>
-
                             <label class="etiqAzul">Status: </label>
                             <select id="selecStatus" style="font-size: .8rem; width: 120px;" onchange="modif();" title="Selecione o status.">
                             <?php 
@@ -3533,8 +3727,7 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                             }
                             ?>
                             </select>
-
-                            <label class="etiqAzul">Ação Adm: </label>
+                            <label class="etiqAzul" title="Ação administrativa">Ação Adm: </label>
                             <select id="selecAcaoAdm" style="font-size: .8rem; width: 120px;" onchange="modif();" title="Selecione a ação da administração.">
                             <?php 
                                 $OpcoesAdm = pg_query($Conec, "SELECT id, descadm FROM ".$xProj.".escaladaf_funcadm WHERE ativo = 1 ORDER BY descadm");
@@ -3546,17 +3739,29 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                             }
                             ?>
                             </select>
+                            <label class="etiqAzul" title="Ação disciplinar">Ação Discipl: </label>
+                            <select id="selecAcaoDisc" style="font-size: .8rem; width: 120px;" onchange="modif();" title="Selecione a acão disciplinar.">
+                            <?php 
+                                $OpcoesDisc = pg_query($Conec, "SELECT id, descdisc FROM ".$xProj.".escaladaf_funcdisc WHERE ativo = 1 ORDER BY descdisc");
+                                if($OpcoesDisc){
+                                    while ($Opcoes = pg_fetch_row($OpcoesDisc)){ ?>
+                                    <option value="<?php echo $Opcoes[0]; ?>"><?php echo $Opcoes[1]; ?></option>
+                                    <?php 
+                                }
+                            }
+                            ?>
+                            </select>
                         </td>
                         <td></td>
                     </tr>
                     <tr>
                         <td class="etiqAzul">Observações: </td>
-                        <td><textarea class="form-control" id="observEscalado" style="resize: both; margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 4px;" rows="6" cols="70" title="Texto da nota" onchange="modif();"></textarea></td>
+                        <td><textarea class="form-control" id="observEscalado" style="resize: both; margin-top: 3px; border: 1px solid blue; border-radius: 10px; padding: 4px;" rows="6" cols="75" title="Texto da nota" onchange="modif();"></textarea></td>
                         <td></td>
                     </tr>
                     <tr>
                         <td style="text-align: center; padding-top: 10px;"><button class="botpadrred" id="apagarNotaFunc" style="font-size: 60%; padding-left: 3px; padding-right: 3px;" onclick="apagaNotaFunc();">Apagar</button></td>
-                        <td style="text-align: center; padding-top: 10px;"><button class="botpadrblue" onclick="salvaNotaFunc();">Salvar</button></td>
+                        <td style="text-align: center; padding-top: 10px;"><button class="botpadrblue" onclick="salvaNotaFunc0();">Salvar</button></td>
                         <td></td>
                     </tr>
                 </table>
@@ -3648,7 +3853,7 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
         <div id="relacEditAdm" class="relacmodal">
             <div class="modal-content-InsTipo">
                 <span class="close" onclick="fechaEditTipo();">&times;</span>
-                <h5 style="text-align: center; color: #666;">Ação</h5>
+                <h5 style="text-align: center; color: #666;">Ação Administrativa</h5>
                     <table style="margin: 0 auto; width: 90%">
                         <tr>
                             <td class="etiq aDir">Texto: </td>
@@ -3662,6 +3867,29 @@ if(strtotime('2025/03/10') > strtotime(date('Y/m/d'))){
                         <button id="botApagaEditAdm" class="resetbotred" style="font-size: .8rem;" onclick="apagaAdm();">Apagar</button>
                         <label style="padding-left: 50%;"></label>
                         <button id="botSalvarEditAdm" class="resetbot" style="font-size: .9rem;" onclick="salvaEditAdm();">Salvar</button>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- Fim Modal-->
+
+        <!-- div modal para editar Ocorr em Notas na escala  -->
+        <div id="relacEditDisc" class="relacmodal">
+            <div class="modal-content-InsTipo">
+                <span class="close" onclick="fechaEditTipo();">&times;</span>
+                <h5 style="text-align: center; color: #666;">Ação Discipinar</h5>
+                    <table style="margin: 0 auto; width: 90%">
+                        <tr>
+                            <td class="etiq aDir">Texto: </td>
+                            <td><input type="text" id="editNomeDisc" onchange="modif();" style="border: 1px solid; border-radius: 5px; width: 90%;"></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                    <br>
+                    <div style="text-align: center;">
+                        <button id="botApagaEditDisc" class="resetbotred" style="font-size: .8rem;" onclick="apagaDisc();">Apagar</button>
+                        <label style="padding-left: 50%;"></label>
+                        <button id="botSalvarEditDisc" class="resetbot" style="font-size: .9rem;" onclick="salvaEditDisc();">Salvar</button>
                     </div>
                 </div>
             </div>

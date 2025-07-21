@@ -1,8 +1,12 @@
 <?php
 require_once("dbcclass.php");
 $url = $_SERVER["PHP_SELF"];
-if(strtolower($url) == $urlIni."arqDaf/config/abrealas.php"){
-   header("Location: $urlIni");
+if(strcmp($url, $urlIni.'arqDaf/modulos/config/abrealas.php') == 0){
+   session_name("arqAdm");
+   session_start();
+   $_SESSION = array();
+   session_destroy();
+   header("Location: ../../index.php"); // OK
 }
 
 $ConecPes = conecPes();
@@ -11,9 +15,9 @@ if($ConecPes != "sConec" && $ConecPes != "sFunc"){
    $xPes = "public";
 }else{
    if($ConecPes == "sFunc"){
-      die("<br>Não foi possível conectar-se ao banco de dados Pessoal. <br>Habilite a extensão pgsql no PHP.");
+      die("<br>Não foi possível conectar-se ao banco de dados Pessoal.  Habilite a extensão pgsql no PHP. ".$_SERVER['HTTP_HOST']);
    }else{
-      die("<br>Não foi possível conectar-se ao banco de dados Pessoal. <br>Verifique os parâmetros da conexão.");
+      die("<br>Não foi possível conectar-se ao banco de dados Pessoal. Verifique os parâmetros da conexão. Variavel: ".$ConecPes);
    }
 }
 

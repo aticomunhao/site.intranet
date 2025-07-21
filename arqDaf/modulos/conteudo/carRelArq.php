@@ -4,7 +4,6 @@
     require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
     $admIns = (int) filter_input(INPUT_GET, 'admins'); // vem de relArq.php
     $Dir = $_SESSION["PagDirDaf"]; // página apresentada
-//    $VerArq = parAdm("verarquivos", $Conec, $xProj); // ver arquivos   1: qquer um pode ver os arquivos - 2: só os usuários da Diretoria/Assessoria
 
     $VerArq = 1;
     if($VerArq == 1){
@@ -14,8 +13,6 @@
             $Sql = "SELECT codarq, descarq, codsetor, TO_CHAR(datains, 'DD/MM/YYYY HH24:MI') FROM ".$xProj.".daf_arqsetor WHERE codsetor = $Dir And ativo = 1 And codsetor = ".$_SESSION["CodSetorUsuDaf"]." ORDER BY datains DESC";
         }
     }
-//echo $Sql;
-
     $rs = pg_query($Conec, $Sql);
     echo "<div style='text-align: center; padding: 10px; font-family: tahoma, arial, cursive, sans-serif;'>";
         echo "<table style='margin: 0 auto; width: 95%;'>";

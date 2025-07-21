@@ -86,14 +86,11 @@ if(!isset($_SESSION["usuarioCPF"])){
                 text-decoration: none;
                 cursor: pointer;
             }
-
         </style>
         <script type="text/javascript">
             $(document).ready(function(){
                 $("#container6").load("modulos/conteudo/relArq.php");
-  
             })
-
         </script>
     </head>
     <body>
@@ -115,6 +112,9 @@ if(!isset($_SESSION["usuarioCPF"])){
         ?>
         <div id="container5">
             <div class="cContainer corFundo"><img src="imagens/folder0.jpg" height="20px;" style="padding-right: 10px;" ><?php echo $Sigla; ?></div>
+            <div style="text-align: center; margin-top: 140px;">
+                <img src="imagens/folder0Tr<?php echo substr($Sigla, -2);?>.png" height="100px;">
+            </div>
         </div>
         <div id="container6"></div> <!--  containers 6 na página relArq.php -->  
     </body>

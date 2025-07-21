@@ -189,20 +189,20 @@ if(!isset($_SESSION["usuarioCPF"])){
             <div class="modal-content-mudaSenha">
                 <span class="close" style="padding-right: 10px;" onclick="fechamudaSenha();">&times;</span>
                 <div class="caixalog">
-                    <h2><img src="imagens/Logo1.png" height="40px;">Nova Senha</h2>
+                    <h2><img src="../imagens/Logo1.png" height="40px;">Nova Senha</h2>
                     <p>Mudança da senha de acesso: <?php echo $NomeCompl; ?></p>
                     <div>
-                        <label style="padding-right: 3px;">Senha atual:</label><img id="olhoSecaoSenha1" style="cursor: pointer;" title="Mantenha clicado para visualizar a senha inserida." src="imagens/olhosenha.png" alt="" width="25" height="15" draggable="false">
+                        <label style="padding-right: 3px;">Senha atual:</label><img id="olhoSecaoSenha1" style="cursor: pointer;" title="Mantenha clicado para visualizar a senha inserida." src="../imagens/olhosenha.png" alt="" width="25" height="15" draggable="false">
                         <input type="password" id="senhaant" class="form-control" value="" onkeypress="if(event.keyCode===13){javascript:foco('salvar');return false;}">
                     </div>
                     <div style="padding-top: 5px;">
-                        <label style="padding-right: 3px;">Nova senha</label><img id="olhoSecaoSenha2" style="cursor: pointer;" title="Mantenha clicado para visualizar a senha inserida." src="imagens/olhosenha.png" alt="" width="25" height="15" draggable="false">
+                        <label style="padding-right: 3px;">Nova senha</label><img id="olhoSecaoSenha2" style="cursor: pointer;" title="Mantenha clicado para visualizar a senha inserida." src="../imagens/olhosenha.png" alt="" width="25" height="15" draggable="false">
                         <input type="password" id="novasenha" class="form-control" value="" onkeypress="if(event.keyCode===13){javascript:foco('repetsenha');return false;}">
                         <span class="invalid-feedback"></span>
                     </div>
 
                     <div style="padding-top: 5px;">
-                        <label style="padding-right: 3px;">Confirme a nova senha</label><img id="olhoSecaoSenha3" style="cursor: pointer;" title="Mantenha clicado para visualizar a senha inserida." src="imagens/olhosenha.png" alt="" width="25" height="15" draggable="false">
+                        <label style="padding-right: 3px;">Confirme a nova senha</label><img id="olhoSecaoSenha3" style="cursor: pointer;" title="Mantenha clicado para visualizar a senha inserida." src="../imagens/olhosenha.png" alt="" width="25" height="15" draggable="false">
                         <input type="password" id="repetsenha" class="form-control" value=""  onkeypress="if(event.keyCode===13){salvaMudaSenha();}"">
                         <span class="invalid-feedback"></span>
                     </div>

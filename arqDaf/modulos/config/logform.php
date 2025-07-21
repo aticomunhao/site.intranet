@@ -54,10 +54,10 @@
                     }                  
                 });
 
-
                 $("#usuario").click(function(){
                     $("#usuario").removeClass('eBold');
                 });
+
 
                 $("#usuario").change(function(){
                     ajaxIni();
@@ -111,14 +111,14 @@
                     $('#mensagem').fadeOut(1000);
                     return false;
                 }
-                LenSenha = document.getElementById("senha").value;
-                if(parseInt(LenSenha.length) < parseInt(document.getElementById("guardaleng").value)){
-                    $('#mensagem').fadeIn("slow");
-                    document.getElementById("mensagem").innerHTML = "Usuário ou senha não conferem.</u>";
-                    document.getElementById("usuario").focus();
-                    $('#mensagem').fadeOut(1000);
-                    return false;
-                }
+//                LenSenha = document.getElementById("senha").value;
+//                if(parseInt(LenSenha.length) < parseInt(document.getElementById("guardaleng").value)){
+//                    $('#mensagem').fadeIn("slow");
+//                    document.getElementById("mensagem").innerHTML = "Usuário ou senha não conferem.</u>";
+//                    document.getElementById("usuario").focus();
+//                    $('#mensagem').fadeOut(1000);
+//                    return false;
+//                }
                 ajaxIni();
                 if(ajax){
                     ajax.open("POST", "modulos/config/registr.php?acao=loglog&usuario="+encodeURIComponent(document.getElementById("usuario").value)+"&senha="+encodeURIComponent(document.getElementById("senha").value), true);

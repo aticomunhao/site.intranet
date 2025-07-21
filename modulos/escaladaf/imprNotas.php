@@ -152,7 +152,7 @@ if(isset($_REQUEST["acao"])){
                  }
                 $pdf->ln(1);
 
-                $rs1 = pg_query($Conec, "SELECT TO_CHAR(dataescala, 'DD/MM/YYYY'), letra, turno, observ, id_ocor, id_mot, id_stat, id_adm 
+                $rs1 = pg_query($Conec, "SELECT TO_CHAR(dataescala, 'DD/MM/YYYY'), letra, turno, observ, id_ocor, id_mot, id_stat, id_adm, id_disc 
                 FROM ".$xProj.".escaladaf_func 
                 WHERE poslog_id = $CodPosLog And TO_CHAR(dataescala, 'MM') = '$Mes' And TO_CHAR(dataescala, 'YYYY') = '$Ano' And grupo_id = $NumGrupo And ativo = 1 ORDER BY dataescala");
                 $row1 = pg_num_rows($rs1);
@@ -160,11 +160,11 @@ if(isset($_REQUEST["acao"])){
                     $pdf->SetX(40); 
                     $pdf->SetFont('Arial', '', 8);
                     $pdf->MultiCell(0, 4, $tbl1[0]." - Letra: ".$tbl1[1]." - Turno: ".$tbl1[2], 0, 'L', false);
-
                     $idOcor = $tbl1[4];
                     $idMot = $tbl1[5];
                     $idStat = $tbl1[6];
-                    $idAdm = $tbl1[7];
+                    $idAdm = $tbl1[7];  // Ação administrativa
+                    $idDisc = $tbl1[8]; // Ação disciplinar
                     $rs2 = pg_query($Conec, "SELECT descocor FROM ".$xProj.".escaladaf_funcoc WHERE id = $idOcor And ativo = 1");
                     $row2 = pg_num_rows($rs2);
                     if($row2 > 0){
@@ -197,27 +197,42 @@ if(isset($_REQUEST["acao"])){
                     }else{
                         $DescAdm = "";
                     }
+                    $rs6 = pg_query($Conec, "SELECT descdisc FROM ".$xProj.".escaladaf_funcdisc WHERE id = $idDisc And ativo = 1");
+                    $row6 = pg_num_rows($rs6);
+                    if($row6 > 0){
+                        $tbl6 = pg_fetch_row($rs6);
+                        $DescDisc = $tbl6[0];
+                    }else{
+                        $DescDisc = "-";
+                    }
+
 
                     $pdf->SetX(40); 
                     $pdf->SetFont('Arial', 'I', 8);
                     $pdf->Cell(16, 4, "Ocorrência:", 0, 0, 'L');
                     $pdf->SetFont('Arial', 'U', 8);
-                    $pdf->Cell(32, 4, $DescOc, 0, 0, 'L');
+                    $pdf->Cell(40, 4, $DescOc, 0, 0, 'L');
 
                     $pdf->SetFont('Arial', 'I', 8);
                     $pdf->Cell(10, 4, "Motivo:", 0, 0, 'L');
                     $pdf->SetFont('Arial', 'U', 8);
-                    $pdf->Cell(30, 4, $DescMot, 0, 0, 'L');
+                    $pdf->Cell(40, 4, $DescMot, 0, 0, 'L');
 
                     $pdf->SetFont('Arial', 'I', 8);
                     $pdf->Cell(10, 4, "Status:", 0, 0, 'L');
                     $pdf->SetFont('Arial', 'U', 8);
-                    $pdf->Cell(30, 4, $DescStat, 0, 0, 'L');
+                    $pdf->Cell(40, 4, $DescStat, 0, 1, 'L');
+
+                    $pdf->SetX(40); 
+                    $pdf->SetFont('Arial', 'I', 8);
+                    $pdf->Cell(16, 4, "Ação Adm: ", 0, 0, 'L');
+                    $pdf->SetFont('Arial', 'U', 8);
+                    $pdf->Cell(40, 4, $DescAdm, 0, 0, 'L');
 
                     $pdf->SetFont('Arial', 'I', 8);
-                    $pdf->Cell(8, 4, "Ação:", 0, 0, 'L');
+                    $pdf->Cell(18, 4, "Ação Discipl:", 0, 0, 'L');
                     $pdf->SetFont('Arial', 'U', 8);
-                    $pdf->Cell(30, 4, $DescAdm, 0, 1, 'L');
+                    $pdf->Cell(40, 4, $DescDisc, 0, 1, 'L');
 
                     $pdf->SetFont('Arial', '', 8);
                     $pdf->SetX(40); 
