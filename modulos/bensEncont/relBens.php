@@ -248,9 +248,9 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                         echo "<button class='botTable fundoAmarelo' onclick='mostraBem($tbl0[0], 6, $Restit);' title='Nível Revisor.'>Arquivar</button>";
                                     }else{
                                         if($Arquivado == 0){
-                                        echo "<button disabled class='botTable fundoCinza corAzulClaro' title='Arquivar o processo.'>Arquivar</button>";
+                                            echo "<button disabled class='botTable fundoCinza corAzulClaro' title='Arquivar o processo.'>Arquivar</button>";
                                         }else{
-                                            echo "<button disabled class='botTable fundoCinza corAzulClaro'>Arquivado</button>";
+                                            echo "<button class='botTable fundoAmareloCl corAzulClaro' onclick='mostraArquivado($tbl0[0]);'>Arquivado</button>";
                                         }
                                     }
 
@@ -259,6 +259,7 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                                     }
                                     echo "<br>";
                                 }
+
                                 if($UsuIns > 0){
                                     echo "<div class='etiqResult' title='Registro inicial'>Registrado</div>";
                                 }

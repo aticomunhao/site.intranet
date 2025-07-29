@@ -24,7 +24,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
     $rs = pg_query($Conec, "SELECT to_char(".$xProj.".bensachados.datareceb, 'DD/MM/YYYY'), numprocesso, descdobem, to_char(".$xProj.".bensachados.dataachou, 'DD/MM/YYYY'), localachou, nomeachou, telefachou, to_char(NOW(), 'DD/MM/YYYY'), usuguarda, to_char(".$xProj.".bensachados.dataguarda, 'DD/MM/YYYY'), nomepropriet, 
     cpfpropriet, telefpropriet, usurestit, to_char(".$xProj.".bensachados.datarestit, 'DD/MM/YYYY'), usucsg, to_char(".$xProj.".bensachados.datarcbcsg, 'DD/MM/YYYY'), setordestino, nomerecebeudestino, destinonodestino, to_char(".$xProj.".bensachados.datadestino, 'DD/MM/YYYY'), 
-    usuarquivou, to_char(".$xProj.".bensachados.dataarquivou, 'DD/MM/YYYY'), usudestino, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, CURRENT_DATE-datareceb As Dias, descencdestino, descencprocesso, usuencdestino, to_char(".$xProj.".bensachados.dataencdestino, 'DD/MM/YYYY')
+    usuarquivou, to_char(".$xProj.".bensachados.dataarquivou, 'DD/MM/YYYY'), usudestino, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, CURRENT_DATE-datareceb As Dias, descencdestino, descencprocesso, usuencdestino, to_char(".$xProj.".bensachados.dataencdestino, 'DD/MM/YYYY'), observarquiv 
     FROM ".$xProj.".bensachados INNER JOIN ".$xProj.".poslog ON ".$xProj.".bensachados.codusuins = ".$xProj.".poslog.pessoas_id
     WHERE ".$xProj.".bensachados.id = $Num ");
     $row = pg_num_rows($rs);
@@ -39,9 +39,9 @@ if(!isset($_SESSION['AdmUsu'])){
     $Dias = (int) $tbl[25];
     $DestSetor = $tbl[26];
     $DestProcesso = $tbl[27];
-
     $UsuEncDest = $tbl[28];
     $DataEncDest = $tbl[29];
+    $ObsArquiv = $tbl[30];
 
 //    8 e 9 usuguarda e dataguarda
 // 10 nomeprop
@@ -261,7 +261,8 @@ if(!isset($_SESSION['AdmUsu'])){
         $pdf->ln(5);
 
         if($UsuRestit > 0){
-            $pdf->SetFillColor(247, 196, 181); // 
+//            $pdf->SetFillColor(247, 196, 181); // salmão ou rosa claro
+            $pdf->SetFillColor(255, 255, 0); // yelow
         }
         $pdf->MultiCell(0, 5, "REGISTRO DE RESTITUIÇÃO DOS OBJETOS DESCRITOS NESTE PROCESSO", 1, 'L', true);
         $pdf->SetFillColor(232, 232, 232); // fundo cinza
@@ -330,7 +331,7 @@ if(!isset($_SESSION['AdmUsu'])){
 
         $pdf->ln(5);
         $pdf->SetFont('Arial', 'I', 8);
-        $pdf->MultiCell(0, 5, "DESTINAÇÃO APÓS O PRAZO DE 90 DIAS", 1, 'L', true);
+        $pdf->MultiCell(0, 5, "DESTINAÇÃO APÓS O PRAZO DE 90 DIAS:", 1, 'L', true);
 
         if($UsuDestino > 0){
             $pdf->ln(3);
@@ -367,7 +368,12 @@ if(!isset($_SESSION['AdmUsu'])){
             $pdf->Cell(30, 4, "Finalidade atribuída: ", 0, 0, 'L');
             $pdf->SetFont('Arial', '', 10);
             $pdf->MultiCell(0, 5, $DestProcesso, 1, 'J', false);
-
+            if(!is_null($ObsArquiv) && $ObsArquiv != ""){
+                $pdf->SetX(15); 
+                $pdf->SetFont('Arial', 'I', 8);
+                $pdf->Cell(30, 4, "Observ arquivamento: ", 0, 0, 'L');
+                $pdf->MultiCell(0, 5, $ObsArquiv, 1, 'J', false);
+            }
         }else{
             $pdf->ln(3);
             if($UsuRestit > 0){
@@ -384,7 +390,6 @@ if(!isset($_SESSION['AdmUsu'])){
         $lin = $pdf->GetY();
         $pdf->Line(10, $lin, 200, $lin);
         $pdf->ln(10);
-        $pdf->SetX(15); 
 
         if($UsuArquiv > 0){
             $pdf->SetFont('Arial', '', 10);
@@ -430,7 +435,6 @@ if(!isset($_SESSION['AdmUsu'])){
         $pdf->MultiCell(0, 5, $tbl[2], 0, 'J', true); //relato
         $pdf->ln(3);
 
-
         $pdf->SetX(15); 
         $pdf->SetFont('Arial', 'I', 8);
         $pdf->Cell(40, 4, "Data em que foi encontrado: ", 0, 0, 'L');
@@ -461,11 +465,9 @@ if(!isset($_SESSION['AdmUsu'])){
         $pdf->Cell(0, 4, $tbl[6], 0, 1, 'L');
         $pdf->ln(2);
 
-
         $lin = $pdf->GetY();
         $pdf->Line(10, $lin, 200, $lin);
         $pdf->ln(5);
-
 
         $pdf->ln(2);
         $lin = $pdf->GetY();

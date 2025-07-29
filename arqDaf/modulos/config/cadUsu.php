@@ -162,9 +162,7 @@ if(!isset($_SESSION["usuarioCPF"])){
                         ajax.onreadystatechange = function(){
                             if(ajax.readyState === 4 ){
                                 if(ajax.responseText){
-//if(document.getElementById("guardausu_cpf").value == "13652176049"){
 //alert(ajax.responseText);
-//}
                                     Resp = eval("(" + ajax.responseText + ")");
                                     if(parseInt(Resp.coderro) === 2){
                                         $('#mensagem').fadeIn("slow");

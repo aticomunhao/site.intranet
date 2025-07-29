@@ -80,7 +80,7 @@ if($Acao=="buscaBem"){
 
     $rs1 = pg_query($Conec, "SELECT to_char(datareceb, 'DD/MM/YYYY'), TO_CHAR(dataachou, 'DD/MM/YYYY'), descdobem, localachou, nomeachou, telefachou, numprocesso, codusuins, TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo, destinonodestino, setordestino, 
     nomerecebeudestino, nomepropriet, cpfpropriet, telefpropriet, usurestit, descencdestino, descencprocesso, codencdestino, codencprocesso, usudestino, 
-    usuencdestino, observ FROM ".$xProj.".bensachados WHERE id = $Codigo ");
+    usuencdestino, observ, observarquiv, TO_CHAR(dataarquivou, 'DD/MM/YYYY'), usuarquivou FROM ".$xProj.".bensachados WHERE id = $Codigo ");
     //TO_CHAR(AGE(CURRENT_DATE, datareceb), 'MM') AS intervalo  - procura o intervalo de 3 meses entre o recebimento e hoje
     if(!$rs1){
         $Erro = 1;
@@ -97,10 +97,22 @@ if($Acao=="buscaBem"){
         }else{
             $EncDest = "";
         }
+        $NomePropriet = $tbl1[12];
+        if(!is_null($tbl1[12])){
+            $NomePropriet = $tbl1[12];
+        }else{
+            $NomePropriet = "";
+        }
+
         if(!is_null($tbl1[22])){
             $Observ = $tbl1[22];
         }else{
             $Observ = "";
+        }
+        if(!is_null($tbl1[23])){
+            $ObservArquiv = $tbl1[23];
+        }else{
+            $ObservArquiv = "";
         }
 
         $UsuDestino = $tbl1[20];
@@ -110,6 +122,15 @@ if($Acao=="buscaBem"){
             $NomeUsuDestino = $tbl6[0];
         }else{
             $NomeUsuDestino = "";
+        }
+
+        $UsuArquivou = $tbl1[25];
+        $rs7 = pg_query($Conec, "SELECT nomecompl FROM ".$xProj.".poslog WHERE pessoas_id = $UsuArquivou"); // usuário que arquivou o processo
+        $tbl7 = pg_fetch_row($rs7);
+        if($tbl7 > 0){
+            $NomeArquivou = $tbl7[0];
+        }else{
+            $NomeArquivou = "";
         }
 
         $CodProcesso = $tbl1[19];
@@ -143,7 +164,7 @@ if($Acao=="buscaBem"){
         $tbl4 = pg_fetch_row($rs4);
         $DescDest = $tbl4[0];
 
-        $var = array("coderro"=>$Erro, "datareg"=>$tbl1[0], "dataachou"=>$tbl1[1], "descdobem"=>nl2br($tbl1[2]), "localachou"=>$tbl1[3], "nomeachou"=>$tbl1[4], "telefachou"=>$tbl1[5], "numprocesso"=>$tbl1[6], "codusuins"=>$CodUsuIns, "nomeusuins"=>$NomeUsuIns, "intervalo"=>$tbl1[8], "destino"=>$tbl1[9], "setordestino"=>$tbl1[10], "nomerecebeu"=>$tbl1[11], "nomepropriet"=>$tbl1[12], "cpfpropriet"=>$tbl1[13], "telefpropriet"=>$tbl1[14], "nomeusurestit"=>$NomeUsuRest, "codusurestit"=>$CodUsuRestit, "setorrecebeu"=>$DescDest, "codSetorDestino"=>$CodDestino, "DescDest"=>$EncDest, "codProcesso"=>$CodProcesso, "DescProcesso"=>$EncProcesso, "UsuEncProcesso"=>$UsuEncProcesso, "NomeEncProcesso"=>$NomeEncProcesso, "UsuDestino"=>$UsuDestino, "NomeUsuDestino"=>$NomeUsuDestino, "observ"=>nl2br($Observ));
+        $var = array("coderro"=>$Erro, "datareg"=>$tbl1[0], "dataachou"=>$tbl1[1], "descdobem"=>nl2br($tbl1[2]), "localachou"=>$tbl1[3], "nomeachou"=>$tbl1[4], "telefachou"=>$tbl1[5], "numprocesso"=>$tbl1[6], "codusuins"=>$CodUsuIns, "nomeusuins"=>$NomeUsuIns, "intervalo"=>$tbl1[8], "destino"=>$tbl1[9], "setordestino"=>$tbl1[10], "nomerecebeu"=>$tbl1[11], "nomepropriet"=>$NomePropriet, "cpfpropriet"=>$tbl1[13], "telefpropriet"=>$tbl1[14], "nomeusurestit"=>$NomeUsuRest, "codusurestit"=>$CodUsuRestit, "setorrecebeu"=>$DescDest, "codSetorDestino"=>$CodDestino, "DescDest"=>$EncDest, "codProcesso"=>$CodProcesso, "DescProcesso"=>$EncProcesso, "UsuEncProcesso"=>$UsuEncProcesso, "NomeEncProcesso"=>$NomeEncProcesso, "UsuDestino"=>$UsuDestino, "NomeUsuDestino"=>$NomeUsuDestino, "observ"=>nl2br($Observ), "observArquivam"=>nl2br($ObservArquiv), "dataArquivou"=>$tbl1[24], "nomeArquivou"=>$NomeArquivou);
     }
     $responseText = json_encode($var);
     echo $responseText;
@@ -172,7 +193,6 @@ if($Acao=="restituiBem"){
     $Telef = filter_input(INPUT_GET, 'telefproprietario');
     $Erro = 0;
     $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET nomepropriet = '$Nome', cpfpropriet = '$Cpf', telefpropriet = '$Telef', usurestit = ".$_SESSION["usuarioID"].", datarestit = NOW(), usuarquivou = ".$_SESSION["usuarioID"].", dataarquivou = NOW() WHERE id = $Cod");
-//    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET nomepropriet = '$Nome', cpfpropriet = '$Cpf', telefpropriet = '$Telef', usurestit = ".$_SESSION["usuarioID"].", datarestit = NOW() WHERE id = $Cod");
     if(!$rs1){
         $Erro = 1;
     }
@@ -211,16 +231,11 @@ if($Acao=="encdestinaBem"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
     $Setor = (int) filter_input(INPUT_GET, 'selecdestino');
     $UsuEdita = (int) filter_input(INPUT_GET, 'codusudest');
-//    $Processo = (int) filter_input(INPUT_GET, 'selecprocesso');
     $Erro = 0;
 
     $rs = pg_query($Conec, "SELECT descdest FROM ".$xProj.".bensdestinos WHERE numdest = $Setor");
     $tbl = pg_fetch_row($rs);
     $SetorDest = $tbl[0];
-
-//    $rs0 = pg_query($Conec, "SELECT processo FROM ".$xProj.".bensprocessos WHERE id = $Processo");
-//    $tbl0 = pg_fetch_row($rs0);
-//    $DescProcesso = $tbl0[0];
 
     if($UsuEdita == 0){
         $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET codencdestino = $Setor, descencdestino = '$SetorDest', dataencdestino = NOW(), usudestino = ".$_SESSION["usuarioID"]." WHERE id = $Cod");
@@ -390,11 +405,23 @@ if($Acao=="recebeBemDest"){
     $responseText = json_encode($var);
     echo $responseText;
 }
+if($Acao=="salvaObsArquivProv"){ // salva observ para arquivamento provisoriamente
+    $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Observ = str_replace("'","\"",$_REQUEST["obsarquiv"]); // substituir aspas simples por duplas
+    $Erro = 0;
+    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET observarquiv = '$Observ' WHERE id = $Cod");
+    if(!$rs1){
+        $Erro = 1;
+    }
+    $var = array("coderro"=>$Erro);
+    $responseText = json_encode($var);
+    echo $responseText;
+}
 if($Acao=="encerraProcesso"){
     $Cod = (int) filter_input(INPUT_GET, 'codigo');
+    $Observ = str_replace("'","\"",$_REQUEST["obsarquiv"]); // substituir aspas simples por duplas
     $Erro = 0;
-
-    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET usuarquivou = ".$_SESSION["usuarioID"].", dataarquivou = NOW() WHERE id = $Cod");
+    $rs1 = pg_query($Conec, "UPDATE ".$xProj.".bensachados SET observarquiv = '$Observ', usuarquivou = ".$_SESSION["usuarioID"].", dataarquivou = NOW() WHERE id = $Cod");
     if(!$rs1){
         $Erro = 1;
     }

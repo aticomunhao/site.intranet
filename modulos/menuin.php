@@ -32,16 +32,9 @@
 			//Provisório 
 			if(strtotime('2025/08/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//0123
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".poslog ADD COLUMN IF NOT EXISTS verarqdaf smallint NOT NULL DEFAULT 0;");
-				pg_query($Conec, "UPDATE ".$xProj.".poslog SET verarqdaf = 1 WHERE pessoas_id = 3 Or pessoas_id = 83");
-				//0124
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".escaladaf_func ADD COLUMN IF NOT EXISTS id_disc smallint NOT NULL DEFAULT 1;");
-				$rs = pg_query($Conec, "SELECT id FROM ".$xProj.".escaladaf_funcadm WHERE id = 7 And ativo = 1");
-				$row =  pg_num_rows($rs);
-				if($row > 0){
-					pg_query($Conec, "UPDATE ".$xProj.".escaladaf_funcadm SET ativo = 0 WHERE id = 7 Or id = 8 Or id = 9 "); 
-				}
+				//0125
+				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS observarquiv text;");
+
 			} // fim data limite
         ?>
 		<!-- menu para a página inicial  -->

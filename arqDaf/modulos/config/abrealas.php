@@ -1,5 +1,6 @@
 <?php
-require_once("dbcclass.php");
+//require_once("dbcclass.php");
+require_once(dirname(dirname(dirname(__FILE__)))."/modulos/config/dbcclass.php");
 $url = $_SERVER["PHP_SELF"];
 if(strcmp($url, $urlIni.'arqDaf/modulos/config/abrealas.php') == 0){
    session_name("arqAdm");

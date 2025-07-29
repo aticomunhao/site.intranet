@@ -709,6 +709,8 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("numprocessoArq").innerHTML = Resp.numprocesso;
                                         document.getElementById("etiqprocessoArq").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
                                         document.getElementById("descdobemArq").innerHTML = Resp.descdobem;
+                                        document.getElementById("observdobemArq").innerHTML = Resp.observ;
+                                        document.getElementById("observArquivam").value = Resp.observArquivam;
                                         document.getElementById("descdestinoArq").innerHTML = Resp.DescDest;
                                         document.getElementById("descprocessoArq").innerHTML = Resp.DescProcesso;
                                         document.getElementById("relacmodalArquivar").style.display = "block";
@@ -745,10 +747,8 @@ if(!isset($_SESSION["usuarioID"])){
                                         document.getElementById("codusudest").value = Resp.UsuDestino;
                                         document.getElementById("etiqAssinaturaDest").innerHTML = Resp.NomeUsuDestino;
                                         document.getElementById("botsalvaregdest").disabled = true;
-
-                let element = document.getElementById('botsalvaregdest');
-                    element.classList.add('botpadrinat');
-
+                                        let element = document.getElementById('botsalvaregdest');
+                                        element.classList.add('botpadrinat');
                                         document.getElementById("relacmodalDest").style.display = "block";
                                     }
                                 }
@@ -1059,7 +1059,7 @@ if(!isset($_SESSION["usuarioID"])){
                         Sim: function () {
                             ajaxIni();
                             if(ajax){
-                                ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=encerraProcesso&codigo="+document.getElementById("guardacod").value, true);
+                                ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=encerraProcesso&codigo="+document.getElementById("guardacod").value+"&obsarquiv="+document.getElementById("observArquivam").value, true);
                                 ajax.onreadystatechange = function(){
                                     if(ajax.readyState === 4 ){
                                         if(ajax.responseText){
@@ -1078,8 +1078,6 @@ if(!isset($_SESSION["usuarioID"])){
                                                 });
                                                 document.getElementById("relacmodalArquivar").style.display = "none";
                                                 $("#carregaBens").load("modulos/bensEncont/relBens.php?acao=Arquivar");
-//                                                window.opener.location.reload(true);
-//                                                window.location.reload();
                                             }
                                         }
                                     }
@@ -1092,7 +1090,79 @@ if(!isset($_SESSION["usuarioID"])){
                     }
                 });
             }
-            
+
+            function modalSalvaObsArq(){ // Salva observ para arquivamento provisoriamente
+                if(document.getElementById("observArquivam").value != ""){
+                    ajaxIni();
+                    if(ajax){
+                        ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=salvaObsArquivProv&codigo="+document.getElementById("guardacod").value+"&obsarquiv="+document.getElementById("observArquivam").value, true);
+                        ajax.onreadystatechange = function(){
+                            if(ajax.readyState === 4 ){
+                                if(ajax.responseText){
+//alert(ajax.responseText);
+                                    Resp = eval("(" + ajax.responseText + ")");
+                                    if(parseInt(Resp.coderro) === 1){
+                                        alert("Houve um erro no servidor.")
+                                    }else{
+                                        $.confirm({
+                                            title: 'Sucesso!',
+                                            content: 'Informação salva provisoriamente.',
+                                            draggable: true,
+                                            buttons: {
+                                                OK: function(){}
+                                            }
+                                        });
+                                    }
+                                }
+                            }
+                        };
+                        ajax.send(null);
+                    }
+                }
+            }
+
+            function mostraArquivado(Cod){
+                ajaxIni();
+                if(ajax){
+                    ajax.open("POST", "modulos/bensEncont/salvaBens.php?acao=buscaBem&codigo="+Cod, true);
+                    ajax.onreadystatechange = function(){
+                        if(ajax.readyState === 4 ){
+                            if(ajax.responseText){
+//alert(ajax.responseText);
+                                Resp = eval("(" + ajax.responseText + ")");
+                                if(parseInt(Resp.coderro) === 1){
+                                    alert("Houve um erro no servidor.")
+                                }else{
+                                    document.getElementById("numprocessoArquivado").innerHTML = Resp.numprocesso;
+                                    document.getElementById("etiqprocessoArquivado").innerHTML = "registrado por "+Resp.nomeusuins+" em "+Resp.datareg+".";
+                                    document.getElementById("descdobemArquivado").innerHTML = Resp.descdobem;
+                                    document.getElementById("observdobemArquivado").innerHTML = Resp.observ;
+                                    document.getElementById("descdestinoArquivado").innerHTML = Resp.DescDest;
+                                    document.getElementById("descprocessoArquivado").innerHTML = Resp.DescProcesso;
+                                    document.getElementById("observArquivamento").innerHTML = Resp.observArquivam;
+                                    document.getElementById("etiqAssinaturaDest").innerHTML = Resp.NomeUsuDestino;
+                                    document.getElementById("dataArquivado").innerHTML = Resp.dataArquivou;
+                                    document.getElementById("nomeArquivado").innerHTML = Resp.nomeArquivou;
+                                    document.getElementById('etiqDestino').innerHTML = "Destinado: ";
+                                    document.getElementById('setaSepara').innerHTML = "&nbsp;&nbsp; &rarr; &nbsp;&nbsp;";
+                                    if(Resp.nomepropriet != ""){
+                                        document.getElementById('setaSepara').innerHTML = "";
+                                        document.getElementById('etiqDestino').innerHTML = "Bem restituído a: ";
+                                        document.getElementById('descdestinoArquivado').innerHTML = Resp.nomepropriet;
+                                    }
+                                    document.getElementById("relacmodalArquivado").style.display = "block";
+                                    
+                                }
+                            }
+                        }
+                    };
+                    ajax.send(null);
+                }
+
+//
+                
+            }
+
             function ApagarBem(){
                 $.confirm({
                     title: 'Confirmação',
@@ -1505,6 +1575,9 @@ if(!isset($_SESSION["usuarioID"])){
             function fechaModalArquivar(){
                 document.getElementById("relacmodalArquivar").style.display = "none";
             }
+            function fechaModalArquivado(){
+                document.getElementById("relacmodalArquivado").style.display = "none";
+            }
             function foco(id){
                 document.getElementById(id).focus();
             }
@@ -1621,6 +1694,7 @@ if(!isset($_SESSION["usuarioID"])){
     </head>
     <body class="corClara" onbeforeunload="return mudaTema(0)"> <!-- ao sair retorna os background claros -->
         <?php
+//echo dirname(dirname(dirname(__FILE__)))."/modulos/";
             if(!$Conec){
                 echo "Sem contato com o Servidor";
                 return false;
@@ -2215,7 +2289,7 @@ if(!isset($_SESSION["usuarioID"])){
 
 
         <!-- div modal para arquivar processo  -->
-       <div id="relacmodalArquivar" class="relacmodal">
+        <div id="relacmodalArquivar" class="relacmodal">
             <div class="modal-content-Bens">
                 <span class="close" onclick="fechaModalArquivar();">&times;</span>
                 <!-- div três colunas -->
@@ -2234,20 +2308,33 @@ if(!isset($_SESSION["usuarioID"])){
                                 <label id="numprocessoArq" class="etiqAzul" style="padding-left: 5px; font-size: 1.1rem;"></label>
                                 <label id="etiqprocessoArq"class="etiqAzul"></label>
                             </td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Descrição: </td>
                             <td>
                                 <div id="descdobemArq" style="border: 1px solid blue; border-radius: 10px; padding: 3px;"></div>
                             </td>
+                            <td></td>
                         </tr>
                         <tr>
-                            <td colspan="2"><hr></td>
+                            <td class="etiqAzul" style="font-size: 70%;">Observações: </td>
+                            <td>
+                                <div id="observdobemArq" style="min-height: 20px; border: 1px solid blue; border-radius: 10px; padding: 3px; font-size: 80%;"></div>
+                            </td>
+                            <td></td>
                         </tr>
                         <tr>
-                            <td colspan="2" style="padding-bottom: 1px;"></td>
+                            <td class="etiqAzul">Observações <br>de Arquivamento: </td>
+                            <td colspan="3"><textarea id="observArquivam" class="form-control" style="border: 1px solid blue; border-radius: 10px; padding: 3px;" rows="2" cols="60" onchange="modif();"></textarea></td>
+                            <td><button class="botpadramarelo" style="padding: 2px;" id="botsalvaObsArq" onclick="modalSalvaObsArq();" title="Salva provisoriamente">Salvar</button></td>
                         </tr>
-                        
+                        <tr>
+                            <td colspan="3"><hr></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="padding-bottom: 1px;"></td>
+                        </tr>
                         <tr>
                             <td class="etiqAzul">Destinado: </td>
                             <td>
@@ -2256,27 +2343,31 @@ if(!isset($_SESSION["usuarioID"])){
                                     <label id="descprocessoArq"></label>
                                 </div>
                             </td>
+                            <td></td>
                         </tr>
                         <tr>
-                            <td colspan="2" style="text-align: center; padding-bottom: 1px; padding-top: 10px;">Este processo será encerrado e arquivado nesta data: <?php echo $Hoje; ?>.</td>
+                            <td colspan="3" style="text-align: center; padding-bottom: 1px; padding-top: 10px;">Este processo será encerrado e arquivado nesta data: <?php echo $Hoje; ?>.</td>
                         </tr>
                         <tr>
-                            <td colspan="2"><hr></td>
+                            <td colspan="3"><hr></td>
                         </tr>
                         <tr>
-                            <td colspan="2" style="padding-bottom: 1px;"></td>
+                            <td colspan="3" style="padding-bottom: 1px;"></td>
                         </tr>
                         <tr>
                             <td class="etiqAzul">Assinatura: </td>
                             <td style="padding-left: 15px; padding-right: 15px;"><div style="border: 1px solid blue; border-radius: 10px; text-align: center;">(a) <label style="font-weight: bold;"> <?php echo $_SESSION["NomeCompl"]; ?> </label></div></td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td></td>
                             <td style="text-align: center; padding-top: 25px;"><button class="botpadrblue" id="botsalvaregarq" onclick="modalArquiva();">Arquivar</button></td>
+                            <td></td>
                         </tr>
                         <tr>
                             <td></td>
                             <td style="text-align: center; padding-top: 25px;"><div id="mensagemArqv" style="color: red; font-weight: bold; margin: 5px; text-align: center; padding-top: 10px;"></div></td>
+                            <td></td>
                         </tr>
                     </table>
                     <br>
@@ -2284,6 +2375,94 @@ if(!isset($_SESSION["usuarioID"])){
            </div>
         </div> <!-- Fim Modal-->
 
+        <!-- div modal para mostrar processo arqquivado  -->
+        <div id="relacmodalArquivado" class="relacmodal">
+            <div class="modal-content-Bens">
+                <span class="close" onclick="fechaModalArquivado();">&times;</span>
+                <!-- div três colunas -->
+                <div class="container" style="margin: 0 auto;">
+                    <div class="row">
+                        <div class="col quadro" style="margin: 0 auto;"></div>
+                        <div class="col quadro"><h5 style="color: #666;">Processo Arquivado</h5></div> <!-- Central - espaçamento entre colunas  -->
+                        <div class="col quadro" style="margin: 0 auto; text-align: center;"> </div> 
+                    </div>
+                </div>
+                <div style="color: black; border: 2px solid blue; border-radius: 10px; padding: 10px;">
+                    <table style="margin: 0 auto; width:85%;">
+                        <tr>
+                            <td class="etiqAzul">Processo: </td>
+                            <td>
+                                <label id="numprocessoArquivado" class="etiqAzul" style="padding-left: 5px; font-size: 1.1rem;"></label>
+                                <label id="etiqprocessoArquivado"class="etiqAzul"></label>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul">Descrição: </td>
+                            <td>
+                                <div id="descdobemArquivado" style="border: 1px solid blue; border-radius: 10px; padding: 3px;"></div>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul" style="font-size: 70%;">Observações: </td>
+                            <td>
+                                <div id="observdobemArquivado" style="min-height: 40px; border: 1px solid blue; border-radius: 10px; padding: 3px; font-size: 80%;"></div>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul">Observações<br>Arquivamento: </td>
+                            <td colspan="3">
+                                <div id="observArquivamento" style="min-height: 40px; border: 1px solid blue; border-radius: 10px; padding: 3px; font-size: 80%;"></div>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"><hr></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="padding-bottom: 1px;"></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul" id="etiqDestino">Destinado: </td>
+                            <td>
+                                <div style="border: 1px solid blue; border-radius: 10px; padding: 3px; padding-left: 10px; font-weight: bold;">
+                                    <label id="descdestinoArquivado"></label><label id="setaSepara" &nbsp;&nbsp; &rarr; &nbsp;&nbsp;></label>
+                                    <label id="descprocessoArquivado"></label>
+                                </div>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: center; padding-bottom: 1px; padding-top: 10px;">Este processo foi encerrado e arquivado em: <label id="dataArquivado" class="etiqAzul" style="padding-left: 5px; font-size: 1.1rem;"></label> </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"><hr></td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="padding-bottom: 1px;"></td>
+                        </tr>
+                        <tr>
+                            <td class="etiqAzul">Assinatura: </td>
+                            <td style="padding-left: 15px; padding-right: 15px;"><div style="border: 1px solid blue; border-radius: 10px; text-align: center;">(a) <label style="font-weight: bold;" id="nomeArquivado"> </label></div></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td style="text-align: center; padding-top: 25px;"></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td style="text-align: center; padding-top: 25px;"><div style="color: red; font-weight: bold; margin: 5px; text-align: center; padding-top: 10px;"></div></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                    <br>
+                </div>
+           </div>
+        </div> <!-- Fim Modal-->
 
          <!-- Modal configuração-->
          <div id="modalBensConfig" class="relacmodal">
@@ -2555,9 +2734,9 @@ if(!isset($_SESSION["usuarioID"])){
                     <ul>
                         <li>1 - Achados e Perdidos no recinto devem ser encaminhados para guarda da Diretoria Administrativa e Financeira (DAF).</li>
                         <li>2 - Apenas usuários selecionados podem ver a relação dos objetos encontrados.</li>
-                        <li>3 - Alguns funcionários são autorizados a registrar e dar andamento aos processos.</li>
-                        <li>4 - Alguns funcionários são autorizados a registrar apenas.</li>
-                        <li>5 - Após noventa dias são abertos os recursos de encaminhamento para doação, descarte, destruição, venda, etc.</li>
+                        <li>3 - Alguns usuários são autorizados a registrar e dar andamento aos processos.</li>
+                        <li>4 - Alguns usuários são autorizados a registrar apenas.</li>
+                        <li>5 - Após noventa dias são liberados os recursos de encaminhamento para doação, descarte, destruição, venda, etc.</li>
                     </ul>
                 </div>
             </div>

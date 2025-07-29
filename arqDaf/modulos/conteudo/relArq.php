@@ -11,9 +11,9 @@ if(!isset($_SESSION["usuarioCPF"])){
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title></title>
-        <link rel="stylesheet" type="text/css" media="screen" href="comp/css/jquery-confirm.min.css" />
-        <script src="comp/js/jquery.min.js"></script> <!-- versão 3.6.3 -->
-        <script src="comp/js/jquery-confirm.min.js"></script>   <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
+        <link rel="stylesheet" type="text/css" media="screen" href="../comp/css/jquery-confirm.min.css" />
+        <script src="../comp/js/jquery.min.js"></script> <!-- versão 3.6.3 -->
+        <script src="../comp/js/jquery-confirm.min.js"></script>   <!-- https://craftpip.github.io/jquery-confirm/#quickfeatures -->
         <style type="text/css">
             .cContainer{ /* encapsula uma frase no topo de uma div em reArq.php e PagDir.php */
                 position: absolute; 
