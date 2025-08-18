@@ -178,6 +178,46 @@
         $objPHPExcel->getActiveSheet()->getStyle('A:F')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
         $objPHPExcel->getActiveSheet()->getStyle('C')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
 
+
+
+        //Contabem Geral de serviços - todos os grupos
+        $rs6 = pg_query($Conec, "SELECT pessoas_id, nomecompl, nomeusual FROM ".$xProj.".poslog 
+        WHERE poslog.eft_daf = 1 And poslog.ativo = 1 ORDER BY nomecompl, ordem_daf, nomeusual ");
+        $row6 = pg_num_rows($rs6);
+        if($row6 > 0){
+            $Num3 = ($Num2+4); 
+            $objPHPExcel->getActiveSheet()->getStyle('C'.$Num3)->getFont()->getColor()->setARGB(\PhpOffice\PhpSpreadsheet\Style\Color::COLOR_RED);
+            $objPHPExcel->getActiveSheet()->setCellValue('C'.$Num3, "Contagem Geral Mês: ".$MesSalvo);
+            $Num3++;
+
+            while($tbl6 = pg_fetch_row($rs6)){
+                $PoslogId = $tbl6[0];
+                $Nome = substr($tbl6[1], 0, 50); //nome completo
+                $rs7 = pg_query($Conec, "SELECT COUNT(poslog_id) 
+                FROM ".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".escaladaf_turnos ON ".$xProj.".escaladaf_ins.turnos_id = ".$xProj.".escaladaf_turnos.id 
+                WHERE poslog_id = $PoslogId And TO_CHAR(dataescalains, 'MM') = '$Mes' And  TO_CHAR(dataescalains, 'YYYY') = '$Ano' And infotexto = 0 And valepag = 1");
+                $tbl7 = pg_fetch_row($rs7);
+                $Total = $tbl7[0];
+
+                $objPHPExcel->getActiveSheet()->setCellValue('C'.$Num3, $Nome);
+                $objPHPExcel->getActiveSheet()->setCellValue('D'.$Num3, $Total);
+                $Num3++;
+            }
+        }
+
+        $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setAutoSize(true);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('B')->setAutoSize(true);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('C')->setAutoSize(true);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('D')->setAutoSize(true);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('E')->setAutoSize(true);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('F')->setAutoSize(true);
+        $objPHPExcel->getActiveSheet()->getStyle('A:F')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $objPHPExcel->getActiveSheet()->getStyle('C')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_LEFT);
+
+
+
+
+
 //        $writer = new PhpOffice\PhpSpreadsheet\Writer\Xlsx($objPHPExcel);
         $writer = new Xlsx($objPHPExcel);
         $writer->save(dirname(dirname(__FILE__)).'/conteudo/arquivos/ListaTurnos.xlsx');

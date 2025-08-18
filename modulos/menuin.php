@@ -32,8 +32,6 @@
 			//Provisório 
 			if(strtotime('2025/08/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
-				//0125
-				pg_query($Conec, "ALTER TABLE IF EXISTS ".$xProj.".bensachados ADD COLUMN IF NOT EXISTS observarquiv text;");
 
 			} // fim data limite
         ?>

@@ -167,7 +167,8 @@ function openhref(Num){
 
 
     if(parseInt(Num) === 100){
-        window.open("arqDaf/index.php", 'ArqDaf');
+//        window.open("arqDaf/index.php", 'ArqDaf');
+        window.open("modulos/arqDaf/indexc.php", 'ArqDaf');
     }
 }
 
