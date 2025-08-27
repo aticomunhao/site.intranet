@@ -11,8 +11,8 @@ require_once("abrealas.php");
         <script type="text/javascript">
             new DataTable('#idTabelaUsu', {
                 lengthMenu: [
-                    [100, 200, 500],
-                    [100, 200, 500]
+                    [300, 500, 900],
+                    [300, 500, 900]
                 ],
                 language: {
                     info: 'Mostrando Página _PAGE_ of _PAGES_',

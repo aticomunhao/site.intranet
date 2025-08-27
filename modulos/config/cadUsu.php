@@ -577,6 +577,9 @@ if(!isset($_SESSION["usuarioID"])){
                                             document.getElementById("ultlog").value = Resp.ultlog;
                                             document.getElementById("acessos").value = Resp.acessos;
                                             document.getElementById("flAdm").value = Resp.adm;
+                                            if(parseInt(Resp.adm) === 1){
+                                                document.getElementById("flAdm").value = 2;
+                                            }
                                             document.getElementById("setor").value = Resp.setor;
                                             document.getElementById("guardaidpessoa").value = Resp.idpessoa;
 //                                            document.getElementById("guardaid_click").value = Resp.idpessoa; // para salvar modif se for procurado por inserção ao invés de click

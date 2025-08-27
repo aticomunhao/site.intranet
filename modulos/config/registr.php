@@ -641,6 +641,7 @@ if($Acao =="checaLogin"){
     $DiaNasc = 0;
     $MesNasc = 0;
     $UltLog = "";
+    $DataInat = "";
     $Acessos = 0;
     $Ativo = 0;
     $Adm = 1;
@@ -683,9 +684,11 @@ if($Acao =="checaLogin"){
                 }else{
                     $DataInat = $Proc1[7];
                 }
+            }else{
+                $Ativo = 1; // cadastro novo
             }
         }else{
-            $Erro = 2; // não encontrado no pessoal
+            $Erro = 2;  // não encontrado no pessoal
         }
     }
     $var = array("coderro"=>$Erro, "quantiUsu"=>$row, "idpessoa"=>$Usu, "cpf"=>$Cpf, "nomeusual"=>$NomeUsual, "nomecompl"=>$NomeCompl, "dianasc"=>$DiaNasc, "mesnasc"=>$MesNasc, "jatem"=>$JaTem, "ultlog"=>$UltLog, "acessos"=>$Acessos, "ativo"=>$Ativo, "adm"=>$Adm, "setor"=>$Setor, "datainat"=>$DataInat);
