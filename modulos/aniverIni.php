@@ -20,7 +20,7 @@
     $rs = pg_query($Conec, "SELECT * FROM information_schema.tables WHERE table_schema = 'cesb';");
     $row = pg_num_rows($rs);
     if($row == 0){
-        die("<br>Faltam tabelas. Informe à ATI");
+        die("<br>Faltam tabelas. Informe à ATI.");
         return false;
     }
     $rs = pg_query($Conec, "SELECT column_name, data_type FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'poslog'");

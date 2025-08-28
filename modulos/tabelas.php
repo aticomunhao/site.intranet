@@ -1030,6 +1030,7 @@ echo "Tabela ".$xProj.".visitas_ar checada. <br>";
       pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf WHERE datains < CURRENT_DATE - interval '$PrazoDel years' And ativo = 0"); // Apaga só os deletados
       pg_query($Conec, "DELETE FROM ".$xProj.".usulog WHERE ativo = 0"); // Apaga os deletados
       pg_query($Conec, "DELETE FROM ".$xProj.".usulog WHERE datalogin < CURRENT_DATE - interval '$PrazoDel years'");
+      pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf_turnos WHERE ativo = 0"); 
    
    }else{
       echo "Eliminação de registros antigos desativado. <br>";   

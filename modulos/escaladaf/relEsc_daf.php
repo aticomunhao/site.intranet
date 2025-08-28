@@ -439,7 +439,7 @@
                                     //Conta número de serviços na escala
                                     $rs5 = pg_query($Conec, "SELECT COUNT(poslog_id) 
                                     FROM ".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".escaladaf_turnos ON ".$xProj.".escaladaf_ins.turnos_id = ".$xProj.".escaladaf_turnos.id 
-                                    WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'MM') = '$Mes' And grupo_ins = $NumGrupo And infotexto = 0 And valepag = 1");
+                                    WHERE poslog_id = $Cod And TO_CHAR(dataescalains, 'MM') = '$Mes' And grupo_ins = $NumGrupo And valepag = 1");  //And infotexto = 0 
                                     $tbl5 = pg_fetch_row($rs5);
                                     $Total = $tbl5[0];
                                 echo "&nbsp;<sup>$Total</sup></td>";

@@ -76,16 +76,27 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
                         </td>
                         <?php
                         if($tbl3[8] == 1){ // infotexto: férias, inss, folga, etc
-                            echo "<td></td>";
-                            echo "<td></td>";
-                            echo "<td></td>";
-                            echo "<td></td>";
+                            ?>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <?php
+                               if($tbl3[2] != "FÉRIAS" && $tbl3[2] != "FOLGA" && $tbl3[2] != "INSS"){
+                                ?>
+                                    <td><input type="checkbox" id="valeRef" title="<?php if($tbl3[9] == 1){echo 'Turno COM vale refeição';}else{echo 'Turno SEM vale refeição.';} ?>" onClick="marcaVale(this, <?php echo $Cod ?>);" <?php if($tbl3[9] == 1) {echo "checked";} ?> ></td>
+                                <?php
+                               }else{
+                                echo "<td></td>";
+                               }
+                            ?>
+                            
+                            <?php
                         }else{
                         ?>
                             <td style="width: 80px; text-align: center;"><?php echo $tbl3[5]; ?></td>
                             <td><input type="text" id="edinterv" value="<?php echo $tbl3[7]; ?>" style="width: 70px; text-align: center; border: 1px solid; border-radius: 3px;" onchange="editaInterv(<?php echo $Cod; ?>, value);"/></td>
                             <td style="width: 70px; text-align: center;"><?php echo $tbl3[6]; ?> </td>
-                            <td><input type="checkbox" id="valeRef" title="<?php if($tbl3[9] == 1){echo 'Turno com vale refeição';}else{echo 'Turno sem vale refeição.';} ?>" onClick="marcaVale(this, <?php echo $Cod ?>);" <?php if($tbl3[9] == 1) {echo "checked";} ?> ></td>
+                            <td><input type="checkbox" id="valeRef" title="<?php if($tbl3[9] == 1){echo 'Turno COM vale refeição';}else{echo 'Turno SEM vale refeição.';} ?>" onClick="marcaVale(this, <?php echo $Cod ?>);" <?php if($tbl3[9] == 1) {echo "checked";} ?> ></td>
                         <?php
                         }
                         ?>
@@ -126,7 +137,12 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             </div>
 
             <br>
-            <button id="abreinsletra" class="botpadrblue" onclick="insereLetra();">Inserir Letra</button>
+            <table style="margin: 0 auto; width: 85%;">
+                <tr>
+                    <td style="text-align: right;"><button class="botpadrblue" onclick="insereLetra();">Inserir Letra</button></td>
+                    <td style="text-align: right;"><button class="botpadrblue" onclick="fechaQuadroHorario()">Fechar</button></td>
+                </tr>
+            </table>
         </div>
     </body>
 </html>

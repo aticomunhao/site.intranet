@@ -159,7 +159,7 @@
 
                 $rs5 = pg_query($Conec, "SELECT COUNT(poslog_id) 
                 FROM ".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".escaladaf_turnos ON ".$xProj.".escaladaf_ins.turnos_id = ".$xProj.".escaladaf_turnos.id 
-                WHERE poslog_id = $PoslogId And TO_CHAR(dataescalains, 'MM') = '$Mes' And  TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo And infotexto = 0 And valepag = 1");
+                WHERE poslog_id = $PoslogId And TO_CHAR(dataescalains, 'MM') = '$Mes' And  TO_CHAR(dataescalains, 'YYYY') = '$Ano' And grupo_ins = $NumGrupo And valepag = 1"); //And infotexto = 0 
                 $tbl5 = pg_fetch_row($rs5);
                 $Total = $tbl5[0];
 
@@ -195,7 +195,7 @@
                 $Nome = substr($tbl6[1], 0, 50); //nome completo
                 $rs7 = pg_query($Conec, "SELECT COUNT(poslog_id) 
                 FROM ".$xProj.".escaladaf_ins INNER JOIN ".$xProj.".escaladaf_turnos ON ".$xProj.".escaladaf_ins.turnos_id = ".$xProj.".escaladaf_turnos.id 
-                WHERE poslog_id = $PoslogId And TO_CHAR(dataescalains, 'MM') = '$Mes' And  TO_CHAR(dataescalains, 'YYYY') = '$Ano' And infotexto = 0 And valepag = 1");
+                WHERE poslog_id = $PoslogId And TO_CHAR(dataescalains, 'MM') = '$Mes' And  TO_CHAR(dataescalains, 'YYYY') = '$Ano' And valepag = 1"); //And infotexto = 0 
                 $tbl7 = pg_fetch_row($rs7);
                 $Total = $tbl7[0];
 

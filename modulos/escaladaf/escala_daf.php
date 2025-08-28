@@ -975,7 +975,7 @@ if(!isset($_SESSION["usuarioID"])){
 //alert(ajax.responseText);
                                 Resp = eval("(" + ajax.responseText + ")");
                                 if(parseInt(Resp.coderro) === 1){
-                                    alert("Houve um erro no servidor.");
+//                                    alert("Houve um erro no servidor.");
                                 }else if(parseInt(Resp.coderro) === 2){
                                         document.getElementById("insletra").value = "";
                                         document.getElementById("insletra").focus();
@@ -992,7 +992,9 @@ if(!isset($_SESSION["usuarioID"])){
                                     $("#relacaoHorarios").load("modulos/escaladaf/edHorarios.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                     $("#faixaquadro").load("modulos/escaladaf/quadrodaf.php?numgrupo="+document.getElementById("guardanumgrupo").value);
                                     document.getElementById("abreinsletra").style.visibility = "visible";
-                                    abreQuadroTurnos(Resp.codigonovo);
+                                    if(parseInt(Resp.codigonovo) > 0){
+                                        abreQuadroTurnos(Resp.codigonovo);
+                                    }
                                 }
                             }
                         }

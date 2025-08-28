@@ -673,6 +673,7 @@ if($Acao =="salvanota"){
 
 if($Acao =="salvainsLetra"){
     $Erro = 0;
+    $CodigoNovo = 0;
     $Ordem = (int) filter_input(INPUT_GET, 'ordem');
     $Letra = strtoupper(filter_input(INPUT_GET, 'insletra'));
 
@@ -704,7 +705,7 @@ if($Acao =="salvainsLetra"){
             $Erro = 1;
         }
     }
-    $var = array("coderro"=>$Erro);
+    $var = array("coderro"=>$Erro, "codigonovo"=>$CodigoNovo);
     $responseText = json_encode($var);
     echo $responseText;
 }

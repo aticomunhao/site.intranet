@@ -80,7 +80,8 @@ function openhref(Num){
         $('#container3').load('modulos/controleAr/controleAr2.php');
     }
     if(parseInt(Num) === 70){
-        $('#container3').load('modulos/controleAr/controleAr3.php');
+//        $('#container3').load('modulos/controleAr/controleAr3.php');
+        $('#container3').load('modulos/controleAr/controleAr4.php');
     }
 //    if(parseInt(Num) === 71){
 //        $('#container3').load('modulos/escalas/escala.php');

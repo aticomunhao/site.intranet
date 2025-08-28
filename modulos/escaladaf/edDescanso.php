@@ -156,5 +156,8 @@ require_once(dirname(dirname(__FILE__))."/config/abrealas.php");
             </table>
             <br>
         </div>
+        <div style="text-align: center;">
+            <button class="botpadrblue" onclick="fechaQuadrodescanso()">Fechar</button>
+        </div>
     </body>
 </html>

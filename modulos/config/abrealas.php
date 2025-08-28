@@ -11,7 +11,7 @@ if(strcmp($url, $urlIni.'modulos/config/abrealas.php') == 0){
 $ConecPes = conecPes();
 if($ConecPes != "sConec" && $ConecPes != "sFunc"){
    $xProj =  "cesb";
-   $xPes = "public";
+   $xPes = "pessoas";
 }else{
    if($ConecPes == "sFunc"){
       die("<br>Não foi possível conectar-se ao banco de dados Pessoal. Habilite a extensão pgsql no PHP.");
@@ -23,7 +23,7 @@ if($ConecPes != "sConec" && $ConecPes != "sFunc"){
 $Conec = conecPost(); // habilitar a extensão: extension = pgsql no phpini
 if($Conec != "sConec" && $Conec != "sFunc"){
    $xProj =  "cesb"; 
-   $xPes = "public";
+   $xPes = "pessoal";
 }else{
    die("<br>Não foi possível conectar-se ao banco de dados Cesb.");
 }

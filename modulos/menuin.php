@@ -32,8 +32,11 @@
 			//Provisório 
 			if(strtotime('2025/08/30') > strtotime(date('Y/m/d'))){
 				require_once(dirname(__FILE__)."/config/abrealas.php");
+				pg_query($Conec, "UPDATE ".$xProj.".escaladaf_turnos SET valeref = 0 WHERE horaturno = 'FÉRIAS' Or horaturno = 'FOLGA' Or horaturno = 'INSS' Or horaturno = 'ATESTADO' ");
+				pg_query($Conec, "UPDATE ".$xProj.".escaladaf_ins SET valepag = 0 WHERE turnoturno = 'FÉRIAS' Or turnoturno = 'FOLGA' Or turnoturno = 'INSS' Or turnoturno = 'ATESTADO' ");
+				pg_query($Conec, "DELETE FROM ".$xProj.".escaladaf_turnos WHERE ativo = 0"); 
 
-			} // fim data limite
+			} // fim data limite   
         ?>
 		<!-- menu para a página inicial  -->
         <ul id="example" class="sf-menu sf-js-enabled sf-arrows sf-menu-dia<?php echo $diaSemana; ?> ">
